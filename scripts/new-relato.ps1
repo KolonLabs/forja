@@ -15,20 +15,24 @@ foreach ($f in $required) {
 
 Write-Host "Creando workspace (relato): $TargetDir"
 
-# 1. Crear estructura de directorios
-$dirs = @(
-    "$TargetDir\.opencode\agents",
-    "$TargetDir\.opencode\skills", 
-    "$TargetDir\.opencode\commands",
-    "$TargetDir\fichas"
-)
-foreach ($d in $dirs) { New-Item -Force -ItemType Directory $d | Out-Null }
+$workspaceCreated = $false
+try {
+    New-Item -LiteralPath $TargetDir -ItemType Directory -Force | Out-Null
+    $workspaceCreated = $true
+
+    # 1. Crear estructura de directorios
+    $dirs = @(
+        "$TargetDir\.opencode\agents",
+        "$TargetDir\.opencode\skills",
+        "$TargetDir\.opencode\commands",
+        "$TargetDir\fichas"
+    )
+    foreach ($d in $dirs) { New-Item -Force -ItemType Directory $d | Out-Null }
 
 # 2. Escribir opencode.json
 @"
 {
   "`$schema": "https://opencode.ai/config.json",
-  "instructions": ["AGENTS.md"],
   "default_agent": "director"
 }
 "@ | Set-Content -LiteralPath (Join-Path $TargetDir "opencode.json") -Encoding UTF8
@@ -60,3 +64,9 @@ Write-Host "  Para comenzar:"
 Write-Host "    opencode --cwd ""workspaces\$($Brief.slug)"""
 Write-Host "    /generar"
 Write-Host ""
+} catch {
+    if ($workspaceCreated -and (Test-Path -LiteralPath $TargetDir)) {
+        Remove-Item -LiteralPath $TargetDir -Recurse -Force
+    }
+    throw
+}

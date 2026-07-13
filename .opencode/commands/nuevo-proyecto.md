@@ -1,13 +1,17 @@
 ---
-name: nuevo-proyecto
 description: Wizard de briefing editorial + creación de workspace para relato o novela
 agent: scaffolder
-user-invocable: true
 ---
 
 # /nuevo-proyecto
 
 Briefing editorial **antes** de crear el workspace. El scaffolder conduce una conversación en 7 fases para que la idea llegue **definida** a `workspaces/<slug>/`.
+
+## Entrada del comando
+
+Argumentos recibidos: `$ARGUMENTS`
+
+Úsalos como datos iniciales del briefing: el primer valor sin prefijo puede ser el slug, el siguiente texto la premisa o el título, y las opciones completan los campos indicados. No asumas los campos omitidos ni omitas las fases 5 y 6.
 
 ## Sintaxis
 
@@ -24,7 +28,6 @@ Briefing editorial **antes** de crear el workspace. El scaffolder conduce una co
 | `--estilo` | explicito, contemporaneo, erotico, fantasia, noir, romantico, thriller | — | Estilo narrativo principal |
 | `--estilo-secundario` | igual que --estilo | — | Estilo de fusión |
 | `--escala` | relato, novela-simple, novela-multi-hilo | — | Escala del proyecto |
-| `--sin-infra` | flag | false | Forzar sin Qdrant/Neo4j (incluso en novela) |
 
 ## Principios del wizard
 
@@ -99,7 +102,7 @@ Briefing editorial **antes** de crear el workspace. El scaffolder conduce una co
   thriller      — Urgente, paranoica, cortante, tensión constante
   ```
 - "¿Te sirve un solo estilo o quieres fusión con un secundario? (ej. thriller + explicito, fantasia + erotico)"
-- "¿Nivel de crudeza? (maximo / alto / medio / bajo)"
+- "¿Nivel de crudeza (explicitud)? (maximo / alto / medio / bajo / minimo)"
 - "¿Punto de vista narrativo? (1ª persona / 3ª limitada / 3ª omnisciente / múltiple)"
 - "¿Hay restricciones? ¿Qué NO quieres que aparezca? (sin flashbacks, sin voz en off, sin ciertos temas, sin violencia sexual explícita, sin incesto…)"
 - "¿Hay límites específicos de contenido que respetar?"
@@ -123,9 +126,7 @@ Briefing editorial **antes** de crear el workspace. El scaffolder conduce una co
 
 **Si el usuario elige `novela-simple`:**
 - "¿Confirmas que no hay líneas temporales paralelas ni POVs múltiples que merezcan hilos separados?"
-- "¿Quieres activar infraestructura de memoria? (Qdrant para resúmenes y entidades + Neo4j para relaciones entre personajes)"
-  - Con infra: tracking completo de coherencia entre capítulos (~33 skills)
-  - Sin infra (`--sin-infra`): modo ligero, solo archivos markdown (~30 skills)
+- Explicar que el workspace inicializará Qdrant para memoria semántica y Neo4j para relaciones; ambos son obligatorios en novelas.
 
 **Si el usuario elige `novela-multi-hilo`:**
 - Por cada hilo, pide y registra:
@@ -227,12 +228,16 @@ Workspace creado: workspaces/<slug>/
   "temas": ["corrupción sistémica", "memoria y olvido", "familia rota"],
   "referencias": ["El padrino (tono de poder corrupto)", "True Detective S1 (atmósfera)"],
   "restricciones": ["Sin violencia sexual explícita", "Sin flashbacks"],
-  "infraestructura": {
-    "qdrant": true,
-    "neo4j": true
-  },
-  "hilos": [],
-  "puntos_conexion": {},
+  "_mapa": "# MAPA — Título de la obra\n\n...",
+  "hechos": [
+    {
+      "acto": "Acto I — La grieta",
+      "objetivo": "Abrir el conflicto",
+      "efecto_lector": "Inquietud",
+      "tension": "La protagonista pierde su única pista",
+      "hechos": ["Ana recibe una grabación que contradice la versión oficial"]
+    }
+  ],
   "reflexion_agente": {
     "fortalezas": ["Conflicto personal potente", "Atmósfera definida", "Protagonista con agencia"],
     "riesgos": ["El ritmo puede decaer en el segundo acto", "La corporación como villano es genérica"],
@@ -240,6 +245,8 @@ Workspace creado: workspaces/<slug>/
   }
 }
 ```
+
+`_mapa` y `hechos` son obligatorios en todas las escalas. Las novelas inicializan siempre Qdrant y Neo4j; no existe `--sin-infra`.
 
 **Campos `hilos[]` (solo `novela-multi-hilo`):**
 ```json
@@ -253,6 +260,8 @@ Workspace creado: workspaces/<slug>/
   "tono": "místico, ritual, opresivo"
 }
 ```
+
+Para cada entrada de `hilos[]`, `_hilos[]` debe incluir el mismo `slug` y los textos iniciales `diseno_hilo_md` y `guion_hilo_md`. La escala requiere al menos dos hilos y cada uno debe tener al menos un acto. Los slugs son siempre `hilo-<kebab-case>` y cada acto multi-hilo debe referir uno de ellos mediante `hechos[].hilo`.
 
 **Campos `puntos_conexion` (solo `novela-multi-hilo`):**
 ```json
@@ -275,9 +284,9 @@ Si el usuario proporciona todos los datos en un solo mensaje (ej. `/nuevo-proyec
 
 | Decisión | Relato | Novela Simple | Novela Multi-hilo |
 |----------|:------:|:-------------:|:-----------------:|
-| Fases del pipeline | 4 | 6 | 8 |
-| Qdrant + Neo4j | No | Sí (configurable `--sin-infra`) | Sí (configurable `--sin-infra`) |
-| Skills inyectados | ~30 | ~33 | ~37 |
+| Fases del pipeline | 4 | 4 | 8 |
+| Qdrant + Neo4j | No | Sí, obligatorios | Sí, obligatorios |
+| Skills inyectados | ~33 | ~39 | ~45 |
 | Memoria persistente | `contexto_narrativo.md` | Qdrant L1-L4 + Neo4j | Qdrant L1-L4 + Neo4j + cross-hilo |
 | Agentes extra | — | memoria, cronista, entidades, epub | memoria, cronista, entidades, epub |
 
@@ -296,4 +305,3 @@ Si el usuario proporciona todos los datos en un solo mensaje (ej. `/nuevo-proyec
 - **No avanzar** a la siguiente fase si la respuesta es demasiado débil — ofrecer 2-3 preguntas de profundización.
 - Cuando el usuario defienda una decisión con criterio, **aceptarla** y registrarla en `reflexion_agente.decisiones_usuario`.
 - **Idioma:** español siempre.
-

@@ -10,13 +10,15 @@ Forja/
 ├── opencode.json                      # Config compartida MCP + permisos
 ├── .opencode/                         # Hub: solo scaffolding y creación de libros
 │   ├── agents/
-│   │   └── scaffolder.md              # Wizard de briefing editorial (7 fases)
+│   │   ├── scaffolder.md              # Wizard de briefing editorial (7 fases)
+│   │   └── bibliotecario.md           # Ensambla libros (EPUB/PDF) desde workspaces publicados
 │   ├── skills/
 │   │   ├── scaffolding-acto/          # Esquema de acto narrativo
 │   │   ├── scaffolding-hecho/         # Esquema de hecho narrativo
 │   │   ├── scaffolding-relato/        # Conversación de estructura (relato)
 │   │   ├── scaffolding-novela-simple/ # Conversación de estructura (novela)
-│   │   └── scaffolding-multi-hilo/    # Conversación de estructura (multi-hilo)
+│   │   ├── scaffolding-multi-hilo/    # Conversación de estructura (multi-hilo)
+│   │   └── scaffolding-mapa/          # Estructura de MAPA.md por escala (Fase 7)
 │   └── commands/
 │       ├── nuevo-proyecto.md          # /nuevo-proyecto
 │       └── crear-libro.md             # /crear-libro
@@ -36,9 +38,11 @@ Forja/
 │   ├── new-novela-simple.ps1          # Creador de workspace novela simple
 │   ├── new-novela-multi-hilo.ps1      # Creador de workspace novela multi-hilo
 │   ├── crear-libro.ps1                # Ensambla libro desde workspaces publicados
+│   ├── build-pdf.ps1                  # Compila PDF con Pandoc y un motor local
+│   ├── templates/forja-kdp.typ         # Plantilla PDF reutilizable
 │   ├── build.css                      # Estilos EPUB
-│   ├── qdrant.py                      # Multi-tenant (colecciones por workspace)
-│   └── neo4j.py                       # Multi-tenant (grafos por workspace)
+│   ├── qdrant.py                      # Multi-tenant (colecciones compartidas por proyecto)
+│   └── neo4j.py                       # Multi-tenant (grafo compartido por proyecto)
 ├── workspaces/                        # Proyectos hijos (workspaces aislados)
 │   ├── legacy/                        # Workspaces legacy (referencia)
 │   └── <slug>/                        # Un workspace por proyecto
@@ -51,8 +55,9 @@ Forja/
 | Agente | Modelo | Fuente | Rol |
 |--------|--------|--------|-----|
 | **scaffolder** | `deepseek-v4-pro` | `.opencode/agents/scaffolder.md` | Wizard de briefing editorial. NO escribe ficción. Crea workspaces. |
+| **bibliotecario** | `deepseek-v4-flash` | `.opencode/agents/bibliotecario.md` | Ensambla libros (EPUB/PDF) desde workspaces ya publicados, vía `/crear-libro`. Sin criterio editorial, no escribe ni edita contenido narrativo. |
 
-El scaffolder **no se inyecta en workspaces**. Solo vive en el hub.
+Ninguno de los dos **se inyecta en workspaces**. Ambos viven solo en el hub.
 
 ## Comandos del hub
 
@@ -81,9 +86,9 @@ Genera `relato.md` (relato) o `novela.md` (novela) en la raíz del workspace. Si
 
 **Desde el hub:**
 ```
-/crear-libro <slug-libro> <workspace1> [workspace2...] [--epub]
+/crear-libro <slug-libro> <workspace1> [workspace2...] [--epub] [--pdf] [--pdf-formato <formato>] [--pdf-motor <motor>] [--titulo "<título>"] [--autor "<autor>"]
 ```
-Lee los archivos limpios de los workspaces, los ensambla en `publicados/<libro>/`, y actualiza `config.json.estado = "publicado"` en los workspaces fuente.
+Lo ejecuta el agente **bibliotecario**: lee los archivos limpios de los workspaces, los ensambla en `publicados/<libro>/`, y actualiza `config.json.estado = "publicado"` en los workspaces fuente.
 
 ## Reglas del hub
 
@@ -92,6 +97,12 @@ Lee los archivos limpios de los workspaces, los ensambla en `publicados/<libro>/
 - **No modificar otros workspaces** sin permiso explícito del usuario.
 - **Cada workspace es autónomo**: tiene su propio `.opencode/` con agentes, skills y comandos inyectados según su escala. No conoce directorios superiores.
 - **shared/ es inmutable** para workspaces creados. Las mejoras al pipeline se aplican manualmente desde el hub.
+
+## Registros persistentes
+
+- `docs/decisiones/` conserva las decisiones arquitectonicas y operativas vigentes. Consultarlo antes de cambiar contratos, aislamiento, infraestructura o formatos de salida.
+- `docs/deuda-tecnica.md` registra riesgos abiertos y sus criterios de cierre. Actualizarlo al identificar o resolver un riesgo real.
+- `docs/plan-hechos-pendientes.md` es historial de incidencias resueltas, no una fuente de trabajo activa.
 
 ## shared/ como fuente de verdad
 
@@ -110,7 +121,7 @@ Al crear un workspace, el script inyecta solo los agentes y skills que correspon
 |--------|-------|:---:|:---:|:---:|:---:|
 | **relato** | 4 fases | No | No | 7 | 33 |
 | **novela-simple** | 4 fases | Sí | No | 9 | 39 |
-| **novela-multi-hilo** | 8 fases | Sí | Sí | 9 | 45 |
+| **novela-multi-hilo** | 8 fases | Sí | Sí (mín. 2) | 9 | 45 |
 
 ## Jerarquía narrativa
 
@@ -118,6 +129,6 @@ Forja define **actos → hechos**. El workspace define **escenas → beats** (re
 
 ## Infraestructura multi-tenant
 
-Qdrant y Neo4j se usan como infraestructura compartida con aislamiento por workspace. Cada novela tiene sus propias colecciones/grafos identificados por slug. Los scripts `scripts/qdrant.py` y `scripts/neo4j.py` son multi-tenant y reciben el slug como parámetro.
+Qdrant y Neo4j se usan como infraestructura compartida con aislamiento por workspace. Qdrant filtra sus colecciones compartidas por el campo `proyecto`; Neo4j aplica el slug en la propiedad `proyecto` de nodos y relaciones. Los scripts `scripts/qdrant.py` y `scripts/neo4j.py` son multi-tenant y reciben el slug en las operaciones del proyecto.
 
 Los relatos no usan Qdrant ni Neo4j — su memoria se gestiona en `contexto_narrativo.md`.

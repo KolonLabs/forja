@@ -1,0 +1,176 @@
+{
+  "titulo": "Dinastías del Poder",
+  "slug": "dinastias-del-poder",
+  "tipo": "novela",
+  "escala": "novela-multi-hilo",
+  "estado": "diseno",
+  "estilo_base": "explicito",
+  "creado": "2026-07-13T17:44:28",
+  "ultima_modificacion": "2026-07-13T17:44:28",
+  "ultimo_hecho_seq": 0,
+  "ultimo_beat_seq": 0,
+  "estilo_secundario": "fantasia",
+  "logline": "Un hombre fracasado descubre que su linaje ha portado un amuleto de poder durante cinco milenios. Cada ancestro ascendió usando el sexo y la dominación como arma… y cada dinastía cayó. Él será el primero en intentar no cagarla.",
+  "genero": "fantasía oscura",
+  "subgenero": "thriller erótico",
+  "tono": "asfixiante, opresivo, sensual",
+  "atmosfera": "Madrid actual (Vallecas, gris y asfixiante), Madrid 1752 (corte borbónica, decadente), Roma 62 d.C. (termas, domus, jerarquía brutal), Uruk 2900 a.C. (templo, zigurat, ritual y misterio)",
+  "explicitud": "maximo",
+  "pov": "3ª limitada múltiple",
+  "extension_estimada": "90000-110000 palabras",
+  "capitulos_estimados": 45,
+  "antagonista_o_conflicto": "Conflicto interno. El propio Daniel es su antagonista: su mediocridad, su deseo de anonimato choca con el poder que exige visibilidad. Sin antagonista externo.",
+  "temas": [
+    "poder y corrupción",
+    "sexo como arma de control",
+    "ciclo de ascenso y caída",
+    "linaje y legado",
+    "anonimato vs visibilidad"
+  ],
+  "referencias": [],
+  "restricciones": [],
+  "puntos_conexion": {
+    "los_amuletos": "Cuatro amuletos distintos, uno por época. Daniel los persigue en el presente guiado por visiones de cada hilo histórico. Sumeria: sello cilíndrico de lapislázuli. Roma: anillo de sello (anulus signaculum). S.XVIII: reloj de bolsillo. Actualidad: mechero Zippo heredado del abuelo. Acumularlos incrementa el poder pero también la visibilidad. Cada uno está impregnado por las vivencias de su portador original.",
+    "el_patron": "Todos los portadores siguen el mismo arco trágico: ascenso mediante el sexo como arma de poder, ostentación creciente, caída por visibilidad excesiva. Daniel es el primero en tener la visión completa del patrón.",
+    "el_linaje": "Sangre Ortega/Orteia como único vínculo funcional con los amuletos. Solo alguien del linaje puede activarlos. Otra persona los encuentra como objetos muertos — piedra fría, metal inerte. Esto hace que la amenaza para Daniel no sea cualquiera: solo su propia sangre puede arrebatárselos.",
+    "las_visiones": "Cada amuleto que Daniel obtiene dispara visiones del siguiente ancestro. Las visiones no son lecciones morales: son mapas del tesoro. Muestran dónde quedó el siguiente amuleto y cómo usó el poder su portador."
+  },
+  "protagonistas": [
+    {
+      "nombre": "Daniel Ortega Muñoz",
+      "deseo": "Vida cómoda desde la sombra. Poder sin visibilidad.",
+      "obstaculo": "El poder del amuleto exige exposición. Cuanto más acumula, más visible se vuelve. Su propia mediocridad y miedo a destacar.",
+      "arco": "De hombre gris invisible a portador consciente del linaje que debe decidir entre ejercer el poder (como sus ancestros) o intentar romper el ciclo por primera vez en cinco milenios."
+    },
+    {
+      "nombre": "Mateo Ortega y Paredes",
+      "deseo": "Influencia en la corte de Fernando VI. Ser invisiblemente indispensable.",
+      "obstaculo": "Su condición de hidalgo arruinado. Su propia ostentación cuando alcanza el poder.",
+      "arco": "De hidalgo humillado a hombre influyente en la corte mediante seducción y chantaje sexual. Cima de poder y caída por visibilidad excesiva."
+    },
+    {
+      "nombre": "Livia Orteia",
+      "deseo": "Manumisión y dignitas para sus descendientes. Que sus hijos nazcan libres.",
+      "obstaculo": "Su condición de esclava. Un sistema que nunca olvida la mácula servil.",
+      "arco": "De cuerpo poseído a dueña de su destino usando el sexo como único activo. Apogeo como liberta poderosa y caída por enfrentarse a quien no debía."
+    },
+    {
+      "nombre": "Nin-Kasi",
+      "deseo": "Control del templo de Inanna desde la sombra. Ser quien susurra a la En.",
+      "obstaculo": "La rígida jerarquía del templo. Diez años como novicia invisible.",
+      "arco": "De novicia anónima a dueña oculta del templo usando el sexo ritual como arma. Apogeo y caída cuando la sombra se vuelve demasiado grande para no ser vista."
+    }
+  ],
+  "personajes_clave": [
+    "Carmen Muñoz (56, madre de Daniel, ama de casa todavía atractiva para su edad, cuida su aspecto aunque ya no tenga a quién seducir)",
+    "Rafael Ortega (58, padre de Daniel, empleado de banca jubilado anticipado, hombre de rutinas, quiere a su hijo pero no sabe decirlo)"
+  ],
+  "setting": "Madrid actual (Vallecas, bloque de pisos, gestoría de seguros), Madrid 1752 (corte borbónica de Fernando VI, Palacio Real, calle del Almendro), Roma 62 d.C. (domus del Aventino, termas de Agripa), Uruk 2900 a.C. (templo de Inanna, giparu, zigurat de Anu)",
+  "reflexion_agente": {
+    "fortalezas": [
+      "Mecánica de los cuatro amuletos: cada hilo histórico es un mapa del tesoro. Daniel no solo aprende del pasado, persigue objetos físicos. Progresión de poder por acumulación.",
+      "Paradoja central sólida: poder + anonimato como deseo y como imposibilidad. Conflicto estructural que no necesita antagonista externo.",
+      "Diversidad de escenarios y voces: cuatro épocas, dos géneros, cuatro formas distintas de ejercer el sexo como poder. Variedad sin perder cohesión.",
+      "Coste del amuleto definido como frustración y obsesión, no mecánicas sobrenaturales rebuscadas. La tragedia es psicológica, humana.",
+      "Decisión valiente de eliminar antagonista externo: el conflicto es interno y estructural, lo que obliga a que la tensión sea genuina."
+    ],
+    "riesgos": [
+      "Los hilos históricos pueden leerse como 'lo mismo tres veces'. El patrón (ascenso, ostentación, caída) está espejado. Si no se diferencian lo suficiente en tono y voz, el lector sentirá repetición. El director debe asegurar que cada portador use el sexo de forma distinta: Mateo por cálculo, Livia por supervivencia, Nin-Kasi por rito sagrado.",
+      "Daniel puede quedar opacado por sus ancestros. Ellos tienen arcos trágicos completos y escenarios exóticos; él es un administrativo de Vallecas. La Parte 4 (solo Daniel) debe ser el pico emocional de la novela o la estructura se desequilibra.",
+      "Sin antagonista externo, el Acto III de Daniel puede carecer de urgencia física. El clímax no puede ser un hombre solo mirando objetos en una mesa. El director debe definir qué significa exactamente 'exposición forzada' en términos de escenas con tensión concreta.",
+      "Extensión ambiciosa: 90-110K palabras para 4 hilos. Los hilos históricos (2 actos, ~10 hechos cada uno) pueden desbordar la estimación o quedar esqueléticos. El director debe revisar la distribución de palabras por hilo en FASE 0."
+    ],
+    "decisiones_usuario": [
+      "Escala: novela-multi-hilo con 4 partes secuenciales (Parte 1: actualidad+S.XVIII, Parte 2: actualidad+Roma, Parte 3: actualidad+Sumeria, Parte 4: solo actualidad).",
+      "Estilo: explicito + fantasia (fusión). Nivel 5 de crudeza. Sexo como motor principal de poder y control.",
+      "Cuatro amuletos distintos, uno por época: sello cilíndrico de lapislázuli (Sumeria), anillo de sello (Roma), reloj de bolsillo (S.XVIII), mechero Zippo heredado (actualidad).",
+      "Origen del primer amuleto: mágico, coherente con la época sumeria. Lo cierra el director en FASE 0.",
+      "Percepción entre portadores: distintos niveles. Daniel es quien tiene la foto más clara. Se decide sobre la marcha en el workspace.",
+      "Amuleto de Daniel: el mechero Zippo se convierte en su amuleto casi sin él saberlo durante la novela.",
+      "Coste del amuleto: frustración y obsesión de que sus descendientes no tengan la misma suerte que los linajes anteriores. Nada de absorción de alma ni mecánicas rebuscadas.",
+      "Sin antagonista externo. Conflicto interno: paradoja del poder vs anonimato. La mediocridad de Daniel es su propio obstáculo.",
+      "Dos de los cuatro protagonistas son mujeres (Livia y Nin-Kasi). Mateo y Daniel son hombres.",
+      "Cada ancestro opera a ciegas. Ninguno conoce a los anteriores. Daniel es el primero que conecta los puntos y ve el patrón completo."
+    ]
+  },
+  "hilos": [
+    {
+      "id": "hilo-actualidad",
+      "stable_id": "daa7214f",
+      "nombre": "Daniel Ortega",
+      "slug": "actualidad",
+      "epoca": "actualidad",
+      "ubicacion": "Madrid, Vallecas",
+      "conflicto": "Romper el ciclo de ascenso y caída del linaje usando sutileza y anonimato, pero el poder acumulado exige visibilidad. La paradoja es el conflicto.",
+      "tono": "gris, asfixiante, íntimo",
+      "personajes": [
+        "Daniel Ortega",
+        "Carmen Munoz",
+        "Rafael Ortega"
+      ],
+      "estado": "pendiente",
+      "archivo_diseno": "hilos/hilo-actualidad/diseno-hilo.md",
+      "archivo_guion": "hilos/hilo-actualidad/guion-hilo.md",
+      "ultimo_capitulo": null,
+      "seq": 0,
+      "parent_id": "global"
+    },
+    {
+      "id": "hilo-mateo",
+      "stable_id": "302f1c42",
+      "nombre": "Mateo Ortega",
+      "slug": "mateo",
+      "epoca": "1752",
+      "ubicacion": "Madrid, corte de Fernando VI",
+      "conflicto": "Ascender en la corte mediante seducción y chantaje sexual sin saber que la visibilidad lo destruirá.",
+      "tono": "decadente, cortesano, calculador",
+      "personajes": "Mateo Ortega y Paredes",
+      "estado": "pendiente",
+      "archivo_diseno": "hilos/hilo-mateo/diseno-hilo.md",
+      "archivo_guion": "hilos/hilo-mateo/guion-hilo.md",
+      "ultimo_capitulo": null,
+      "seq": 0,
+      "parent_id": "global"
+    },
+    {
+      "id": "hilo-livia",
+      "stable_id": "385f84f4",
+      "nombre": "Livia Orteia",
+      "slug": "livia",
+      "epoca": "62 d.C.",
+      "ubicacion": "Roma, Aventino",
+      "conflicto": "De esclava a liberta usando su cuerpo como único activo, sin saber que la ostentación la derrumbará.",
+      "tono": "áspero, jerárquico, de supervivencia",
+      "personajes": "Livia Orteia",
+      "estado": "pendiente",
+      "archivo_diseno": "hilos/hilo-livia/diseno-hilo.md",
+      "archivo_guion": "hilos/hilo-livia/guion-hilo.md",
+      "ultimo_capitulo": null,
+      "seq": 0,
+      "parent_id": "global"
+    },
+    {
+      "id": "hilo-ninkasi",
+      "stable_id": "90211054",
+      "nombre": "Nin-Kasi",
+      "slug": "ninkasi",
+      "epoca": "2900 a.C.",
+      "ubicacion": "Uruk, templo de Inanna",
+      "conflicto": "Ascender en la jerarquía del templo usando el sexo ritual como arma, sin saber que la visibilidad la condenará.",
+      "tono": "místico, ritual, opresivo",
+      "personajes": "Nin-Kasi",
+      "estado": "pendiente",
+      "archivo_diseno": "hilos/hilo-ninkasi/diseno-hilo.md",
+      "archivo_guion": "hilos/hilo-ninkasi/guion-hilo.md",
+      "ultimo_capitulo": null,
+      "seq": 0,
+      "parent_id": "global"
+    }
+  ],
+  "partes": [
+    "Parte 1: Actualidad + S.XVIII",
+    "Parte 2: Actualidad + Roma (con ecos del S.XVIII)",
+    "Parte 3: Actualidad + Sumeria (con ecos de Roma y S.XVIII)",
+    "Parte 4: Solo actualidad (resolución)"
+  ]
+}

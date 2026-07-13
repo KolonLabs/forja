@@ -13,6 +13,8 @@ Carga `scaffolding-acto` y `scaffolding-hecho` para conocer el esquema. Lo que p
 
 Una novela multi-hilo tiene la complejidad añadida de múltiples líneas narrativas independientes. El usuario puede llegar con los hilos claros o con una intuición difusa de "varias épocas" o "varios puntos de vista". Tu trabajo es ayudar a darles forma sin imponer estructura prematura.
 
+La escala requiere al menos dos hilos. Cada hilo necesita conflicto propio y al menos un acto en `hechos`.
+
 ## Cómo conducir la conversación
 
 ### 1. Identificar los hilos
@@ -65,6 +67,8 @@ Los actos en el BRIEF.json se organizan por hilo. Cada acto tiene un campo `hilo
       "hilo": "hilo-madrid",
       "acto": "Acto I — La grieta",
       "objetivo": "...",
+      "efecto_lector": "...",
+      "tension": "...",
       "hechos": ["H_01: ...", "H_02: ..."]
     },
     {
@@ -91,7 +95,7 @@ El archivo `_actos.md` para multi-hilo debe usar la jerarquía `Hilo → Acto �
 
 Estructura:
 ```markdown
-## Hilo: <nombre> — slug: hilo-<slug>
+## Hilo: <nombre> — slug: hilo-<kebab-case>
 > Época: ... | Ubicación: ... | Tono: ...
 > Conflicto: ...
 > Personajes principales: ...
@@ -108,7 +112,7 @@ Estructura:
 ### Acto II — <nombre del acto>
 ...
 
-## Hilo: <nombre 2> — slug: hilo-<slug2>
+## Hilo: <nombre 2> — slug: hilo-<kebab-case>
 > ...
 
 ### Acto I — ...
@@ -119,9 +123,11 @@ El scaffolder produce el `_actos.md` directamente con esta estructura. El direct
 
 **Recordatorio:** los hilos NO son un nivel estructural en la jerarquía Qdrant. Son un campo `hilo` en L1 y L3. La jerarquía sigue siendo L0 (beat) → L1 → L2 → L3 → L4.
 
-### 5. Infraestructura
+### 5. Contrato e infraestructura
 
-Qdrant + Neo4j por defecto. Las consultas cross-hilo requieren Neo4j.
+Qdrant y Neo4j son obligatorios; el script los inicializa al crear el workspace y se detiene si alguno no está operativo. Las consultas cross-hilo requieren Neo4j.
+
+Cada `hilos[].slug` debe usar `hilo-<kebab-case>`. El mismo slug aparece sin transformaciones en `hechos[].hilo` y en `_hilos[]`. Para cada hilo, `_hilos[]` debe aportar exactamente una entrada con `diseno_hilo_md` y `guion_hilo_md` no vacíos.
 
 ## Cambio de escala
 

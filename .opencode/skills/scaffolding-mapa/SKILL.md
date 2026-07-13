@@ -76,7 +76,7 @@ Añadir respecto al relato:
 ### Novela multi-hilo
 
 Añadir respecto a novela simple:
-- `hilos/hilo-<slug>/diseno-hilo.md` y `guion-hilo.md`
+- `hilos/hilo-<kebab-case>/diseno-hilo.md` y `guion-hilo.md`
 - `fichas/conexion_<slug>.md`
 - `guion-novela.md` con tabla `## Trenzado`
 - Skills extra: diseno-hilo, plantilla-hilo, trenzado-narrativo, validacion-cross-hilo

@@ -14,20 +14,24 @@ foreach ($f in $required) {
 
 Write-Host "Creando workspace (novela-multi-hilo): $TargetDir"
 
-# 1. Crear estructura de directorios
-$dirs = @(
-    "$TargetDir\.opencode\agents",
-    "$TargetDir\.opencode\skills", 
-    "$TargetDir\.opencode\commands",
-    "$TargetDir\fichas"
-)
-foreach ($d in $dirs) { New-Item -Force -ItemType Directory $d | Out-Null }
+$workspaceCreated = $false
+try {
+    New-Item -LiteralPath $TargetDir -ItemType Directory -Force | Out-Null
+    $workspaceCreated = $true
+
+    # 1. Crear estructura de directorios
+    $dirs = @(
+        "$TargetDir\.opencode\agents",
+        "$TargetDir\.opencode\skills",
+        "$TargetDir\.opencode\commands",
+        "$TargetDir\fichas"
+    )
+    foreach ($d in $dirs) { New-Item -Force -ItemType Directory $d | Out-Null }
 
 # 2. Escribir opencode.json
 @"
 {
   "`$schema": "https://opencode.ai/config.json",
-  "instructions": ["AGENTS.md"],
   "default_agent": "director"
 }
 "@ | Set-Content -LiteralPath (Join-Path $TargetDir "opencode.json") -Encoding UTF8
@@ -48,9 +52,9 @@ Seed-HiloFolders -TargetDir $TargetDir -OperationalHilos $opsHilos -Brief $Brief
 
 # Registrar hilos en config
 $config = Get-Content (Join-Path $TargetDir "config.json") -Raw | ConvertFrom-Json
-$config.hilos = $opsHilos
+$config | Add-Member -MemberType NoteProperty -Name "hilos" -Value $opsHilos -Force
 if ($Brief.PSObject.Properties.Name.Contains("partes") -and $Brief.partes) {
-    $config.partes = $Brief.partes
+    $config | Add-Member -MemberType NoteProperty -Name "partes" -Value $Brief.partes -Force
 }
 $config | ConvertTo-Json -Depth 12 | Set-Content -LiteralPath (Join-Path $TargetDir "config.json") -Encoding UTF8
 
@@ -74,3 +78,9 @@ Write-Host "  Para comenzar:"
 Write-Host "    opencode --cwd ""workspaces\$($Brief.slug)"""
 Write-Host "    /generar"
 Write-Host ""
+} catch {
+    if ($workspaceCreated -and (Test-Path -LiteralPath $TargetDir)) {
+        Remove-Item -LiteralPath $TargetDir -Recurse -Force
+    }
+    throw
+}

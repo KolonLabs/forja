@@ -59,7 +59,7 @@ Pregunta: "¿Refleja esto la novela que tienes en mente?"
 
 ### 5. Infraestructura
 
-Preguntar si Qdrant y Neo4j están disponibles. Si no, ofrecer `_no_infra: true`. Explicar pros/contras.
+Qdrant y Neo4j son obligatorios para toda novela simple. Explica que el script los inicializa al crear el workspace y que la creación se detiene si no están operativos. No ofrezcas `_no_infra` ni una alternativa sin infraestructura.
 
 ## Cambio de escala
 

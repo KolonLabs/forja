@@ -32,15 +32,20 @@ function Test-HechosStructure {
         if (-not ($acto.hechos -is [array]) -or $acto.hechos.Count -eq 0) {
             throw "hechos[$(($actNum-1))]: 'hechos' debe ser un array con al menos un elemento para acto '$(if ($acto.acto) { $acto.acto } else { '(sin nombre)' })'"
         }
+        foreach ($hecho in $acto.hechos) {
+            if (-not ($hecho -is [string]) -or [string]::IsNullOrWhiteSpace($hecho)) {
+                throw "hechos[$(($actNum-1))]: cada hecho debe ser texto no vacio"
+            }
+        }
         $actNum++
     }
-    # Validate hilo field in multi-hilo scale
+
+    # Los actos multi-hilo se enlazan por el slug canonico del hilo.
     if ($Brief.escala -eq "novela-multi-hilo") {
-        Test-BriefField $Brief "hilos" "hechos-multi-hilo"
+        Test-MultiHiloBrief $Brief
         $validHilos = @()
         foreach ($h in $Brief.hilos) {
-            $slug = if ($h.slug) { $h.slug } else { Get-HiloSlug $h }
-            $validHilos += $slug
+            $validHilos += Get-HiloSlug $h
         }
         foreach ($acto in $hechos) {
             if (-not $acto.PSObject.Properties.Name.Contains("hilo") -or -not $acto.hilo) {
@@ -48,6 +53,11 @@ function Test-HechosStructure {
             }
             if ($acto.hilo -notin $validHilos) {
                 throw "hechos[acto '$($acto.acto)']: hilo '$($acto.hilo)' no definido en hilos[] (válidos: $($validHilos -join ', '))"
+            }
+        }
+        foreach ($slug in $validHilos) {
+            if (-not ($hechos | Where-Object { $_.hilo -eq $slug } | Select-Object -First 1)) {
+                throw "novela-multi-hilo: el hilo '$slug' no tiene ningun acto definido en hechos[]"
             }
         }
     }
@@ -166,6 +176,57 @@ function Inject-Pipeline {
         }
         Copy-Item -LiteralPath (Join-Path $HubRoot "scripts\qdrant.py") -Destination (Join-Path $scriptsDir "qdrant.py") -Force
         Copy-Item -LiteralPath (Join-Path $HubRoot "scripts\neo4j.py") -Destination (Join-Path $scriptsDir "neo4j.py") -Force
+    }
+}
+
+function Test-MultiHiloBrief {
+    param($Brief)
+
+    Test-BriefField $Brief "hilos" "novela-multi-hilo"
+    Test-BriefField $Brief "_hilos" "novela-multi-hilo"
+    if (-not ($Brief.hilos -is [array]) -or $Brief.hilos.Count -lt 2) {
+        throw "novela-multi-hilo: hilos debe contener al menos dos hilos"
+    }
+    if (-not ($Brief._hilos -is [array]) -or $Brief._hilos.Count -eq 0) {
+        throw "novela-multi-hilo: _hilos debe contener los archivos iniciales de cada hilo"
+    }
+
+    $knownSlugs = @{}
+    foreach ($hilo in $Brief.hilos) {
+        foreach ($field in @("slug", "nombre", "epoca", "conflicto")) {
+            if (-not $hilo.PSObject.Properties.Name.Contains($field) -or -not $hilo.$field) {
+                throw "novela-multi-hilo: hilos[] requiere '$field'"
+            }
+        }
+        $slug = Get-HiloSlug $hilo
+        if ($hilo.slug -ne $slug -or $slug -notmatch '^hilo-[a-z0-9]+(-[a-z0-9]+)*$') {
+            throw "novela-multi-hilo: el slug de hilo '$($hilo.slug)' debe usar el formato hilo-<kebab-case>"
+        }
+        if ($knownSlugs.ContainsKey($slug)) {
+            throw "novela-multi-hilo: slug de hilo duplicado '$slug'"
+        }
+        $knownSlugs[$slug] = $true
+    }
+
+    $seedSlugs = @{}
+    foreach ($seed in $Brief._hilos) {
+        foreach ($field in @("slug", "diseno_hilo_md", "guion_hilo_md")) {
+            if (-not $seed.PSObject.Properties.Name.Contains($field) -or -not $seed.$field) {
+                throw "novela-multi-hilo: _hilos[] requiere '$field'"
+            }
+        }
+        if (-not $knownSlugs.ContainsKey($seed.slug)) {
+            throw "novela-multi-hilo: _hilos contiene el slug desconocido '$($seed.slug)'"
+        }
+        if ($seedSlugs.ContainsKey($seed.slug)) {
+            throw "novela-multi-hilo: _hilos contiene el slug duplicado '$($seed.slug)'"
+        }
+        $seedSlugs[$seed.slug] = $true
+    }
+    foreach ($slug in $knownSlugs.Keys) {
+        if (-not $seedSlugs.ContainsKey($slug)) {
+            throw "novela-multi-hilo: falta _hilos para '$slug'"
+        }
     }
 }
 
@@ -313,35 +374,22 @@ function Write-ActosMdMultiHilo {
     $content += "> Las escenas y beats los genera el guionista a partir de estos hechos.`n"
     $content += "> El director puede anadir notas al final durante el desarrollo.`n`n"
 
-    $hilosBySlug = @{}
-    if ($Brief.PSObject.Properties.Name.Contains("hilos") -and $Brief.hilos) {
-        foreach ($hilo in $Brief.hilos) {
-            $slug = Get-HiloSlug $hilo
-            $hilosBySlug[$slug] = $hilo.nombre
-        }
-    }
+    # Agrupar por hilo evita secciones duplicadas si el brief intercalo actos.
+    foreach ($hiloDef in $Brief.hilos) {
+        $hiloSlug = Get-HiloSlug $hiloDef
+        $content += "## Hilo: $($hiloDef.nombre) — slug: $hiloSlug`n`n"
 
-    $currentHilo = ""
-    foreach ($h in $Brief.hechos) {
-        $hilo = ""
-        if ($h.PSObject.Properties.Name.Contains("hilo") -and $h.hilo) {
-            $hilo = $h.hilo
+        foreach ($h in ($Brief.hechos | Where-Object { $_.hilo -eq $hiloSlug })) {
+            $content += "### $($h.acto)`n`n"
+            if ($h.objetivo) { $content += "**Objetivo narrativo:** $($h.objetivo)`n`n" }
+            if ($h.efecto_lector) { $content += "**Que debe sentir el lector:** $($h.efecto_lector)`n`n" }
+            if ($h.tension) { $content += "**Tension:** $($h.tension)`n`n" }
+            $content += "#### Hechos`n`n"
+            foreach ($hc in $h.hechos) {
+                $content += "- $($hc)`n"
+            }
+            $content += "`n"
         }
-        if ($hilo -ne $currentHilo) {
-            $hiloNombre = if ($hilosBySlug.ContainsKey($hilo)) { $hilosBySlug[$hilo] } else { $hilo }
-            $content += "## Hilo: $($hiloNombre) — slug: $($hilo)`n`n"
-            $currentHilo = $hilo
-        }
-
-        $content += "### $($h.acto)`n`n"
-        if ($h.objetivo) { $content += "**Objetivo narrativo:** $($h.objetivo)`n`n" }
-        if ($h.efecto_lector) { $content += "**Que debe sentir el lector:** $($h.efecto_lector)`n`n" }
-        if ($h.tension) { $content += "**Tension:** $($h.tension)`n`n" }
-        $content += "#### Hechos`n`n"
-        foreach ($hc in $h.hechos) {
-            $content += "- $($hc)`n"
-        }
-        $content += "`n"
     }
     $content += "## Notas del director`n`n(Espacio para notas durante el desarrollo)`n"
 
@@ -399,7 +447,7 @@ Hilos en ``config.json.hilos`` y ``hilos/hilo-*/``.
 
     $infraSection = ""
     if ($Escala -ne "relato") {
-        $infraSection = "Qdrant ``:6333`` + Neo4j ``:7687`` (colecciones/grafos ``$($Brief.slug)_*``)"
+        $infraSection = "Qdrant ``:6333`` y Neo4j ``:7687`` compartidos, aislados por el slug ``$($Brief.slug)`` en los datos."
     } else {
         $infraSection = "Modo ligero: sin Qdrant ni Neo4j. Memoria en contexto_narrativo.md."
     }
@@ -450,18 +498,15 @@ function Write-MapaMd {
 
 function Get-HiloSlug {
     param($Hilo)
-    if ($Hilo.slug) { 
-        $s = ($Hilo.slug -replace '[^a-z0-9-]', '').Trim('-')
-        # Strip existing "hilo-" prefix if present to avoid double prefix
-        if ($s.StartsWith("hilo-")) { $s = $s.Substring(5) }
-        return $s
+    if ($Hilo.slug) {
+        return ($Hilo.slug -replace '[^a-z0-9-]', '').Trim('-')
     }
     if ($Hilo.nombre) {
         $s = $Hilo.nombre.ToLower()
         $s = $s -replace '[áàä]', 'a' -replace '[éèë]', 'e' -replace '[íìï]', 'i'
         $s = $s -replace '[óòö]', 'o' -replace '[úùü]', 'u' -replace 'ñ', 'n'
         $s = $s -replace '[^a-z0-9]+', '-'
-        return $s.Trim('-')
+        return "hilo-" + $s.Trim('-')
     }
     throw "Cada hilo necesita slug o nombre."
 }
@@ -471,7 +516,7 @@ function New-OperationalHilos {
     $ops = @()
     foreach ($h in $BriefHilos) {
         $slug = Get-HiloSlug $h
-        $id = "hilo-$slug"
+        $id = $slug
         $ops += [ordered]@{
             id = $id
             stable_id = if ($h.stable_id) { $h.stable_id } else { [guid]::NewGuid().ToString("N").Substring(0,8) }
@@ -490,27 +535,23 @@ function New-OperationalHilos {
             parent_id = "global"
         }
     }
-    return $ops
+    # Preserve la colección aunque solo haya un hilo; de otro modo PowerShell
+    # entrega el diccionario escalar y rompe Count, foreach y config.json.
+    Write-Output -NoEnumerate $ops
 }
 
 function Seed-HiloFolders {
     param([string]$TargetDir, $OperationalHilos, $Brief)
     
-    if ((-not ($Brief.PSObject.Properties.Name -contains "_hilos_data") -or -not $Brief._hilos_data) -and
-        (-not ($Brief.PSObject.Properties.Name -contains "_hilos") -or -not $Brief._hilos)) {
-        throw "Seed-HiloFolders: brief no contiene '_hilos_data' ni '_hilos'"
+    if (-not ($Brief.PSObject.Properties.Name -contains "_hilos") -or -not $Brief._hilos) {
+        throw "Seed-HiloFolders: brief no contiene '_hilos'"
     }
     
     foreach ($h in $OperationalHilos) {
         $folder = Join-Path $TargetDir "hilos\$($h.id)"
         New-Item -ItemType Directory -Path $folder -Force | Out-Null
         
-        $hiloDataSource = if ($Brief.PSObject.Properties.Name -contains "_hilos_data" -and $Brief._hilos_data) {
-            $Brief._hilos_data
-        } else {
-            $Brief._hilos
-        }
-        $hiloData = $hiloDataSource | Where-Object { $_.slug -eq $h.slug } | Select-Object -First 1
+        $hiloData = $Brief._hilos | Where-Object { $_.slug -eq $h.slug } | Select-Object -First 1
         if (-not $hiloData) { throw "Seed-HiloFolders: no se encontraron datos para hilo '$($h.slug)'" }
         
         Set-Content -LiteralPath (Join-Path $folder "diseno-hilo.md") -Value $hiloData.diseno_hilo_md -Encoding UTF8
@@ -525,25 +566,20 @@ function Seed-HiloFolders {
 
 function Initialize-Infra {
     param([string]$TargetDir, $Brief)
-    $noInfra = $Brief.PSObject.Properties.Name.Contains("_no_infra") -and $Brief._no_infra
-    if ($noInfra) { return }
-
     $pythonCmd = $null
-    if (Get-Command python3 -ErrorAction SilentlyContinue) { $pythonCmd = "python3" }
-    elseif (Get-Command python -ErrorAction SilentlyContinue) { $pythonCmd = "python" }
-    if (-not $pythonCmd) { Write-Warning "Python no encontrado. Inicializacion de Qdrant/Neo4j omitida."; return }
+    if (Get-Command python -ErrorAction SilentlyContinue) { $pythonCmd = "python" }
+    elseif (Get-Command python3 -ErrorAction SilentlyContinue) { $pythonCmd = "python3" }
+    if (-not $pythonCmd) { throw "Python no encontrado. Las novelas requieren Qdrant y Neo4j operativos." }
 
-    try {
-        & $pythonCmd (Join-Path $PSScriptRoot "..\qdrant.py") init
-        Write-Host "Qdrant inicializado"
-    } catch {
-        Write-Warning "Qdrant no disponible. Continuando sin memoria vectorial."
-    }
-    try {
-        & $pythonCmd (Join-Path $PSScriptRoot "..\neo4j.py") init
-        Write-Host "Neo4j inicializado"
-    } catch {
-        Write-Warning "Neo4j no disponible. Continuando sin grafo de relaciones."
+    foreach ($infra in @(
+        @{ Nombre = "Qdrant"; Script = "qdrant.py" },
+        @{ Nombre = "Neo4j"; Script = "neo4j.py" }
+    )) {
+        & $pythonCmd (Join-Path $PSScriptRoot "..\$($infra.Script)") init
+        if ($LASTEXITCODE -ne 0) {
+            throw "$($infra.Nombre) no pudo inicializarse (codigo de salida $LASTEXITCODE)."
+        }
+        Write-Host "$($infra.Nombre) inicializado"
     }
 }
 
