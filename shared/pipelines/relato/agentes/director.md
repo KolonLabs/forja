@@ -143,11 +143,11 @@ Por cada beat `⬜` en `guion.md`:
 9. Siguiente beat.
 
 Gate: todos los beats `✅`. `contexto_narrativo.md` actualizado tras cada escena.
-Actualiza `config.json.estado = "publicacion"`.
+Ejecuta FASE 4 sin cambiar aún `config.json.estado`. Si el proceso se interrumpe, retoma la finalización al detectar que todos los beats están `✅`.
 
-### FASE 4 — Publicacion (`estado: publicacion`)
+### FASE 4 — Finalizar (tras cerrar la escritura)
 
-Objetivo: transformar el draft en un relato limpio. La publicacion es formateo, no reescritura: no generes prosa nueva, no resumas y no condenses.
+Objetivo: transformar el draft en un relato limpio. La finalización es formateo, no reescritura: no generes prosa nueva, no resumas y no condenses.
 
 1. Lee `relato-draft.md` completo.
 2. Escribe `relato.md` copiando la prosa sin modificarla:
@@ -157,7 +157,7 @@ Objetivo: transformar el draft en un relato limpio. La publicacion es formateo, 
    - Copia textualmente la prosa entre headings.
 3. Verifica: sin headings residuales, sin dobles separadores, archivo mayor que cero y contenido integro.
 4. Gate: `relato.md` existe y es valido.
-5. Actualiza `config.json.estado = "publicado"`.
+5. Actualiza `config.json.estado = "finalizado"`. **Nunca** asignas `publicado`: ese estado solo lo asigna el bibliotecario del hub cuando `/crear-libro` termina correctamente.
 
 ---
 
@@ -190,9 +190,10 @@ Objetivo: transformar el draft en un relato limpio. La publicacion es formateo, 
 
 ## Pipeline: /publicar
 
-1. Si el relato está en `estado: publicacion`, aplica FASE 4.
-2. Si el relato está en `estado: escritura` con todos los beats `✅`, aplica FASE 4 directamente.
+1. Si el relato está en `estado: finalizado`, verifica `relato.md` y no reescribas prosa.
+2. Si el relato está en `estado: escritura` con todos los beats `✅`, aplica FASE 4.
 3. Verifica `relato.md` > 0 bytes, sin headings residuales.
+4. Tras una finalización correcta, deja el estado en `finalizado`.
 
 ---
 

@@ -11,7 +11,7 @@ Forja/
 ├── .opencode/                         # Hub: solo scaffolding y creación de libros
 │   ├── agents/
 │   │   ├── scaffolder.md              # Wizard de briefing editorial (7 fases)
-│   │   └── bibliotecario.md           # Ensambla libros (EPUB/PDF) desde workspaces publicados
+│   │   └── bibliotecario.md           # Ensambla libros y recompila formatos desde artefactos publicados
 │   ├── skills/
 │   │   ├── scaffolding-acto/          # Esquema de acto narrativo
 │   │   ├── scaffolding-hecho/         # Esquema de hecho narrativo
@@ -21,7 +21,8 @@ Forja/
 │   │   └── scaffolding-mapa/          # Estructura de MAPA.md por escala (Fase 7)
 │   └── commands/
 │       ├── nuevo-proyecto.md          # /nuevo-proyecto
-│       └── crear-libro.md             # /crear-libro
+│       ├── crear-libro.md             # /crear-libro
+│       └── recompilar-libro.md        # /recompilar-libro
 ├── shared/                            # Fuente de verdad del pipeline de ficción
 │   ├── .opencode/
 │   │   ├── agents/                    # Agentes fijos: memoria, cronista (solo novelas)
@@ -37,7 +38,8 @@ Forja/
 │   ├── new-relato.ps1                 # Creador de workspace relato
 │   ├── new-novela-simple.ps1          # Creador de workspace novela simple
 │   ├── new-novela-multi-hilo.ps1      # Creador de workspace novela multi-hilo
-│   ├── crear-libro.ps1                # Ensambla libro desde workspaces publicados
+│   ├── crear-libro.ps1                # Ensambla libro desde workspaces finalizados
+│   ├── recompilar-libro.ps1           # Regenera formatos desde un libro publicado
 │   ├── build-pdf.ps1                  # Compila PDF con Pandoc y un motor local
 │   ├── templates/forja-kdp.typ         # Plantilla PDF reutilizable
 │   ├── build.css                      # Estilos EPUB
@@ -55,7 +57,7 @@ Forja/
 | Agente | Modelo | Fuente | Rol |
 |--------|--------|--------|-----|
 | **scaffolder** | `deepseek-v4-pro` | `.opencode/agents/scaffolder.md` | Wizard de briefing editorial. NO escribe ficción. Crea workspaces. |
-| **bibliotecario** | `deepseek-v4-flash` | `.opencode/agents/bibliotecario.md` | Ensambla libros (EPUB/PDF) desde workspaces ya publicados, vía `/crear-libro`. Sin criterio editorial, no escribe ni edita contenido narrativo. |
+| **bibliotecario** | `deepseek-v4-flash` | `.opencode/agents/bibliotecario.md` | Ensambla libros (EPUB/PDF) desde workspaces finalizados, vía `/crear-libro`, y recompila formatos de libros ya publicados. Sin criterio editorial, no escribe ni edita contenido narrativo. |
 
 Ninguno de los dos **se inyecta en workspaces**. Ambos viven solo en el hub.
 
@@ -64,7 +66,8 @@ Ninguno de los dos **se inyecta en workspaces**. Ambos viven solo en el hub.
 | Comando | Descripción |
 |---------|-------------|
 | `/nuevo-proyecto` | Wizard de briefing (7 fases) + creación de workspace |
-| `/crear-libro` | Ensambla un libro desde workspaces publicados (1+ relatos o 1 novela) |
+| `/crear-libro` | Ensambla un libro desde workspaces finalizados (1+ relatos o 1 novela) |
+| `/recompilar-libro` | Añade o regenera EPUB/PDF desde el Markdown congelado de un libro publicado |
 
 Los comandos de escritura (`/generar`, `/revisar`, `/expandir`, `/publicar`) operan **dentro de un workspace** y los ejecuta el director de esa escala.
 
@@ -88,7 +91,9 @@ Genera `relato.md` (relato) o `novela.md` (novela) en la raíz del workspace. Si
 ```
 /crear-libro <slug-libro> <workspace1> [workspace2...] [--epub] [--pdf] [--pdf-formato <formato>] [--pdf-motor <motor>] [--titulo "<título>"] [--autor "<autor>"]
 ```
-Lo ejecuta el agente **bibliotecario**: lee los archivos limpios de los workspaces, los ensambla en `publicados/<libro>/`, y actualiza `config.json.estado = "publicado"` en los workspaces fuente.
+Lo ejecuta el agente **bibliotecario**: lee los archivos limpios de workspaces en estado `finalizado`, los ensambla en `publicados/<libro>/` y, cuando todas las salidas solicitadas terminan correctamente, actualiza las fuentes a `config.json.estado = "publicado"`. El director nunca asigna `publicado`.
+
+Para añadir o regenerar EPUB/PDF de un libro ya publicado se usa `/recompilar-libro <slug-libro> [--epub] [--pdf] [--pdf-formato <formato>] [--pdf-motor <motor>]`. Opera solo sobre el Markdown y `manifest.json` congelados en `publicados/<libro>/`; no modifica workspaces.
 
 ## Reglas del hub
 

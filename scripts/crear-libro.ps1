@@ -1,4 +1,4 @@
-# crear-libro.ps1 -- Ensambla libros desde workspaces publicados de Forja.
+# crear-libro.ps1 -- Ensambla libros desde workspaces finalizados de Forja.
 
 param(
     [Parameter(Mandatory = $true)]
@@ -82,6 +82,12 @@ function Invoke-EpubBuild {
     }
 }
 
+function Get-FileSha256 {
+    param([string]$Path)
+
+    return (Get-FileHash -LiteralPath $Path -Algorithm SHA256).Hash.ToLowerInvariant()
+}
+
 Assert-KebabSlug $Libro "Libro"
 if (-not $Fuentes -or $Fuentes.Count -eq 0) {
     throw "Debes indicar al menos un workspace fuente."
@@ -112,8 +118,8 @@ foreach ($source in $Fuentes) {
         throw "Workspace '$source' tiene un config.json invalido. $_"
     }
 
-    if ($config.estado -notin @("publicacion", "publicado")) {
-        throw "Workspace '$source' esta en estado '$($config.estado)'. Ejecuta /publicar antes de compilar."
+    if ($config.estado -ne "finalizado") {
+        throw "Workspace '$source' esta en estado '$($config.estado)'. /crear-libro solo admite fuentes finalizadas."
     }
     if ($config.tipo -notin @("relato", "novela")) {
         throw "Workspace '$source' tiene tipo '$($config.tipo)' no soportado. Debe ser relato o novela."
@@ -131,6 +137,7 @@ foreach ($source in $Fuentes) {
         ConfigPath = $configPath
         ConfigRaw = $configRaw
         ManuscriptPath = $manuscriptPath
+        ManuscriptSha256 = Get-FileSha256 $manuscriptPath
         Title = if ($config.titulo) { $config.titulo } else { $source }
     }
 }
@@ -145,6 +152,9 @@ if ($sourceTypes[0] -eq "novela" -and $sources.Count -ne 1) {
 
 New-Item -ItemType Directory -Force -Path $PublicadosRoot | Out-Null
 $outputDir = Join-Path $PublicadosRoot $Libro
+if (Test-Path -LiteralPath $outputDir) {
+    throw "El libro '$Libro' ya existe en $outputDir. Usa recompilar-libro.ps1 para añadir o regenerar formatos."
+}
 $operationId = [guid]::NewGuid().ToString("N")
 $stageDir = Join-Path $PublicadosRoot ".${Libro}.staging-$operationId"
 $backupDir = Join-Path $PublicadosRoot ".${Libro}.backup-$operationId"
@@ -172,14 +182,68 @@ try {
         & (Join-Path $PSScriptRoot "build-pdf.ps1") -InputMarkdown $bookMarkdown -OutputPdf (Join-Path $stageDir "$Libro.pdf") -Titulo $Titulo -Autor $Autor -PdfFormat $PdfFormat -PdfEngine $PdfEngine
     }
 
+    $artifacts = [ordered]@{
+        markdown = [ordered]@{
+            archivo = "$Libro.md"
+            sha256 = Get-FileSha256 $bookMarkdown
+        }
+    }
+    if ($Epub) {
+        $epubPath = Join-Path $stageDir "$Libro.epub"
+        $artifacts.epub = [ordered]@{
+            archivo = "$Libro.epub"
+            sha256 = Get-FileSha256 $epubPath
+        }
+    }
+    if ($Pdf) {
+        $pdfPath = Join-Path $stageDir "$Libro.pdf"
+        $artifacts.pdf = [ordered]@{
+            archivo = "$Libro.pdf"
+            sha256 = Get-FileSha256 $pdfPath
+            formato = $PdfFormat
+            motor_solicitado = $PdfEngine
+        }
+    }
+
+    $timestamp = (Get-Date).ToString("yyyy-MM-ddTHH:mm:ss")
+    $manifest = [ordered]@{
+        schema_version = 1
+        libro = $Libro
+        titulo = $Titulo
+        autor = $Autor
+        tipo = $sourceTypes[0]
+        creado = $timestamp
+        actualizado = $timestamp
+        fuentes = @(
+            $sources | ForEach-Object {
+                [ordered]@{
+                    workspace = $_.Slug
+                    manuscrito = [System.IO.Path]::GetFileName($_.ManuscriptPath)
+                    sha256 = $_.ManuscriptSha256
+                }
+            }
+        )
+        artefactos = $artifacts
+        historial_formatos = @(
+            [ordered]@{
+                fecha = $timestamp
+                accion = "crear"
+                formatos = @($artifacts.Keys)
+            }
+        )
+    }
+    [System.IO.File]::WriteAllText(
+        (Join-Path $stageDir "manifest.json"),
+        ($manifest | ConvertTo-Json -Depth 12),
+        $utf8NoBom
+    )
+
     # Update source states only after all requested artifacts have built successfully.
     foreach ($source in $sources) {
-        if ($source.Config.estado -eq "publicacion") {
-            $source.Config.estado = "publicado"
-            $source.Config.ultima_modificacion = (Get-Date).ToString("yyyy-MM-ddTHH:mm:ss")
-            Set-Content -LiteralPath $source.ConfigPath -Value ($source.Config | ConvertTo-Json -Depth 12) -Encoding UTF8
-            $updatedSources += $source
-        }
+        $source.Config.estado = "publicado"
+        $source.Config.ultima_modificacion = $timestamp
+        Set-Content -LiteralPath $source.ConfigPath -Value ($source.Config | ConvertTo-Json -Depth 12) -Encoding UTF8
+        $updatedSources += $source
     }
 
     if (Test-Path -LiteralPath $outputDir) {
@@ -208,6 +272,7 @@ try {
     Write-Host "  Markdown: $(Join-Path $outputDir "$Libro.md")"
     if ($Epub) { Write-Host "  EPUB:     $(Join-Path $outputDir "$Libro.epub")" }
     if ($Pdf) { Write-Host "  PDF:      $(Join-Path $outputDir "$Libro.pdf")" }
+    Write-Host "  Manifiesto: $(Join-Path $outputDir "manifest.json")"
 } catch {
     foreach ($source in $updatedSources) {
         Set-Content -LiteralPath $source.ConfigPath -Value $source.ConfigRaw -Encoding UTF8

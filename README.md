@@ -23,7 +23,8 @@ Consulta la [guia operativa del hub](docs/operacion-hub.md) para elegir escala, 
 | Comando | Uso |
 |---|---|
 | `/nuevo-proyecto` | Conduce un briefing editorial de siete fases y crea un workspace. |
-| `/crear-libro` | Compila una novela o una antologia de relatos ya publicados. |
+| `/crear-libro` | Compila una novela o una antologia desde workspaces finalizados. |
+| `/recompilar-libro` | Añade o regenera formatos de un libro ya publicado sin tocar sus fuentes. |
 
 Los comandos de escritura (`/generar`, `/revisar`, `/expandir`, `/publicar`) se ejecutan dentro del workspace, no desde el hub.
 

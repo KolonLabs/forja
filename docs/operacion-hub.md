@@ -53,7 +53,7 @@ El resultado es un manuscrito limpio en la raiz del workspace:
 | Relato | `relato.md` |
 | Novela | `novela.md` |
 
-La compilacion solo acepta workspaces cuyo `config.json` este en estado `publicacion` o `publicado` y contengan ese archivo. No compiles borradores, escenas ni beats de forma directa.
+Al terminar `/publicar`, el director deja el workspace en estado `finalizado`. La compilacion inicial solo acepta ese estado y el manuscrito limpio correspondiente. No compiles borradores, escenas ni beats de forma directa.
 
 ## Flujo 3: compilar un libro
 
@@ -76,7 +76,15 @@ Ejemplos:
 /crear-libro barniz-de-sangre barniz-de-sangre --epub --pdf --pdf-formato paperback --titulo "Barniz de sangre" --autor "Amaro Alba"
 ```
 
-El libro se crea en `publicados/<slug-libro>/` con `<slug-libro>.md` y, si se pidieron, `<slug-libro>.epub` y `<slug-libro>.pdf`. Cuando la compilacion termina correctamente, los workspaces fuente que estaban en `publicacion` pasan a `publicado`.
+El libro se crea en `publicados/<slug-libro>/` con `<slug-libro>.md`, `manifest.json` y, si se pidieron, `<slug-libro>.epub` y `<slug-libro>.pdf`. Cuando todas las salidas solicitadas terminan correctamente, las fuentes pasan de `finalizado` a `publicado`.
+
+Un workspace `publicado` no puede volver a entrar en `/crear-libro` de forma implicita. Para añadir o regenerar formatos de ese mismo libro, usa:
+
+```text
+/recompilar-libro <slug-libro> [--epub] [--pdf] [--pdf-formato <formato>] [--pdf-motor <motor>]
+```
+
+El comando recompila desde el Markdown congelado y el manifiesto de `publicados/<slug-libro>/`; no lee ni modifica workspaces.
 
 ## Formatos y requisitos de salida
 
@@ -103,7 +111,7 @@ El formato predeterminado es `paperback`. Si Pandoc no esta en el `PATH`, el com
 
 | Mensaje o situacion | Accion |
 |---|---|
-| El workspace no esta en estado publicable. | Ejecuta `/publicar` dentro del workspace antes de compilar. |
+| El workspace no esta en estado `finalizado`. | Ejecuta `/publicar` dentro del workspace antes de compilar. |
 | Falta `relato.md` o `novela.md`. | Publica la obra; no pases archivos ni rutas manuales al comando. |
 | Se mezclan relatos y novelas. | Compila una novela sola o usa exclusivamente relatos para la antologia. |
 | Falta Pandoc. | Instala Pandoc o define `PANDOC_PATH`/`PANDOC`. |

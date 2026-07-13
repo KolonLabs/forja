@@ -7,6 +7,8 @@ agent: director
 
 Convierte el draft del workspace en un archivo limpio en la raíz del workspace.
 
+Al terminar correctamente, el director deja `config.json.estado = "finalizado"`. `publicado` está reservado al hub: solo `/crear-libro` lo asigna después de compilar todas las salidas solicitadas.
+
 ## Sintaxis
 
 ```

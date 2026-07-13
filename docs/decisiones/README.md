@@ -15,4 +15,5 @@ Este directorio conserva decisiones arquitectonicas y operativas que deben sobre
 |---|---|---|
 | [0001](0001-hub-y-workspaces-aislados.md) | El hub orquesta; los workspaces son autonomos. | Aceptada |
 | [0002](0002-contrato-de-creacion-e-infraestructura.md) | La escala determina infraestructura y el brief es un contrato validado. | Aceptada |
-| [0003](0003-publicacion-y-compilacion.md) | Solo manuscritos publicados se compilan en una novela o una antologia. | Aceptada |
+| [0003](0003-publicacion-y-compilacion.md) | Publicación y compilación inicial de libros. | Sustituida parcialmente por ADR 0004 |
+| [0004](0004-finalizado-y-recompilacion-de-formatos.md) | `finalizado` es la única entrada de compilación; `publicado` es terminal y los formatos se recompilan desde un manifiesto. | Aceptada |

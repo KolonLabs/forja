@@ -77,11 +77,11 @@ Por cada beat `⬜` en `guion.md`, en orden secuencial:
 
 **Gate:** Todos los beats ✅. `contexto_narrativo.md` actualizado por escena.
 
-**Transición:** `config.json.estado = "publicado"`.
+**Siguiente paso:** ejecutar FASE 4 sin cambiar aún el estado. Si el proceso se interrumpe, el director detecta que todos los beats están ✅ y retoma la finalización.
 
 ---
 
-### FASE 4 — Publicar (`estado: publicacion`)
+### FASE 4 — Finalizar (tras cerrar la escritura)
 
 | Paso | Acción |
 |------|--------|
@@ -90,12 +90,14 @@ Por cada beat `⬜` en `guion.md`, en orden secuencial:
 
 **Gate:** `relato.md` existe y es válido.
 
+**Transición:** `config.json.estado = "finalizado"`. El estado `publicado` solo lo asigna el hub después de compilar el libro correctamente.
+
 ---
 
 ## Transiciones de estado
 
 ```
-diseno → fichas → escritura → publicacion → publicado
+diseno → fichas → escritura → finalizado → publicado (hub)
 ```
 
 ## Agentes activos

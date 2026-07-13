@@ -14,6 +14,7 @@ Este registro contiene riesgos abiertos que requieren una correccion o una valid
 |---|---|---|---|
 | DT-001 | No hay una suite automatizada de regresion para los scripts del hub que cubra creacion por escala y compilacion Markdown, EPUB y PDF con fixtures aisladas. | Una modificacion futura puede romper contratos de briefs o empaquetado sin detectarse antes de uso manual. | Incorporar pruebas repetibles que no modifiquen workspaces reales y ejecutar todas correctamente. |
 | DT-002 | La disponibilidad de Pandoc y de los motores PDF se descubre al solicitar la compilacion. | El fallo se comunica tarde, al publicar un libro con salida EPUB o PDF. | Crear un preflight explicito del hub que informe herramientas encontradas, versiones y motores disponibles. |
+| DT-003 | Los workflows de novela simple y novela multi-hilo aun usan `publicacion`/`publicado`, mientras que la compilacion del hub ya exige `finalizado`. | Una novela creada con los flujos actuales no podra compilarse hasta migrar su contrato de estados. | Revisar ambos workflows y sus plantillas/skills para que finalicen en `finalizado`, dejando `publicado` reservado al bibliotecario. |
 
 ## Cerrada
 

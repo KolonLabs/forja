@@ -1,5 +1,5 @@
 ---
-description: Crea un libro (EPUB/PDF) desde uno o varios workspaces. Una novela = un libro. Varios relatos = antología.
+description: Crea un libro (Markdown/EPUB/PDF) desde workspaces finalizados. Una novela = un libro. Varios relatos = antología.
 agent: bibliotecario
 ---
 
@@ -41,11 +41,12 @@ Interpreta esos argumentos antes de actuar. El primer valor es el slug del libro
 2. Ensambla el contenido en `publicados/<slug-libro>/<slug-libro>.md`
 3. Opcionalmente compila EPUB con `--epub` y/o PDF con `--pdf`
 4. Rechaza mezclas de relatos y novelas, o más de una novela
-5. Marca `config.json.estado = "publicado"` en los workspaces fuente
+5. Escribe `manifest.json` con fuentes congeladas, hashes y formatos generados
+6. Solo si todas las salidas solicitadas terminan correctamente, marca `config.json.estado = "publicado"` en los workspaces fuente
 
 ## Requisitos
 
-- Los workspaces fuente deben tener su contenido publicado (`/publicar` ejecutado previamente)
+- Los workspaces fuente deben estar en estado `finalizado` tras ejecutar `/publicar`
 - El archivo `relato.md` o `novela.md` debe existir en la raíz de cada workspace
 - Pandoc debe estar instalado para `--epub` y `--pdf`
 - Para PDF se requiere además Typst, wkhtmltopdf o XeLaTeX (el motor `auto` los prueba en ese orden)

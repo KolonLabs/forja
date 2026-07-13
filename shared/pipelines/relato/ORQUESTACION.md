@@ -109,7 +109,8 @@ FASE 3 beat a beat
     si falla: director → integrador
     director: ✅ en guion.md, append a relato-draft.md
     si último beat de escena: director actualiza contexto_narrativo.md (2-3 frases)
-  estado → "publicacion"
+  director: /publicar genera relato.md
+  estado → "finalizado"
 
 FASE 4 publicar
   /publicar: procesa relato-draft.md → relato.md
@@ -201,7 +202,8 @@ Output: fichas/<tipo>_<slug>.md
 | `diseno` | ✅ (FASE 1) |
 | `fichas` | ✅ (FASE 2) |
 | `escritura` | ✅ (FASE 3) |
-| `publicacion` | ✅ (FASE 4) |
+| `finalizado` | ✅ (manuscrito limpio listo para compilar) |
+| `publicado` | Solo hub, tras `/crear-libro` correcto |
 
 ---
 

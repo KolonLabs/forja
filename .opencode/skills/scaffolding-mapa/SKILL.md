@@ -48,10 +48,10 @@ Fichas: <tipo>_<slug>.md (personaje_miguel.md, lugar_parking.md)
 | FASE 1: Diseño | diseno | guionista → guion.md |
 | FASE 2: Componentes | fichas | entidades → fichas/ + reconciliación |
 | FASE 3: Beat a beat | escritura | escritor → validador → ±integrador |
-| FASE 4: Publicar | publicacion | /publicar → relato.md |
+| FASE 4: Finalizar | escritura | /publicar → relato.md y estado `finalizado` |
 
 ## Transiciones
-diseno → fichas → escritura → publicacion → publicado
+diseno → fichas → escritura → finalizado → publicado (hub)
 
 ## Agentes
 director, guionista, escritor, validador, integrador, entidades
