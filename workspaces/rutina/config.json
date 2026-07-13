@@ -1,0 +1,55 @@
+{
+  "titulo": "¿Rutina?",
+  "slug": "rutina",
+  "tipo": "relato",
+  "escala": "relato",
+  "estado": "diseno",
+  "estilo_base": "explicito",
+  "creado": "2026-07-08T11:55:27",
+  "ultima_modificacion": "2026-07-08T11:55:27",
+  "ultimo_hecho_global": "H_0000",
+  "ultimo_beat_global": "B_0000",
+  "logline": "Un contable de 43 años descubre el deseo homosexual a través del cruising anónimo, guiado por un hombre mayor, mientras su matrimonio pende de un hilo.",
+  "genero": "narrativa erotica",
+  "tono": "clinico y visceral, sin juicio",
+  "explicitud": "maximo",
+  "pov": "3ª limitada",
+  "extension_estimada": "16000-19000",
+  "temas": [
+    "Descubrimiento sexual tardio",
+    "Doble vida",
+    "Cruising como ritual"
+  ],
+  "restricciones": [
+    "Sin violencia sexual",
+    "Sin mujeres en encuentros"
+  ],
+  "protagonistas": [
+    {
+      "nombre": "Miguel Torres",
+      "deseo": "Experimentar el deseo sin que su vida ordenada se derrumbe",
+      "arco": "De voyeur involuntario a iniciado, hasta la fisura final",
+      "obstaculo": "Su miedo, la culpa, ser descubierto por Elena"
+    }
+  ],
+  "personajes_clave": [
+    "Elena — 41 años, su mujer. Percibe cambios.",
+    "El hombre mayor — 55-60, mentor del cruising."
+  ],
+  "setting": "Madrid actual. Oficina, Mostoles, Cercanias, parkings, banos, parque.",
+  "reflexion_agente": {
+    "riesgos": [
+      "Elena como fantasma",
+      "Variar dinamicas"
+    ],
+    "fortalezas": [
+      "Protagonista de 40+ descubriendo deseo",
+      "Contraste rutina/clandestinidad"
+    ],
+    "decisiones_usuario": [
+      "~17.000 palabras",
+      "Solo cruising gay",
+      "Final abierto"
+    ]
+  }
+}

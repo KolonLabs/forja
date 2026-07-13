@@ -1,0 +1,6 @@
+node_modules/
+*.draft.md
+relato-draft.md
+draft.md
+*_backup_*
+_actos_backup_*

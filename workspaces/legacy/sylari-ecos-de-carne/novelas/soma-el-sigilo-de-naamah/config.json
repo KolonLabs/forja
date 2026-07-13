@@ -1,0 +1,86 @@
+{
+  "titulo": "Soma — El Sigilo de Naamah",
+  "slug": "soma-el-sigilo-de-naamah",
+  "tipo": "novela",
+  "escala": "multi-hilo",
+  "estado": "diseno",
+  "estilo_base": "thriller",
+  "estilo_secundario": "explicito",
+  "palabras_estimadas": "100000-130000",
+  "capitulos_estimados": 40,
+  "partes": [
+    {
+      "nombre": "PARTE I — LA SIEMBRA",
+      "capitulos": "1-22",
+      "descripcion": "Alternancia de los tres hilos. Cada capítulo deja semillas que el lector interpreta. Sumeria y 1612 concluyen sus arcos al final de esta parte."
+    },
+    {
+      "nombre": "PARTE II — LA COSECHA",
+      "capitulos": "23-40",
+      "descripcion": "Solo época contemporánea. Convergencia total de Daniel, Beatriz y Marcos. Apertura de la losa. Liberación de Naamah."
+    }
+  ],
+  "hilos": [
+    {
+      "id": "hilo-sumeria",
+      "nombre": "Hilo Sumeria",
+      "slug": "sumeria",
+      "epoca": "~2800 a.C.",
+      "ubicacion": "Zigurat de Naamah, Sumeria",
+      "personajes_principales": ["Naamah", "Sumo Sacerdote", "Siete Sacerdotisas"],
+      "conflicto": "Naamah, entidad súcubo que se alimenta de la represión ajena, es libre y temida. Las Siete Sacerdotisas conspiran para atraparla en una losa de basalto mediante un ritual de sellado con geometría sagrada.",
+      "tono": "Épico, ritual, sensorial. La crudeza es ceremonial — cuerpos como ofrenda, semen como tributo, sangre como sello.",
+      "estado": "pendiente",
+      "ultimo_capitulo": null,
+      "archivo_guion": "hilos/hilo-sumeria/guion-hilo.md",
+      "archivo_diseno": "hilos/hilo-sumeria/diseno-hilo.md"
+    },
+    {
+      "id": "hilo-inquisicion",
+      "nombre": "Hilo Inquisición",
+      "slug": "inquisicion",
+      "epoca": "1612 d.C.",
+      "ubicacion": "Convento de La Latina, Madrid",
+      "personajes_principales": ["Sor Catalina (abadesa)", "Inquisidor", "Novicias"],
+      "conflicto": "Sor Catalina, abadesa de un convento en La Latina, descubre la losa de basalto en el sótano del convento y establece un pacto con Naamah. La Inquisición se acerca. Para salvar el secreto, debe sellar el sótano con cal — sepultando la losa y sacrificando su libertad.",
+      "tono": "Claustrofóbico, místico, opresivo. La crudeza emerge en el contraste entre el hábito y el deseo reprimido de las novicias. Fe contra culpa.",
+      "estado": "pendiente",
+      "ultimo_capitulo": null,
+      "archivo_guion": "hilos/hilo-inquisicion/guion-hilo.md",
+      "archivo_diseno": "hilos/hilo-inquisicion/diseno-hilo.md"
+    },
+    {
+      "id": "hilo-actualidad",
+      "nombre": "Hilo Actualidad",
+      "slug": "actualidad",
+      "epoca": "2026 d.C.",
+      "ubicacion": "Madrid (Apex Creative, La Latina, apartamentos)",
+      "personajes_principales": ["Daniel", "Beatriz", "Marcos", "Javier", "Lena", "Hugo", "Valeria", "Adrián", "Sofía"],
+      "conflicto": "Daniel, diseñador invisible de Apex Creative, descubre la losa en el sótano del palacete de La Latina y vectoriza el sigilo como logo de Soma, una app de CRM. El sigilo es un nodo amplificador: Naamah, atrapada en la losa 4.800 años atrás, usa a Daniel como catalizador para desatar la represión de quienes entran en contacto con el logo. Beatriz, directora de Apex y descendiente de la abadesa, descubre su herencia. Marcos, ejecutivo de control, es arrastrado a un abismo de sumisión orquestado por Hugo, Valeria y Adrián. Los tres convergen en el sótano cuando Naamah reclama su liberación.",
+      "tono": "Thriller contemporáneo + explícito total. Tensión urbana, atmósfera de conspiración corporativa, sexo explícito como manifestación del poder de Naamah. Ritmo creciente hasta el clímax en el sótano.",
+      "estado": "pendiente",
+      "ultimo_capitulo": null,
+      "archivo_guion": "hilos/hilo-actualidad/guion-hilo.md",
+      "archivo_diseno": "hilos/hilo-inquisicion/diseno-hilo.md"
+    }
+  ],
+  "entidades": {
+    "personajes": ["Naamah", "Daniel", "Beatriz", "Marcos", "Sor Catalina", "Sumo Sacerdote", "Lena", "Javier", "Hugo", "Valeria", "Adrián", "Sofía", "Inquisidor"],
+    "lugares": ["Zigurat de Naamah", "Convento de La Latina", "Palacete de Apex Creative", "Sótano de la losa", "Pub La Latina", "Apartamento de Hugo y Valeria", "Apartamento de Daniel", "Apartamento de Beatriz", "Apartamento de Marcos"],
+    "objetos": ["Losa de basalto negro", "Colgante de plata", "Sigilo de Naamah", "App Soma", "Puñal de plata de la abadesa"],
+    "organizaciones": ["Apex Creative", "Inquisición española", "Siete Sacerdotisas de Naamah"]
+  },
+  "puntos_conexion": {
+    "la_losa": "Mismo objeto físico en Sumeria (creación), 1612 (sellado), 2026 (apertura)",
+    "el_sigilo": "Misma geometría: trazado en Sumeria → grabado en plata en 1612 → vectorizado como logo en 2026",
+    "el_ritual": "Tres rituales: captura (Sumeria) → renovación (1612) → liberación (2026)",
+    "el_sotano": "Misma ubicación física en 1612 y 2026 (el convento se convierte en palacete/oficina)",
+    "naamah": "Misma entidad en las tres épocas"
+  },
+  "creado": "2026-07-01T09:44:00",
+  "ultima_modificacion": "2026-07-01T09:44:00",
+  "ultimo_beat_id": null,
+  "capitulos_completados": 0,
+  "version_qdrant": "pendiente",
+  "version_neo4j": "pendiente"
+}

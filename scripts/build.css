@@ -1,0 +1,129 @@
+/* estilos.css
+   Estilos mínimos para el EPUB generado por pandoc.
+   Guardar como UTF-8.
+*/
+
+@charset "utf-8";
+
+:root{
+  --main-font: "Georgia", "Times New Roman", serif;
+  --sans-font: "Helvetica Neue", "Arial", sans-serif;
+  --base-size: 1em;
+  --lead-color: #222;
+}
+
+/* Base */
+html, body {
+  background: #fff;
+  color: var(--lead-color);
+  font-family: var(--main-font);
+  font-size: var(--base-size);
+  line-height: 1.5;
+  margin: 0;
+  padding: 0;
+}
+
+/* Title page / portada */
+.titlepage, .frontmatter {
+  text-align: center;
+  margin-top: 3em;
+  margin-bottom: 3em;
+}
+.title { font-size: 1.8em; font-weight: 700; margin-bottom: 0.4em; }
+.author { font-size: 1em; color: #444; margin-bottom: 1em; }
+
+/* Capitulos */
+h1 {
+  font-size: 1.6em;
+  text-align: center;
+  margin: 1.4em 0 0.6em;
+  font-weight: 700;
+  page-break-before: always;
+}
+
+h2 {
+  font-size: 1.2em;
+  margin: 1.0em 0 0.4em;
+  font-weight: 600;
+}
+
+/* Párrafos */
+p {
+  text-indent: 1em;
+  margin: 0.45em 0;
+  orphans: 3;
+  widows: 2;
+}
+
+/* Evitar indent en ciertos bloques (listas, bloque de cita, etc) */
+ul, ol, blockquote, pre, table {
+  text-indent: 0;
+  margin: 0.6em 0;
+}
+
+/* Citas */
+blockquote {
+  margin-left: 1em;
+  margin-right: 1em;
+  padding-left: 0.9em;
+  border-left: 3px solid #e0e0e0;
+  color: #333;
+  font-style: italic;
+}
+
+/* Imágenes */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0.6em auto;
+}
+
+/* Separadores */
+hr {
+  border: none;
+  border-top: 1px solid #e6e6e6;
+  margin: 1.0em 0;
+}
+
+/* Tablas simples */
+table {
+  border-collapse: collapse;
+  width: auto;
+}
+th, td {
+  padding: 0.35em 0.6em;
+  border: 1px solid #e6e6e6;
+}
+
+/* Código */
+code, pre {
+  font-family: Menlo, Consolas, "Liberation Mono", monospace;
+  background: #f6f6f6;
+  padding: 0.15em 0.3em;
+  border-radius: 3px;
+  font-size: 0.95em;
+}
+
+/* Enlaces: mantener legible en e-readers */
+a {
+  color: inherit;
+  text-decoration: underline;
+}
+
+/* Clases de utilidad */
+.center { text-align: center; }
+.no-indent { text-indent: 0; }
+
+/* Evitar saltos raros: forzar nueva página en títulos de capítulo */
+.chapter-title { page-break-before: always; text-align: center; }
+
+/* Ajustes para impresión/EPUB */
+@media print {
+  h1 { page-break-before: always; }
+}
+
+/* Compactar saltos de línea excesivos (pandoc puede generar dobles) */
+p + p { margin-top: 0.35em; }
+
+/* Fin de estilos */
