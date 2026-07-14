@@ -33,6 +33,7 @@ _actos.md (actos con hechos) → guion.md (escenas + hechos H_NNNN + beats B_NNN
 | PIPELINE.md | Script | — | Fases del pipeline |
 | ORQUESTACION.md | Script | — | Contratos de spawn |
 | MAPA.md | Script | — | Este archivo |
+| GUIA.md | Script | — | Cuándo usar cada comando y cuándo volver al hub |
 | guion.md | guionista | guionista, director (estados) | Escenas, hechos, beats |
 | relato-draft.md | director | escritor (append) | Prosa beat a beat |
 | relato.md | director (/publicar) | — | Versión limpia publicable |

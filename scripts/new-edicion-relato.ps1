@@ -156,6 +156,7 @@ El director añade una fila por cada ejecución de `/corregir`, `/revisar` o `/e
 | Archivo | Uso |
 |---|---|
 | EDICION.md | Linaje, motivo y reglas de esta edición |
+| GUIA.md | Ayuda para decidir entre corregir, revisar, expandir, publicar o volver al hub |
 | relato-edicion-anterior.md | Manuscrito publicado de referencia (solo lectura) |
 | correcciones.md | Registro de pasadas y beats corregidos |
 

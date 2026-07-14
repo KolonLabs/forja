@@ -25,6 +25,7 @@ Forja/
 │       ├── nueva-edicion.md           # /nueva-edicion (relato)
 │       └── recompilar-libro.md        # /recompilar-libro
 ├── shared/                            # Fuente de verdad del pipeline de ficción
+│   ├── GUIA.md                        # Ayuda de comandos inyectada en cada workspace nuevo
 │   ├── .opencode/
 │   │   ├── agents/                    # Agentes fijos: memoria, cronista (solo novelas)
 │   │   ├── skills/                    # 36 skills: invariantes + exclusivos por escala
@@ -120,6 +121,7 @@ Si cambia el contenido de un relato publicado, se usa `/nueva-edicion <workspace
 |-----------|-----------|
 | `shared/.opencode/agents/` | 2 agentes fijos: memoria, cronista (solo se inyectan en novelas) |
 | `shared/.opencode/skills/` | 41 skills: invariantes + exclusivos por escala |
+| `shared/GUIA.md` | Guía de decisión para la persona usuaria, copiada como `GUIA.md` en cada workspace nuevo |
 | `shared/.opencode/commands/` | 8 comandos: generar, revisar, expandir, corregir, publicar, refinar-hechos, revisar-guion, validar-hechos |
 | `shared/pipelines/<escala>/` | 7 agentes + 4 skills + PIPELINE.md + ORQUESTACION.md por escala |
 

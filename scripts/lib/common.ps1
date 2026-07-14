@@ -129,7 +129,13 @@ function Inject-Pipeline {
     # 4. ORQUESTACION.md
     Copy-Item -LiteralPath (Join-Path $ScaleDir "ORQUESTACION.md") -Destination (Join-Path $TargetDir "ORQUESTACION.md") -Force
 
-    # 5. Skills filtrados por escala
+    # 5. Guía de uso para la persona usuaria
+    $userGuide = Join-Path $SharedDir "GUIA.md"
+    if (Test-Path -LiteralPath $userGuide -PathType Leaf) {
+        Copy-Item -LiteralPath $userGuide -Destination (Join-Path $TargetDir "GUIA.md") -Force
+    }
+
+    # 6. Skills filtrados por escala
     $hubSkills = Join-Path $SharedDir ".opencode\skills"
     $wsSkills = Join-Path $targetOC "skills"
     $excluded = @()
@@ -148,7 +154,7 @@ function Inject-Pipeline {
         }
     }
 
-    # 6. Skills de la escala (4: contexto-subagente, estructura-narrativa, plantilla-guion, beats-estructura)
+    # 7. Skills de la escala (4: contexto-subagente, estructura-narrativa, plantilla-guion, beats-estructura)
     $scaleSkills = Join-Path $ScaleDir "skills"
     if (Test-Path -LiteralPath $scaleSkills) {
         Get-ChildItem -LiteralPath $scaleSkills -Directory | ForEach-Object {
@@ -159,7 +165,7 @@ function Inject-Pipeline {
         }
     }
 
-    # 7. Comandos
+    # 8. Comandos
     $hubCommands = Join-Path $SharedDir ".opencode\commands"
     $wsCommands = Join-Path $targetOC "commands"
     if (Test-Path -LiteralPath $hubCommands) {
@@ -168,7 +174,7 @@ function Inject-Pipeline {
         }
     }
 
-    # 8. Scripts Python de infraestructura (solo novelas)
+    # 9. Scripts Python de infraestructura (solo novelas)
     if ($Escala -ne "relato") {
         $scriptsDir = Join-Path $TargetDir "scripts"
         if (-not (Test-Path -LiteralPath $scriptsDir)) {

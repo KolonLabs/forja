@@ -41,6 +41,8 @@ Los comandos de escritura (`/generar`, `/corregir`, `/revisar`, `/expandir`, `/p
 | `scripts/` | Infraestructura para crear workspaces y compilar libros. |
 | `publicados/` | Libros compilados en Markdown y, si se solicitan, EPUB y PDF. |
 
+Cada workspace nuevo recibe `GUIA.md`, una ayuda rápida para elegir el comando adecuado según el estado de la obra y el objetivo editorial.
+
 ## Referencias
 
 - [Guia operativa](docs/operacion-hub.md): pasos, restricciones, requisitos y solucion de errores habituales.
