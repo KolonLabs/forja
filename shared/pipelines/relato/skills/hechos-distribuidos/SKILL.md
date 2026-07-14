@@ -1,35 +1,43 @@
 ---
 name: hechos-distribuidos
-description: Procesa hechos [D] de relato usando anclas B_XXXX y sin infraestructura externa.
+description: Modela recurrencias [D] de relato por función narrativa, no como una cola mecánica de inserciones.
 ---
 
-# Hechos distribuidos — Relato
+# `cola_d.md` — Recurrencias de relato
 
-Un hecho `[D · H_XXXX–H_YYYY]` es un patrón que se despliega en beats de escenas lineales dentro de ese rango. Nunca genera una escena exclusiva.
+Un `[D]` describe una recurrencia que atraviesa hechos lineales. `cola_d.md` solo se usa en Fase 1 y se cierra antes de escribir.
 
-## Cola de trabajo
+## Tipos
 
-El director crea `cola_d.md`:
+| Tipo | Tratamiento |
+|---|---|
+| `evento` | Apariciones discretas que generan beats. |
+| `patrón` | Conducta o presión repetida que genera beats distintos. |
+| `progresión` | Cambio gradual con hitos visibles que generan beats. |
+| `motivo` | Imagen, atmósfera o eco; no genera beats y pasa como directriz de escena. |
+
+## Entrada
 
 ```markdown
-# Cola de hechos distribuidos
-| Hecho | Rango | Estado | Anclas |
-|---|---|---|---|
-| H_0004 | H_0002–H_0007 | pendiente | B_0005, B_0011 |
+## H_0004 — La mentira doméstica
+
+- Tipo: patrón
+- Rango: H_0002–H_0007
+- Curva: normalidad → presión → evidencia → coste
+- Límites: no revelar el mensaje antes de H_0006
+- Apariciones candidatas:
+  - Tras B_0005: la mentira parece automática.
+  - Tras B_0011: exige una acción concreta.
+  - Tras B_0018: deja una prueba con coste.
+- Estado: pendiente | resuelto | bloqueo
 ```
 
-Cada anotación indica un beat ancla, no una posición numérica:
+Cada aparición debe cambiar su función para lector, personaje o trama. No se fija una cantidad mínima ni máxima.
 
-```text
-H_0004: insertar después de B_0005. Función: mostrar la primera mentira automática.
-```
+## Reglas
 
-## Algoritmo
-
-1. El guionista genera y valida los beats de hechos lineales para todo el arco.
-2. El director decide las anclas `B_XXXX` de cada `[D]` una vez conocido el mapa completo.
-3. El guionista crea un beat nuevo con el siguiente ID global y lo inserta tras cada ancla.
-4. Cada beat distribuido lleva `{D:H_XXXX}` y comparte escena con beats lineales.
-5. El auditor comprueba rango, reparto, no consecutividad de instancias del mismo `[D]` y ausencia de fugas de información.
-
-No se renumeran beats al insertar. Si cambia la agrupación resultante, se vuelve a ejecutar el modo `escenas`.
+1. Las anclas son candidatas justificadas, no posiciones ciegas.
+2. La consecutividad es una advertencia editorial: puede permitirse un montaje o una escalada con función clara.
+3. Un `[D]` no obtiene una escena propia mientras sea patrón; si su culminación necesita una escena, debe estar respaldada por un hecho lineal. Si no existe, el director solicita modificar los hechos.
+4. Los motivos se anotan como directrices de las `E_XXXX` pertinentes, sin crear beats.
+5. Al resolverse la cobertura, la cola queda cerrada y no forma parte del contexto de escritura.

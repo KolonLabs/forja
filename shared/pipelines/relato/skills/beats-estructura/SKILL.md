@@ -1,57 +1,38 @@
 ---
 name: beats-estructura
-description: Contrato de beats globales para relatos. Úsalo al crear, insertar, revisar o escribir beats.
+description: Define beats globales de relato como acciones concretas sin invadir la prosa.
 ---
 
-# Beats globales — Relato
+# Beats — Relato
 
-## Identidad y orden
+`B_XXXX` es un ID global y durable. Su posición es la posición que ocupa en el guion; no se renumera, reutiliza ni deriva de una escena.
 
-- Un beat se identifica exclusivamente como `B_XXXX`.
-- El identificador es global, único y durable dentro del relato. Se toma de `config.json.ultimo_beat_seq` y nunca se reutiliza ni renumera.
-- La posición narrativa es la posición de la línea en `guion.md`; no se deduce del número de ID.
-- Al insertar un beat, se crea el siguiente `B_XXXX` y se coloca junto al beat ancla. Las referencias existentes siguen intactas.
-- No uses `stable_id`, `parent_id`, `seq`, UUIDs ni displays derivados.
-
-## Formato canónico
+## Formato
 
 ```text
-⬜ B_0001 — Acción concreta y verificable [Tono — EXTENSIÓN] {H_0001}
+⬜ B_0001 — Ana borra el aviso antes de que Luis lo vea.
+⬜ B_0002 — Luis pregunta qué estaba mirando Ana. [registro: tenso]
 ```
 
-Un beat distribuido añade la procedencia:
+El registro es opcional y solo aparece si el beat necesita apartarse del arco tonal de su `E_XXXX`. Ejemplos: `contenido`, `tenso`, `revelación`, `explícito / visceral`, `íntimo`, `brutal`.
 
-```text
-⬜ B_0012 — Ana borra el aviso antes de que Luis lo lea [Tenso — BREVE] {D:H_0004}
-```
+No añadas etiquetas de hecho, `[D]`, extensión, número de palabras, POV, lugar ni encabezados narrativos al beat.
 
-Estados permitidos: `⬜`, `🔄`, `✅`, `⛔`.
+## Qué fija un beat
 
-## Un beat correcto
+- quién hace qué;
+- qué cambia o qué consecuencia deja;
+- la acción mínima que la prosa debe realizar.
 
-- Tiene sujeto, acción, consecuencia y un cambio comprobable.
-- Es una unidad causal mínima, no un resumen ni una escena completa.
-- Puede escribirse en prosa sin necesitar inventar una acción nuclear nueva.
-- Conserva referencias a uno o más `H_XXXX`; los beats `[D]` conservan `D:H_XXXX`.
-- Lleva uno o dos tonos y una extensión de `tonos-beat`.
+## Qué pertenece a la escena o al escritor
 
-No contiene ambientación, psicología abstracta ni prosa acabada: esos elementos corresponden al escritor.
+- lugar, tiempo, POV, objetivo, resultado y arco tonal: `E_XXXX`;
+- ritmo, frases, diálogo, imágenes, sensorialidad y psicología: escritor;
+- cobertura de `H_XXXX`: comprobación temporal de diseño;
+- recurrencias `[D]`: `cola_d.md` durante diseño.
 
-## Inserción, eliminación y reparación
+Un beat no es un resumen, una descripción, una emoción abstracta ni prosa parcialmente escrita.
 
-1. Localiza el beat ancla por `B_XXXX`.
-2. Crea el siguiente `B_XXXX` solo si aparece una acción causal nueva.
-3. Inserta, elimina o reordena las líneas necesarias sin cambiar los IDs supervivientes.
-4. Revisa las transiciones inmediatas y la cobertura de hechos.
-5. Si la modificación afecta a una escena ya agrupada, reevalúa esa `E_XXXX` y las adyacentes; no se renumeran escenas.
+## Reparaciones
 
-## Checklist
-
-| Criterio | Debe cumplirse |
-|---|---|
-| Identidad | `B_XXXX` único, global y no reutilizado |
-| Acción | sujeto + acción concreta + consecuencia |
-| Cobertura | referencia a `H_XXXX` o `D:H_XXXX` |
-| Atomicidad | no fusiona acontecimientos independientes |
-| Causalidad | enlaza con el beat previo y prepara el siguiente |
-| Escritura | extensión y tono son realizables en prosa |
+Al insertar un acontecimiento causal nuevo, asigna el siguiente `B_XXXX` y colócalo donde corresponda. Conserva los IDs supervivientes. Si la inserción altera una agrupación, reevalúa las escenas afectadas sin inventar una jerarquía adicional.

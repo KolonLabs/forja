@@ -1,30 +1,28 @@
 ---
 name: contexto-subagente
-description: Define el contexto mínimo de los subagentes de relato con IDs H_, B_ y E_ globales.
+description: Define el contexto mínimo de agentes de relato para no sobrecargar la generación.
 compatibility: opencode
 ---
 
 # Contexto de subagentes — Relato
 
-## Contrato común
-
-Los identificadores válidos son `H_XXXX`, `B_XXXX` y `E_XXXX`. Son visibles, globales y suficientes para localizar cualquier elemento. No uses `stable_id`, `parent_id`, `seq` ni UUID.
+Usa solo `H_XXXX`, `B_XXXX` y `E_XXXX`. No uses identidad opaca ni secuencias locales.
 
 ## Guionista
 
-- `beats`: `BRIEF.md`, `_actos.md`, último `B_XXXX` y los beats finales ya existentes si reanuda.
-- `distribuidos`: `cola_d.md`, cada ancla `B_XXXX`, su beat anterior y posterior, y el rango de `H_XXXX`.
-- `escenas`: mapa completo de beats ya validado; debe devolver agrupaciones, no alterar acciones de beats salvo una reparación explícita.
-- `reparar`: diagnóstico, tramo delimitado por `B_XXXX`/`E_XXXX`, hechos y transiciones vecinas.
+- `beats`: brief, hechos, último beat y cualquier tramo ya diseñado.
+- `distribuidos`: la entrada concreta de `cola_d.md`, ancla y beats vecinos.
+- `escenas`: mapa completo de beats validado; devuelve escenas, no reescribe acciones.
+- `reparar`: problema bloqueante, tramo y escenas vecinas.
 
 ## Escritor
 
-Pasa: bloque completo de la `E_XXXX`, beat actual `B_XXXX`, prosa previa de la escena, tres beats anteriores si existen, fichas relevantes, `contexto_narrativo.md`, tono, extensión y estilo. Devuelve solo prosa.
+Recibe una `E_XXXX` completa, todas sus acciones `B_XXXX`, escena anterior/siguiente, fichas necesarias y solo los deltas de contexto relevantes. Devuelve todos los bloques de la escena.
 
 ## Validador e integrador
 
-Pasa: `B_XXXX`, acción de guion, bloque `E_XXXX`, texto actual, contexto y fichas relevantes, ventanas anterior/posterior y la lista exacta de dimensiones. El integrador devuelve el bloque con heading `## B_XXXX — acción`.
+Reciben la escena completa y, para una corrección, los bloques señalados más sus vecinos inmediatos. El validador señala problemas por beat; el integrador devuelve solo reemplazos.
 
-## Entidades y contexto
+## Memoria
 
-Las fichas se localizan por su ruta `fichas/<tipo>_<slug>.md` y se citan por nombre/tipo. El director actualiza el contexto al cerrar cada `E_XXXX`.
+El director actualiza un delta por escena. Tras `Salida: separador`, compacta los deltas de la secuencia. No entrega al escritor memoria irrelevante.

@@ -1,54 +1,35 @@
 ---
 name: plantilla-guion
-description: Plantilla del guion de relato basado en beats globales y escenas derivadas.
+description: Plantilla mínima de guion de relato con beats globales y escenas operativas.
 ---
 
-# Guion de relato
-
-El guion se construye en dos pasos: primero se valida el mapa completo de `B_XXXX`; después se crean `E_XXXX` para agrupar beats contiguos. No incluye identificadores opacos ni secuencias locales.
-
-```markdown
 # Guion — [TÍTULO]
 
-## Premisa
+El guion se construye en dos pasos: beats globales primero; escenas operativas después. Los `H_XXXX` se validan en diseño, pero no se imprimen en cada beat.
 
-[Una frase]
-
-## Mapa de beats y escenas
+```markdown
+## Escenas
 
 ### E_0001 — [Nombre]
 
 - Ubicación: [lugar]
-- Tiempo: [momento y continuidad]
-- POV: [personaje o narrador]
-- Objetivo: [qué debe cambiar]
-- Tensión: [conflicto activo]
-- Resultado: [estado al cierre]
-- Transición: [puente hacia E_0002]
-- Hechos cubiertos: H_0001, H_0002
+- Tiempo y POV: [momento y foco]
+- Objetivo: [qué intenta ocurrir]
+- Resultado: [qué ha cambiado al cierre]
+- Arco tonal: [inicio] → [giro] → [cierre]
+- Salida: continua | separador
 
 #### Beats
 
-⬜ B_0001 — [acción causal] [Tono — BREVE] {H_0001}
-⬜ B_0002 — [consecuencia] [Tono — MEDIA] {H_0001}
-⬜ B_0003 — [acción puente] [Tono — BREVE] {D:H_0002}
-
----
-
-### E_0002 — [Nombre]
-...
-
-## Arco verificado
-
-- Inicio: ...
-- Desarrollo: ...
-- Clímax: ...
-- Desenlace: ...
+⬜ B_0001 — [acción causal].
+⬜ B_0002 — [acción que modifica la situación]. [registro: revelación]
 ```
 
-Reglas:
+## Reglas
 
-1. Cada `B_XXXX` aparece una sola vez y pertenece a una sola escena.
-2. Los beats de una escena son contiguos en el orden narrativo.
-3. Una escena no se crea por cantidad: requiere continuidad de tiempo/espacio/POV y una unidad dramática propia.
-4. `H_XXXX` y `B_XXXX` no se renumeran. Una `E_XXXX` puede reagruparse en corrección, manteniendo su ID si conserva su función; una escena nueva usa el siguiente ID.
+1. Cada `B_XXXX` aparece una sola vez y pertenece a una `E_XXXX`.
+2. Los beats de una escena son contiguos.
+3. Cada `E_XXXX` es una unidad dramática y de generación manejable; una situación amplia puede abarcar varias escenas operativas.
+4. Una salida `continua` no crea separador visible en el manuscrito; `separador` sí.
+5. No hay mínimos de beats, cuotas de palabras ni extensiones obligatorias.
+6. Al dividir una escena, conserva el ID en la primera parte y asigna otro a la siguiente. Al fusionar, conserva el ID de la primera.

@@ -154,7 +154,7 @@ function Inject-Pipeline {
         }
     }
 
-    # 7. Skills de la escala (4: contexto-subagente, estructura-narrativa, plantilla-guion, beats-estructura)
+    # 7. Skills específicos de la escala; sobrescriben contratos genéricos cuando comparten nombre.
     $scaleSkills = Join-Path $ScaleDir "skills"
     if (Test-Path -LiteralPath $scaleSkills) {
         Get-ChildItem -LiteralPath $scaleSkills -Directory | ForEach-Object {
@@ -165,7 +165,7 @@ function Inject-Pipeline {
         }
     }
 
-    # 8. Comandos
+    # 8. Comandos comunes
     $hubCommands = Join-Path $SharedDir ".opencode\commands"
     $wsCommands = Join-Path $targetOC "commands"
     if (Test-Path -LiteralPath $hubCommands) {
@@ -174,7 +174,16 @@ function Inject-Pipeline {
         }
     }
 
-    # 9. Scripts Python de infraestructura (solo novelas)
+    # 9. Overrides de comandos por escala. Se copian después de los comunes
+    # para que el workspace reciba instrucciones sin contaminación de otra escala.
+    $scaleCommands = Join-Path $ScaleDir "commands"
+    if (Test-Path -LiteralPath $scaleCommands) {
+        Get-ChildItem -LiteralPath $scaleCommands -File -Filter "*.md" | ForEach-Object {
+            Copy-Item -LiteralPath $_.FullName -Destination (Join-Path $wsCommands $_.Name) -Force
+        }
+    }
+
+    # 10. Scripts Python de infraestructura (solo novelas)
     if ($Escala -ne "relato") {
         $scriptsDir = Join-Path $TargetDir "scripts"
         if (-not (Test-Path -LiteralPath $scriptsDir)) {

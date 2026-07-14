@@ -9,7 +9,7 @@ Esta guía responde **qué comando usar según tu objetivo**. Para el contrato d
 | Afinar hechos antes de desarrollar | `/refinar-hechos` | Un hecho es vago, demasiado amplio o un `[D]` no tiene rango/anotaciones claros. | Para revisar el ritmo del guion ya creado. |
 | Comprobar que los hechos cuentan una historia coherente | `/validar-hechos` | Quieres detectar contradicciones, huecos, fugas de información o problemas de arco. | Para corregir prosa. |
 | Crear o continuar la obra | `/generar` | El workspace está en el flujo normal de diseño, componentes o escritura. | En una edición derivada con estado `correccion`. |
-| Revisar la estructura antes de escribir o cerrar | `/revisar-guion` | Hay dudas sobre escenas, arcos, ritmo, transiciones o trenzado. | Para cambiar solo la redacción de un beat. |
+| Revisar la estructura antes de escribir o cerrar | `/revisar-guion` | Hay dudas sobre beats, escenas operativas, ritmo, registros o salidas visibles. | Para cambiar solo la redacción de un beat. |
 | Corregir un fragmento concreto | `/revisar B_NNNN <instrucción>` | Conoces el beat o puedes describirlo con suficiente precisión. | Para una pasada integral de toda la obra. |
 | Añadir desarrollo a un fragmento sin cambiar su acción | `/expandir B_NNNN <enfoque>` | Falta detalle sensorial, emocional, físico o un monólogo. | Para alterar la estructura o el resultado del beat. |
 | Corregir una edición completa de un relato publicado | `/corregir [alcance] <instrucción>` | Solo en un relato derivado con estado `correccion`. | En el workspace publicado original o en novelas por ahora. |
@@ -22,7 +22,7 @@ _actos.md
   ├─ /refinar-hechos          (opcional, recomendado)
   ├─ /validar-hechos          (opcional, recomendado)
   └─ /generar
-       ├─ /revisar-guion      (audita beats globales y escenas antes de escribir)
+       ├─ /revisar-guion      (audita beats, escenas operativas y salidas)
        ├─ /revisar o /expandir (si un beat concreto necesita cambios)
        └─ /publicar
 ```
@@ -34,14 +34,16 @@ No edites `relato.md` ni `novela.md` directamente: son la salida limpia. Las cor
 `/generar` trabaja de forma autónoma a partir del arco ya acotado:
 
 ```text
-H_XXXX (hechos) → B_XXXX (beats globales) → E_XXXX (escenas) → prosa
+H_XXXX (hechos) → B_XXXX (beats globales) → E_XXXX (escenas operativas) → prosa
 ```
 
 - `H_XXXX` procede del briefing y no cambia durante la generación.
-- `B_XXXX` es una acción causal y su identificador nunca se renumera. Si se inserta uno, recibe el siguiente número y se coloca en el orden correcto.
-- `E_XXXX` agrupa beats contiguos que forman una unidad de tiempo, espacio, POV y conflicto.
+- `B_XXXX` es una acción causal, sin prosa ni cuota de longitud. Su identificador nunca se renumera.
+- `E_XXXX` agrupa beats contiguos en una unidad dramática que se escribe en una sola generación. Una situación amplia puede incluir varias escenas operativas.
+- La escena define un arco tonal; un beat solo añade `[registro: ...]` cuando requiere un tratamiento distinto, por ejemplo explícito o visceral.
+- `Salida: continua` mantiene la prosa sin corte visible; `Salida: separador` crea `---` en el manuscrito.
 
-El sistema primero valida el arco entero de beats, después valida el ritmo de las escenas y solo entonces escribe. Se detiene únicamente si una decisión contradice el brief, es editorialmente ambigua o un beat no supera sus reintentos de validación.
+El sistema valida el mapa de beats una vez, agrupa escenas y escribe una escena completa cada vez. Se detiene únicamente ante contradicción con hechos, restricciones o desenlace fijados; las preferencias editoriales se resuelven de forma autónoma.
 
 ## Estados
 
@@ -51,7 +53,7 @@ El sistema primero valida el arco entero de beats, después valida el ritmo de l
 diseno → fichas → escritura → finalizado → publicado (hub)
 ```
 
-- `diseno`: permite afinar hechos y cambiar guion. `fichas` y `escritura` permiten continuar y corregir beats; `/revisar-guion` es auditoría, no altera la estructura sin una corrección transaccional.
+- `diseno`: permite afinar hechos, recurrencias y guion. `fichas` y `escritura` permiten continuar y corregir bloques; `/revisar-guion` es auditoría, no altera la estructura sin una corrección transaccional.
 - `finalizado`: el manuscrito está listo para compilar desde el hub.
 - `publicado`: no reabras el original. Si cambia el contenido, crea una edición derivada desde el hub.
 

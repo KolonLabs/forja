@@ -1,97 +1,85 @@
 # Orquestación — Relato
 
-Referencia operativa para el director. El contrato narrativo es `H_XXXX → B_XXXX → E_XXXX → prosa`; `PIPELINE.md` define gates y estados.
+`PIPELINE.md` es la fuente de verdad. Este archivo solo define propiedad de archivos, entradas y salidas de cada agente.
 
-## Reglas globales
+## Reglas operativas
 
-1. Relato no usa `stable_id`, `parent_id`, `seq`, Qdrant ni Neo4j.
-2. `H_`, `B_` y `E_` son IDs visibles, globales y únicos dentro del workspace. Al crear un beat o una escena se toma el siguiente contador de `config.json`; nunca se renumera un ID existente.
-3. El director es el único escritor persistente de `config.json`, `guion.md`, `relato-draft.md`, `contexto_narrativo.md` y `registro-pipeline.md`. Los subagentes devuelven contenido o diagnósticos.
-4. Antes de sobrescribir, el director crea backup; cada transición, reparación o bloqueo se anota en `registro-pipeline.md`.
-5. El director decide autónomamente dentro de `BRIEF.md`. Solo detiene el flujo si una reparación contradice una restricción explícita, hay dos direcciones editoriales equivalentes o se agotan los reintentos.
+1. Los únicos IDs son `H_XXXX`, `B_XXXX` y `E_XXXX`; son globales, visibles y no se renumeran.
+2. El director persiste los archivos. Los subagentes devuelven propuestas, prosa o diagnósticos.
+3. El director solo consulta al usuario si una decisión cambia un hecho, el desenlace, una restricción o una relación ya fijada. Las alternativas estilísticas se resuelven autónomamente.
+4. Los backups y el registro se crean solo para bloqueos, cambios estructurales y ediciones; no para operaciones rutinarias.
 
-## Matriz de agentes
+## Agentes
 
-| Agente | Invocado por | Devuelve | No hace |
-|---|---|---|---|
-| director | comandos del usuario | decisiones, archivos y estados | Prosa o guion de autoría propia |
-| guionista | director | mapa de beats, inserciones `[D]`, agrupación de escenas o tramos corregidos | Persistir archivos |
-| auditor-beats | director | diagnóstico por `H_`/`B_`/`E_` | Modificar archivos |
-| escritor | director | prosa de un `B_XXXX` | Encabezados, estados o archivos |
-| validador | director | JSON de evaluación | Modificar archivos |
-| integrador | director | bloque `B_XXXX` corregido | Persistir archivos |
-| entidades | director | ficha Markdown propuesta | Persistir archivos |
-
-## Modos del guionista
-
-| Modo | Entrada | Salida |
+| Agente | Entrada | Salida |
 |---|---|---|
-| `beats` | `BRIEF.md`, `_actos.md`, contadores | Mapa global de `B_XXXX` para todos los hechos lineales. |
-| `distribuidos` | `guion.md`, `cola_d.md`, beats ancla `B_XXXX` | Beats `[D]` insertados tras el ancla, dentro de su rango. |
-| `escenas` | Mapa completo de beats | Escenas `E_XXXX` que agrupan beats contiguos. |
-| `reparar` | Tramo señalado por auditor | Sustitución mínima de beats o agrupaciones, sin renumerar IDs existentes. |
+| guionista | hechos, beats o tramo señalado | mapa de beats, propuesta `[D]`, escenas o reparación |
+| auditor-beats | mapa de beats + hechos | un diagnóstico estructural priorizado |
+| escritor | escena `E_XXXX`, beats, contexto y fichas | escena completa con bloques `B_XXXX` |
+| validador | escena completa + contexto | problemas concretos por beat, sin scores |
+| integrador | bloques señalados + feedback | reemplazos de esos bloques |
+| entidades | entidad recurrente o crítica | ficha Markdown propuesta |
 
 ## Formato de guion
 
 ```markdown
-### E_0001 — Nombre de escena
+### E_0001 — Nombre
 
 - Ubicación: ...
-- Tiempo: ...
-- POV: ...
+- Tiempo y POV: ...
 - Objetivo: ...
-- Tensión: ...
 - Resultado: ...
-- Transición: ...
-- Hechos cubiertos: H_0001, H_0002
+- Arco tonal: contenido → tenso → revelación
+- Salida: continua | separador
 
 #### Beats
 
-⬜ B_0001 — acción concreta [Tenso — BREVE] {H_0001}
-⬜ B_0002 — consecuencia concreta [Revelación — MEDIA] {H_0002}
+⬜ B_0001 — Acción concreta y consecuencia.
+⬜ B_0002 — Acción que cambia la situación. [registro: explícito / visceral]
 ```
 
-Un beat puede mencionar varios hechos con `{H_..., H_...}`. Un beat `[D]` añade `{D:H_0004}` y siempre comparte escena con beats lineales.
+`[registro: ...]` es opcional: el beat sin etiqueta hereda el arco tonal de la escena. No se escriben extensiones, etiquetas `H`, etiquetas `D` ni prosa en estas líneas.
+
+## Modos del guionista
+
+| Modo | Devuelve |
+|---|---|
+| `beats` | Mapa global de beats y cobertura temporal `H → B`. |
+| `distribuidos` | Apariciones de `[D]` según la función anotada en `cola_d.md`. |
+| `escenas` | Escenas operativas manejables, con arco tonal y tipo de salida. |
+| `reparar` | Cambio mínimo de beats o escenas, con impacto declarado. |
 
 ## Briefings mínimos
 
 ### Escritor
 
 ```text
-Beat: B_XXXX; escena: E_XXXX; posición: N de M.
-Leer: bloque de escena, contexto_narrativo.md, fichas relevantes, prosa previa de la escena y últimos tres beats previos.
-Devolver: solo prosa para B_XXXX, sin heading.
+Escena: E_XXXX completa; beats en orden; escena previa y siguiente; fichas necesarias;
+delta de contexto relevante; estilo activo.
+Devolver: la escena completa, con un bloque ## B_XXXX — acción por beat.
 ```
 
 ### Validador
 
 ```text
-Beat: B_XXXX; texto y acción del guion; bloque E_XXXX; fichas y contexto relevantes.
-Dimensiones: [lista exacta].
-Devolver: JSON con beat_id, dimensiones_evaluadas, umbral_aplicado y aprobado.
+Escena: E_XXXX completa; guion de escena; contexto y fichas relevantes.
+Devolver: problemas factuales bloqueantes y observaciones editoriales por B_XXXX. Sin puntuaciones.
 ```
 
 ### Integrador
 
 ```text
-Beat: B_XXXX; bloque actual; feedback; mismas dimensiones de validación; bloque E_XXXX y ventanas anterior/posterior.
-Devolver: bloque corregido con heading ## B_XXXX — acción.
+Escena: E_XXXX; bloques B_XXXX señalados; feedback; bloque anterior y posterior;
+contexto y estilo.
+Devolver: solo los bloques corregidos, cada uno con su heading.
 ```
 
-## Estados y mutabilidad
+## Estados
 
-| Estado | Operaciones permitidas |
+| Estado | Operaciones |
 |---|---|
 | `diseno` | generar, refinar/validar hechos, revisar o reparar guion |
-| `fichas` | generar; auditoría de guion sin cambios estructurales |
-| `escritura` | generar, revisar/expandir beats; auditoría sin cambios estructurales |
-| `correccion` | corregir, revisar/expandir; cambios estructurales transaccionales |
-| `finalizado`, `publicado` | solo lectura/verificación; para cambiar contenido, edición derivada |
-
-## Contadores de `config.json`
-
-| Campo | Uso |
-|---|---|
-| `ultimo_hecho_seq` | Último hecho asignado por el scaffolder; no se modifica al generar. |
-| `ultimo_beat_seq` | Último número de `B_XXXX` asignado. |
-| `ultimo_escena_seq` | Último número de `E_XXXX` asignado. |
+| `fichas` | generar y crear fichas bajo demanda |
+| `escritura` | generar, revisar/expandir bloques; auditoría sin cambio estructural |
+| `correccion` | corregir y cambios transaccionales |
+| `finalizado`, `publicado` | solo lectura; para contenido nuevo, edición derivada |

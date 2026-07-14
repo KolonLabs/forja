@@ -1,34 +1,29 @@
 ---
 name: contexto-narrativo
-description: Memoria local de relato actualizada por escena mediante IDs E_, B_ y nombres de ficha.
+description: Memoria local compacta de relato, actualizada por escenas operativas.
 ---
 
 # Contexto narrativo — Relato
 
-`contexto_narrativo.md` sustituye a la infraestructura de novelas. Solo el director lo escribe al cerrar cada `E_XXXX`.
+Solo el director escribe `contexto_narrativo.md`.
 
 ```markdown
 # Contexto narrativo — [título]
 
-## Resumen por escena
+## Secuencia actual
 
-### E_0001 — [nombre]
-- Beats cerrados: B_0001–B_0004
-- Resumen: [2-4 frases]
+### E_0003 — [nombre]
+- Delta: [cambio de estado, revelación o continuidad imprescindible]
 
-## Estado de entidades
+## Estado acumulado
 
-### [Nombre] — ficha: fichas/personaje_nombre.md
-[ubicación, estado, relaciones, heridas o decisiones]
-
-## Conexiones abiertas
-
-- [conexión y beat que la abrió]
+- [personaje/lugar/objeto]: [estado actual verificable]
 
 ## Próxima escena
 
-- Escena: E_0002
-- Personajes, ubicación y tensión acumulada: ...
+- E_0004: [elementos necesarios para entrar]
 ```
 
-Las referencias de continuidad se hacen por `B_XXXX`, `E_XXXX` y ruta/nombre de ficha. No se usan `stable_id`.
+- Después de cada `E_XXXX`, añade un delta breve, no un resumen exhaustivo.
+- Tras una salida `separador`, compacta los deltas de esa secuencia en `Estado acumulado` y conserva solo lo relevante.
+- Las referencias usan `B_XXXX`, `E_XXXX`, nombres y rutas de ficha. No se usan `stable_id`.
