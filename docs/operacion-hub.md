@@ -4,7 +4,7 @@ Esta guia describe como operar el hub. Los workspaces son autonomos: este docume
 
 ## Antes de empezar
 
-Ejecuta `/nuevo-proyecto`, `/nueva-edicion` y `/crear-libro` desde la raiz del hub. Abre un workspace existente con:
+Ejecuta `/nuevo-proyecto`, `/rehidratar-relato`, `/nueva-edicion` y `/crear-libro` desde la raiz del hub. Abre un workspace existente con:
 
 ```powershell
 opencode --cwd "workspaces/<slug>"
@@ -107,6 +107,18 @@ Abre ese workspace y ejecuta una pasada completa o puntual:
 
 `/publicar` genera el nuevo `relato.md` y pasa la edición a `finalizado`. Después compílala con un slug de libro distinto mediante `/crear-libro`; así la edición anterior y sus formatos permanecen congelados. Las ediciones de novela simple y multi-hilo aún no están soportadas.
 
+## Flujo 5: rehidratar un relato legado
+
+Usa este flujo cuando quieras descartar la producción de un relato creado con un pipeline antiguo y conservar solo su semilla editorial:
+
+```text
+/rehidratar-relato <origen> <slug-destino> [--actos actual|backup]
+```
+
+El scaffolder lee `config.json`, `BRIEF.md` y los actos elegidos; valida la semilla, presenta una nueva reflexión editorial y pide confirmación. Solo entonces crea el destino en `diseno` con `H_XXXX`, agentes, skills, comandos y transacciones vigentes. Nunca incorpora guion, draft, fichas, memoria ni manuscrito del origen, y tampoco modifica el origen.
+
+El destino debe tener un slug nuevo. Si después quieres sustituir el workspace legado, archiva primero el origen y realiza el intercambio como una operación explícita separada.
+
 ## Formatos y requisitos de salida
 
 | Salida | Opcion | Requisitos |
@@ -134,6 +146,7 @@ El formato predeterminado es `paperback`. Si Pandoc no esta en el `PATH`, el com
 |---|---|
 | El workspace no esta en estado `finalizado`. | Ejecuta `/publicar` dentro del workspace antes de compilar. |
 | Quiero corregir contenido de un relato `publicado`. | Crea `/nueva-edicion`; `/recompilar-libro` no modifica texto. |
+| Quiero reiniciar un relato legado desde su brief y hechos. | Usa `/rehidratar-relato`; no usa ni conserva su producción antigua. |
 | Falta `relato.md` o `novela.md`. | Publica la obra; no pases archivos ni rutas manuales al comando. |
 | Se mezclan relatos y novelas. | Compila una novela sola o usa exclusivamente relatos para la antologia. |
 | Falta Pandoc. | Instala Pandoc o define `PANDOC_PATH`/`PANDOC`. |

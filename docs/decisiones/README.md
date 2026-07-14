@@ -22,3 +22,4 @@ Este directorio conserva decisiones arquitectonicas y operativas que deben sobre
 | [0007](0007-escritura-por-escenas-operativas-en-relato.md) | Relato escribe y valida por escenas operativas; regula recurrencias y separadores sin cuotas de prosa. | Aceptada |
 | [0008](0008-contratos-ejecutables-de-relato.md) | Relato materializa IDs, aísla sus skills y usa anclas invisibles de beat dentro de prosa por escena. | Aceptada |
 | [0009](0009-integridad-transaccional-de-relato.md) | Relato persiste recurrencias y estructura de forma transaccional; las ediciones derivadas validan y regeneran su contrato. | Aceptada |
+| [0010](0010-rehidratacion-de-relatos-legados.md) | Un relato legado se reinicia desde su semilla editorial en un destino nuevo; no migra prosa ni guion. | Aceptada |
