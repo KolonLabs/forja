@@ -11,6 +11,7 @@ Usa solo `H_XXXX`, `B_XXXX` y `E_XXXX`. No uses identidad opaca ni secuencias lo
 ## Guionista
 
 - `beats`: brief, hechos, último beat y cualquier tramo ya diseñado.
+- `recurrencias`: `[D]` de `_actos.md`, mapa lineal provisional y límites narrativos; devuelve entradas de `cola_d.md`, no beats.
 - `distribuidos`: la entrada concreta de `cola_d.md`, ancla y beats vecinos.
 - `escenas`: mapa completo de beats validado; devuelve escenas, no reescribe acciones.
 - `reparar`: problema bloqueante, tramo y escenas vecinas.

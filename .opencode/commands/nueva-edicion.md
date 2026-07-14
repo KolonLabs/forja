@@ -21,6 +21,7 @@ Extrae el workspace de origen, el slug de edición y las opciones antes de invoc
 
 - Solo admite relatos en estado `publicado`.
 - `slug-edicion` debe ser distinto y usar `kebab-case`.
+- El guion de origen debe contener escenas `E_XXXX`, sus beats y `Salida`; la edición puede normalizar anclas y marcadores, pero no inventa la agrupación dramática de una obra antigua.
 - Guarda el texto publicado como `relato-edicion-anterior.md`; no lo modifica.
 - El nuevo workspace queda en estado `correccion`. El trabajo editorial ocurre allí, nunca en el original.
 - Por ahora no admite novelas: su migración de estados y edición sigue pendiente.

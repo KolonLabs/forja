@@ -61,6 +61,9 @@ foreach ($required in @("guion.md", "relato-draft.md", "relato.md", "fichas")) {
         throw "Workspace publicado '$Origen' no contiene '$required'; no se puede abrir una edición corregible."
     }
 }
+# Una edición no puede inventar la agrupación dramática de una obra antigua.
+# Exigimos escenas canónicas; el draft sí puede normalizarse sin tocar prosa.
+[void](Get-RelatoGuionEscenas -GuionPath (Join-Path $sourcePath "guion.md"))
 
 $rootSlug = $Origen
 $editionNumber = 2
@@ -100,9 +103,17 @@ try {
     }
     Inject-Pipeline -TargetDir $stagePath -Escala "relato" -EstiloBase $sourceConfig.estilo_base -EstiloSecundario $sourceConfig.estilo_secundario
 
-    # Las ediciones derivadas reciben el contrato vigente: una escena continua
-    # con anclas invisibles de beat, no headings que fragmenten la prosa.
-    $draftMigrated = Convert-RelatoDraftToAnchors -DraftPath (Join-Path $stagePath "relato-draft.md")
+    # Las ediciones derivadas reciben el contrato vigente. Se normalizan solo
+    # metadatos de control: headings B y marcadores de escena; nunca la prosa.
+    $draftMigration = Convert-RelatoDraftToSceneContract `
+        -DraftPath (Join-Path $stagePath "relato-draft.md") `
+        -GuionPath (Join-Path $stagePath "guion.md")
+
+    $contextPath = Join-Path $stagePath "contexto_narrativo.md"
+    if (-not (Test-Path -LiteralPath $contextPath -PathType Leaf)) {
+        $initialContext = "# Contexto narrativo — $Titulo`n`n## Estado acumulado`n`n- Edición abierta: reconstruir continuidad desde ``relato-edicion-anterior.md``, ``guion.md`` y el draft antes de la primera corrección.`n"
+        [System.IO.File]::WriteAllText($contextPath, $initialContext, $utf8NoBom)
+    }
 
     $previousManuscript = Join-Path $stagePath "relato.md"
     $snapshotPath = Join-Path $stagePath "relato-edicion-anterior.md"
@@ -128,6 +139,10 @@ try {
         ($config | ConvertTo-Json -Depth 12),
         $utf8NoBom
     )
+    # No conservamos AGENTS.md ni MAPA.md del origen: son instrucciones de
+    # ejecución y podrían describir un contrato anterior al pipeline vigente.
+    Write-AgentsMd -TargetDir $stagePath -Brief $config -Escala "relato"
+    Write-RelatoEditionMapa -TargetDir $stagePath -Titulo $Titulo -Origen $Origen -Numero $editionNumber
 
     $editionNote = @"
 # Edición $editionNumber — $Titulo
@@ -142,32 +157,24 @@ Este workspace deriva de una publicación anterior. El manuscrito de referencia 
 "@
     [System.IO.File]::WriteAllText((Join-Path $stagePath "EDICION.md"), $editionNote, $utf8NoBom)
 
+    $migrationRows = @()
+    if ($draftMigration.headings_migrated) {
+        $migrationRows += "| $timestamp | Normalización de draft | Todos los B conservados | Headings heredados convertidos a anclas invisibles |"
+    }
+    if ($draftMigration.scene_markers_migrated) {
+        $migrationRows += "| $timestamp | Normalización de escenas | Todas las E conservadas | Marcadores ESCENA reconstruidos desde el guion sin tocar prosa |"
+    }
     $correctionLog = @"
 # Registro de correcciones — Edición $editionNumber
 
 | Fecha | Alcance | Beats afectados | Resultado |
 |---|---|---|---|
 | $timestamp | Apertura de edición | — | Pendiente de corrección |
-$(if ($draftMigrated) { "| $timestamp | Normalización de draft | Todos los B conservados | Headings heredados convertidos a anclas invisibles |" })
+$($migrationRows -join "`n")
 
 El director añade una fila por cada ejecución de `/corregir`, `/revisar` o `/expandir` realizada durante esta edición.
 "@
     [System.IO.File]::WriteAllText((Join-Path $stagePath "correcciones.md"), $correctionLog, $utf8NoBom)
-
-    $editionMapNote = @"
-
-## Edición derivada
-
-| Archivo | Uso |
-|---|---|
-| EDICION.md | Linaje, motivo y reglas de esta edición |
-| GUIA.md | Ayuda para decidir entre corregir, revisar, expandir, publicar o volver al hub |
-| relato-edicion-anterior.md | Manuscrito publicado de referencia (solo lectura) |
-| correcciones.md | Registro de pasadas y beats corregidos |
-
-Estado actual: ``correccion``. Corregir ``relato-draft.md``; al cerrar, ``/publicar`` crea el nuevo ``relato.md``.
-"@
-    [System.IO.File]::AppendAllText((Join-Path $stagePath "MAPA.md"), $editionMapNote, $utf8NoBom)
 
     $editionAgentsNote = @"
 

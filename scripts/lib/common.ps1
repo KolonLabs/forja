@@ -315,6 +315,158 @@ function Convert-RelatoDraftToAnchors {
     return $true
 }
 
+function Get-RelatoGuionEscenas {
+    param([string]$GuionPath)
+
+    $guion = Get-Content -LiteralPath $GuionPath -Raw -Encoding UTF8
+    $sceneMatches = [regex]::Matches($guion, '(?m)^###\s+(E_\d{4})\s*(?:—|-|:)\s*(.+?)\s*$')
+    if ($sceneMatches.Count -eq 0) {
+        throw "El guion no contiene escenas operativas E_XXXX compatibles. No es seguro derivar una edición sin migrar primero su estructura."
+    }
+
+    $escenas = @()
+    $seenBeats = @{}
+    for ($index = 0; $index -lt $sceneMatches.Count; $index++) {
+        $match = $sceneMatches[$index]
+        $end = if ($index + 1 -lt $sceneMatches.Count) { $sceneMatches[$index + 1].Index } else { $guion.Length }
+        $block = $guion.Substring($match.Index + $match.Length, $end - ($match.Index + $match.Length))
+        $salida = [regex]::Match($block, '(?mi)^-\s*Salida:\s*(continua|separador)\s*$')
+        if (-not $salida.Success) {
+            throw "La escena $($match.Groups[1].Value) no declara 'Salida: continua|separador'."
+        }
+
+        $beats = @([regex]::Matches($block, '(?m)^\s*(?:[-*]\s*)?(?:⬜|🔄|✅)?\s*(B_\d{4})\s+—') | ForEach-Object { $_.Groups[1].Value })
+        if ($beats.Count -eq 0) {
+            throw "La escena $($match.Groups[1].Value) no contiene beats B_XXXX."
+        }
+        foreach ($beat in $beats) {
+            if ($seenBeats.ContainsKey($beat)) {
+                throw "El guion repite el beat $beat en más de una escena."
+            }
+            $seenBeats[$beat] = $true
+        }
+
+        $escenas += [pscustomobject]@{
+            id = $match.Groups[1].Value
+            nombre = $match.Groups[2].Value.Trim()
+            salida = $salida.Groups[1].Value.ToLowerInvariant()
+            beats = $beats
+        }
+    }
+    return $escenas
+}
+
+function Test-RelatoIdSequence {
+    param([string[]]$Esperados, [string[]]$Actuales)
+
+    if ($Esperados.Count -ne $Actuales.Count) { return $false }
+    for ($index = 0; $index -lt $Esperados.Count; $index++) {
+        if ($Esperados[$index] -ne $Actuales[$index]) { return $false }
+    }
+    return $true
+}
+
+function Convert-RelatoDraftToSceneContract {
+    param(
+        [string]$DraftPath,
+        [string]$GuionPath
+    )
+
+    $headingsMigrated = Convert-RelatoDraftToAnchors -DraftPath $DraftPath
+    $escenas = @(Get-RelatoGuionEscenas -GuionPath $GuionPath)
+    $draft = Get-Content -LiteralPath $DraftPath -Raw -Encoding UTF8
+    $expectedBeats = @($escenas | ForEach-Object { $_.beats } | ForEach-Object { $_ })
+    $actualBeats = @([regex]::Matches($draft, '(?m)^<!--\s*(B_\d{4})\s*-->\s*$') | ForEach-Object { $_.Groups[1].Value })
+    if (-not (Test-RelatoIdSequence -Esperados $expectedBeats -Actuales $actualBeats)) {
+        throw "El draft no contiene exactamente los beats del guion, en el mismo orden. No es seguro derivar una edición."
+    }
+
+    $markerPattern = '(?m)^<!--\s*ESCENA\s+(E_\d{4})\s*:\s*(.*?)\s*\|\s*salida:\s*(continua|separador)\s*-->\s*$'
+    $markers = [regex]::Matches($draft, $markerPattern)
+    $markersMigrated = $false
+    if ($markers.Count -eq 0) {
+        foreach ($escena in $escenas) {
+            $firstBeat = $escena.beats[0]
+            $safeName = ($escena.nombre -replace '--', '—' -replace '\|', '/')
+            $marker = "<!-- ESCENA $($escena.id): $safeName | salida: $($escena.salida) -->"
+            $anchorPattern = "(?m)^<!--\s*$([regex]::Escape($firstBeat))\s*-->\s*$"
+            $anchorRegex = [regex]::new($anchorPattern)
+            if ($anchorRegex.Matches($draft).Count -ne 1) {
+                throw "No se pudo insertar el marcador de $($escena.id) antes de $firstBeat."
+            }
+            $draft = $anchorRegex.Replace($draft, "$marker`n<!-- $firstBeat -->", 1)
+        }
+        $markersMigrated = $true
+        $markers = [regex]::Matches($draft, $markerPattern)
+    }
+
+    $expectedEscenas = @($escenas | ForEach-Object { $_.id })
+    $actualEscenas = @($markers | ForEach-Object { $_.Groups[1].Value })
+    if (-not (Test-RelatoIdSequence -Esperados $expectedEscenas -Actuales $actualEscenas)) {
+        throw "Los marcadores ESCENA del draft no coinciden exactamente con el guion."
+    }
+    for ($index = 0; $index -lt $escenas.Count; $index++) {
+        $escena = $escenas[$index]
+        if ($markers[$index].Groups[3].Value.ToLowerInvariant() -ne $escena.salida) {
+            throw "La salida del marcador $($escena.id) no coincide con su guion."
+        }
+        $start = $markers[$index].Index + $markers[$index].Length
+        $end = if ($index + 1 -lt $markers.Count) { $markers[$index + 1].Index } else { $draft.Length }
+        $block = $draft.Substring($start, $end - $start)
+        $sceneBeats = @([regex]::Matches($block, '(?m)^<!--\s*(B_\d{4})\s*-->\s*$') | ForEach-Object { $_.Groups[1].Value })
+        if (-not (Test-RelatoIdSequence -Esperados $escena.beats -Actuales $sceneBeats)) {
+            throw "Los beats contenidos en $($escena.id) no coinciden con el guion."
+        }
+    }
+
+    if ($headingsMigrated -or $markersMigrated) {
+        $utf8NoBom = [System.Text.UTF8Encoding]::new($false)
+        [System.IO.File]::WriteAllText($DraftPath, $draft, $utf8NoBom)
+    }
+    return [pscustomobject]@{
+        headings_migrated = $headingsMigrated
+        scene_markers_migrated = $markersMigrated
+    }
+}
+
+function Write-RelatoEditionMapa {
+    param(
+        [string]$TargetDir,
+        [string]$Titulo,
+        [string]$Origen,
+        [int]$Numero
+    )
+
+    $content = (@'
+# MAPA — {0}
+
+## Flujo de esta edición
+
+```text
+guion.md (E_XXXX + B_XXXX)
+  → relato-draft.md (prosa por escena, anclas invisibles B_XXXX)
+  → /corregir, /revisar o /expandir
+  → /publicar
+  → relato.md (manuscrito limpio)
+```
+
+## Archivos de edición
+
+| Archivo | Uso |
+|---|---|
+| EDICION.md | Linaje y motivo de la edición {1} derivada de `{2}`. |
+| relato-edicion-anterior.md | Manuscrito publicado de referencia, solo lectura. |
+| correcciones.md | Registro de pasadas e IDs afectados. |
+| guion.md | Escenas operativas y beats canónicos. |
+| relato-draft.md | Prosa continua por escena; las anclas no son secciones. |
+| contexto_narrativo.md | Memoria local que se actualiza desde la primera escena afectada. |
+
+Estado actual: `correccion`. No modifiques `relato-edicion-anterior.md`; termina con `/publicar` para volver a `finalizado`.
+'@) -f $Titulo, $Numero, $Origen
+    $utf8NoBom = [System.Text.UTF8Encoding]::new($false)
+    [System.IO.File]::WriteAllText((Join-Path $TargetDir "MAPA.md"), $content, $utf8NoBom)
+}
+
 function Write-ConfigJson {
     param([string]$TargetDir, $Brief)
     

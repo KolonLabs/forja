@@ -12,7 +12,7 @@ Esta guía responde **qué comando usar según tu objetivo**. Para el contrato d
 | Revisar la estructura antes de escribir o cerrar | `/revisar-guion` | Hay dudas sobre beats, escenas operativas, ritmo, registros o salidas visibles. | Para cambiar solo la redacción de un beat. |
 | Corregir un fragmento concreto | `/revisar B_XXXX <instrucción>` | Conoces el beat que contiene el cambio. | Para una pasada integral de toda la obra. |
 | Añadir desarrollo a un fragmento sin cambiar su acción | `/expandir B_XXXX <enfoque>` | Falta detalle sensorial, emocional, físico o un monólogo. | Para alterar la estructura o el resultado del beat. |
-| Corregir una edición completa de un relato publicado | `/corregir [alcance] <instrucción>` | Solo en un relato derivado con estado `correccion`. | En el workspace publicado original o en novelas por ahora. |
+| Corregir estructura o una pasada completa | `/corregir [alcance] <instrucción>` | En `escritura` o en una edición derivada con estado `correccion`. | En el workspace publicado original o en novelas por ahora. |
 | Generar el manuscrito limpio | `/publicar` | Todos los beats están cerrados o has terminado una edición derivada. | Para corregir prosa: primero revisa o corrige el draft. |
 
 ## Camino habitual
@@ -55,7 +55,8 @@ El sistema valida el mapa de beats una vez, agrupa escenas y escribe una escena 
 diseno → fichas → escritura → finalizado → publicado (hub)
 ```
 
-- `diseno`: permite afinar hechos, recurrencias y guion. `fichas` y `escritura` permiten continuar y corregir bloques; `/revisar-guion` es auditoría, no altera la estructura sin una corrección transaccional.
+- `diseno`: permite afinar hechos, recurrencias y guion. En `diseno` o `fichas`, usa `/revisar-guion`: aún no existe prosa anclada para `/revisar` o `/expandir`.
+- `escritura`: permite continuar, revisar o expandir beats ya escritos y ejecutar `/corregir estructura` de forma transaccional sobre guion, draft y contexto.
 - `finalizado`: el manuscrito está listo para compilar desde el hub.
 - `publicado`: no reabras el original. Si cambia el contenido, crea una edición derivada desde el hub.
 

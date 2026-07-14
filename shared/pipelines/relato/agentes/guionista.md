@@ -29,9 +29,13 @@ Genera todos los `B_XXXX` lineales para el arco completo. Cada beat contiene una
 
 Al final devuelve una cobertura temporal `H_XXXX → B_XXXX`; es una salida de control para el director y no forma parte del guion persistente.
 
+## Modo `recurrencias`
+
+Recibes los `[D]` de `_actos.md` y el mapa lineal provisional. Para cada uno devuelve una entrada completa de `cola_d.md`: hecho de origen, tipo (`evento`, `patrón`, `progresión` o `motivo`), rango, curva, límites de información y apariciones candidatas justificadas por función. No crees beats ni escenas en este modo; el director persiste la cola antes de pedir las inserciones.
+
 ## Modo `distribuidos`
 
-Lee `cola_d.md` y crea solo las apariciones de tipo `evento`, `patrón` o `progresión`. Inserta el siguiente `B_XXXX` tras la ancla elegida por su función. Respeta límites de información y curva; no apliques cuotas ni prohibiciones mecánicas de consecutividad. Los motivos se traducen en directrices de escena, no en beats.
+Recibes una entrada persistida de `cola_d.md`, el mapa provisional y el siguiente ID disponible. Crea solo las apariciones de tipo `evento`, `patrón` o `progresión`. Inserta el siguiente `B_XXXX` tras la ancla elegida por su función. Respeta límites de información y curva; no apliques cuotas ni prohibiciones mecánicas de consecutividad. Los motivos se traducen en directrices de escena, no en beats.
 
 ## Modo `escenas`
 

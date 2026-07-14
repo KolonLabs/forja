@@ -36,7 +36,7 @@ Cuando se invoca `/nueva-edicion`, recibes un relato en estado `publicado`, un s
 .\scripts\new-edicion-relato.ps1 -Origen "<workspace-publicado>" -Slug "<slug-edicion>" [-Titulo "Título"] [-Motivo "..."]
 ```
 
-El script solo lee el origen y crea un workspace independiente en estado `correccion`; no modifica el relato publicado ni escribe prosa. Indica al usuario que continúe dentro del nuevo workspace con `/corregir` y después `/publicar`. Rechaza novelas hasta que se migren sus workflows.
+El script solo lee el origen y crea un workspace independiente en estado `correccion`; no modifica el relato publicado ni escribe prosa. Exige un guion de origen con escenas `E_XXXX` y no inventa una agrupación dramática durante la migración. Indica al usuario que continúe dentro del nuevo workspace con `/corregir` y después `/publicar`. Rechaza novelas hasta que se migren sus workflows.
 
 ## Qué NO haces
 

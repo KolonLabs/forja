@@ -25,11 +25,12 @@ Un beat contiene únicamente acción, consecuencia y, cuando difiere del arco to
 ## FASE 1 — Diseño (`diseno`)
 
 1. **Preparar.** El director verifica `H_XXXX`, restricciones y rangos `[D]`.
-2. **Mapa de beats.** El guionista genera todos los `B_XXXX` de hechos lineales. Devuelve al director una cobertura temporal `H → B`; no se persiste en el guion.
-3. **Recurrencias.** El director procesa `cola_d.md`: resuelve eventos, patrones y progresiones; los motivos pasan como directrices de escena y no generan beats. Las apariciones se insertan por función, no por cuota.
-4. **Diagnóstico único.** El auditor revisa cobertura, causalidad, atomicidad, fugas de información y ausencia de prosa en los beats. Solo los problemas bloqueantes se reparan, en una única pasada.
+2. **Mapa lineal provisional.** El director lee `ultimo_beat_seq`, fija el primer `B_XXXX` disponible y se lo comunica al guionista. El guionista genera los beats de hechos lineales y la cobertura temporal `H → B`. Mientras no se persista el guion, estos IDs son provisionales y no sobreviven a una interrupción.
+3. **Materializar recurrencias.** El guionista, en modo `recurrencias`, convierte cada `[D]` en una entrada completa de `cola_d.md` (tipo, rango, curva, límites y apariciones candidatas). El director persiste esa cola. Después pide el modo `distribuidos`, empezando en el siguiente ID provisional, para insertar solo eventos, patrones y progresiones por función. Los motivos pasan como directrices de escena y no generan beats.
+4. **Diagnóstico único.** `auditor-beats` revisa cobertura, causalidad, atomicidad, fugas de información y ausencia de prosa en los beats. Solo los problemas bloqueantes se reparan, en una única pasada.
 5. **Escenas.** El guionista agrupa beats en `E_XXXX`. Una situación amplia puede contener varias escenas operativas si existe un giro de objetivo, información, poder, foco o resultado. Cada escena declara arco tonal y `Salida: continua | separador`.
-6. **Gate mecánico.** El director comprueba que todos los beats pertenecen a una escena, son contiguos y que las salidas son coherentes. No hay una segunda auditoría estética por defecto.
+6. **Persistencia atómica.** El director escribe el `guion.md` final, actualiza `ultimo_beat_seq` y `ultimo_escena_seq` en la misma operación, marca las entradas de `cola_d.md` como resueltas y la cierra. Desde este punto, ningún ID persistido se reutiliza.
+7. **Gate mecánico.** El director comprueba que todos los beats pertenecen a una escena, son contiguos y que las salidas son coherentes. No hay una segunda auditoría estética por defecto.
 
 Si falta un hecho lineal para culminar un `[D]`, el director presenta ese bloqueo: no inventa ni altera `H_XXXX` sin autorización.
 
@@ -51,7 +52,7 @@ Por cada `E_XXXX`, en orden:
 
 1. El director marca sus beats `🔄` y prepara fichas, contexto y la escena siguiente.
 2. El escritor genera la **escena completa** en una respuesta. El director la persiste bajo `<!-- ESCENA E_XXXX: nombre | salida: continua|separador -->`, con una ancla `<!-- B_XXXX -->` antes del primer pasaje que realiza cada beat.
-3. El director verifica mecánicamente que cada ancla aparece una vez, en el orden del guion, y que la prosa realiza cada acción nuclear. Las anclas no dividen la escena en prosas independientes.
+3. El director verifica mecánicamente un marcador de escena con la misma `Salida`, y que cada ancla aparece una vez, en el orden y dentro de la `E_XXXX` del guion. También verifica que la prosa realiza cada acción nuclear. Las anclas no dividen la escena en prosas independientes.
 4. El validador evalúa la escena completa: continuidad, arco tonal, ritmo y crudeza cuando aplique. Devuelve problemas concretos por `B_XXXX`, no puntuaciones.
 5. Si hay correcciones, el integrador reescribe solo los bloques señalados. El director comprueba las invariantes afectadas y cierra la escena. Solo una contradicción factual o una restricción imposible bloquea el avance.
 6. El director marca los beats `✅` y actualiza el contexto con el delta de la escena.
@@ -60,7 +61,7 @@ Por cada `E_XXXX`, en orden:
 
 ## FASE 4 — Finalizar
 
-1. Verifica la correspondencia guion/draft y que no existan beats huérfanos.
+1. Verifica que cada `E_XXXX` del guion tenga un único marcador de draft, en el mismo orden y con la misma `Salida`; cada marcador debe contener exactamente sus `B_XXXX`, una vez y en orden. Rechaza escenas, anclas o beats huérfanos.
 2. Genera `relato.md` con el título de `config.json`.
 3. Elimina anclas `B_XXXX` y marcadores de escena. Convierte en `---` solo los marcadores con `salida: separador`; los de `continua` se eliminan sin corte visible.
 
@@ -68,7 +69,7 @@ Por cada `E_XXXX`, en orden:
 
 ## Correcciones y memoria
 
-- Una corrección estructural actualiza en una transacción el guion, las escenas del draft afectadas y el contexto desde la primera `E_XXXX` modificada.
+- Una corrección estructural en `escritura` o `correccion` actualiza en una transacción el guion, las escenas del draft afectadas y el contexto desde la primera `E_XXXX` modificada. En `finalizado` o `publicado`, primero se abre una edición derivada.
 - Al dividir una escena, la primera conserva su `E_XXXX` y la siguiente toma un ID nuevo. Al fusionarlas, sobrevive la primera y la otra queda retirada; ningún ID se reutiliza.
 - Si un draft heredado usa headings `## B_XXXX — ...`, el director los sustituye primero por `<!-- B_XXXX -->`, sin reescribir su prosa, antes de revisar, expandir o corregir.
 - Cada escena añade al contexto solo un delta breve. Tras una salida `separador`, el director compacta los deltas de la secuencia cerrada.

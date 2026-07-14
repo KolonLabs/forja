@@ -24,3 +24,4 @@ La misma prosa continúa y realiza la siguiente acción.
 3. Las anclas no son headings, no añaden pausas narrativas y se eliminan al publicar.
 4. El tramo de un beat va desde su ancla hasta la siguiente; puede continuar una frase o un párrafo iniciado antes si la continuidad lo exige.
 5. Un draft legado con `## B_XXXX — ...` se normaliza sustituyendo cada heading por la ancla equivalente, sin reescribir prosa.
+6. La secuencia de marcadores `E_XXXX`, sus `Salida` y los beats contenidos en cada escena debe coincidir exactamente con `guion.md`; publicación y correcciones estructurales lo verifican antes de persistir.

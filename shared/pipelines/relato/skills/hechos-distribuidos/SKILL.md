@@ -7,6 +7,8 @@ description: Modela recurrencias [D] de relato por función narrativa, no como u
 
 Un `[D]` describe una recurrencia que atraviesa hechos lineales. `cola_d.md` solo se usa en Fase 1 y se cierra antes de escribir.
 
+El guionista la propone en modo `recurrencias` a partir de `_actos.md` y del mapa lineal provisional; el director la persiste antes de pedir inserciones. La cola nunca se deduce de memoria ni se deja implícita.
+
 ## Tipos
 
 | Tipo | Tratamiento |

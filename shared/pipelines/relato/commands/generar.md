@@ -8,7 +8,7 @@ agent: director
 Lee `config.json`, `PIPELINE.md` y `ORQUESTACION.md`. Avanza por el estado actual sin reiniciar fases cerradas.
 
 ```text
-diseno: H → B → cola_d → diagnóstico único → E
+diseno: H → B lineales provisionales → cola_d persistida → inserciones [D] → diagnóstico único → E → guion y contadores atómicos
 fichas: fichas necesarias + memoria local
 escritura: una E completa por llamada al escritor
 ```

@@ -13,7 +13,7 @@
 
 | Agente | Entrada | Salida |
 |---|---|---|
-| guionista | hechos, beats o tramo señalado | mapa de beats, propuesta `[D]`, escenas o reparación |
+| guionista | hechos, beats o tramo señalado | mapa lineal, entradas de `cola_d.md`, inserciones `[D]`, escenas o reparación |
 | auditor-beats | mapa de beats + hechos | un diagnóstico estructural priorizado |
 | escritor | escena `E_XXXX`, beats, contexto y fichas | escena completa con anclas invisibles `B_XXXX` |
 | validador | escena completa + contexto | problemas concretos por beat, sin scores |
@@ -45,6 +45,7 @@
 | Modo | Devuelve |
 |---|---|
 | `beats` | Mapa global de beats y cobertura temporal `H → B`. |
+| `recurrencias` | Entradas completas de `cola_d.md`, sin beats ni escenas. |
 | `distribuidos` | Apariciones de `[D]` según la función anotada en `cola_d.md`. |
 | `escenas` | Escenas operativas manejables, con arco tonal y tipo de salida. |
 | `reparar` | Cambio mínimo de beats o escenas, con impacto declarado. |
@@ -92,6 +93,6 @@ Las anclas permiten localizar una acción para corregirla. No son headings ni un
 |---|---|
 | `diseno` | generar, refinar/validar hechos, revisar o reparar guion |
 | `fichas` | generar y crear fichas bajo demanda |
-| `escritura` | generar, revisar/expandir bloques; auditoría sin cambio estructural |
-| `correccion` | corregir y cambios transaccionales |
+| `escritura` | generar, revisar/expandir bloques y corregir estructura transaccionalmente |
+| `correccion` | revisar, expandir, corregir y cambios transaccionales de una edición derivada |
 | `finalizado`, `publicado` | solo lectura; para contenido nuevo, edición derivada |
