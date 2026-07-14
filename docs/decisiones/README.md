@@ -18,3 +18,4 @@ Este directorio conserva decisiones arquitectonicas y operativas que deben sobre
 | [0003](0003-publicacion-y-compilacion.md) | Publicación y compilación inicial de libros. | Sustituida parcialmente por ADR 0004 |
 | [0004](0004-finalizado-y-recompilacion-de-formatos.md) | `finalizado` es la única entrada de compilación; `publicado` es terminal y los formatos se recompilan desde un manifiesto. | Aceptada |
 | [0005](0005-ediciones-derivadas-de-relato.md) | Los cambios de contenido de un relato publicado se hacen en una edición derivada. | Aceptada |
+| [0006](0006-beats-globales-y-escenas-derivadas-en-relato.md) | Relato diseña beats globales antes de derivar escenas; usa IDs H/B/E visibles sin infraestructura. | Aceptada |

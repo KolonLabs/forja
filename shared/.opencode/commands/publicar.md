@@ -18,11 +18,12 @@ Al terminar correctamente, el director deja `config.json.estado = "finalizado"`.
 ## Relato
 
 1. Lee `relato-draft.md`
-2. Elimina todos los headings `## B_XXXX — ...` (beats)
-3. Convierte comentarios de escena `<!-- ESCENA N: ... -->` en separadores `---`
-4. Conserva el título del relato como `# Título`
-5. Escribe `relato.md` en la raíz del workspace
-6. Gate: archivo > 0 bytes, sin headings de beat residuales
+2. Exige que todos los `B_XXXX` de `guion.md` estén `✅` y que el draft contenga cada uno una sola vez, sin beats huérfanos
+3. Elimina todos los headings `## B_XXXX — ...` (beats)
+4. Convierte comentarios de escena `<!-- ESCENA E_XXXX: ... -->` en separadores `---`
+5. Obtiene el título de `config.json.titulo` y lo escribe como `# Título`
+6. Escribe `relato.md` en la raíz del workspace
+7. Gate: archivo > 0 bytes, sin IDs/headings de control ni separadores duplicados
 
 Estructura resultante (`relato.md`):
 ```

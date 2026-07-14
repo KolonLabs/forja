@@ -258,6 +258,7 @@ function Write-ConfigJson {
         ultima_modificacion = $now
         ultimo_hecho_seq = 0
         ultimo_beat_seq = 0
+        ultimo_escena_seq = 0
     }
     if ($Brief.PSObject.Properties.Name.Contains("estilo_secundario") -and $Brief.estilo_secundario) {
         $config.estilo_secundario = $Brief.estilo_secundario

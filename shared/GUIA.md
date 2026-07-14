@@ -22,12 +22,26 @@ _actos.md
   ├─ /refinar-hechos          (opcional, recomendado)
   ├─ /validar-hechos          (opcional, recomendado)
   └─ /generar
-       ├─ /revisar-guion      (si la estructura necesita ajustes)
+       ├─ /revisar-guion      (audita beats globales y escenas antes de escribir)
        ├─ /revisar o /expandir (si un beat concreto necesita cambios)
        └─ /publicar
 ```
 
 No edites `relato.md` ni `novela.md` directamente: son la salida limpia. Las correcciones se hacen sobre el draft y los beats mediante los comandos anteriores.
+
+### Cómo se construye un relato
+
+`/generar` trabaja de forma autónoma a partir del arco ya acotado:
+
+```text
+H_XXXX (hechos) → B_XXXX (beats globales) → E_XXXX (escenas) → prosa
+```
+
+- `H_XXXX` procede del briefing y no cambia durante la generación.
+- `B_XXXX` es una acción causal y su identificador nunca se renumera. Si se inserta uno, recibe el siguiente número y se coloca en el orden correcto.
+- `E_XXXX` agrupa beats contiguos que forman una unidad de tiempo, espacio, POV y conflicto.
+
+El sistema primero valida el arco entero de beats, después valida el ritmo de las escenas y solo entonces escribe. Se detiene únicamente si una decisión contradice el brief, es editorialmente ambigua o un beat no supera sus reintentos de validación.
 
 ## Estados
 
@@ -37,7 +51,7 @@ No edites `relato.md` ni `novela.md` directamente: son la salida limpia. Las cor
 diseno → fichas → escritura → finalizado → publicado (hub)
 ```
 
-- `diseno`, `fichas`, `escritura`: usa `/generar` para avanzar o los comandos de revisión cuando corresponda.
+- `diseno`: permite afinar hechos y cambiar guion. `fichas` y `escritura` permiten continuar y corregir beats; `/revisar-guion` es auditoría, no altera la estructura sin una corrección transaccional.
 - `finalizado`: el manuscrito está listo para compilar desde el hub.
 - `publicado`: no reabras el original. Si cambia el contenido, crea una edición derivada desde el hub.
 

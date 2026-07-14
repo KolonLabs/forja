@@ -1,84 +1,57 @@
 ---
 name: beats-estructura
-description: Estructura de beats para relato. Formato, identidad, orden, reglas y prohibiciones. Cárgalo al generar, insertar, reordenar o revisar beats.
+description: Contrato de beats globales para relatos. Úsalo al crear, insertar, revisar o escribir beats.
 ---
 
-# Skill — Estructura de Beats (Relato)
+# Beats globales — Relato
 
-## Reglas fundamentales
+## Identidad y orden
 
-- Una sola frase con acción concreta narrable por beat.
-- Sin títulos de bloque en la propuesta.
-- Sin número fijo de beats por bloque, pero sin excederse.
-- Cada beat recibe un `stable_id` opaco e inmutable al crearse.
-- `seq` expresa su posición y siempre es local al `parent_id` de la escena.
-- El ID de presentación se deriva de `seq` al mostrar y nunca se almacena.
+- Un beat se identifica exclusivamente como `B_XXXX`.
+- El identificador es global, único y durable dentro del relato. Se toma de `config.json.ultimo_beat_seq` y nunca se reutiliza ni renumera.
+- La posición narrativa es la posición de la línea en `guion.md`; no se deduce del número de ID.
+- Al insertar un beat, se crea el siguiente `B_XXXX` y se coloca junto al beat ancla. Las referencias existentes siguen intactas.
+- No uses `stable_id`, `parent_id`, `seq`, UUIDs ni displays derivados.
 
-## Formato de beat
-
-```text
-⬜ stable_id [seq] — acción [Tono — EXTENSIÓN]
-```
-
-Ejemplo canónico:
+## Formato canónico
 
 ```text
-⬜ a1b2c3d4 [34] — Laura se arrodilla ante Diego [Opresivo — BREVE]
+⬜ B_0001 — Acción concreta y verificable [Tono — EXTENSIÓN] {H_0001}
 ```
 
-- `a1b2c3d4`: `stable_id` inmutable.
-- `[34]`: `seq` local a la escena padre.
-- `i9j0k1l2 [34]`: display derivado de `seq: 34` únicamente al presentar el beat.
-- `stable_id` se usa en `parent_id`, fichas y anotaciones de `cola_d.md`.
-
-### Estados
+Un beat distribuido añade la procedencia:
 
 ```text
-✅ a1b2c3d4 [1] — Desembarca en Villaverde arrastrando la mochila por el muelle [Contemplativo — MEDIA]
-🔄 e5f6a7b8 [2] — Observa a los trabajadores portuarios descargar la mercancía [Tenso — BREVE]
-⬜ 11223344 [3] — Descubre el cuerpo flotando entre dos barcazas [Revelación — EXTENSA]
-⬜ 55667788 [4] — Decide no avisar a nadie y sigue caminando [Clínico — BREVE]
+⬜ B_0012 — Ana borra el aviso antes de que Luis lo lea [Tenso — BREVE] {D:H_0004}
 ```
 
-Estados: ✅ completo · 🔄 en progreso · ⬜ pendiente.
+Estados permitidos: `⬜`, `🔄`, `✅`, `⛔`.
 
-## Orden, inserción y renumeración
+## Un beat correcto
 
-Al insertar, eliminar o reordenar hermanos:
+- Tiene sujeto, acción, consecuencia y un cambio comprobable.
+- Es una unidad causal mínima, no un resumen ni una escena completa.
+- Puede escribirse en prosa sin necesitar inventar una acción nuclear nueva.
+- Conserva referencias a uno o más `H_XXXX`; los beats `[D]` conservan `D:H_XXXX`.
+- Lleva uno o dos tonos y una extensión de `tonos-beat`.
 
-1. Identifica el grupo por `parent_id`; `seq` nunca se interpreta globalmente.
-2. Usa la operación `renumber-siblings` para abrir o cerrar el hueco desde el primer `seq` afectado.
-3. Cambia exclusivamente `seq`.
-4. Conserva `stable_id`, `parent_id` y todas las referencias externas.
-5. Regenera displays como `i9j0k1l2 [34]` solo al presentar el resultado.
+No contiene ambientación, psicología abstracta ni prosa acabada: esos elementos corresponden al escritor.
 
-`stable_id` es inmutable. Una renumeración jamás crea un beat nuevo ni modifica su identidad.
+## Inserción, eliminación y reparación
 
-## Extensiones y tonos
+1. Localiza el beat ancla por `B_XXXX`.
+2. Crea el siguiente `B_XXXX` solo si aparece una acción causal nueva.
+3. Inserta, elimina o reordena las líneas necesarias sin cambiar los IDs supervivientes.
+4. Revisa las transiciones inmediatas y la cobertura de hechos.
+5. Si la modificación afecta a una escena ya agrupada, reevalúa esa `E_XXXX` y las adyacentes; no se renumeran escenas.
 
-La extensión (`BREVE`, `MEDIA`, `EXTENSA`) y el catálogo de tonos están definidos en `tonos-beat`. El guionista asigna la etiqueta; el escritor la desarrolla. El beat del guion siempre ocupa una línea.
+## Checklist
 
-## Qué debe tener un beat
-
-- Sujeto claro que actúa.
-- Acción concreta y narrable.
-- Consecuencia o cambio en la trama.
-
-## Qué no debe tener
-
-- Estados de ánimo sin acción.
-- Resumen de intenciones.
-- Descripciones de escenario sin evento.
-- Reflexiones abstractas del narrador.
-
-## Evaluación
-
-| # | Criterio | ¿Pasa? |
-|---|----------|--------|
-| 1 | ¿Hay un sujeto claro que actúa? | |
-| 2 | ¿La acción puede escribirse como escena? | |
-| 3 | ¿Tiene consecuencia en la trama? | |
-| 4 | ¿Evita repetir beats anteriores? | |
-| 5 | ¿Progresa el arco narrativo? | |
-| 6 | ¿`seq` es local al padre y `stable_id` permanece inmutable? | |
-
+| Criterio | Debe cumplirse |
+|---|---|
+| Identidad | `B_XXXX` único, global y no reutilizado |
+| Acción | sujeto + acción concreta + consecuencia |
+| Cobertura | referencia a `H_XXXX` o `D:H_XXXX` |
+| Atomicidad | no fusiona acontecimientos independientes |
+| Causalidad | enlaza con el beat previo y prepara el siguiente |
+| Escritura | extensión y tono son realizables en prosa |

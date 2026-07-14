@@ -66,7 +66,7 @@ Evalúa SOLO:
 
 7. Si los cambios son complejos, invoca al `guionista` para que proponga refinamientos desde su criterio editorial. El guionista tiene libertad para expandir creativamente los `[D]`.
 
-8. Con aprobación del usuario, actualiza `_actos.md`.
+8. Con aprobación del usuario, actualiza `_actos.md` únicamente en `diseno`. En relato, desde `fichas` en adelante el archivo de hechos queda congelado para evitar desincronizar guion y draft; presenta el diagnóstico sin modificarlo.
 
 ### Gate
 

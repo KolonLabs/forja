@@ -1,224 +1,97 @@
-# Orquestación — agentes, skills y rutas de datos (RELATO)
+# Orquestación — Relato
 
-Referencia para **director** y subagentes. Rutas en `MAPA.md`. Fases en `PIPELINE.md`.
-
----
+Referencia operativa para el director. El contrato narrativo es `H_XXXX → B_XXXX → E_XXXX → prosa`; `PIPELINE.md` define gates y estados.
 
 ## Reglas globales
 
-1. **Quién escribe qué:** solo el agente indicado en la columna «Escribe» modifica ese archivo.
-2. **Briefing de spawn:** el director pasa siempre rutas relativas al workspace, IDs (`H_`/`B_`), y `Modo`.
-3. **IDs:** asignar desde `config.json` → `ultimo_hecho_seq` / `ultimo_beat_seq`. Tras asignar, incrementar en el archivo que creó el ID.
-   - **Relatos:** IDs locales `H_NNNN`, `B_NNNN` por relato.
-4. **Estados en guion:** `⬜` → `🔄` (al empezar beat) → `✅` (validador aprueba). Lo marca el **director** tras cada beat.
-5. **Backup** antes de sobrescribir archivos con contenido existente.
+1. Relato no usa `stable_id`, `parent_id`, `seq`, Qdrant ni Neo4j.
+2. `H_`, `B_` y `E_` son IDs visibles, globales y únicos dentro del workspace. Al crear un beat o una escena se toma el siguiente contador de `config.json`; nunca se renumera un ID existente.
+3. El director es el único escritor persistente de `config.json`, `guion.md`, `relato-draft.md`, `contexto_narrativo.md` y `registro-pipeline.md`. Los subagentes devuelven contenido o diagnósticos.
+4. Antes de sobrescribir, el director crea backup; cada transición, reparación o bloqueo se anota en `registro-pipeline.md`.
+5. El director decide autónomamente dentro de `BRIEF.md`. Solo detiene el flujo si una reparación contradice una restricción explícita, hay dos direcciones editoriales equivalentes o se agotan los reintentos.
 
----
+## Matriz de agentes
 
-## Matriz de agentes (7 agentes)
+| Agente | Invocado por | Devuelve | No hace |
+|---|---|---|---|
+| director | comandos del usuario | decisiones, archivos y estados | Prosa o guion de autoría propia |
+| guionista | director | mapa de beats, inserciones `[D]`, agrupación de escenas o tramos corregidos | Persistir archivos |
+| auditor-beats | director | diagnóstico por `H_`/`B_`/`E_` | Modificar archivos |
+| escritor | director | prosa de un `B_XXXX` | Encabezados, estados o archivos |
+| validador | director | JSON de evaluación | Modificar archivos |
+| integrador | director | bloque `B_XXXX` corregido | Persistir archivos |
+| entidades | director | ficha Markdown propuesta | Persistir archivos |
 
-| Agente | Invocado por | Lee | Escribe | Invoca | Modelo |
-|--------|--------------|-----|---------|--------|--------|
-| **director** | usuario `/generar`, `/revisar`, `/expandir`, `/publicar`, `/refinar-hechos`, `/validar-hechos`, `/revisar-guion` | `PIPELINE.md`, `MAPA.md`, `config.json`, `BRIEF.md`, `AGENTS.md`, `contexto_narrativo.md`, guiones según fase | `config.json`, `contexto_narrativo.md`, estados en guiones, `fichas/` | guionista, escritor, validador, integrador, entidades, auditor-beats | `deepseek-v4-pro` |
-| **guionista** | director | Briefing + archivos del modo (ver tabla modos abajo) | Guiones según modo | — | `deepseek-v4-pro` |
-| **auditor-beats** | director | `guion.md`, `_actos.md`, `AGENTS.md` | — (read-only, diagnóstico al director) | — | `deepseek-v4-pro` |
-| **escritor** | director | Briefing + `guion.md` (beat), `contexto_narrativo.md`, `fichas/` relevantes, `AGENTS.md`, estilo skill | `relato-draft.md` (append sección `## B_NNNN`) | — | `deepseek-v4-pro` |
-| **validador** | director | Briefing + texto del beat, `guion.md`, `contexto_narrativo.md`, `fichas/` | — (solo JSON) | — | `deepseek-v4-pro` |
-| **integrador** | director | Briefing + `relato-draft.md` (beat), JSON validador | `relato-draft.md` (reemplaza sección beat) | — | `deepseek-v4-pro` |
-| **entidades** | director | Nombre, tipo, descripción de entidad + contexto narrativo | `fichas/<tipo>_<slug>.md` (markdown) | — | `deepseek-v4-pro` |
+## Modos del guionista
 
----
+| Modo | Entrada | Salida |
+|---|---|---|
+| `beats` | `BRIEF.md`, `_actos.md`, contadores | Mapa global de `B_XXXX` para todos los hechos lineales. |
+| `distribuidos` | `guion.md`, `cola_d.md`, beats ancla `B_XXXX` | Beats `[D]` insertados tras el ancla, dentro de su rango. |
+| `escenas` | Mapa completo de beats | Escenas `E_XXXX` que agrupan beats contiguos. |
+| `reparar` | Tramo señalado por auditor | Sustitución mínima de beats o agrupaciones, sin renumerar IDs existentes. |
 
-## Guionista — modos y contrato
+## Formato de guion
 
-### Relato
+```markdown
+### E_0001 — Nombre de escena
 
-| Modo | Lee | Escribe | Actualiza config |
-|------|-----|---------|------------------|
-| `estructura` | `BRIEF.md`, `_actos.md`, `AGENTS.md` | `guion.md` (escenas, sin beats) | — (director pone `estado=fichas`) |
-| `escena` | `guion.md` (escena actual), `AGENTS.md` | `guion.md` (beats bajo hechos) | — |
+- Ubicación: ...
+- Tiempo: ...
+- POV: ...
+- Objetivo: ...
+- Tensión: ...
+- Resultado: ...
+- Transición: ...
+- Hechos cubiertos: H_0001, H_0002
 
----
+#### Beats
 
-## Auditor-beats — modos y contrato
-
-| Modo | Lee | Escribe | Skills |
-|------|-----|---------|--------|
-| `atomizar` | `guion.md`, `_actos.md`, `AGENTS.md` | — (diagnóstico al director) | `beats-estructura` |
-| `transiciones` | `guion.md`, `_actos.md`, `AGENTS.md` | — (diagnóstico al director) | `validacion-coherencia`, `beats-estructura` [+ `hechos-distribuidos` si hay `[D]`] |
-| `limpieza` | `guion.md`, `AGENTS.md` | — (diagnóstico al director) | `beats-estructura`, `mecanica-prosa` |
-
-### → auditor-beats
-
-```
-Modo: [cobertura | atomizar | transiciones | limpieza]
-Leer: guion.md, _actos.md, AGENTS.md
-Output: diagnóstico al director (tablas de problemas + propuestas)
-No modificar guion.md
+⬜ B_0001 — acción concreta [Tenso — BREVE] {H_0001}
+⬜ B_0002 — consecuencia concreta [Revelación — MEDIA] {H_0002}
 ```
 
----
+Un beat puede mencionar varios hechos con `{H_..., H_...}`. Un beat `[D]` añade `{D:H_0004}` y siempre comparte escena con beats lineales.
 
-## Skills — rol y quién los carga
+## Briefings mínimos
 
-| Skill | Invocación | Quién lo aplica | Efecto |
-|-------|------------|-----------------|--------|
-| `mecanica-prosa` | automática | escritor, integrador | Formato de prosa: guiones de diálogo, párrafos, ⚡, cursiva |
-| `beats-estructura` | automática | guionista, escritor (lectura) | Formato `B_NNNN` — acción. `[Tono — EXTENSIÓN]` |
-| `tonos-beat` | automática | guionista (asignar), escritor (ejecutar) | Catálogo de 15 tonos + reglas BREVE/MEDIA/EXTENSA |
-| `estructura-narrativa` | automática | guionista | Jerarquía: actos → capítulos → escenas → beats |
-| `plantilla-guion` | automática | guionista | Estructura de archivos de guion |
-| `plantilla-ficha` | automática | entidades, director | Estructura FIJO/DINÁMICO para 10 tipos de entidad |
-| `plantilla-personaje` / `plantilla-lugar` / `plantilla-objeto` / `plantilla-animal` / `plantilla-evento` / `plantilla-organizacion` | automática | entidades | Campos obligatorios por tipo de entidad |
-| `estilo-explicito` / `estilo-contemporaneo` / `estilo-erotico` / `estilo-fantasia` / `estilo-noir` / `estilo-romantico` / `estilo-thriller` | automática | escritor, integrador, validador (tono) | Voz narrativa: vocabulario, ritmo, crudeza, foco sensorial |
-| `estilo-prosa` | automática | director (crear/validar estilos) | Meta-skill: estructura que debe tener un skill de estilo |
-| `validacion-crudeza` | automática | validador | Evalúa vocabulario explícito, ausencia de eufemismos |
-| `validacion-tono` | automática | validador | Evalúa coherencia tonal contra el estilo activo |
-| `validacion-geometria` | automática | validador | Evalúa ritmo, cadencia, fluidez de frases |
-| `validacion-coherencia` | automática | validador | Evalúa continuidad física, consistencia de personajes, lógica |
-| `validacion-sensorial` | automática | validador | Evalúa presencia de los 5 sentidos |
-| `consistencia-narrativa` | manual (`/revisar`) | director → validador | Auditoría de coherencia entre actos, capítulos, arcos |
-| `contexto-subagente` | automática | director (antes de spawn) | Define qué información pasar a cada subagente |
-| `desarrollo-narrativa` | manual (`/generar` en escritura) | director, escritor | Guía para desarrollar escenas y beats |
-| `fichas-personajes` | manual (crear/editar fichas) | director, entidades | Guía para crear perfiles NEXUS/HELIX/VELA/STRIX/AXIOM |
+### Escritor
 
----
-
-## Caminos por fase — RELATO (4 fases)
-
-```
-FASE 1 diseño
-  director → guionista(modo: estructura) → guionista(modo: escena × N)
-  director → auditor-beats(modo: atomizar) → auditor-beats(modo: transiciones) → auditor-beats(modo: limpieza)
-  IN:  BRIEF.md, _actos.md, AGENTS.md
-  OUT: guion.md (escenas + beats locales, validados)
-  estado → "diseno" → "fichas"
-
-FASE 2 componentes
-  director: extrae entidades de guion.md
-  director → entidades (×N): crea fichas en fichas/<tipo>_<slug>.md
-  director: reconciliación (sin contradicciones entre fichas)
-  director: crea contexto_narrativo.md (vacío) + relato-draft.md (vacío)
-  OUT: fichas/ + contexto_narrativo.md + relato-draft.md
-  estado → "escritura"
-
-FASE 3 beat a beat
-  por cada beat ⬜ en guion.md:
-    director → escritor(beat, fichas, contexto_narrativo)
-    director → validador(read-only, scope completa)
-    si falla: director → integrador
-    director: ✅ en guion.md, append a relato-draft.md
-    si último beat de escena: director actualiza contexto_narrativo.md (2-3 frases)
-  director: /publicar genera relato.md
-  estado → "finalizado"
-
-FASE 4 publicar
-  /publicar: procesa relato-draft.md → relato.md
-  (limpiar headings, convertir comentarios en ---)
+```text
+Beat: B_XXXX; escena: E_XXXX; posición: N de M.
+Leer: bloque de escena, contexto_narrativo.md, fichas relevantes, prosa previa de la escena y últimos tres beats previos.
+Devolver: solo prosa para B_XXXX, sin heading.
 ```
 
----
+### Validador
 
-## Plantillas de briefing (director → subagente)
-
-### → guionista
-
-```
-Modo: [estructura | escena] [pasada: 1 | 2]
-Workspace: [cwd]
-Leer: [lista rutas relativas]
-Escribir: [ruta salida]
-IDs: asignar desde config ultimo_hecho_seq=[X] ultimo_beat_seq=[Y]
-Contexto previo: [últimos 5-8 beats del acto anterior, si aplica]
-Contexto posterior: [beat siguiente al punto de inserción, solo pasada 2]
-Criterio: [función narrativa]
-Estilo base: [nombre] — cargar skill estilo-<nombre>
-{{#if estilo_secundario}}Estilo secundario: [nombre] — fusionar con estilo-<nombre>{{/if}}
+```text
+Beat: B_XXXX; texto y acción del guion; bloque E_XXXX; fichas y contexto relevantes.
+Dimensiones: [lista exacta].
+Devolver: JSON con beat_id, dimensiones_evaluadas, umbral_aplicado y aprobado.
 ```
 
-### → escritor (relato)
+### Integrador
 
-```
-Beat: B_NNNN | Escena: E_NN
-Leer: guion.md (escena actual), contexto_narrativo.md, fichas/[lista], AGENTS.md,
-      TODOS los beats ya escritos de la escena actual (desde el primero),
-      últimos 3 beats de la escena anterior (si aplica)
-Escribir: relato-draft.md — sección ## B_NNNN (append)
-Tono: [BREVE|MEDIA|EXTENSA] + [tono de tonos-beat]
-Estilo: [estilo_base] — cargar skill estilo-<nombre>
-Beat N de M en la escena
-⚠️ No repetir anclas sensoriales (mismo sonido, olor, textura) ya usadas en beats anteriores de la misma escena
-No marcar ✅ en guion — solo prosa en draft
+```text
+Beat: B_XXXX; bloque actual; feedback; mismas dimensiones de validación; bloque E_XXXX y ventanas anterior/posterior.
+Devolver: bloque corregido con heading ## B_XXXX — acción.
 ```
 
-### → validador
+## Estados y mutabilidad
 
-```
-Modo: read-only
-Beat: B_NNNN (o modo global)
-Texto: [fragmento o ruta relato-draft.md sección B_NNNN]
-Dimensiones: ["coherencia", "sensorial", ...] — lista concreta (preferido)
-  o Scope: [completa|media|ligera] — formato heredado (se normaliza a dimensiones)
-Leer coherencia: contexto_narrativo.md, fichas/[...], guion.md
-Estilo activo: [nombre] — validar tono con skill validacion-tono + estilo-<nombre>
-Salida: solo JSON (sin editar archivos). Incluir dimensiones_evaluadas, umbral_aplicado, aprobado
-```
+| Estado | Operaciones permitidas |
+|---|---|
+| `diseno` | generar, refinar/validar hechos, revisar o reparar guion |
+| `fichas` | generar; auditoría de guion sin cambios estructurales |
+| `escritura` | generar, revisar/expandir beats; auditoría sin cambios estructurales |
+| `correccion` | corregir, revisar/expandir; cambios estructurales transaccionales |
+| `finalizado`, `publicado` | solo lectura/verificación; para cambiar contenido, edición derivada |
 
-### → integrador
+## Contadores de `config.json`
 
-```
-Beat: B_NNNN
-Leer: relato-draft.md sección B_NNNN, JSON validador adjunto
-Escribir: reemplazar sección ## B_NNNN en relato-draft.md
-Mantener acción nuclear del beat; aplicar mecanica-prosa + estilo
-Estilo: [estilo_base] — cargar skill estilo-<nombre>
-{{#if estilo_secundario}}+ fusionar con estilo-<nombre>{{/if}}
-```
-
-### → entidades
-
-```
-Entidad: [nombre], tipo [personaje|lugar|objeto|...], slug
-Contexto narrativo: [dónde aparece, qué rol tiene]
-Output: fichas/<tipo>_<slug>.md
-```
-
----
-
-## config.json — quién actualiza qué
-
-| Campo | Quién | Cuándo |
-|-------|-------|--------|
-| `estado` | **director** | Al cerrar cada fase |
-| `ultimo_hecho_seq` | **guionista** o **director** | Al asignar nuevo H_NNNN (incrementar después de usarlo) |
-| `ultimo_beat_seq` | **guionista** o **director** | Al asignar nuevo B_NNNN |
-| `capitulos_completados` | **director** | Al cerrar relato |
-| `ultima_modificacion` | quien escriba config | En cada actualización |
-
-**Valores posibles de `config.json.estado`:**
-
-| Estado | Relato |
-|--------|:------:|
-| `diseno` | ✅ (FASE 1) |
-| `fichas` | ✅ (FASE 2) |
-| `escritura` | ✅ (FASE 3) |
-| `finalizado` | ✅ (manuscrito limpio listo para compilar) |
-| `publicado` | Solo hub, tras `/crear-libro` correcto |
-| `correccion` | Edición derivada: `/corregir`, `/revisar` o `/expandir` antes de `/publicar` |
-
----
-
-## Huecos prohibidos (no delegar sin dueño)
-
-| Acción | Dueño (quién TIENE que hacerlo) |
-|--------|--------------------------------|
-| Asignar IDs H_/B_ | **guionista** (director verifica en config) |
-| Marcar ⬜🔄✅ en guion | **director** |
-| Escribir prosa | **escritor** |
-| Corregir prosa tras fallo | **integrador** |
-| Validar | **validador** (read-only, solo JSON) |
-| Publicar limpio | `/publicar` |
-| Crear entidades | **entidades** (solo markdown) |
-| Escribir contexto_narrativo.md | **director** (al cerrar escena) |
-
-
+| Campo | Uso |
+|---|---|
+| `ultimo_hecho_seq` | Último hecho asignado por el scaffolder; no se modifica al generar. |
+| `ultimo_beat_seq` | Último número de `B_XXXX` asignado. |
+| `ultimo_escena_seq` | Último número de `E_XXXX` asignado. |

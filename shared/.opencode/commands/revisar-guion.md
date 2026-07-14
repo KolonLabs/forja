@@ -44,7 +44,7 @@ El director:
 
 5. Para cada problema, propón una solución. Si requiere reestructuración, sugiere invocar al guionista en modo estructura.
 
-6. Con aprobación del usuario, aplica los ajustes al archivo de guion correspondiente.
+6. En relato con estado `diseno`, con aprobación del usuario aplica los ajustes al guion. En `fichas` o `escritura`, la orden es una auditoría de solo lectura: no cambies la estructura sin una corrección transaccional que actualice guion, draft y contexto. En `finalizado` o `publicado`, no modifica contenido; usa una edición derivada.
 
 ## Gate
 
@@ -56,8 +56,8 @@ El director:
 
 ## Cuándo usarlo
 
-- Después de la fase de estructura, antes de la escritura beat a beat
-- Antes de `/publicar` como verificación final de coherencia
+- Después de agrupar los beats globales en escenas, antes de la escritura
+- Antes de `/publicar` como verificación final de solo lectura
 - Si durante la escritura el escritor detecta inconsistencias y las reporta al director
 
 ## Relación con otros comandos

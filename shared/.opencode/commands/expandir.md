@@ -28,6 +28,10 @@ Expande un beat con más detalle. El director invoca al escritor en modo expansi
 3. Escritor (modo expansión) → validador → ±integrador
 4. Reemplazo del beat en el draft
 
+## Ediciones de relato
+
+En un relato `finalizado` o `publicado`, no modifica contenido: abre una edición derivada. En `correccion`, anota el resultado en `correcciones.md`. Una expansión no cambia la acción nuclear ni la estructura de `B_XXXX`; si hiciera falta, usa una corrección estructural.
+
 ## Modo expansión del escritor
 
 El escritor recibe:

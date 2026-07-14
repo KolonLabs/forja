@@ -19,7 +19,9 @@ El director:
 
 1. Lee `_actos.md` y `BRIEF.md`
 2. Carga los skills `consistencia-narrativa`, `desarrollo-narrativa` y `hechos-distribuidos`
-3. **Consulta `memoria` condicional:** si `config.json.estado != "diseno"` (es decir, ya hay capítulos escritos o entidades creadas), invoca al `memoria` para obtener el estado actual del mundo narrativo. Cruza los hechos propuestos contra el estado acumulado de personajes, relaciones y summaries. Si `estado == "diseno"`, salta este paso — no hay datos que consultar.
+3. **Consulta de continuidad condicional:**
+   - En **relato**, nunca invoques `memoria`: no existe en esta escala. Si ya hay escritura, usa `contexto_narrativo.md`, `guion.md` y las fichas Markdown locales.
+   - En novelas, si `config.json.estado != "diseno"`, invoca `memoria` según su contrato.
 4. **Separa hechos lineales y `[D]`.** La validación de coherencia aplica a AMBOS, pero los `[D]` tienen criterios específicos adicionales por ser patrones que se despliegan en el tiempo.
 
 ### Checklist A — Coherencia general (lineales + `[D]`)
@@ -64,7 +66,7 @@ Los hechos `[D]` son patrones que se despliegan entre varios hechos lineales. No
 
 5. Para cada problema detectado, propón una solución concreta. Si la solución es compleja, sugiere invocar al guionista.
 
-6. Con aprobación del usuario, actualiza `_actos.md`.
+6. En `diseno`, con aprobación del usuario, actualiza `_actos.md`. En relato con estado `fichas`, `escritura`, `finalizado` o `publicado`, no modifica hechos: presenta el diagnóstico y dirige a una corrección estructural de edición cuando corresponda.
 
 ## Gate
 

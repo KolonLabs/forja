@@ -26,9 +26,9 @@ Si el estado es `correccion`, no reinicia ni reescribe el pipeline: ese workspac
 ## Fases por escala
 
 ### Relato (4 fases)
-- **FASE 1 — Diseño**: guionista genera `guion.md` (actos → escenas → hechos → beats)
+- **FASE 1 — Diseño**: valida `H_XXXX`, genera el mapa global de `B_XXXX`, resuelve `[D]` y después agrupa beats contiguos en `E_XXXX`
 - **FASE 2 — Componentes**: entidades crea fichas en `fichas/`, director reconcilia, crea `contexto_narrativo.md` + `relato-draft.md`
-- **FASE 3 — Beat a beat**: escritor → validador → ±integrador por cada beat. Director actualiza `contexto_narrativo.md` por escena
+- **FASE 3 — Por escena y beat**: escritor → validador → ±integrador por cada `B_XXXX`. Director actualiza `contexto_narrativo.md` al cerrar cada `E_XXXX`
 - **FASE 4 — Finalizar**: `/publicar` genera `relato.md` limpio y deja el estado en `finalizado`
 
 ### Novela simple (4 fases)
@@ -54,4 +54,4 @@ Cada workspace produce en su raíz:
 
 - El director tiene iniciativa editorial: propone cambios, detecta problemas, sugiere mejoras
 - En novelas, la memoria persistente (Qdrant + Neo4j) mantiene coherencia entre capítulos
-- El usuario puede interrumpir en cualquier fase para ajustar dirección
+- El usuario puede interrumpir en cualquier fase para ajustar dirección. En relato, el director avanza autónomamente salvo contradicción con el brief, ambigüedad editorial material o un beat bloqueado.
