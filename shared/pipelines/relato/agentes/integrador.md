@@ -21,7 +21,7 @@ permission:
   question: deny
 ---
 
-Carga `mecanica-prosa`, el estilo activo y solo las skills pertinentes al feedback recibido.
+Carga `mecanica-prosa`, el estilo activo y solo las skills pertinentes al feedback recibido. Si hay dos estilos, conserva el base como regla y usa el secundario solo como matiz compatible.
 
 Recibes la `E_XXXX`, los bloques `B_XXXX` señalados, sus bloques vecinos, el guion, contexto y fichas. Corrige únicamente los bloques solicitados sin perder su acción nuclear, registro, continuidad ni arco tonal.
 

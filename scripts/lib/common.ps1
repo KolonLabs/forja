@@ -580,7 +580,7 @@ $(if ($Brief.PSObject.Properties.Name.Contains("premisa") -and $Brief.premisa) {
 
 ## Genero y voz
 - **Genero:** $generoLine
-- **Estilo base:** $($Brief.estilo_base)$(if ($Brief.PSObject.Properties.Name.Contains("estilo_secundario") -and $Brief.estilo_secundario) { " + $($Brief.estilo_secundario) (fusion)" } else { "" })
+- **Estilo base:** $($Brief.estilo_base)$(if ($Brief.PSObject.Properties.Name.Contains("estilo_secundario") -and $Brief.estilo_secundario) { " + $($Brief.estilo_secundario) (matiz; prevalece el base)" } else { "" })
 - **Tono:** $(if ($Brief.PSObject.Properties.Name.Contains("tono") -and $Brief.tono) { $Brief.tono } else { "---" })
 - **Explicitud:** $(if ($Brief.PSObject.Properties.Name.Contains("explicitud") -and $Brief.explicitud) { $Brief.explicitud } else { "maximo" })
 - **POV:** $(if ($Brief.PSObject.Properties.Name.Contains("pov") -and $Brief.pov) { $Brief.pov } else { "---" })
@@ -698,8 +698,10 @@ function Write-AgentsMd {
     }
     $skillsStr = ($skillsActivos -join ", ")
     $estiloRef = "``estilo-$($Brief.estilo_base)``"
+    $estiloSecondaryRule = ""
     if ($Brief.PSObject.Properties.Name.Contains("estilo_secundario") -and $Brief.estilo_secundario) {
-        $estiloRef += " + ``estilo-$($Brief.estilo_secundario)`` (fusion)"
+        $estiloRef += " + ``estilo-$($Brief.estilo_secundario)`` (matiz)"
+        $estiloSecondaryRule = " El estilo base prevalece; el secundario solo aporta matices compatibles y nunca altera restricciones, explicitud, hechos ni beats."
     }
 
     $hiloSection = ""
@@ -725,7 +727,7 @@ Hilos en ``config.json.hilos`` y ``hilos/hilo-*/``.
 
 ## Integridad de relato
 
-El director usa ``scripts/relato-transaccion.ps1`` para diseño, correcciones y publicación. No edites ``.forja-transaccion/`` ni escribas directamente los artefactos vivos mientras exista un staging.
+El director usa ``scripts/relato-transaccion.ps1`` para hechos, diseño, ajustes de guion, componentes, escritura, correcciones y publicación. No edites ``.forja-transaccion/`` ni escribas directamente artefactos canónicos; el staging se retoma si sigue siendo válido o se descarta explícitamente.
 "@
     }
 
@@ -738,7 +740,7 @@ El director usa ``scripts/relato-transaccion.ps1`` para diseño, correcciones y 
 ## Reglas
 
 - **Idioma:** espanol, contenido en espanol.
-- **Estilo:** $estiloRef
+- **Estilo:** $estiloRef$estiloSecondaryRule
 - **Tono:** $tonoRule
 - **Explicitud:** $explicitud (sin eufemismos, vocabulario directo).
 - **POV:** $(if ($Brief.PSObject.Properties.Name.Contains("pov") -and $Brief.pov) { $Brief.pov } else { "segun BRIEF.md" }).

@@ -21,7 +21,7 @@ permission:
   question: deny
 ---
 
-Carga `mecanica-prosa`, `tonos-beat` y el estilo activo. Recibes una `E_XXXX` completa, sus beats, fichas necesarias, contexto relevante y las escenas limítrofes.
+Carga `mecanica-prosa`, `tonos-beat` y el estilo activo. Recibes una `E_XXXX` completa, sus beats, fichas necesarias, contexto relevante y las escenas limítrofes. Si hay estilo secundario, el estilo base prevalece; el secundario solo puede matizar, nunca contradecir el brief, la explicitud ni un registro del beat.
 
 Escribe la escena como prosa continua y cohesionada. Respeta la acción nuclear de cada beat, el arco tonal de la escena y los registros explícitos que aparezcan en beats concretos. Los beats no dictan ritmo, sensorialidad, vocabulario, diálogo ni psicología: esas decisiones son tuyas.
 

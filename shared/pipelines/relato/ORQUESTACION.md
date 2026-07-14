@@ -6,7 +6,7 @@
 
 1. El director persiste los archivos; los subagentes devuelven propuestas, prosa o diagnósticos.
 2. El director solo consulta al usuario si una decisión cambia un hecho, el desenlace, una restricción o una relación ya fijada. Las alternativas estilísticas se resuelven autónomamente.
-3. Los cambios de diseño, corrección y publicación que afecten a más de un artefacto usan `relato-transaccion.ps1`; los subagentes nunca escriben archivos.
+3. Diseño, ajustes de guion, componentes, escritura por escena, corrección y publicación usan `relato-transaccion.ps1` cuando afectan artefactos canónicos; los subagentes nunca escriben archivos.
 
 ## Agentes
 
@@ -25,7 +25,7 @@
 
 ```text
 Escena: E_XXXX completa; beats en orden; escena previa y siguiente; fichas necesarias;
-delta de contexto relevante; estilo activo.
+delta de contexto relevante; estilo activo. Si hay dos estilos, el base prevalece y el secundario solo matiza.
 Devolver: la escena completa, con `<!-- B_XXXX -->` antes del primer pasaje que realiza cada beat. Las anclas no crean secciones de prosa.
 ```
 

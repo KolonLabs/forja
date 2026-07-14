@@ -9,7 +9,17 @@ permission:
   glob: allow
   grep: allow
   list: allow
-  edit: allow
+  edit:
+    "*": allow
+    "config.json": deny
+    "_actos.md": deny
+    "guion.md": deny
+    "relato-draft.md": deny
+    "contexto_narrativo.md": deny
+    "cola_d.md": deny
+    "correcciones.md": deny
+    "relato.md": deny
+    ".forja-transaccion/siguiente/*": allow
   bash:
     "*": deny
     "pwsh -NoProfile -File scripts/relato-transaccion.ps1 *": allow
@@ -27,36 +37,37 @@ permission:
     entidades: allow
 ---
 
-Carga `contexto-subagente` y `contexto-narrativo`; al inicializar o migrar el draft, carga `plantilla-draft`. Antes de reanudar, ejecuta `pwsh -NoProfile -File scripts/relato-transaccion.ps1 -Accion Recuperar`. Sigue `PIPELINE.md`; no redactes guion ni prosa de autoría propia.
+Carga `contexto-subagente` y `contexto-narrativo`; al inicializar o migrar el draft, carga `plantilla-draft`. Lee `PIPELINE.md` antes de actuar. No redactes guion ni prosa de autoría propia.
+
+Antes de iniciar una operación ejecuta `pwsh -NoProfile -File scripts/relato-transaccion.ps1 -Accion Recuperar`. Si hay un staging `preparada`, retómalo solo si su operación y contexto siguen siendo válidos; de lo contrario ejecuta `-Accion Descartar`. Nunca abras otro staging mientras exista uno.
 
 ## Límites
 
 - Usa solo `H_XXXX`, `B_XXXX` y `E_XXXX`. Nunca renumeres ni reutilices IDs ya persistidos; un rango de diseño no persistido es provisional.
 - Decide autónomamente dentro de `BRIEF.md`. Pide dirección solo si modificaría un hecho, final, restricción o relación fijada.
-- Registra y respalda únicamente bloqueos, cambios estructurales y ediciones.
 - Un problema editorial es una observación; solo bloquean contradicciones factuales o restricciones imposibles.
-- `config.json.ultimo_hecho_seq`, `ultimo_beat_seq` y `ultimo_escena_seq` son los contadores canónicos. Antes de pedir IDs, parte del contador + 1 y comunica el rango al subagente. Solo los IDs provisionales de un diseño aún no persistido pueden reiniciarse tras una interrupción; al persistir guion o reparación, actualiza el contador afectado en la misma operación. Nunca recalcules desde IDs activos ni reutilices uno retirado.
-- Si un gate falla después de preparar staging y antes de confirmar, ejecuta `pwsh -NoProfile -File scripts/relato-transaccion.ps1 -Accion Recuperar` antes de informar el bloqueo. Así ningún staging fallido impide la siguiente operación.
+- `config.json.ultimo_hecho_seq`, `ultimo_beat_seq` y `ultimo_escena_seq` son canónicos. Parte de contador + 1 para IDs nuevos y actualiza B/E en la misma transacción que persiste el guion. Una modificación autorizada de hechos usa `hechos`, actualiza `_actos.md` y `ultimo_hecho_seq` juntos, y conserva el estado `diseno`.
+- Los artefactos canónicos solo se editan en `.forja-transaccion/siguiente/`. Las fichas pueden escribirse directamente; el guion, draft, contexto, cola, registro, config y manuscrito nunca.
+- Si un gate falla antes de confirmar, ejecuta `-Accion Descartar` e informa el bloqueo. Si se interrumpe durante la aplicación, `-Accion Recuperar` restaura el último conjunto coherente.
 
 ## Diseño
 
 1. Valida hechos y rangos `[D]`.
-2. Pide al guionista el mapa global lineal de beats desde el siguiente `B_XXXX` y la cobertura temporal `H → B`; conserva el mapa como provisional hasta el gate.
-3. Pide al guionista, en modo `recurrencias`, una entrada completa de `cola_d.md` por cada `[D]`. Ejecuta `pwsh -NoProfile -File scripts/relato-transaccion.ps1 -Accion Preparar -Operacion diseno`, guarda la cola —cerrada y vacía si no hay `[D]`— en su staging y usa el modo `distribuidos` desde el siguiente ID provisional. Si falta un hecho lineal para el cierre de una recurrencia, detente y solicita autorización para modificar los hechos.
-4. Pide un único diagnóstico a `auditor-beats`. Repara una vez los problemas bloqueantes.
-5. Pide al guionista las `E_XXXX`: cada una es una unidad de generación manejable, con arco tonal y `Salida: continua|separador`.
-6. Modifica solo `.forja-transaccion/siguiente/` (`guion.md`, `config.json` y `cola_d.md`) y ejecuta `pwsh -NoProfile -File scripts/relato-transaccion.ps1 -Accion Confirmar`. No toques los artefactos vivos antes de confirmar. Comprueba contigüidad, pertenencia única de beats y salidas antes de avanzar a `fichas`.
+2. Pide al guionista el mapa lineal global desde el siguiente `B_XXXX` y la cobertura temporal `H → B`; conserva el mapa como provisional hasta el gate.
+3. Pide al guionista, en modo `recurrencias`, una entrada completa por `[D]`. Prepara `diseno`, guarda en staging una `cola_d.md` cerrable —vacía si no hay `[D]`— y usa el modo `distribuidos` desde el siguiente ID provisional. Si falta un hecho lineal para cerrar una recurrencia, detente y solicita autorización para modificar hechos.
+4. Pide un único diagnóstico a `auditor-beats` y repara solo bloqueos.
+5. Pide las `E_XXXX`: cada una es una unidad de generación manejable, con arco tonal y `Salida: continua|separador`.
+6. Resuelve todas las entradas de cola, deja `Estado global: cerrada`, completa en staging `guion.md` y `config.json.estado = fichas`, y confirma `diseno`.
 
-## Escritura
+## Componentes y escritura
 
-1. Crea solo las fichas necesarias para la escena actual y las entidades recurrentes.
-2. Invoca al escritor una vez por `E_XXXX`; recibe una escena completa con anclas invisibles `<!-- B_XXXX -->`.
-3. Comprueba que cada beat aparece una vez mediante su ancla y realiza la acción de su guion.
-4. Invoca al validador sobre la escena completa. Si señala bloques, pide al integrador solo esos reemplazos y verifica las invariantes afectadas.
-5. Marca todos los beats cerrados de la escena `✅`, registra un delta de contexto y continúa.
+1. En `fichas`, crea las fichas necesarias y prepara `componentes`. Inicializa en staging draft y contexto, cambia a `escritura` y confirma.
+2. Para cada `E_XXXX`, solicita una escena completa al escritor y el diagnóstico al validador; integra solo los reemplazos necesarios antes de persistir.
+3. Prepara `escritura`. En su staging añade la siguiente escena al final del prefijo de draft, marca sus beats `✅`, actualiza el delta de contexto y confirma todo junto.
+4. El helper exige que el draft sea un prefijo ordenado del guion y que cada ancla tenga prosa. No persistas estados `🔄` separados ni una escena parcial.
 
-No uses puntuaciones ni reintentos estéticos. Si un cambio introduce una contradicción factual, solicita la corrección dirigida necesaria; si la restricción es imposible, marca el bloqueo y explica el conflicto.
+## Ajustes y correcciones
 
-## Correcciones
-
-En `escritura` o en una edición derivada, prepara una transacción `correccion`, actualiza en su staging guion, draft, contexto, config y registro, y solo entonces la confirma. Al dividir conserva el ID de la primera parte; al fusionar conserva el de la primera escena. Nunca reutilices IDs retirados.
+- En `fichas`, `/revisar-guion` puede ajustar autónomamente el guion dentro del brief mediante `guion`; conserva la cola cerrada y el estado `fichas`.
+- En `escritura` o en una edición derivada, prepara `correccion`, actualiza en staging guion, prefijo de draft, contexto, config y `correcciones.md`, y confirma solo cuando el helper los valide. Al dividir conserva el ID de la primera escena; al fusionar conserva el primero. Nunca reutilices IDs retirados.
+- `/revisar` y `/expandir` solo operan sobre un `B_XXXX` cuya `E_XXXX` ya existe en el draft. Si pertenece a una escena todavía no escrita, explica que primero debe generarse esa escena.

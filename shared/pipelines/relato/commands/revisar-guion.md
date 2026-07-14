@@ -1,18 +1,18 @@
 ---
-description: Audita el guion de relato: beats globales, escenas operativas, ritmo y salidas visibles.
+description: Audita y, antes de escribir, ajusta el guion de relato con beats globales y escenas operativas.
 agent: director
 ---
 
 # /revisar-guion — Relato
 
-Lee `guion.md`, `_actos.md`, `BRIEF.md` y `config.json`.
+En `diseno`, todavía no existe un guion canónico: lee `_actos.md`, `BRIEF.md` y `config.json`, informa de problemas de hechos o recurrencias y dirige a `/generar`. Los hechos solo cambian con autorización.
 
-Comprueba:
+En `fichas`, lee además `guion.md` y `cola_d.md`. Comprueba cobertura causal, atomicidad sin prosa, agrupación de `E_XXXX`, arcos tonales y `Salida`. Aplica autónomamente las reparaciones que respeten el brief mediante:
 
-- cobertura causal de los hechos sin exigir etiquetas `H` en beats;
-- acciones atómicas y sin prosa en `B_XXXX`;
-- agrupación y contigüidad de `E_XXXX`;
-- arco tonal y registros de beats cuando cambie la intensidad;
-- `Salida: continua|separador` y su efecto previsto en el manuscrito.
+```powershell
+pwsh -NoProfile -File scripts/relato-transaccion.ps1 -Accion Preparar -Operacion guion
+```
 
-En `diseno`, aplica autónomamente las correcciones que respeten `BRIEF.md`; solicita dirección solo si cambiarían un hecho, desenlace, restricción o relación fijada. En `fichas` o `escritura`, es solo auditoría: los cambios estructurales se realizan mediante una corrección transaccional. En `finalizado` o `publicado`, no puedes abrir la edición desde este workspace aislado: indica volver al hub y usar `/nueva-edicion <origen> <slug-edicion>`.
+Trabaja solo en `.forja-transaccion/siguiente/`, conserva `config.json.estado = "fichas"` y la cola cerrada, y confirma. Solicita dirección solo si cambiaría un hecho, desenlace, restricción o relación fijada.
+
+En `escritura` o `correccion`, es auditoría: una corrección estructural se realiza con `/corregir estructura <instrucción>`. En `finalizado` o `publicado`, indica volver al hub y usar `/nueva-edicion <origen> <slug-edicion>`.

@@ -18,7 +18,7 @@ Usa solo `H_XXXX`, `B_XXXX` y `E_XXXX`. No uses identidad opaca ni secuencias lo
 
 ## Escritor
 
-Recibe una `E_XXXX` completa, todas sus acciones `B_XXXX`, escena anterior/siguiente, fichas necesarias y solo los deltas de contexto relevantes. Devuelve una prosa de escena continua con anclas invisibles `<!-- B_XXXX -->`.
+Recibe una `E_XXXX` completa, todas sus acciones `B_XXXX`, escena anterior/siguiente, fichas necesarias y solo los deltas de contexto relevantes. Devuelve una prosa de escena continua con anclas invisibles `<!-- B_XXXX -->`. No recibe ni necesita escenas futuras completas.
 
 ## Validador e integrador
 

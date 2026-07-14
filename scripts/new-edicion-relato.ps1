@@ -6,11 +6,16 @@ param(
     [Parameter(Mandatory = $true)]
     [string]$Slug,
     [string]$Titulo,
-    [string]$Motivo = "Corrección editorial posterior a la publicación."
+    [string]$Motivo = "Corrección editorial posterior a la publicación.",
+    [string]$ForjaRootOverride
 )
 
 $ErrorActionPreference = "Stop"
-$ForjaRoot = Split-Path -Parent $PSScriptRoot
+$ForjaRoot = if ([string]::IsNullOrWhiteSpace($ForjaRootOverride)) {
+    Split-Path -Parent $PSScriptRoot
+} else {
+    (Resolve-Path -LiteralPath $ForjaRootOverride -ErrorAction Stop).Path
+}
 $HubRoot = $ForjaRoot
 $WorkspacesRoot = Join-Path $ForjaRoot "workspaces"
 $utf8NoBom = [System.Text.UTF8Encoding]::new($false)
@@ -91,6 +96,13 @@ try {
     New-Item -ItemType Directory -Force -Path $stagePath | Out-Null
     Get-ChildItem -LiteralPath $sourcePath -Force | ForEach-Object {
         Copy-Item -LiteralPath $_.FullName -Destination $stagePath -Recurse -Force
+    }
+
+    # El staging interno nunca es parte del linaje editorial. Un publicado no
+    # debería tenerlo, pero se elimina de forma defensiva antes de abrir la edición.
+    $inheritedTransaction = Join-Path $stagePath ".forja-transaccion"
+    if (Test-Path -LiteralPath $inheritedTransaction) {
+        Remove-Item -LiteralPath $inheritedTransaction -Recurse -Force
     }
 
     # La edición recibe el pipeline vigente, no una copia potencialmente obsoleta del origen.

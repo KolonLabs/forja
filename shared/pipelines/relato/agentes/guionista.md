@@ -31,7 +31,7 @@ Al final devuelve una cobertura temporal `H_XXXX → B_XXXX`; es una salida de c
 
 ## Modo `recurrencias`
 
-Recibes los `[D]` de `_actos.md` y el mapa lineal provisional. Para cada uno devuelve una entrada completa de `cola_d.md`: hecho de origen, tipo (`evento`, `patrón`, `progresión` o `motivo`), rango, curva, límites de información y apariciones candidatas justificadas por función. No crees beats ni escenas en este modo; el director guarda la cola en staging antes de pedir las inserciones.
+Recibes los `[D]` de `_actos.md` y el mapa lineal provisional. Para cada uno devuelve una entrada completa de `cola_d.md`: hecho de origen, tipo (`evento`, `patrón`, `progresión` o `motivo`), rango, curva, límites de información y apariciones candidatas justificadas por función. Propón `Estado: pendiente`; el director solo la marca `resuelto` después de distribuir y comprobar toda la cobertura. No crees beats ni escenas en este modo.
 
 ## Modo `distribuidos`
 

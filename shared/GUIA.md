@@ -47,7 +47,7 @@ El `relato-draft.md` conserva prosa continua por escena. Sus comentarios `<!-- B
 
 El sistema valida el mapa de beats una vez, agrupa escenas y escribe una escena completa cada vez. Se detiene únicamente ante contradicción con hechos, restricciones o desenlace fijados; las preferencias editoriales se resuelven de forma autónoma.
 
-Los cambios de diseño, corrección y publicación se preparan internamente en `.forja-transaccion/` y se confirman como conjunto recuperable. No edites esa carpeta: el director la gestiona y restaura el último estado coherente si una operación se interrumpe.
+Los cambios de hechos, diseño, guion, componentes, escritura, corrección y publicación se preparan internamente en `.forja-transaccion/`. No edites esa carpeta: el director la retoma si sigue siendo válida, la descarta si no lo es y restaura el último estado coherente si una aplicación se interrumpe.
 
 ## Estados
 
@@ -57,8 +57,9 @@ Los cambios de diseño, corrección y publicación se preparan internamente en `
 diseno → fichas → escritura → finalizado → publicado (hub)
 ```
 
-- `diseno`: permite afinar hechos, recurrencias y guion. En `diseno` o `fichas`, usa `/revisar-guion`: aún no existe prosa anclada para `/revisar` o `/expandir`.
-- `escritura`: permite continuar, revisar o expandir beats ya escritos y ejecutar `/corregir estructura` de forma transaccional sobre guion, draft y contexto.
+- `diseno`: permite afinar hechos y recurrencias. Los cambios autorizados de hechos actualizan `_actos.md` y su contador juntos; `/revisar-guion` aquí diagnostica los insumos y `/generar` construye el primer guion.
+- `fichas`: permite revisar y ajustar el guion antes de empezar prosa; `/revisar-guion` lo confirma de forma transaccional sin cambiar de estado.
+- `escritura`: confirma una escena completa por vez. El draft es un prefijo de escenas ya cerradas; `/revisar`, `/expandir` y `/corregir` solo modifican prosa de ese prefijo.
 - `finalizado`: el manuscrito está listo para compilar desde el hub.
 - `publicado`: no reabras el original. Si cambia el contenido, crea una edición derivada desde el hub.
 
