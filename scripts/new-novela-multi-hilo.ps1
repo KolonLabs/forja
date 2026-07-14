@@ -16,7 +16,7 @@ Write-Host "Creando workspace (novela-multi-hilo): $TargetDir"
 
 $workspaceCreated = $false
 try {
-    New-Item -LiteralPath $TargetDir -ItemType Directory -Force | Out-Null
+    New-Item -Path $TargetDir -ItemType Directory -Force | Out-Null
     $workspaceCreated = $true
 
     # 1. Crear estructura de directorios

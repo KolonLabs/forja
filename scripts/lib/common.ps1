@@ -95,7 +95,9 @@ function Get-ProtagonistasText {
 function Inject-Pipeline {
     param(
         [string]$TargetDir,
-        [string]$Escala
+        [string]$Escala,
+        [string]$EstiloBase,
+        [string]$EstiloSecundario
     )
     $SharedDir = Join-Path $HubRoot "shared"
     $ScaleDir = Join-Path $SharedDir "pipelines\$Escala"
@@ -139,14 +141,37 @@ function Inject-Pipeline {
     $hubSkills = Join-Path $SharedDir ".opencode\skills"
     $wsSkills = Join-Path $targetOC "skills"
     $excluded = @()
+    $allowed = @()
     if ($Escala -eq "relato") {
-        $excluded = @("auditoria-neo4j","diseno-hilo","hechos-estructura","neo4j","plantilla-arco","plantilla-hilo","qdrant","trenzado-narrativo","validacion-cross-hilo")
+        # Relato no parte de un paquete genérico por exclusión: recibe solo las
+        # invariantes que realmente usa. El resto se define como override propio
+        # de escala en $ScaleDir\skills.
+        $styleNames = @($EstiloBase, $EstiloSecundario) | Where-Object { -not [string]::IsNullOrWhiteSpace($_) } | Select-Object -Unique
+        if ($styleNames.Count -eq 0) {
+            $configPath = Join-Path $TargetDir "config.json"
+            if (Test-Path -LiteralPath $configPath -PathType Leaf) {
+                $workspaceConfig = Get-Content -LiteralPath $configPath -Raw -Encoding UTF8 | ConvertFrom-Json
+                $styleNames = @($workspaceConfig.estilo_base, $workspaceConfig.estilo_secundario) | Where-Object { -not [string]::IsNullOrWhiteSpace($_) } | Select-Object -Unique
+            }
+        }
+        if ($styleNames.Count -eq 0) {
+            throw "Inject-Pipeline relato: falta estilo_base para seleccionar las skills de estilo."
+        }
+        foreach ($styleName in $styleNames) {
+            $skillName = "estilo-$styleName"
+            if (-not (Test-Path -LiteralPath (Join-Path $hubSkills $skillName) -PathType Container)) {
+                throw "Inject-Pipeline relato: skill de estilo no encontrada: $skillName"
+            }
+            $allowed += $skillName
+        }
+        $allowed += "mecanica-prosa"
     } elseif ($Escala -eq "novela-simple") {
         $excluded = @("diseno-hilo","plantilla-hilo","trenzado-narrativo","validacion-cross-hilo")
     }
 
     if (Test-Path -LiteralPath $hubSkills) {
         Get-ChildItem -LiteralPath $hubSkills -Directory | ForEach-Object {
+            if ($Escala -eq "relato" -and $_.Name -notin $allowed) { return }
             if ($_.Name -in $excluded) { return }
             $dest = Join-Path $wsSkills $_.Name
             if (Test-Path -LiteralPath $dest) { Remove-Item -LiteralPath $dest -Recurse -Force }
@@ -249,6 +274,47 @@ function Test-MultiHiloBrief {
 # Escritura de archivos del workspace desde brief JSON
 # ------------------------------------------------------------
 
+function Get-RelatoHechoCount {
+    param($Brief)
+
+    $count = 0
+    foreach ($acto in $Brief.hechos) {
+        if ($null -ne $acto.hechos) {
+            $count += @($acto.hechos).Count
+        }
+    }
+    return $count
+}
+
+function ConvertTo-RelatoHechoTexto {
+    param([string]$Texto)
+
+    # El briefing puede traer un prefijo H_XX/H_XXXX antiguo. El workspace es
+    # dueño de la numeración global y lo sustituye al escribir _actos.md.
+    $normalizado = [regex]::Replace($Texto.Trim(), '^H_\d{1,4}\s*(?:[—:]\s*)?', '')
+    return [regex]::Replace($normalizado, 'H_(\d{1,4})', {
+        param($match)
+        return ('H_{0:D4}' -f [int]$match.Groups[1].Value)
+    })
+}
+
+function Convert-RelatoDraftToAnchors {
+    param([string]$DraftPath)
+
+    $draft = Get-Content -LiteralPath $DraftPath -Raw -Encoding UTF8
+    $convertido = [regex]::Replace($draft, '(?m)^##\s+(B_\d{4})(?:\s+—[^\r\n]*)?\s*\r?\n?', {
+        param($match)
+        return "<!-- $($match.Groups[1].Value) -->`n"
+    })
+    if ($convertido -eq $draft) {
+        return $false
+    }
+
+    $utf8NoBom = [System.Text.UTF8Encoding]::new($false)
+    [System.IO.File]::WriteAllText($DraftPath, $convertido, $utf8NoBom)
+    return $true
+}
+
 function Write-ConfigJson {
     param([string]$TargetDir, $Brief)
     
@@ -265,7 +331,7 @@ function Write-ConfigJson {
         estilo_base = $Brief.estilo_base
         creado = $now
         ultima_modificacion = $now
-        ultimo_hecho_seq = 0
+        ultimo_hecho_seq = if ($escala -eq "relato") { Get-RelatoHechoCount -Brief $Brief } else { 0 }
         ultimo_beat_seq = 0
         ultimo_escena_seq = 0
     }
@@ -355,7 +421,11 @@ $($protasBlock)$($personajesBlock)$($antagBlock)$($settingBlock)$($temasBlock)$(
 }
 
 function Write-ActosMd {
-    param([string]$TargetDir, $Brief)
+    param(
+        [string]$TargetDir,
+        $Brief,
+        [switch]$AsignarIdsGlobales
+    )
 
     Test-BriefField $Brief "hechos" "Write-ActosMd"
 
@@ -363,6 +433,7 @@ function Write-ActosMd {
     $content += "> Las escenas y beats los genera el guionista a partir de estos hechos.`n"
     $content += "> El director puede anadir notas al final durante el desarrollo.`n`n"
 
+    $hechoSeq = 0
     foreach ($h in $Brief.hechos) {
         $content += "## $($h.acto)`n`n"
         if ($h.objetivo) { $content += "**Objetivo narrativo:** $($h.objetivo)`n`n" }
@@ -370,7 +441,13 @@ function Write-ActosMd {
         if ($h.tension) { $content += "**Tension:** $($h.tension)`n`n" }
         $content += "### Hechos`n`n"
         foreach ($hc in $h.hechos) {
-            $content += "- $($hc)`n"
+            if ($AsignarIdsGlobales) {
+                $hechoSeq++
+                $texto = ConvertTo-RelatoHechoTexto -Texto ([string]$hc)
+                $content += ("- H_{0:D4} — {1}`n" -f $hechoSeq, $texto)
+            } else {
+                $content += "- $($hc)`n"
+            }
         }
         $content += "`n"
     }
@@ -420,31 +497,33 @@ function Write-AgentsMd {
     $restricciones = if ($Brief.PSObject.Properties.Name.Contains("restricciones") -and $Brief.restricciones) { Get-ListText $Brief.restricciones } else { "- (ninguna)" }
     $temas = if ($Brief.PSObject.Properties.Name.Contains("temas") -and $Brief.temas) { Get-ListText $Brief.temas } else { "- (ver BRIEF.md)" }
 
-    $skillsActivos = @(
-        "mecanica-prosa", "beats-estructura", "estructura-narrativa", "tonos-beat",
-        "hechos-distribuidos",
-        "estilo-$($Brief.estilo_base)"
-    )
+    if ($Escala -eq "relato") {
+        $skillsActivos = @(
+            "mecanica-prosa", "beats-estructura", "contexto-narrativo", "contexto-subagente",
+            "estructura-narrativa", "hechos-distribuidos", "plantilla-guion", "plantilla-draft", "plantilla-ficha",
+            "tonos-beat", "validacion-coherencia", "validacion-crudeza", "validacion-geometria",
+            "validacion-sensorial", "validacion-tono", "estilo-$($Brief.estilo_base)"
+        )
+    } else {
+        $skillsActivos = @(
+            "mecanica-prosa", "beats-estructura", "estructura-narrativa", "tonos-beat",
+            "hechos-distribuidos", "estilo-$($Brief.estilo_base)"
+        )
+    }
     if ($Brief.PSObject.Properties.Name.Contains("estilo_secundario") -and $Brief.estilo_secundario) {
         $skillsActivos += "estilo-$($Brief.estilo_secundario)"
     }
-    $skillsActivos += @(
-        "plantilla-guion", "plantilla-ficha", "plantilla-personaje", "plantilla-lugar",
-        "plantilla-objeto", "plantilla-animal", "plantilla-evento",
-        "plantilla-organizacion",
-        "validacion-crudeza", "validacion-coherencia", "validacion-geometria",
-        "validacion-sensorial", "validacion-tono",
-        "consistencia-narrativa", "contexto-subagente", "desarrollo-narrativa",
-        "fichas-personajes", "estilo-prosa"
-    )
     if ($Escala -ne "relato") {
+        $skillsActivos += @(
+            "plantilla-personaje", "plantilla-lugar", "plantilla-objeto", "plantilla-animal",
+            "plantilla-evento", "plantilla-organizacion", "consistencia-narrativa",
+            "desarrollo-narrativa", "fichas-personajes", "estilo-prosa"
+        )
         $skillsActivos += @("plantilla-arco", "qdrant", "neo4j", "auditoria-neo4j")
     }
     if ($Escala -eq "novela-multi-hilo") {
         $skillsActivos += @("plantilla-hilo", "diseno-hilo", "trenzado-narrativo", "validacion-cross-hilo")
     }
-    $skillsActivos += @("generar", "revisar", "expandir", "publicar")
-
     $skillsStr = ($skillsActivos -join ", ")
     $estiloRef = "``estilo-$($Brief.estilo_base)``"
     if ($Brief.PSObject.Properties.Name.Contains("estilo_secundario") -and $Brief.estilo_secundario) {

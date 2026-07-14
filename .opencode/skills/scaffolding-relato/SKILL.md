@@ -49,7 +49,7 @@ Para cada bloque (acto):
 - **Tensión:** qué está en juego
 - **Hechos:** los eventos concretos que han emergido de la conversación
 
-**Hechos distribuidos `[D]`:** cuando un hecho describa un patrón recurrente, una evolución progresiva o una rutina que no puede escribirse en una sola escena, márcalo con `[D · H_XX–H_YY]`. El rango indica entre qué hechos lineales debe desplegarse. El workspace lo convertirá en beats intercalados, no en escenas propias. Ver `scaffolding-hecho` para criterios y ejemplos.
+**Hechos distribuidos `[D]`:** cuando un hecho describa un patrón recurrente, una evolución progresiva o una rutina que no puede escribirse en una sola escena, márcalo con `[D · H_XXXX–H_XXXX]`. El rango indica entre qué hechos lineales debe desplegarse. El workspace lo convertirá en beats intercalados, no en escenas propias. Ver `scaffolding-hecho` para criterios y ejemplos.
 
 Pregunta: "¿Esto captura lo que tenías en mente? ¿Falta algo? ¿Sobra algo?"
 

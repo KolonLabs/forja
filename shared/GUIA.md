@@ -10,8 +10,8 @@ Esta guía responde **qué comando usar según tu objetivo**. Para el contrato d
 | Comprobar que los hechos cuentan una historia coherente | `/validar-hechos` | Quieres detectar contradicciones, huecos, fugas de información o problemas de arco. | Para corregir prosa. |
 | Crear o continuar la obra | `/generar` | El workspace está en el flujo normal de diseño, componentes o escritura. | En una edición derivada con estado `correccion`. |
 | Revisar la estructura antes de escribir o cerrar | `/revisar-guion` | Hay dudas sobre beats, escenas operativas, ritmo, registros o salidas visibles. | Para cambiar solo la redacción de un beat. |
-| Corregir un fragmento concreto | `/revisar B_NNNN <instrucción>` | Conoces el beat o puedes describirlo con suficiente precisión. | Para una pasada integral de toda la obra. |
-| Añadir desarrollo a un fragmento sin cambiar su acción | `/expandir B_NNNN <enfoque>` | Falta detalle sensorial, emocional, físico o un monólogo. | Para alterar la estructura o el resultado del beat. |
+| Corregir un fragmento concreto | `/revisar B_XXXX <instrucción>` | Conoces el beat que contiene el cambio. | Para una pasada integral de toda la obra. |
+| Añadir desarrollo a un fragmento sin cambiar su acción | `/expandir B_XXXX <enfoque>` | Falta detalle sensorial, emocional, físico o un monólogo. | Para alterar la estructura o el resultado del beat. |
 | Corregir una edición completa de un relato publicado | `/corregir [alcance] <instrucción>` | Solo en un relato derivado con estado `correccion`. | En el workspace publicado original o en novelas por ahora. |
 | Generar el manuscrito limpio | `/publicar` | Todos los beats están cerrados o has terminado una edición derivada. | Para corregir prosa: primero revisa o corrige el draft. |
 
@@ -37,11 +37,13 @@ No edites `relato.md` ni `novela.md` directamente: son la salida limpia. Las cor
 H_XXXX (hechos) → B_XXXX (beats globales) → E_XXXX (escenas operativas) → prosa
 ```
 
-- `H_XXXX` procede del briefing y no cambia durante la generación.
+- `H_XXXX` se asigna al crear `_actos.md` y no cambia durante la generación.
 - `B_XXXX` es una acción causal, sin prosa ni cuota de longitud. Su identificador nunca se renumera.
 - `E_XXXX` agrupa beats contiguos en una unidad dramática que se escribe en una sola generación. Una situación amplia puede incluir varias escenas operativas.
 - La escena define un arco tonal; un beat solo añade `[registro: ...]` cuando requiere un tratamiento distinto, por ejemplo explícito o visceral.
 - `Salida: continua` mantiene la prosa sin corte visible; `Salida: separador` crea `---` en el manuscrito.
+
+El `relato-draft.md` conserva prosa continua por escena. Sus comentarios `<!-- B_XXXX -->` son anclas invisibles para localizar una corrección; no son secciones narrativas y desaparecen al publicar.
 
 El sistema valida el mapa de beats una vez, agrupa escenas y escribe una escena completa cada vez. Se detiene únicamente ante contradicción con hechos, restricciones o desenlace fijados; las preferencias editoriales se resuelven de forma autónoma.
 

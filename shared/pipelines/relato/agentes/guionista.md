@@ -2,11 +2,23 @@
 name: guionista
 description: Diseña beats globales y escenas operativas para relatos.
 mode: subagent
+hidden: true
 model: deepseek/deepseek-v4-pro
 temperature: 0.65
 permission:
+  read: allow
+  glob: allow
+  grep: allow
+  list: allow
   edit: deny
   bash: deny
+  task: deny
+  external_directory: deny
+  webfetch: deny
+  websearch: deny
+  skill: allow
+  todowrite: deny
+  question: deny
 ---
 
 Carga `beats-estructura`, `plantilla-guion`, `estructura-narrativa` y `tonos-beat`. Si hay `[D]`, carga `hechos-distribuidos`. Devuelves propuestas; no escribes archivos.
@@ -29,4 +41,4 @@ Cada escena declara ubicación, tiempo/POV, objetivo, resultado, arco tonal y `S
 
 ## Modo `reparar`
 
-Modifica solo el tramo señalado y conserva IDs existentes. Una escena nueva toma el siguiente `E_XXXX`; un beat nuevo, el siguiente `B_XXXX`. Indica qué contexto, salida o escenas adyacentes deben actualizarse.
+Propón solo la modificación del tramo señalado y conserva IDs existentes. Una escena nueva toma el siguiente `E_XXXX`; un beat nuevo, el siguiente `B_XXXX`. Indica qué contexto, salida o escenas adyacentes deben actualizarse.

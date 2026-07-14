@@ -159,7 +159,7 @@ Estos skills no son checklists — son guías para mantener una conversación ed
 
 **No preguntes "¿cuántos actos?" ni "¿cuántos hechos?" al principio.** Primero explora la historia: ¿cómo empieza? ¿qué pasa después? ¿cuál es el clímax? ¿cómo termina? Deja que el usuario cuente. Tú escuchas, profundizas, afinas. Solo al final, cuando la historia esté clara, propones: "Basado en lo que hemos hablado, veo X actos con Y hechos. ¿Te cuadra?"
 
-**Hechos distribuidos `[D]`:** cuando un hecho describa un patrón recurrente, un hábito, una evolución progresiva o un estado (no una acción puntual), márcalo con `[D · H_XX–H_YY]` indicando el rango de hechos lineales entre los que debe desplegarse. El espacio de trabajo los convertirá en beats intercalados, no en escenas propias. El skill `scaffolding-hecho` contiene los criterios completos y ejemplos.
+**Hechos distribuidos `[D]`:** cuando un hecho describa un patrón recurrente, un hábito, una evolución progresiva o un estado (no una acción puntual), márcalo con `[D · H_XXXX–H_XXXX]` indicando el rango de hechos lineales entre los que debe desplegarse. El espacio de trabajo los convertirá en beats intercalados, no en escenas propias. El skill `scaffolding-hecho` contiene los criterios completos y ejemplos.
 
 **Antes de marcar `[D]`, pregúntate:** ¿esta transformación la tiene que VER el lector en una escena concreta o la puede INFERIR de beats dispersos? Si necesita verla, no es `[D]` — es un hecho lineal.
 
@@ -280,7 +280,7 @@ Donde `$briefJson` es una variable PowerShell que contiene el string JSON comple
       "tension": "<qué está en juego>",
       "hechos": [
         "<descripción del hecho narrativo>",
-        "H_NN [D · H_XX–H_YY]: <descripción del hecho distribuido>",
+        "H_NNNN [D · H_XXXX–H_XXXX]: <descripción del hecho distribuido>",
         "<otro hecho>"
       ]
     }

@@ -28,7 +28,7 @@ Si el estado es `correccion`, no reinicia ni reescribe el pipeline: ese workspac
 ### Relato (4 fases)
 - **FASE 1 — Diseño**: valida `H_XXXX`, genera el mapa global de `B_XXXX`, resuelve `[D]` y después agrupa beats contiguos en `E_XXXX`
 - **FASE 2 — Componentes**: entidades crea fichas en `fichas/`, director reconcilia, crea `contexto_narrativo.md` + `relato-draft.md`
-- **FASE 3 — Por escena y beat**: escritor → validador → ±integrador por cada `B_XXXX`. Director actualiza `contexto_narrativo.md` al cerrar cada `E_XXXX`
+- **FASE 3 — Por escena**: escritor → validador → ±integrador por cada `E_XXXX`; las anclas `B_XXXX` solo permiten localizar tramos dentro de esa prosa continua. El director actualiza `contexto_narrativo.md` al cerrar cada escena.
 - **FASE 4 — Finalizar**: `/publicar` genera `relato.md` limpio y deja el estado en `finalizado`
 
 ### Novela simple (4 fases)

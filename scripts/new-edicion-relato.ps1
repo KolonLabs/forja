@@ -98,7 +98,11 @@ try {
     foreach ($directory in @("agents", "skills", "commands")) {
         New-Item -ItemType Directory -Force -Path (Join-Path $stageOpenCode $directory) | Out-Null
     }
-    Inject-Pipeline -TargetDir $stagePath -Escala "relato"
+    Inject-Pipeline -TargetDir $stagePath -Escala "relato" -EstiloBase $sourceConfig.estilo_base -EstiloSecundario $sourceConfig.estilo_secundario
+
+    # Las ediciones derivadas reciben el contrato vigente: una escena continua
+    # con anclas invisibles de beat, no headings que fragmenten la prosa.
+    $draftMigrated = Convert-RelatoDraftToAnchors -DraftPath (Join-Path $stagePath "relato-draft.md")
 
     $previousManuscript = Join-Path $stagePath "relato.md"
     $snapshotPath = Join-Path $stagePath "relato-edicion-anterior.md"
@@ -144,6 +148,7 @@ Este workspace deriva de una publicación anterior. El manuscrito de referencia 
 | Fecha | Alcance | Beats afectados | Resultado |
 |---|---|---|---|
 | $timestamp | Apertura de edición | — | Pendiente de corrección |
+$(if ($draftMigrated) { "| $timestamp | Normalización de draft | Todos los B conservados | Headings heredados convertidos a anclas invisibles |" })
 
 El director añade una fila por cada ejecución de `/corregir`, `/revisar` o `/expandir` realizada durante esta edición.
 "@

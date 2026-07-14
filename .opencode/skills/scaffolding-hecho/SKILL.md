@@ -12,7 +12,7 @@ Un **hecho** es un evento narrativo de alto nivel que describe QUÉ ocurre, no C
 | Tipo | Comportamiento | Genera |
 |------|---------------|--------|
 | **Lineal** (sin marca) | Evento concreto en un momento único | 1-N escenas secuenciales |
-| **Distribuido** (`[D · H_XX–H_YY]`) | Patrón, rutina o evolución que se despliega entre varios hechos | Beats inyectados en escenas existentes (no escenas propias) |
+| **Distribuido** (`[D · H_XXXX–H_XXXX]`) | Patrón, rutina o evolución que se despliega entre varios hechos | Beats inyectados en escenas existentes (no escenas propias) |
 
 ## Qué es un hecho (lineal)
 
@@ -33,7 +33,7 @@ Un **hecho** es un evento narrativo de alto nivel que describe QUÉ ocurre, no C
 
 ## Qué es un hecho distribuido `[D]`
 
-Un hecho `[D]` describe un **patrón recurrente, rutina, evolución progresiva o estado** que no puede escribirse en una sola escena. El scaffolder lo marca con `[D · H_XX–H_YY]` indicando el rango de hechos lineales donde debe desplegarse.
+Un hecho `[D]` describe un **patrón recurrente, rutina, evolución progresiva o estado** que no puede escribirse en una sola escena. El scaffolder lo marca con `[D · H_XXXX–H_XXXX]` indicando el rango de hechos lineales donde debe desplegarse.
 
 - ✅ «La búsqueda se vuelve sistemática: transporte, cafeterías, parkings.» — Patrón válido.
 - ✅ «La coacción escala en lo cotidiano: ascensor, bar, casa.» — Patrón válido.
@@ -89,16 +89,16 @@ Una frase o párrafo breve. Lo bastante específico para que se sepa qué escrib
 
 En el nivel del scaffolder, algunos hechos describen **patrones, rutinas o evoluciones** que no ocurren en un solo momento. Estos hechos no pueden escribirse como una escena secuencial: deben **respirar entre los hechos del acto**, filtrándose como beats dentro de las escenas de otros hechos.
 
-Para marcarlos, se usa el prefijo `[D · H_XX–H_YY]` en el string del hecho:
+Para marcarlos, se usa el prefijo `[D · H_XXXX–H_XXXX]` en el string del hecho:
 
 ```
-H_07 [D · H_06–H_10]: La búsqueda se vuelve sistemática...
+H_0007 [D · H_0006–H_0010]: La búsqueda se vuelve sistemática...
 ```
 
 | Componente | Significado |
 |-----------|-------------|
 | `[D]` | Hecho distribuido (no genera escenas propias) |
-| `H_XX–H_YY` | Rango de hechos lineales entre los que se despliega |
+| `H_XXXX–H_XXXX` | Rango de hechos lineales entre los que se despliega |
 
 ### Cuándo usar `[D]`
 
@@ -129,16 +129,16 @@ H_07 [D · H_06–H_10]: La búsqueda se vuelve sistemática...
 ```markdown
 ### Hechos
 
-- H_06: Salidas nocturnas. Parking periférico...
-- H_07 [D · H_06–H_10]: La búsqueda se vuelve sistemática...
-- H_08: Diego, vecino de abajo...
-- H_09: Los viernes, Miguel queda con los amigos...
-- H_10: Mensaje anónimo. Es Diego...
+- H_0006: Salidas nocturnas. Parking periférico...
+- H_0007 [D · H_0006–H_0010]: La búsqueda se vuelve sistemática...
+- H_0008: Diego, vecino de abajo...
+- H_0009: Los viernes, Miguel queda con los amigos...
+- H_0010: Mensaje anónimo. Es Diego...
 ```
 
 ## Relación con otros skills
 
 - `scaffolding-acto`: define el acto que contiene los hechos.
 - `scaffolding-relato` / `scaffolding-novela-simple` / `scaffolding-multi-hilo`: guían la conversación de estructura según escala. Todos deben conocer el formato `[D]`.
-- `beats-estructura`: skill del workspace que define el formato de beats (B_NN) a partir de hechos.
+- `beats-estructura`: skill del workspace que define el formato de beats (B_XXXX) a partir de hechos.
 - `hechos-distribuidos`: skill del workspace que el guionista carga para procesar hechos `[D]`.

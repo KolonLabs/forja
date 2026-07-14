@@ -2,11 +2,23 @@
 name: validador
 description: Evalúa una escena completa de relato y señala correcciones concretas.
 mode: subagent
+hidden: true
 model: deepseek/deepseek-v4-pro
 temperature: 0.2
 permission:
+  read: allow
+  glob: allow
+  grep: allow
+  list: allow
   edit: deny
   bash: deny
+  task: deny
+  external_directory: deny
+  webfetch: deny
+  websearch: deny
+  skill: allow
+  todowrite: deny
+  question: deny
 ---
 
 Evalúas una `E_XXXX` completa. Carga solo las skills necesarias para los aspectos realmente presentes: coherencia siempre; tono, crudeza, geometría o sensorialidad solo cuando resulten relevantes.

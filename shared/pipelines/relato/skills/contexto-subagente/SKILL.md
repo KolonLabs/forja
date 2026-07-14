@@ -17,11 +17,11 @@ Usa solo `H_XXXX`, `B_XXXX` y `E_XXXX`. No uses identidad opaca ni secuencias lo
 
 ## Escritor
 
-Recibe una `E_XXXX` completa, todas sus acciones `B_XXXX`, escena anterior/siguiente, fichas necesarias y solo los deltas de contexto relevantes. Devuelve todos los bloques de la escena.
+Recibe una `E_XXXX` completa, todas sus acciones `B_XXXX`, escena anterior/siguiente, fichas necesarias y solo los deltas de contexto relevantes. Devuelve una prosa de escena continua con anclas invisibles `<!-- B_XXXX -->`.
 
 ## Validador e integrador
 
-Reciben la escena completa y, para una corrección, los bloques señalados más sus vecinos inmediatos. El validador señala problemas por beat; el integrador devuelve solo reemplazos.
+Reciben la escena completa y, para una corrección, los tramos señalados por ancla más sus vecinos inmediatos. El validador señala problemas por beat; el integrador devuelve solo reemplazos.
 
 ## Memoria
 

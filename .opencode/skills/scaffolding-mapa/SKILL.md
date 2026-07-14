@@ -21,7 +21,7 @@ El brief JSON debe incluir un campo `"_mapa"` con el contenido markdown completo
 # MAPA — {{TITULO}} ({{SLUG}}, escala relato)
 
 ## Jerarquía narrativa
-_actos.md (actos con hechos) → guion.md (escenas + hechos H_NNNN + beats B_NNNN) → relato-draft.md (prosa, ## B_NNNN) → relato.md (limpio, publicable)
+_actos.md (actos con hechos H_XXXX) → guion.md (escenas + beats B_XXXX) → relato-draft.md (prosa por escena + anclas invisibles B_XXXX) → relato.md (limpio, publicable)
 
 ## Dónde vive cada cosa
 | Archivo | Quién crea | Quién actualiza | Contenido |
@@ -35,7 +35,7 @@ _actos.md (actos con hechos) → guion.md (escenas + hechos H_NNNN + beats B_NNN
 | MAPA.md | Script | — | Este archivo |
 | GUIA.md | Script | — | Cuándo usar cada comando y cuándo volver al hub |
 | guion.md | guionista | guionista, director (estados) | Escenas, hechos, beats |
-| relato-draft.md | director | escritor (append) | Prosa beat a beat |
+| relato-draft.md | director | escritor (por escena) | Prosa continua por escena; anclas invisibles de beat |
 | relato.md | director (/publicar) | — | Versión limpia publicable |
 | EDICION.md | /nueva-edicion (solo edición) | — | Linaje y motivo de la edición derivada |
 | relato-edicion-anterior.md | /nueva-edicion (solo edición) | — | Manuscrito publicado de referencia, solo lectura |
@@ -51,14 +51,14 @@ Fichas: <tipo>_<slug>.md (personaje_miguel.md, lugar_parking.md)
 |---|---|---|
 | FASE 1: Diseño | diseno | guionista → guion.md |
 | FASE 2: Componentes | fichas | entidades → fichas/ + reconciliación |
-| FASE 3: Beat a beat | escritura | escritor → validador → ±integrador |
+| FASE 3: Por escena | escritura | escritor → validador → ±integrador por cada `E_XXXX` |
 | FASE 4: Finalizar | escritura | /publicar → relato.md y estado `finalizado` |
 
 ## Transiciones
 diseno → fichas → escritura → finalizado → publicado (hub)
 
 ## Agentes
-director, guionista, escritor, validador, integrador, entidades
+director, guionista, auditor-beats, escritor, validador, integrador, entidades
 No aplican: memoria, cronista
 
 ## Infraestructura

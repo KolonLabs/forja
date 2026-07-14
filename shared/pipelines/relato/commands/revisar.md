@@ -9,6 +9,8 @@ agent: director
 /revisar B_XXXX [instrucción]
 ```
 
-El director localiza el bloque dentro de su `E_XXXX`, pasa al integrador la instrucción y los bloques vecinos, y reemplaza solo ese bloque. Comprueba acción nuclear, continuidad inmediata y arco tonal; no asigna notas numéricas.
+Solicitud recibida: $ARGUMENTS
+
+Extrae un `B_XXXX` de la solicitud; si falta, pide esa referencia antes de modificar. El director localiza su ancla `<!-- B_XXXX -->` dentro de la `E_XXXX`, pasa al integrador la instrucción y los tramos vecinos, y reemplaza solo ese tramo. Comprueba acción nuclear, continuidad inmediata y arco tonal; no asigna notas numéricas.
 
 No cambia hechos, beats ni estructura. Si la petición lo exige, informa de que necesita una corrección estructural. En `finalizado` o `publicado`, crea una edición derivada antes de modificar contenido.

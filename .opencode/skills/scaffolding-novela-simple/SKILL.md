@@ -53,7 +53,7 @@ Para cada arco:
 - **Capítulos estimados** (basados en lo que el usuario ha descrito)
 - **Hechos:** los eventos de alto nivel que han emergido
 
-**Hechos distribuidos `[D]`:** cuando un hecho describa un patrón recurrente, una evolución progresiva o una rutina, márcalo con `[D · H_XX–H_YY]`. El rango indica entre qué hechos lineales debe desplegarse. El workspace lo convertirá en beats intercalados, no en escenas propias. Ver `scaffolding-hecho` para criterios y ejemplos.
+**Hechos distribuidos `[D]`:** cuando un hecho describa un patrón recurrente, una evolución progresiva o una rutina, márcalo con `[D · H_XXXX–H_XXXX]`. El rango indica entre qué hechos lineales debe desplegarse. El workspace lo convertirá en beats intercalados, no en escenas propias. Ver `scaffolding-hecho` para criterios y ejemplos.
 
 Pregunta: "¿Refleja esto la novela que tienes en mente?"
 

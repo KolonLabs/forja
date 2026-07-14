@@ -7,6 +7,10 @@ agent: bibliotecario
 
 Abre una nueva edición de un relato ya publicado. El original permanece inmutable: se crea otro workspace con el guion, fichas y draft necesarios para corregir el contenido.
 
+Argumentos recibidos: $ARGUMENTS
+
+Extrae el workspace de origen, el slug de edición y las opciones antes de invocar al bibliotecario. Si faltan los dos primeros argumentos, solicita los datos sin crear ningún workspace.
+
 ## Sintaxis
 
 ```text

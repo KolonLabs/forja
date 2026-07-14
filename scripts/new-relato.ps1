@@ -17,7 +17,7 @@ Write-Host "Creando workspace (relato): $TargetDir"
 
 $workspaceCreated = $false
 try {
-    New-Item -LiteralPath $TargetDir -ItemType Directory -Force | Out-Null
+    New-Item -Path $TargetDir -ItemType Directory -Force | Out-Null
     $workspaceCreated = $true
 
     # 1. Crear estructura de directorios
@@ -39,12 +39,12 @@ try {
 
 # 2. Inyectar pipeline
 Write-Host "Inyectando pipeline relato..."
-Inject-Pipeline -TargetDir $TargetDir -Escala "relato"
+Inject-Pipeline -TargetDir $TargetDir -Escala "relato" -EstiloBase $Brief.estilo_base -EstiloSecundario $Brief.estilo_secundario
 
 # 3. Escribir archivos del workspace
 Write-ConfigJson -TargetDir $TargetDir -Brief $Brief
 Write-BriefMd -TargetDir $TargetDir -Brief $Brief
-Write-ActosMd -TargetDir $TargetDir -Brief $Brief
+Write-ActosMd -TargetDir $TargetDir -Brief $Brief -AsignarIdsGlobales
 Write-AgentsMd -TargetDir $TargetDir -Brief $Brief -Escala "relato"
 Write-MapaMd -TargetDir $TargetDir -Brief $Brief
 

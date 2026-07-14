@@ -69,19 +69,19 @@ Los actos en el BRIEF.json se organizan por hilo. Cada acto tiene un campo `hilo
       "objetivo": "...",
       "efecto_lector": "...",
       "tension": "...",
-      "hechos": ["H_01: ...", "H_02: ..."]
+      "hechos": ["H_0001: ...", "H_0002: ..."]
     },
     {
       "hilo": "hilo-sumeria",
       "acto": "Acto I — El templo",
       "objetivo": "...",
-      "hechos": ["H_15: ...", "H_16: ..."]
+      "hechos": ["H_0015: ...", "H_0016: ..."]
     }
   ]
 }
 ```
 
-**Hechos distribuidos `[D]`:** cuando un hecho describa un patrón recurrente o evolución progresiva, márcalo con `[D · H_XX–H_YY]`. En multi-hilo, un `[D]` puede distribuirse en varios hilos si el patrón es cross-hilo. Ver `scaffolding-hecho` para criterios y ejemplos.
+**Hechos distribuidos `[D]`:** cuando un hecho describa un patrón recurrente o evolución progresiva, márcalo con `[D · H_XXXX–H_XXXX]`. En multi-hilo, un `[D]` puede distribuirse en varios hilos si el patrón es cross-hilo. Ver `scaffolding-hecho` para criterios y ejemplos.
 
 Puntos de conexión que han emergido de la conversación.
 
@@ -105,9 +105,9 @@ Estructura:
 > Tensión: ...
 
 #### Hechos
-- H_01: ...
-- H_02: ...
-- H_03 [D · H_05–H_10]: ...
+- H_0001: ...
+- H_0002: ...
+- H_0003 [D · H_0005–H_0010]: ...
 
 ### Acto II — <nombre del acto>
 ...

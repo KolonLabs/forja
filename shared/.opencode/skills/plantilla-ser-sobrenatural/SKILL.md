@@ -1,5 +1,5 @@
 ---
-name: plantilla-ser_sobrenatural
+name: plantilla-ser-sobrenatural
 description: Estructura y campos obligatorios para crear una ficha de ser sobrenatural con naturaleza, manifestación, reglas ontológicas y rol narrativo. Secciones FIJO (inmutable) y DINÁMICO (actualizable por el cronista).
 ---
 

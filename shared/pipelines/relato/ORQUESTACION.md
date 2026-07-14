@@ -15,7 +15,7 @@
 |---|---|---|
 | guionista | hechos, beats o tramo señalado | mapa de beats, propuesta `[D]`, escenas o reparación |
 | auditor-beats | mapa de beats + hechos | un diagnóstico estructural priorizado |
-| escritor | escena `E_XXXX`, beats, contexto y fichas | escena completa con bloques `B_XXXX` |
+| escritor | escena `E_XXXX`, beats, contexto y fichas | escena completa con anclas invisibles `B_XXXX` |
 | validador | escena completa + contexto | problemas concretos por beat, sin scores |
 | integrador | bloques señalados + feedback | reemplazos de esos bloques |
 | entidades | entidad recurrente o crítica | ficha Markdown propuesta |
@@ -56,7 +56,7 @@
 ```text
 Escena: E_XXXX completa; beats en orden; escena previa y siguiente; fichas necesarias;
 delta de contexto relevante; estilo activo.
-Devolver: la escena completa, con un bloque ## B_XXXX — acción por beat.
+Devolver: la escena completa, con `<!-- B_XXXX -->` antes del primer pasaje que realiza cada beat. Las anclas no crean secciones de prosa.
 ```
 
 ### Validador
@@ -71,8 +71,20 @@ Devolver: problemas factuales bloqueantes y observaciones editoriales por B_XXXX
 ```text
 Escena: E_XXXX; bloques B_XXXX señalados; feedback; bloque anterior y posterior;
 contexto y estilo.
-Devolver: solo los bloques corregidos, cada uno con su heading.
+Devolver: solo los tramos corregidos, cada uno iniciado por su ancla `<!-- B_XXXX -->`.
 ```
+
+## Formato de draft
+
+```markdown
+<!-- ESCENA E_0001: nombre | salida: continua -->
+<!-- B_0001 -->
+Prosa de la escena.
+<!-- B_0002 -->
+La prosa continúa sin un corte visible.
+```
+
+Las anclas permiten localizar una acción para corregirla. No son headings ni unidades de escritura: la unidad de prosa y validación sigue siendo `E_XXXX`.
 
 ## Estados
 
