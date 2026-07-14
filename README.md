@@ -9,6 +9,8 @@ Forja es el hub que crea y compila proyectos de ficcion. No escribe manuscritos 
 3. Dentro del workspace, desarrolla la obra y ejecuta `/publicar` para generar el manuscrito limpio.
 4. Vuelve al hub y ejecuta `/crear-libro` para ensamblar Markdown y, opcionalmente, EPUB y PDF.
 
+Si un relato publicado requiere cambios de contenido, crea primero una edición derivada con `/nueva-edicion`; no uses `/recompilar-libro`, que solo regenera formatos.
+
 ```text
 /nuevo-proyecto
 opencode --cwd "workspaces/<slug>"
@@ -24,9 +26,10 @@ Consulta la [guia operativa del hub](docs/operacion-hub.md) para elegir escala, 
 |---|---|
 | `/nuevo-proyecto` | Conduce un briefing editorial de siete fases y crea un workspace. |
 | `/crear-libro` | Compila una novela o una antologia desde workspaces finalizados. |
+| `/nueva-edicion` | Abre una edición corregible e independiente de un relato publicado. |
 | `/recompilar-libro` | Añade o regenera formatos de un libro ya publicado sin tocar sus fuentes. |
 
-Los comandos de escritura (`/generar`, `/revisar`, `/expandir`, `/publicar`) se ejecutan dentro del workspace, no desde el hub.
+Los comandos de escritura (`/generar`, `/corregir`, `/revisar`, `/expandir`, `/publicar`) se ejecutan dentro del workspace, no desde el hub.
 
 ## Estructura
 

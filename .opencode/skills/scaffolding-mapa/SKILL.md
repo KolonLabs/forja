@@ -36,6 +36,9 @@ _actos.md (actos con hechos) → guion.md (escenas + hechos H_NNNN + beats B_NNN
 | guion.md | guionista | guionista, director (estados) | Escenas, hechos, beats |
 | relato-draft.md | director | escritor (append) | Prosa beat a beat |
 | relato.md | director (/publicar) | — | Versión limpia publicable |
+| EDICION.md | /nueva-edicion (solo edición) | — | Linaje y motivo de la edición derivada |
+| relato-edicion-anterior.md | /nueva-edicion (solo edición) | — | Manuscrito publicado de referencia, solo lectura |
+| correcciones.md | /nueva-edicion, director | director | Registro de las correcciones de una edición |
 | contexto_narrativo.md | director | director | Memoria del relato |
 | fichas/ | entidades | entidades | Fichas de entidades |
 

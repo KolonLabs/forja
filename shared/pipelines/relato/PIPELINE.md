@@ -94,10 +94,24 @@ Por cada beat `⬜` en `guion.md`, en orden secuencial:
 
 ---
 
+## Edición derivada (`estado: correccion`)
+
+Una edición derivada conserva `guion.md`, fichas y `relato-draft.md` de un relato publicado, pero guarda el manuscrito previo en `relato-edicion-anterior.md`. No reinicia FASE 1–3.
+
+1. `/corregir` ejecuta una auditoría global y corrige estructura/prosa por beats; `/revisar` y `/expandir` permiten intervenciones concretas.
+2. Toda modificación se valida y queda anotada en `correcciones.md`.
+3. `/publicar` vuelve a generar `relato.md` desde el draft corregido.
+
+**Transición de edición:** `publicado (origen) → correccion (edición derivada) → finalizado → publicado (hub)`.
+
+---
+
 ## Transiciones de estado
 
 ```
 diseno → fichas → escritura → finalizado → publicado (hub)
+
+publicado (origen) → correccion (edición derivada) → finalizado → publicado (hub)
 ```
 
 ## Agentes activos
@@ -119,6 +133,7 @@ diseno → fichas → escritura → finalizado → publicado (hub)
 - `/generar` — inicia o continúa desde `config.json.estado`
 - `/revisar-guion` — revisa la coherencia de guion.md (escenas, arcos, ritmo, transiciones)
 - `/revisar B_NNNN [instrucciones]` — revisión puntual de un beat
+- `/corregir [alcance] [instrucciones]` — pasada completa de una edición derivada
 - `/expandir B_NNNN [instrucciones]` — expansión de un beat
 - `/publicar` — salida limpia
 

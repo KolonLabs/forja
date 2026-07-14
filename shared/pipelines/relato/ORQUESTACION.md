@@ -204,6 +204,7 @@ Output: fichas/<tipo>_<slug>.md
 | `escritura` | ✅ (FASE 3) |
 | `finalizado` | ✅ (manuscrito limpio listo para compilar) |
 | `publicado` | Solo hub, tras `/crear-libro` correcto |
+| `correccion` | Edición derivada: `/corregir`, `/revisar` o `/expandir` antes de `/publicar` |
 
 ---
 

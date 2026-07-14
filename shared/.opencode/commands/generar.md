@@ -21,13 +21,15 @@ El director:
 3. Sigue el contrato en `ORQUESTACION.md` para spawnear subagentes
 4. Avanza secuencialmente por las fases hasta completar el pipeline
 
+Si el estado es `correccion`, no reinicia ni reescribe el pipeline: ese workspace es una edición derivada y se trabaja con `/corregir`, `/revisar` o `/expandir` antes de ejecutar `/publicar`.
+
 ## Fases por escala
 
 ### Relato (4 fases)
 - **FASE 1 — Diseño**: guionista genera `guion.md` (actos → escenas → hechos → beats)
 - **FASE 2 — Componentes**: entidades crea fichas en `fichas/`, director reconcilia, crea `contexto_narrativo.md` + `relato-draft.md`
 - **FASE 3 — Beat a beat**: escritor → validador → ±integrador por cada beat. Director actualiza `contexto_narrativo.md` por escena
-- **FASE 4 — Publicar**: `/publicar` genera `relato.md` limpio
+- **FASE 4 — Finalizar**: `/publicar` genera `relato.md` limpio y deja el estado en `finalizado`
 
 ### Novela simple (4 fases)
 - **FASE 0 — Diseño**: guionista genera `guion-novela.md`

@@ -11,7 +11,7 @@ Forja/
 ├── .opencode/                         # Hub: solo scaffolding y creación de libros
 │   ├── agents/
 │   │   ├── scaffolder.md              # Wizard de briefing editorial (7 fases)
-│   │   └── bibliotecario.md           # Ensambla libros y recompila formatos desde artefactos publicados
+│   │   └── bibliotecario.md           # Deriva ediciones, ensambla libros y recompila formatos
 │   ├── skills/
 │   │   ├── scaffolding-acto/          # Esquema de acto narrativo
 │   │   ├── scaffolding-hecho/         # Esquema de hecho narrativo
@@ -22,6 +22,7 @@ Forja/
 │   └── commands/
 │       ├── nuevo-proyecto.md          # /nuevo-proyecto
 │       ├── crear-libro.md             # /crear-libro
+│       ├── nueva-edicion.md           # /nueva-edicion (relato)
 │       └── recompilar-libro.md        # /recompilar-libro
 ├── shared/                            # Fuente de verdad del pipeline de ficción
 │   ├── .opencode/
@@ -39,6 +40,7 @@ Forja/
 │   ├── new-novela-simple.ps1          # Creador de workspace novela simple
 │   ├── new-novela-multi-hilo.ps1      # Creador de workspace novela multi-hilo
 │   ├── crear-libro.ps1                # Ensambla libro desde workspaces finalizados
+│   ├── new-edicion-relato.ps1         # Deriva una edición corregible de un relato publicado
 │   ├── recompilar-libro.ps1           # Regenera formatos desde un libro publicado
 │   ├── build-pdf.ps1                  # Compila PDF con Pandoc y un motor local
 │   ├── templates/forja-kdp.typ         # Plantilla PDF reutilizable
@@ -57,7 +59,7 @@ Forja/
 | Agente | Modelo | Fuente | Rol |
 |--------|--------|--------|-----|
 | **scaffolder** | `deepseek-v4-pro` | `.opencode/agents/scaffolder.md` | Wizard de briefing editorial. NO escribe ficción. Crea workspaces. |
-| **bibliotecario** | `deepseek-v4-flash` | `.opencode/agents/bibliotecario.md` | Ensambla libros (EPUB/PDF) desde workspaces finalizados, vía `/crear-libro`, y recompila formatos de libros ya publicados. Sin criterio editorial, no escribe ni edita contenido narrativo. |
+| **bibliotecario** | `deepseek-v4-flash` | `.opencode/agents/bibliotecario.md` | Deriva ediciones de relatos publicados, ensambla libros desde workspaces finalizados y recompila formatos. No escribe ni edita contenido narrativo. |
 
 Ninguno de los dos **se inyecta en workspaces**. Ambos viven solo en el hub.
 
@@ -67,9 +69,10 @@ Ninguno de los dos **se inyecta en workspaces**. Ambos viven solo en el hub.
 |---------|-------------|
 | `/nuevo-proyecto` | Wizard de briefing (7 fases) + creación de workspace |
 | `/crear-libro` | Ensambla un libro desde workspaces finalizados (1+ relatos o 1 novela) |
+| `/nueva-edicion` | Deriva un relato publicado en un workspace de corrección independiente |
 | `/recompilar-libro` | Añade o regenera EPUB/PDF desde el Markdown congelado de un libro publicado |
 
-Los comandos de escritura (`/generar`, `/revisar`, `/expandir`, `/publicar`) operan **dentro de un workspace** y los ejecuta el director de esa escala.
+Los comandos de escritura (`/generar`, `/corregir`, `/revisar`, `/expandir`, `/publicar`) operan **dentro de un workspace** y los ejecuta el director de esa escala.
 
 ## Cómo crear un proyecto nuevo
 
@@ -95,6 +98,8 @@ Lo ejecuta el agente **bibliotecario**: lee los archivos limpios de workspaces e
 
 Para añadir o regenerar EPUB/PDF de un libro ya publicado se usa `/recompilar-libro <slug-libro> [--epub] [--pdf] [--pdf-formato <formato>] [--pdf-motor <motor>]`. Opera solo sobre el Markdown y `manifest.json` congelados en `publicados/<libro>/`; no modifica workspaces.
 
+Si cambia el contenido de un relato publicado, se usa `/nueva-edicion <workspace-publicado> <slug-edicion> [--titulo "..."] [--motivo "..."]`. Crea un workspace derivado en estado `correccion`, con `relato-edicion-anterior.md` como referencia inmutable. Tras `/corregir` y `/publicar`, la edición queda `finalizado` y se compila con un slug de libro nuevo. Este flujo no está disponible todavía para novelas.
+
 ## Reglas del hub
 
 - **Idioma**: español (todo el contenido, vocabulario e interacción).
@@ -115,7 +120,7 @@ Para añadir o regenerar EPUB/PDF de un libro ya publicado se usa `/recompilar-l
 |-----------|-----------|
 | `shared/.opencode/agents/` | 2 agentes fijos: memoria, cronista (solo se inyectan en novelas) |
 | `shared/.opencode/skills/` | 41 skills: invariantes + exclusivos por escala |
-| `shared/.opencode/commands/` | 7 comandos: generar, revisar, expandir, publicar, refinar-hechos, revisar-guion, validar-hechos |
+| `shared/.opencode/commands/` | 8 comandos: generar, revisar, expandir, corregir, publicar, refinar-hechos, revisar-guion, validar-hechos |
 | `shared/pipelines/<escala>/` | 7 agentes + 4 skills + PIPELINE.md + ORQUESTACION.md por escala |
 
 Al crear un workspace, el script inyecta solo los agentes y skills que corresponden a la escala detectada. Los agentes escala-específicos (director, guionista, escritor, validador, integrador, entidades) viven en `shared/pipelines/<escala>/agentes/`.

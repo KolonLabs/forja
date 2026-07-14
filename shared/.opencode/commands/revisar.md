@@ -46,6 +46,10 @@ El director deduce el scope según las instrucciones del usuario:
 3. Corrección → validador → ±integrador
 4. Reemplazo quirúrgico del beat en el draft (solo ese bloque)
 
+## Ediciones derivadas de relato
+
+En un relato con `estado: correccion`, `/revisar` opera sobre la edición derivada. Debe preservar `relato-edicion-anterior.md`, mantener el estado `correccion`, actualizar `ultima_modificacion` y anotar el beat y el resultado en `correcciones.md`. Para un relato `finalizado` o `publicado`, no edites el texto: abre primero `/nueva-edicion` desde el hub. Las novelas mantienen su contrato actual hasta su migración específica.
+
 ## Notas
 
 - El director mantiene coherencia: si el beat corregido afecta a fichas de entidades, propone actualizarlas

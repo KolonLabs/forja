@@ -163,6 +163,8 @@ Objetivo: transformar el draft en un relato limpio. La finalización es formateo
 
 ## Pipeline: /revisar
 
+Solo modifica texto si el estado es `escritura` o `correccion`. Si está `finalizado` o `publicado`, no reabras el texto: indica que debe crearse una edición derivada desde el hub con `/nueva-edicion`.
+
 1. Identifica el beat por `stable_id`; usa `seq` o descripción solo para presentar candidatos y confirmar el `stable_id` correcto.
 2. Crea backup de `relato-draft.md`.
 3. Lee el beat, el guion y las fichas relevantes.
@@ -175,16 +177,37 @@ Objetivo: transformar el draft en un relato limpio. La finalización es formateo
    - `completo` → 5 dimensiones
 6. Mismo criterio de integrador que en `/generar`.
 7. Reemplaza solo el bloque del beat (localizado por stable_id) en `relato-draft.md`.
+8. Si el estado es `correccion`, conserva ese estado, actualiza `ultima_modificacion` y añade una fila a `correcciones.md` con fecha, alcance, beat y resultado. Nunca modifica `relato-edicion-anterior.md`.
 
 ---
 
 ## Pipeline: /expandir
+
+Solo modifica texto si el estado es `escritura` o `correccion`. En `finalizado` o `publicado`, exige abrir una edición derivada.
 
 1. Identifica el beat por `stable_id`; si el usuario aporta display o descripción, resuélvelos primero al `stable_id`.
 2. Crea backup.
 3. Invoca al `escritor` en modo expansión: recibe beat original + beat del guion + enfoque de expansión + beat siguiente del draft (para no romper transición).
 4. Invoca al `validador` e `integrador` según criterio estándar.
 5. Reemplaza solo el bloque del beat (localizado por stable_id) en `relato-draft.md`.
+6. Si el estado es `correccion`, mantiene el estado y registra el cambio en `correcciones.md`.
+
+---
+
+## Pipeline: /corregir (edición derivada)
+
+Precondición: `config.json.tipo = "relato"`, `estado = "correccion"` y existe `edicion`. Si no se cumple, detente: este flujo no está disponible todavía para novelas ni para relatos que no deriven de una publicación.
+
+1. Lee `EDICION.md`, `correcciones.md`, `relato-edicion-anterior.md`, `relato-draft.md`, `guion.md`, `contexto_narrativo.md` y fichas relevantes. El manuscrito de referencia es solo lectura.
+2. Crea backup de cada archivo que vayas a modificar.
+3. Invoca al `validador` en modo global con `dimensiones: ["coherencia", "tono", "crudeza", "geometria", "sensorial"]`. El briefing incluye también la instrucción del usuario y el manuscrito de referencia para distinguir una corrección de una regresión.
+4. Clasifica sus hallazgos por `stable_id`:
+   - **Estructura o continuidad de acciones:** invoca al `guionista` en modo `revision` sobre el tramo mínimo. Si se añaden, eliminan o alteran acciones, reescribe los beats afectados con `escritor`, valida e integra igual que en FASE 3.
+   - **Prosa, voz, ritmo, crudeza o sensorial:** invoca al `integrador` por beat, con feedback global y la instrucción del usuario; revalida cada beat afectado.
+   - **Sin hallazgos pero con instrucción explícita:** localiza los beats afectados y aplica la instrucción mediante `integrador`.
+5. No apliques cambios fuera del alcance solicitado sin justificarlo en el registro. Si el modo es `completa`, resuelve todos los hallazgos que el director considere necesarios para cumplir el gate de la edición.
+6. Actualiza `contexto_narrativo.md` si una corrección cambia estados, hechos o relaciones. Actualiza fichas si cambian atributos persistentes.
+7. Añade una fila a `correcciones.md` (fecha, alcance, beats y resultado), actualiza `ultima_modificacion` y conserva `estado = "correccion"`.
 
 ---
 
@@ -192,8 +215,9 @@ Objetivo: transformar el draft en un relato limpio. La finalización es formateo
 
 1. Si el relato está en `estado: finalizado`, verifica `relato.md` y no reescribas prosa.
 2. Si el relato está en `estado: escritura` con todos los beats `✅`, aplica FASE 4.
-3. Verifica `relato.md` > 0 bytes, sin headings residuales.
-4. Tras una finalización correcta, deja el estado en `finalizado`.
+3. Si el relato está en `estado: correccion`, verifica que todos los beats de `guion.md` están `✅`, que existe `correcciones.md` y aplica FASE 4 sobre el draft corregido.
+4. Verifica `relato.md` > 0 bytes, sin headings residuales.
+5. Tras una finalización correcta, deja el estado en `finalizado`.
 
 ---
 

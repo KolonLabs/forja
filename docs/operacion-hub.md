@@ -4,7 +4,7 @@ Esta guia describe como operar el hub. Los workspaces son autonomos: este docume
 
 ## Antes de empezar
 
-Ejecuta `/nuevo-proyecto` y `/crear-libro` desde la raiz del hub. Abre un workspace existente con:
+Ejecuta `/nuevo-proyecto`, `/nueva-edicion` y `/crear-libro` desde la raiz del hub. Abre un workspace existente con:
 
 ```powershell
 opencode --cwd "workspaces/<slug>"
@@ -86,6 +86,27 @@ Un workspace `publicado` no puede volver a entrar en `/crear-libro` de forma imp
 
 El comando recompila desde el Markdown congelado y el manifiesto de `publicados/<slug-libro>/`; no lee ni modifica workspaces.
 
+## Flujo 4: corregir un relato publicado
+
+Una corrección de contenido es una edición nueva, no una recompilación. Desde el hub:
+
+```text
+/nueva-edicion <workspace-publicado> <slug-edicion> [--titulo "Título"] [--motivo "..."]
+```
+
+Solo admite relatos en `publicado`. El original permanece intacto. El hub crea `workspaces/<slug-edicion>/`, conserva la versión de partida en `relato-edicion-anterior.md` y deja el derivado en estado `correccion`.
+
+Abre ese workspace y ejecuta una pasada completa o puntual:
+
+```text
+/corregir completa
+/revisar B_0012 ajustar la continuidad del diálogo
+/expandir B_0021 hacer más visible la reacción de Laura
+/publicar
+```
+
+`/publicar` genera el nuevo `relato.md` y pasa la edición a `finalizado`. Después compílala con un slug de libro distinto mediante `/crear-libro`; así la edición anterior y sus formatos permanecen congelados. Las ediciones de novela simple y multi-hilo aún no están soportadas.
+
 ## Formatos y requisitos de salida
 
 | Salida | Opcion | Requisitos |
@@ -112,6 +133,7 @@ El formato predeterminado es `paperback`. Si Pandoc no esta en el `PATH`, el com
 | Mensaje o situacion | Accion |
 |---|---|
 | El workspace no esta en estado `finalizado`. | Ejecuta `/publicar` dentro del workspace antes de compilar. |
+| Quiero corregir contenido de un relato `publicado`. | Crea `/nueva-edicion`; `/recompilar-libro` no modifica texto. |
 | Falta `relato.md` o `novela.md`. | Publica la obra; no pases archivos ni rutas manuales al comando. |
 | Se mezclan relatos y novelas. | Compila una novela sola o usa exclusivamente relatos para la antologia. |
 | Falta Pandoc. | Instala Pandoc o define `PANDOC_PATH`/`PANDOC`. |
