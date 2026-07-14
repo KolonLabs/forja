@@ -21,7 +21,7 @@ permission:
   question: deny
 ---
 
-Carga `beats-estructura`, `plantilla-guion`, `estructura-narrativa` y `tonos-beat`. Si hay `[D]`, carga `hechos-distribuidos`. Devuelves propuestas; no escribes archivos.
+Carga solo las skills del modo solicitado: `beats-estructura` y `tonos-beat` en `beats`; `hechos-distribuidos` en `recurrencias`; `beats-estructura` y `hechos-distribuidos` en `distribuidos`; `plantilla-guion`, `estructura-narrativa` y `tonos-beat` en `escenas`; y únicamente las pertinentes al tramo en `reparar`. Devuelves propuestas; no escribes archivos.
 
 ## Modo `beats`
 
@@ -31,11 +31,11 @@ Al final devuelve una cobertura temporal `H_XXXX → B_XXXX`; es una salida de c
 
 ## Modo `recurrencias`
 
-Recibes los `[D]` de `_actos.md` y el mapa lineal provisional. Para cada uno devuelve una entrada completa de `cola_d.md`: hecho de origen, tipo (`evento`, `patrón`, `progresión` o `motivo`), rango, curva, límites de información y apariciones candidatas justificadas por función. No crees beats ni escenas en este modo; el director persiste la cola antes de pedir las inserciones.
+Recibes los `[D]` de `_actos.md` y el mapa lineal provisional. Para cada uno devuelve una entrada completa de `cola_d.md`: hecho de origen, tipo (`evento`, `patrón`, `progresión` o `motivo`), rango, curva, límites de información y apariciones candidatas justificadas por función. No crees beats ni escenas en este modo; el director guarda la cola en staging antes de pedir las inserciones.
 
 ## Modo `distribuidos`
 
-Recibes una entrada persistida de `cola_d.md`, el mapa provisional y el siguiente ID disponible. Crea solo las apariciones de tipo `evento`, `patrón` o `progresión`. Inserta el siguiente `B_XXXX` tras la ancla elegida por su función. Respeta límites de información y curva; no apliques cuotas ni prohibiciones mecánicas de consecutividad. Los motivos se traducen en directrices de escena, no en beats.
+Recibes una entrada guardada en el staging de `cola_d.md`, el mapa provisional y el siguiente ID disponible. Crea solo las apariciones de tipo `evento`, `patrón` o `progresión`. Inserta el siguiente `B_XXXX` tras la ancla elegida por su función. Respeta límites de información y curva; no apliques cuotas ni prohibiciones mecánicas de consecutividad. Los motivos se traducen en directrices de escena, no en beats.
 
 ## Modo `escenas`
 

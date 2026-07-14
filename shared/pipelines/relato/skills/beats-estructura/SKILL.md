@@ -5,7 +5,7 @@ description: Define beats globales de relato como acciones concretas sin invadir
 
 # Beats — Relato
 
-`B_XXXX` es un ID global y durable. Su posición es la posición que ocupa en el guion; no se renumera, reutiliza ni deriva de una escena.
+`B_XXXX` es un ID global y durable **desde que el guion queda persistido**. Antes de ese gate, el director puede asignar un rango provisional que no sobrevive a una interrupción. Ya persistido, su posición es la que ocupa en el guion; no se renumera, reutiliza ni deriva de una escena.
 
 ## Formato
 

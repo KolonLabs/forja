@@ -15,8 +15,8 @@ H_XXXX (hechos de briefing)
 | ID | Función |
 |---|---|
 | `H_XXXX` | Hecho del briefing. Se congela al iniciar la escritura. |
-| `B_XXXX` | Acción causal mínima. Es global, único y no se renumera. |
-| `E_XXXX` | Unidad dramática y de generación. Agrupa beats contiguos y no se renumera. |
+| `B_XXXX` | Acción causal mínima. Es global, único y no se renumera tras persistirse. |
+| `E_XXXX` | Unidad dramática y de generación. Agrupa beats contiguos y no se renumera tras persistirse. |
 
 El orden en `guion.md` es el orden narrativo. Los IDs solo identifican: no existen `stable_id`, `parent_id`, `seq` ni UUID. `config.json.ultimo_hecho_seq`, `ultimo_beat_seq` y `ultimo_escena_seq` son los contadores canónicos: el director asigna desde contador + 1 y los actualiza al persistir, sin recalcularlos ni reutilizar IDs retirados.
 
@@ -26,11 +26,13 @@ Un beat contiene únicamente acción, consecuencia y, cuando difiere del arco to
 
 1. **Preparar.** El director verifica `H_XXXX`, restricciones y rangos `[D]`.
 2. **Mapa lineal provisional.** El director lee `ultimo_beat_seq`, fija el primer `B_XXXX` disponible y se lo comunica al guionista. El guionista genera los beats de hechos lineales y la cobertura temporal `H → B`. Mientras no se persista el guion, estos IDs son provisionales y no sobreviven a una interrupción.
-3. **Materializar recurrencias.** El guionista, en modo `recurrencias`, convierte cada `[D]` en una entrada completa de `cola_d.md` (tipo, rango, curva, límites y apariciones candidatas). El director persiste esa cola. Después pide el modo `distribuidos`, empezando en el siguiente ID provisional, para insertar solo eventos, patrones y progresiones por función. Los motivos pasan como directrices de escena y no generan beats.
+3. **Materializar recurrencias.** El guionista, en modo `recurrencias`, convierte cada `[D]` en una entrada completa de `cola_d.md` (tipo, rango, curva, límites y apariciones candidatas). El director abre el staging `diseno`, guarda allí la cola —cerrada y vacía si no hay `[D]`— y pide el modo `distribuidos` leyendo esa copia. Empieza en el siguiente ID provisional e inserta solo eventos, patrones y progresiones por función. Los motivos pasan como directrices de escena y no generan beats.
 4. **Diagnóstico único.** `auditor-beats` revisa cobertura, causalidad, atomicidad, fugas de información y ausencia de prosa en los beats. Solo los problemas bloqueantes se reparan, en una única pasada.
 5. **Escenas.** El guionista agrupa beats en `E_XXXX`. Una situación amplia puede contener varias escenas operativas si existe un giro de objetivo, información, poder, foco o resultado. Cada escena declara arco tonal y `Salida: continua | separador`.
-6. **Persistencia atómica.** El director escribe el `guion.md` final, actualiza `ultimo_beat_seq` y `ultimo_escena_seq` en la misma operación, marca las entradas de `cola_d.md` como resueltas y la cierra. Desde este punto, ningún ID persistido se reutiliza.
+6. **Persistencia recuperable.** El director completa en el staging ya abierto `guion.md`, `config.json` y la `cola_d.md` cerrada, y ejecuta `scripts/relato-transaccion.ps1 -Accion Confirmar` solo si el helper valida la estructura y los contadores. Tras una interrupción, `-Accion Recuperar` descarta o restaura el conjunto completo. Desde este punto, ningún ID persistido se reutiliza.
 7. **Gate mecánico.** El director comprueba que todos los beats pertenecen a una escena, son contiguos y que las salidas son coherentes. No hay una segunda auditoría estética por defecto.
+
+Si cualquier gate falla después de abrir staging y antes de confirmar, el director ejecuta `-Accion Recuperar`; los artefactos vivos quedan intactos.
 
 Si falta un hecho lineal para culminar un `[D]`, el director presenta ese bloqueo: no inventa ni altera `H_XXXX` sin autorización.
 
@@ -62,15 +64,15 @@ Por cada `E_XXXX`, en orden:
 ## FASE 4 — Finalizar
 
 1. Verifica que cada `E_XXXX` del guion tenga un único marcador de draft, en el mismo orden y con la misma `Salida`; cada marcador debe contener exactamente sus `B_XXXX`, una vez y en orden. Rechaza escenas, anclas o beats huérfanos.
-2. Genera `relato.md` con el título de `config.json`.
-3. Elimina anclas `B_XXXX` y marcadores de escena. Convierte en `---` solo los marcadores con `salida: separador`; los de `continua` se eliminan sin corte visible.
+2. Prepara una transacción `publicar`, genera en su staging `relato.md` con el título de `config.json` y deja `config.json.estado = "finalizado"`.
+3. Elimina anclas `B_XXXX` y marcadores de escena. Convierte en `---` solo los marcadores con `salida: separador`; los de `continua` se eliminan sin corte visible. Confirma la transacción; el helper rechaza un manuscrito que conserve IDs de control.
 
 **Transición:** `estado = finalizado`. El hub asigna `publicado` tras compilar.
 
 ## Correcciones y memoria
 
-- Una corrección estructural en `escritura` o `correccion` actualiza en una transacción el guion, las escenas del draft afectadas y el contexto desde la primera `E_XXXX` modificada. En `finalizado` o `publicado`, primero se abre una edición derivada.
+- Una corrección estructural en `escritura` o `correccion` actualiza mediante staging transaccional el guion, las escenas del draft afectadas y el contexto desde la primera `E_XXXX` modificada. En `finalizado` o `publicado`, el workspace solo indica volver al hub para abrir una edición derivada.
 - Al dividir una escena, la primera conserva su `E_XXXX` y la siguiente toma un ID nuevo. Al fusionarlas, sobrevive la primera y la otra queda retirada; ningún ID se reutiliza.
-- Si un draft heredado usa headings `## B_XXXX — ...`, el director los sustituye primero por `<!-- B_XXXX -->`, sin reescribir su prosa, antes de revisar, expandir o corregir.
+- Si un draft heredado usa headings `## B_XXXX — ...`, el director los sustituye dentro del staging de corrección por `<!-- B_XXXX -->`, sin reescribir su prosa, antes de revisar, expandir o corregir.
 - Cada escena añade al contexto solo un delta breve. Tras una salida `separador`, el director compacta los deltas de la secuencia cerrada.
 - `cola_d.md` se cierra al terminar diseño y no se carga durante la escritura.

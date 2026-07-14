@@ -38,7 +38,7 @@ H_XXXX (hechos) → B_XXXX (beats globales) → E_XXXX (escenas operativas) → 
 ```
 
 - `H_XXXX` se asigna al crear `_actos.md` y no cambia durante la generación.
-- `B_XXXX` es una acción causal, sin prosa ni cuota de longitud. Su identificador nunca se renumera.
+- `B_XXXX` es una acción causal, sin prosa ni cuota de longitud. El rango de diseño es provisional; una vez persistido el guion, su identificador nunca se renumera.
 - `E_XXXX` agrupa beats contiguos en una unidad dramática que se escribe en una sola generación. Una situación amplia puede incluir varias escenas operativas.
 - La escena define un arco tonal; un beat solo añade `[registro: ...]` cuando requiere un tratamiento distinto, por ejemplo explícito o visceral.
 - `Salida: continua` mantiene la prosa sin corte visible; `Salida: separador` crea `---` en el manuscrito.
@@ -46,6 +46,8 @@ H_XXXX (hechos) → B_XXXX (beats globales) → E_XXXX (escenas operativas) → 
 El `relato-draft.md` conserva prosa continua por escena. Sus comentarios `<!-- B_XXXX -->` son anclas invisibles para localizar una corrección; no son secciones narrativas y desaparecen al publicar.
 
 El sistema valida el mapa de beats una vez, agrupa escenas y escribe una escena completa cada vez. Se detiene únicamente ante contradicción con hechos, restricciones o desenlace fijados; las preferencias editoriales se resuelven de forma autónoma.
+
+Los cambios de diseño, corrección y publicación se preparan internamente en `.forja-transaccion/` y se confirman como conjunto recuperable. No edites esa carpeta: el director la gestiona y restaura el último estado coherente si una operación se interrumpe.
 
 ## Estados
 

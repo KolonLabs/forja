@@ -123,7 +123,7 @@ Si cambia el contenido de un relato publicado, se usa `/nueva-edicion <workspace
 | `shared/.opencode/skills/` | 41 skills: invariantes + exclusivos por escala |
 | `shared/GUIA.md` | Guía de decisión para la persona usuaria, copiada como `GUIA.md` en cada workspace nuevo |
 | `shared/.opencode/commands/` | 8 comandos: generar, revisar, expandir, corregir, publicar, refinar-hechos, revisar-guion, validar-hechos |
-| `shared/pipelines/<escala>/` | Agentes, skills y, cuando una escala lo requiere, overrides de comandos + `PIPELINE.md` + `ORQUESTACION.md` |
+| `shared/pipelines/<escala>/` | Agentes, skills, scripts y overrides de comandos propios de escala + `PIPELINE.md` + `ORQUESTACION.md` |
 
 Al crear un workspace, el script inyecta agentes y skills de su escala y aplica, después de los comandos comunes, los overrides de comando que correspondan. Los agentes escala-específicos (director, guionista, escritor, validador, integrador, entidades) viven en `shared/pipelines/<escala>/agentes/`.
 

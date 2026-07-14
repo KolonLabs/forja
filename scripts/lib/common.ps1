@@ -117,7 +117,7 @@ function Inject-Pipeline {
         }
     }
 
-    # 2. Agentes de escala (6)
+    # 2. Agentes de escala (7 en relato)
     $scaleAgents = Join-Path $ScaleDir "agentes"
     if (Test-Path -LiteralPath $scaleAgents) {
         Get-ChildItem -LiteralPath $scaleAgents -File -Filter "*.md" | ForEach-Object {
@@ -125,19 +125,32 @@ function Inject-Pipeline {
         }
     }
 
-    # 3. PIPELINE.md
+    # 3. Scripts locales de escala. Relato usa solo helpers de integridad y no
+    # recibe infraestructura ni conoce directorios superiores.
+    $scaleScripts = Join-Path $ScaleDir "scripts"
+    if (Test-Path -LiteralPath $scaleScripts -PathType Container) {
+        $targetScripts = Join-Path $TargetDir "scripts"
+        if (-not (Test-Path -LiteralPath $targetScripts -PathType Container)) {
+            New-Item -ItemType Directory -Force -Path $targetScripts | Out-Null
+        }
+        Get-ChildItem -LiteralPath $scaleScripts -File | ForEach-Object {
+            Copy-Item -LiteralPath $_.FullName -Destination (Join-Path $targetScripts $_.Name) -Force
+        }
+    }
+
+    # 4. PIPELINE.md
     Copy-Item -LiteralPath (Join-Path $ScaleDir "PIPELINE.md") -Destination (Join-Path $TargetDir "PIPELINE.md") -Force
 
-    # 4. ORQUESTACION.md
+    # 5. ORQUESTACION.md
     Copy-Item -LiteralPath (Join-Path $ScaleDir "ORQUESTACION.md") -Destination (Join-Path $TargetDir "ORQUESTACION.md") -Force
 
-    # 5. Guía de uso para la persona usuaria
+    # 6. Guía de uso para la persona usuaria
     $userGuide = Join-Path $SharedDir "GUIA.md"
     if (Test-Path -LiteralPath $userGuide -PathType Leaf) {
         Copy-Item -LiteralPath $userGuide -Destination (Join-Path $TargetDir "GUIA.md") -Force
     }
 
-    # 6. Skills filtrados por escala
+    # 7. Skills filtrados por escala
     $hubSkills = Join-Path $SharedDir ".opencode\skills"
     $wsSkills = Join-Path $targetOC "skills"
     $excluded = @()
@@ -179,7 +192,7 @@ function Inject-Pipeline {
         }
     }
 
-    # 7. Skills específicos de la escala; sobrescriben contratos genéricos cuando comparten nombre.
+    # 8. Skills específicos de la escala; sobrescriben contratos genéricos cuando comparten nombre.
     $scaleSkills = Join-Path $ScaleDir "skills"
     if (Test-Path -LiteralPath $scaleSkills) {
         Get-ChildItem -LiteralPath $scaleSkills -Directory | ForEach-Object {
@@ -190,7 +203,7 @@ function Inject-Pipeline {
         }
     }
 
-    # 8. Comandos comunes
+    # 9. Comandos comunes
     $hubCommands = Join-Path $SharedDir ".opencode\commands"
     $wsCommands = Join-Path $targetOC "commands"
     if (Test-Path -LiteralPath $hubCommands) {
@@ -199,7 +212,7 @@ function Inject-Pipeline {
         }
     }
 
-    # 9. Overrides de comandos por escala. Se copian después de los comunes
+    # 10. Overrides de comandos por escala. Se copian después de los comunes
     # para que el workspace reciba instrucciones sin contaminación de otra escala.
     $scaleCommands = Join-Path $ScaleDir "commands"
     if (Test-Path -LiteralPath $scaleCommands) {
@@ -208,7 +221,7 @@ function Inject-Pipeline {
         }
     }
 
-    # 10. Scripts Python de infraestructura (solo novelas)
+    # 11. Scripts Python de infraestructura (solo novelas)
     if ($Escala -ne "relato") {
         $scriptsDir = Join-Path $TargetDir "scripts"
         if (-not (Test-Path -LiteralPath $scriptsDir)) {
@@ -325,9 +338,15 @@ function Get-RelatoGuionEscenas {
     }
 
     $escenas = @()
+    $seenScenes = @{}
     $seenBeats = @{}
     for ($index = 0; $index -lt $sceneMatches.Count; $index++) {
         $match = $sceneMatches[$index]
+        $sceneId = $match.Groups[1].Value
+        if ($seenScenes.ContainsKey($sceneId)) {
+            throw "El guion repite la escena $sceneId."
+        }
+        $seenScenes[$sceneId] = $true
         $end = if ($index + 1 -lt $sceneMatches.Count) { $sceneMatches[$index + 1].Index } else { $guion.Length }
         $block = $guion.Substring($match.Index + $match.Length, $end - ($match.Index + $match.Length))
         $salida = [regex]::Match($block, '(?mi)^-\s*Salida:\s*(continua|separador)\s*$')
@@ -347,7 +366,7 @@ function Get-RelatoGuionEscenas {
         }
 
         $escenas += [pscustomobject]@{
-            id = $match.Groups[1].Value
+            id = $sceneId
             nombre = $match.Groups[2].Value.Trim()
             salida = $salida.Groups[1].Value.ToLowerInvariant()
             beats = $beats
@@ -460,6 +479,7 @@ guion.md (E_XXXX + B_XXXX)
 | guion.md | Escenas operativas y beats canónicos. |
 | relato-draft.md | Prosa continua por escena; las anclas no son secciones. |
 | contexto_narrativo.md | Memoria local que se actualiza desde la primera escena afectada. |
+| .forja-transaccion/ | Staging recuperable gestionado por el director; no se edita a mano. |
 
 Estado actual: `correccion`. No modifiques `relato-edicion-anterior.md`; termina con `/publicar` para volver a `finalizado`.
 '@) -f $Titulo, $Numero, $Origen
@@ -699,6 +719,16 @@ Hilos en ``config.json.hilos`` y ``hilos/hilo-*/``.
         $infraSection = "Modo ligero: sin Qdrant ni Neo4j. Memoria en contexto_narrativo.md."
     }
 
+    $integritySection = ""
+    if ($Escala -eq "relato") {
+        $integritySection = @"
+
+## Integridad de relato
+
+El director usa ``scripts/relato-transaccion.ps1`` para diseño, correcciones y publicación. No edites ``.forja-transaccion/`` ni escribas directamente los artefactos vivos mientras exista un staging.
+"@
+    }
+
     @"
 # $($Brief.titulo)
 
@@ -722,6 +752,7 @@ $restricciones
 ### Skills activos
 $skillsStr
 $hiloSection
+$integritySection
 ## Infraestructura
 $infraSection
 

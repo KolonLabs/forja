@@ -17,9 +17,9 @@ H_XXXX (hechos de briefing) → B_XXXX (beats globales) → E_XXXX (escenas deri
 - `H_XXXX`, `B_XXXX` y `E_XXXX` son visibles, globales y suficientes dentro de un workspace de relato.
 - No se usan `stable_id`, UUID, `parent_id` ni `seq` local.
 - Los beats se diseñan y auditan para el arco completo antes de agruparse en escenas. Las escenas agrupan beats contiguos por continuidad dramática.
-- Los IDs no se renumeran ni se reutilizan. Una inserción recibe el siguiente número disponible y el orden se expresa por la posición en `guion.md`.
-- El director es el único persistente de artefactos; los subagentes devuelven texto o diagnósticos. Cada gate y reparación queda en `registro-pipeline.md`.
-- Tras tres fallos de validación, un beat queda bloqueado y el pipeline no publica ni avanza de fase.
+- Los rangos B/E son provisionales durante diseño. Al persistir el guion se vuelven durables: no se renumeran ni se reutilizan; una inserción posterior recibe el siguiente número disponible y el orden se expresa por la posición en `guion.md`.
+- El director es el único persistente de artefactos; los subagentes devuelven texto o diagnósticos. Las operaciones multiarquivo se preparan en staging recuperable y se registran en `correcciones.md` cuando afectan una corrección o edición.
+- El diagnóstico estructural y su reparación son únicos por defecto; solo una contradicción factual o una restricción imposible bloquea el avance.
 
 ## Consecuencias
 
