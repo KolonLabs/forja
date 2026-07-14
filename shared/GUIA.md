@@ -88,7 +88,7 @@ Vuelve a la raíz de Forja para estas operaciones:
 | Crear un libro desde una obra terminada | `/crear-libro <slug-libro> <workspace...>` |
 | Añadir o regenerar EPUB/PDF sin cambiar el texto | `/recompilar-libro <slug-libro> --epub/--pdf` |
 
-`/recompilar-libro` no cambia contenido. Una corrección textual requiere `/nueva-edicion` (solo relatos por ahora). `/rehidratar-relato` extrae la semilla de un relato legado como evidencia y propone una estructura nueva antes de crear el workspace; `/importar-proyecto` analiza notas o guiones libres, conserva sus evidencias fuera del workspace y permite confirmar la escala recomendada antes de crear el brief.
+`/recompilar-libro` no cambia contenido. Una corrección textual requiere `/nueva-edicion` (solo relatos por ahora). `/rehidratar-relato` extrae la semilla de un relato legado como evidencia y propone una estructura nueva antes de crear el workspace; `/importar-proyecto` analiza notas o guiones libres como evidencia, propone un argumento reforzado y permite confirmar tanto la escala como las ampliaciones antes de crear el brief.
 
 ## Antes de actuar
 

@@ -78,7 +78,7 @@ Ninguno de los dos **se inyecta en workspaces**. Ambos viven solo en el hub.
 | `/nueva-edicion` | Deriva un relato publicado en un workspace de corrección independiente |
 | `/recompilar-libro` | Añade o regenera EPUB/PDF desde el Markdown congelado de un libro publicado |
 | `/rehidratar-relato` | Extrae evidencia de un relato legado y reconstruye un workspace nuevo de diseño tras validación editorial |
-| `/importar-proyecto` | Descubre una semilla editorial desde archivos libres y crea un workspace tras validarla |
+| `/importar-proyecto` | Extrae evidencia de archivos libres y reconstruye un argumento confirmado antes de crear el workspace |
 
 Los comandos de escritura (`/generar`, `/corregir`, `/revisar`, `/expandir`, `/publicar`) operan **dentro de un workspace** y los ejecuta el director de esa escala.
 
@@ -110,7 +110,7 @@ Si cambia el contenido de un relato publicado, se usa `/nueva-edicion <workspace
 
 Para reiniciar un relato legado con el pipeline vigente, se usa `/rehidratar-relato <origen> <slug-destino> [--actos actual|backup]` desde el hub. El extractor solo recupera `config.json`, `BRIEF.md` y los actos indicados como evidencia; el scaffolder propone después una estructura nueva y hechos con detonante, presión, cambio y consecuencia suficientes para derivar beats. No migra prosa ni guion, nunca modifica el origen y solo crea el destino tras reflexión y confirmación explícitas.
 
-Para recuperar ideas desde notas, escaletas o guiones libres se usa `/importar-proyecto <slug-destino> --fuente "<ruta>" [--fuente "<ruta>" ...]`. Analiza fuentes autorizadas en modo lectura, separa evidencia de hipótesis y solo crea el workspace tras la reflexión editorial y una confirmación explícita. La skill `importacion-fuentes` guía qué extraer; el scaffolder propone la escala y la persona usuaria la confirma.
+Para recuperar ideas desde notas, escaletas o guiones libres se usa `/importar-proyecto <slug-destino> --fuente "<ruta>" [--fuente "<ruta>" ...]`. Analiza fuentes autorizadas en modo lectura y separa evidencia de hipótesis. Tras elegir una candidata, el scaffolder puede reconstruir un argumento más sólido —sin copiar la escaleta— y debe señalar las propuestas no respaldadas antes de confirmarlas. Con la escala confirmada, los hechos finales aportan detonante, presión, cambio y consecuencia suficientes para derivar beats. Solo entonces se crea el workspace.
 
 ## Reglas del hub
 

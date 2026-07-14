@@ -129,7 +129,7 @@ Usa este flujo para ideas dispersas, notas, escaletas, guiones parciales o borra
 
 La primera versión admite archivos Markdown y texto plano, incluidos de forma recursiva dentro de las rutas autorizadas. El hub genera un paquete temporal con rutas, hashes y líneas para que el scaffolder extraiga evidencias, hipótesis, conflictos y candidatas. Las fuentes nunca se modifican ni se copian como prosa al destino.
 
-Si hay varias historias o versiones incompatibles, el scaffolder pide elegir antes de generar un brief. Si hay una candidata clara, completa el briefing, propone una escala con señales que la sostienen y la persona usuaria la confirma o la cambia. Después solicita la reflexión editorial y confirmación habituales. Tras crear el workspace, elimina el paquete temporal salvo que se pida conservar el informe.
+Si hay varias historias o versiones incompatibles, el scaffolder pide elegir antes de generar un brief. Con una candidata clara, usa la fuente como evidencia, no como escaleta final: propone un argumento más sólido, que puede reorganizar, ampliar o simplificar los elementos heredados. Lo que no esté respaldado se declara como propuesta razonada y se confirma antes de persistir. Tras confirmar la escala, los hechos finales deben aportar detonante, presión, cambio y consecuencia; así el guionista podrá derivar beats sin inventar el núcleo de la historia. Después solicita la reflexión editorial y confirmación habituales. Tras crear el workspace, elimina el paquete temporal salvo que se pida conservar el informe.
 
 ## Formatos y requisitos de salida
 
@@ -159,7 +159,7 @@ El formato predeterminado es `paperback`. Si Pandoc no esta en el `PATH`, el com
 | El workspace no esta en estado `finalizado`. | Ejecuta `/publicar` dentro del workspace antes de compilar. |
 | Quiero corregir contenido de un relato `publicado`. | Crea `/nueva-edicion`; `/recompilar-libro` no modifica texto. |
 | Quiero reiniciar un relato legado desde su brief y hechos. | Usa `/rehidratar-relato`; no usa ni conserva su producción antigua. |
-| Tengo notas, escaletas o guiones sin estructura Forja. | Usa `/importar-proyecto` con rutas autorizadas; primero valida la semilla recuperada. |
+| Tengo notas, escaletas o guiones sin estructura Forja. | Usa `/importar-proyecto` con rutas autorizadas; primero valida la evidencia y la propuesta editorial reconstruida. |
 | Falta `relato.md` o `novela.md`. | Publica la obra; no pases archivos ni rutas manuales al comando. |
 | Se mezclan relatos y novelas. | Compila una novela sola o usa exclusivamente relatos para la antologia. |
 | Falta Pandoc. | Instala Pandoc o define `PANDOC_PATH`/`PANDOC`. |

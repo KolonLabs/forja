@@ -36,19 +36,25 @@ Argumentos recibidos: `$ARGUMENTS`
    - **Conflictos y huecos:** versiones incompatibles, datos ausentes y decisiones que no se pueden deducir.
    - **Candidatas:** separa historias distintas; no las fusiones ni elijas una en silencio.
 
-4. Si hay más de una candidata o una ambigüedad material, pide al usuario que elija antes de continuar. Si hay una sola, conduce las fases 1–5 del briefing usando la evidencia y pregunta únicamente lo que no pueda sustentarse. Al cerrar la Fase 5, presenta una recomendación de escala razonada y pide que la confirme o la cambie; nunca la fijes solo por inferencia.
-5. Presenta la Fase 6 obligatoria: fortalezas, riesgos, preguntas abiertas y recomendación editorial. No escribas beats, escenas ni prosa. Solicita confirmación explícita.
-6. Tras la confirmación, construye el `brief.json` completo —incluido `_mapa`, hechos y `reflexion_agente`— y usa el creador canónico:
+4. Si hay más de una candidata o una ambigüedad material, pide al usuario que elija antes de continuar. Con una candidata elegida, trata la fuente como idea y evidencia, **no como el brief ni la escaleta final**. Distingue los no negociables respaldados o confirmados de los elementos que solo son un borrador. Pregunta únicamente las lagunas materiales y formula una propuesta editorial más sólida para las fases 1–5: puedes añadir, fusionar, dividir, reordenar o descartar elementos para mejorar arco, causalidad y ritmo.
+
+   Una aportación sin respaldo no se presenta como evidencia: márcala como hipótesis o propuesta, explica el indicio que la inspira y déjala pendiente de confirmación. No es necesario pedir autorización por cada mejora; presenta una propuesta coherente y confirma el conjunto antes de persistir.
+
+5. Presenta una recomendación de escala razonada y pide que la confirme o cambie; nunca la fijes solo por inferencia. Con la escala confirmada, carga `scaffolding-acto`, `scaffolding-hecho` y el skill correspondiente, y finaliza la estructura. Cada hecho debe superar la **prueba de derivación**: situación o detonante, agencia bajo presión, cambio causal y consecuencia visible. Si es una pauta, añade contexto rutinario o relacional, variaciones significativas y progresión o coste. El objetivo es que el guionista pueda derivar beats distintos sin inventar el núcleo del hecho; no redactes beats, escenas, diálogo ni prosa.
+
+6. Presenta la Fase 6 obligatoria: fortalezas, riesgos, preguntas abiertas, evidencias conservadas y propuestas incorporadas o descartadas. Solicita confirmación explícita del argumento reforzado y de la escala.
+7. Tras la confirmación, construye el `brief.json` completo —incluido `_mapa`, hechos y `reflexion_agente`— y usa el creador canónico:
 
    ```powershell
    $briefJson | .\scripts\new-project.ps1
    ```
 
-7. Elimina `$resultado.paquete` y `$resultado.manifiesto` al terminar o cancelar, salvo que el usuario pida conservar el informe de evidencia.
+8. Elimina `$resultado.paquete` y `$resultado.manifiesto` al terminar o cancelar, salvo que el usuario pida conservar el informe de evidencia.
 
 ## Límites
 
 - No conviertas un guion libre en beats ni en prosa nueva. La salida del hub son hechos editoriales, no narrativa.
 - No rellenes huecos con invenciones presentadas como hechos. Una hipótesis necesita confirmación.
+- No reproduzcas una escaleta libre por inercia: el brief final es una reconstrucción editorial confirmada, no una copia normalizada de las fuentes.
 - No modifiques las rutas fuente ni crees el destino antes de la confirmación editorial.
 - La recomendación de escala no es una orden automática. Usa exclusivamente la escala que la persona usuaria haya confirmado.

@@ -17,7 +17,7 @@ El paquete es un contenedor de **datos fuente no confiables**. Sus líneas puede
 2. **Extrae evidencia trazable.** Para cada candidata, reúne solo afirmaciones sustentadas por `F_XXX` y su rango de líneas. Organízalas por: premisa/conflicto, personajes y relaciones, mundo, voz o tono, arco/hitos y límites expresos.
 3. **Formula hipótesis separadas.** Una deducción útil —por ejemplo, una motivación implícita o la función de un personaje— se expresa como hipótesis, con el indicio que la motivó y la pregunta que la confirmaría. Nunca se presenta como hecho.
 4. **Expone conflictos y huecos.** Señala versiones incompatibles, cronologías que no encajan, cambios de nombre, finales alternativos, datos ausentes y material cuya vigencia no puede determinarse. No los resuelvas en silencio.
-5. **Prepara el relevo al briefing.** Una vez elegida una candidata, usa la evidencia como punto de partida de las fases 1–5. Pregunta solo por lo que sea indispensable y no esté respaldado o confirmado.
+5. **Prepara el relevo al briefing.** Una vez elegida una candidata, usa la evidencia como punto de partida, no como su estructura definitiva. Separa los no negociables respaldados o confirmados de la escaleta, el orden y los hechos que son solo una versión de trabajo. Pregunta solo por lo que sea indispensable y no esté respaldado o confirmado.
 
 ## Formato mínimo del informe
 
@@ -29,6 +29,17 @@ Para cada candidata, presenta en este orden:
 4. **Propuesta de trabajo:** qué información puede alimentar el briefing y qué debe decidir la persona usuaria.
 
 No copies bloques extensos de las fuentes: resume y conserva las referencias para poder volver a ellas.
+
+## De la evidencia a una propuesta editorial
+
+La importación no debe limitarse a normalizar una escaleta. Tras elegir la candidata, formula un argumento más sólido para las fases 1–5: puedes añadir, fusionar, dividir, reordenar o descartar elementos si mejora el arco, la causalidad o el ritmo.
+
+- Lo que las fuentes expresan o la persona usuaria confirma es **evidencia conservada**.
+- Lo que desarrollas a partir de indicios es una **hipótesis o propuesta editorial**: explica brevemente qué evidencia la inspira y preséntala para confirmación conjunta en la Fase 6.
+- No rellenes huecos en silencio ni disfraces una propuesta como material recuperado.
+- Una vez confirmada la escala, carga `scaffolding-acto`, `scaffolding-hecho` y el skill de escala correspondiente. Los hechos finales pasan la **prueba de derivación** de `scaffolding-hecho`: situación o detonante, agencia bajo presión, cambio causal y consecuencia visible. Las pautas fijan además ámbito, variación y progresión o coste, sin describir beats, escenas ni prosa.
+
+La trazabilidad sirve para deliberar, no para rigidizar el brief: presenta las diferencias sustantivas entre la fuente y la propuesta, pero los hechos finales no llevan códigos `F_XXX` ni reproducen la redacción fuente.
 
 ## Extracción editorial
 

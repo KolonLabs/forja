@@ -48,6 +48,13 @@ try {
     Assert-True (Test-Path -LiteralPath $resultado.manifiesto) "emite manifiesto separado"
     Assert-Throws { & (Join-Path $RepoRoot "scripts\preparar-importacion-proyecto.ps1") -Fuente @($fuentes, $segundaFuente) -Salida (Join-Path $RunRoot "demasiado-grande.md") -MaxCaracteres 10 | Out-Null } "no trunca fuentes al superar el límite"
 
+    $comando = Get-Content -LiteralPath (Join-Path $RepoRoot ".opencode\commands\importar-proyecto.md") -Raw -Encoding UTF8
+    $skill = Get-Content -LiteralPath (Join-Path $RepoRoot ".opencode\skills\importacion-fuentes\SKILL.md") -Raw -Encoding UTF8
+    $agente = Get-Content -LiteralPath (Join-Path $RepoRoot ".opencode\agents\scaffolder.md") -Raw -Encoding UTF8
+    Assert-True ($comando -match "no como el brief ni la escaleta final" -and $comando -match "prueba de derivación") "el comando exige reconstrucción editorial y hechos derivables"
+    Assert-True ($skill -match "De la evidencia a una propuesta editorial" -and $skill -match 'no llevan códigos `F_XXX`') "la skill separa trazabilidad y brief reconstruido"
+    Assert-True ($agente -match "propuesta editorial de reconstrucción" -and $agente -match "no conviertas una inferencia en evidencia") "el scaffolder no copia ni falsea la fuente"
+
     Write-Host "OK: regresión de importación de proyecto superada."
 } finally {
     if (Test-Path -LiteralPath $RunRoot) {
