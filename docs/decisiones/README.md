@@ -28,3 +28,4 @@ Este directorio conserva decisiones arquitectonicas y operativas que deben sobre
 | [0013](0013-beats-globales-con-patrones-inferidos-en-relato.md) | Relato integra patrones y contraste en el mapa global de beats, sin `[D]` ni `cola_d.md`. | Aceptada |
 | [0014](0014-reconstruccion-editorial-en-rehidratacion-de-relatos.md) | La rehidratación extrae evidencia y el scaffolder reconstruye hechos con entidad suficiente para derivar beats. | Aceptada |
 | [0015](0015-reconstruccion-editorial-en-importacion-de-proyectos.md) | La importación reconstruye un argumento confirmado desde evidencia, sin convertir hipótesis en hechos recuperados. | Aceptada |
+| [0016](0016-url-publicas-como-fuentes-de-importacion.md) | La importación admite rutas locales y URL HTTPS públicas trazables, con límites de red. | Aceptada |

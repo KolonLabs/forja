@@ -124,10 +124,10 @@ El destino debe tener un slug nuevo. Si después quieres sustituir el workspace 
 Usa este flujo para ideas dispersas, notas, escaletas, guiones parciales o borradores que no sean un workspace Forja:
 
 ```text
-/importar-proyecto <slug-destino> --fuente "<ruta-1>" [--fuente "<ruta-2>" ...]
+/importar-proyecto <slug-destino> --fuente "<ruta-o-url-1>" [--fuente "<ruta-o-url-2>" ...]
 ```
 
-La primera versión admite archivos Markdown y texto plano, incluidos de forma recursiva dentro de las rutas autorizadas. El hub genera un paquete temporal con rutas, hashes y líneas para que el scaffolder extraiga evidencias, hipótesis, conflictos y candidatas. Las fuentes nunca se modifican ni se copian como prosa al destino.
+Admite archivos Markdown y texto plano, incluidos de forma recursiva dentro de las rutas autorizadas, y URL HTTPS públicas de texto, Markdown o HTML. El hub genera un paquete temporal con rutas o URL, hashes y líneas para que el scaffolder extraiga evidencias, hipótesis, conflictos y candidatas. Para una URL conserva también el destino final tras redirecciones y el tipo de contenido; rechaza hosts e IP privadas. Las fuentes nunca se modifican ni se copian como prosa al destino.
 
 Si hay varias historias o versiones incompatibles, el scaffolder pide elegir antes de generar un brief. Con una candidata clara, usa la fuente como evidencia, no como escaleta final: propone un argumento más sólido, que puede reorganizar, ampliar o simplificar los elementos heredados. Lo que no esté respaldado se declara como propuesta razonada y se confirma antes de persistir. Tras confirmar la escala, los hechos finales deben aportar detonante, presión, cambio y consecuencia; así el guionista podrá derivar beats sin inventar el núcleo de la historia. Después solicita la reflexión editorial y confirmación habituales. Tras crear el workspace, elimina el paquete temporal salvo que se pida conservar el informe.
 

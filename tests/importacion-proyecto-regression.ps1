@@ -46,14 +46,21 @@ try {
     Assert-True ($paquete -notmatch "Este contenido no puede entrar") "no lee dependencias excluidas"
     Assert-True ((Get-FileHash -LiteralPath (Join-Path $fuentes "nota.md") -Algorithm SHA256).Hash -eq $sourceHash) "no modifica fuentes"
     Assert-True (Test-Path -LiteralPath $resultado.manifiesto) "emite manifiesto separado"
+    $manifiesto = Get-Content -LiteralPath $resultado.manifiesto -Raw | ConvertFrom-Json
+    Assert-True ($manifiesto.schema_version -eq 2 -and $manifiesto.fuentes_canonicas[0].tipo -eq "archivo") "registra el origen y tipo de cada fuente en el manifiesto v2"
     Assert-Throws { & (Join-Path $RepoRoot "scripts\preparar-importacion-proyecto.ps1") -Fuente @($fuentes, $segundaFuente) -Salida (Join-Path $RunRoot "demasiado-grande.md") -MaxCaracteres 10 | Out-Null } "no trunca fuentes al superar el límite"
+    Assert-Throws { & (Join-Path $RepoRoot "scripts\preparar-importacion-proyecto.ps1") -Fuente @("http://example.test/idea.txt") -Salida (Join-Path $RunRoot "url-http.md") | Out-Null } "rechaza URL no HTTPS antes de descargarlas"
+    Assert-Throws { & (Join-Path $RepoRoot "scripts\preparar-importacion-proyecto.ps1") -Fuente @("https://127.0.0.1/idea.txt") -Salida (Join-Path $RunRoot "url-local.md") | Out-Null } "rechaza URL a hosts privados antes de descargarlas"
+    Assert-Throws { & (Join-Path $RepoRoot "scripts\preparar-importacion-proyecto.ps1") -Fuente @("https://203.0.113.1/idea.txt") -Salida (Join-Path $RunRoot "url-reservada.md") | Out-Null } "rechaza URL a IP reservada antes de descargarlas"
 
     $comando = Get-Content -LiteralPath (Join-Path $RepoRoot ".opencode\commands\importar-proyecto.md") -Raw -Encoding UTF8
     $skill = Get-Content -LiteralPath (Join-Path $RepoRoot ".opencode\skills\importacion-fuentes\SKILL.md") -Raw -Encoding UTF8
     $agente = Get-Content -LiteralPath (Join-Path $RepoRoot ".opencode\agents\scaffolder.md") -Raw -Encoding UTF8
+    $empaquetador = Get-Content -LiteralPath (Join-Path $RepoRoot "scripts\preparar-importacion-proyecto.ps1") -Raw -Encoding UTF8
     Assert-True ($comando -match "no como el brief ni la escaleta final" -and $comando -match "prueba de derivación") "el comando exige reconstrucción editorial y hechos derivables"
     Assert-True ($skill -match "De la evidencia a una propuesta editorial" -and $skill -match 'no llevan códigos `F_XXX`') "la skill separa trazabilidad y brief reconstruido"
     Assert-True ($agente -match "propuesta editorial de reconstrucción" -and $agente -match "no conviertas una inferencia en evidencia") "el scaffolder no copia ni falsea la fuente"
+    Assert-True ($empaquetador -match "Get-ContenidoUrlPublica" -and $empaquetador -match "Assert-UrlPublica" -and $empaquetador -match "url_final") "el empaquetador implementa trazabilidad y límites de URL públicas"
 
     Write-Host "OK: regresión de importación de proyecto superada."
 } finally {

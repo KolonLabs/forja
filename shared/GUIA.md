@@ -84,7 +84,7 @@ Vuelve a la raíz de Forja para estas operaciones:
 |---|---|
 | Abrir una edición corregible de un relato publicado | `/nueva-edicion <origen> <slug-edicion>` |
 | Reiniciar un relato legado desde su semilla editorial | `/rehidratar-relato <origen> <slug-destino>` |
-| Recuperar una obra desde notas o guiones libres | `/importar-proyecto <slug-destino> --fuente "<ruta>"` |
+| Recuperar una obra desde notas, guiones libres o una URL pública | `/importar-proyecto <slug-destino> --fuente "<ruta-o-url>"` |
 | Crear un libro desde una obra terminada | `/crear-libro <slug-libro> <workspace...>` |
 | Añadir o regenerar EPUB/PDF sin cambiar el texto | `/recompilar-libro <slug-libro> --epub/--pdf` |
 
