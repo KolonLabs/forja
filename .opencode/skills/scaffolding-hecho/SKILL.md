@@ -5,7 +5,9 @@ description: Esquema de un hecho narrativo. Define qué es y qué no es un hecho
 
 # Hecho narrativo — esquema
 
-Un **hecho** es un evento narrativo de alto nivel que describe QUÉ ocurre, no CÓMO se cuenta. Es la unidad más grande que define Forja: las escenas y los beats se generan en el workspace a partir de estos hechos.
+Un **hecho** es una unidad causal de alto nivel que describe QUÉ debe hacerse visible, no CÓMO se cuenta. Puede contener un evento, una secuencia estrechamente relacionada o una pauta con su consecuencia; las escenas y los beats se generan en el workspace a partir de ese contrato.
+
+**Regla por escala:** relato usa solo hechos `H_XXXX`, sin marcas `[D]`; sus pautas se describen dentro del hecho y el guionista decide los beats que las hacen visibles. Novela-simple y novela-multi-hilo conservan los hechos distribuidos `[D]` descritos más abajo.
 
 **Tipos de hechos:**
 
@@ -16,7 +18,7 @@ Un **hecho** es un evento narrativo de alto nivel que describe QUÉ ocurre, no C
 
 ## Qué es un hecho (lineal)
 
-- ✅ Un evento concreto con sujeto, acción y consecuencia: "Miguel presencia un encuentro sexual en el parking. Uno lo mira. Se queda paralizado."
+- ✅ Un cambio o secuencia causal con sujeto, acciones relacionadas y consecuencia: "Miguel presencia un encuentro sexual en el parking; la mirada de uno de los hombres rompe su indiferencia y vuelve a casa incapaz de retomar su rutina."
 - ✅ Algo que ocurre y cambia el estado de la historia.
 - ✅ Suficientemente detallado para poder descomponerlo en escenas y beats en el workspace.
 - ✅ Implica acción física o decisión del personaje.
@@ -29,7 +31,7 @@ Un **hecho** es un evento narrativo de alto nivel que describe QUÉ ocurre, no C
 - ❌ Un tema abstracto: "La dualidad entre sus dos vidas."
 - ❌ Varios eventos inconexos en una misma frase.
 
-> ⚠️ **Estas reglas aplican SOLO a hechos lineales.** Los hechos `[D]` son patrones intencionales — ver sección «Hechos lineales vs distribuidos» abajo. Un `[D]` como «La búsqueda se vuelve sistemática» es un patrón válido, no un defecto.
+> ⚠️ En relato, una pauta explícita también es válida dentro de un hecho si aclara qué debe hacerse perceptible y qué cambia. No se acompaña de `[D]`, rango ni orden de beats.
 
 ## Qué es un hecho distribuido `[D]`
 
@@ -50,12 +52,10 @@ Un `[D]` no se evalúa como un lineal. No necesita «sujeto, acción, consecuenc
 ### Bien definido
 
 ```
-"Miguel presencia un encuentro sexual entre dos hombres en el parking de su oficina. 
-Uno de ellos lo mira directamente mientras recibe sexo oral. Miguel se queda paralizado. 
-Se masturba en el coche. Vuelve a casa. Esa noche no duerme."
+"Miguel presencia un encuentro sexual en el parking de su oficina. La mirada de uno de los hombres convierte su curiosidad en una implicación que no puede negar; vuelve a casa incapaz de recuperar la normalidad."
 ```
 
-→ Esto puede convertirse en una escena con varios beats: salir de la oficina, ver el encuentro, masturbarse, conducir a casa, interactuar con Elena.
+→ Esto puede convertirse en varios beats y, si el arco lo necesita, intercalarse con beats de su rutina doméstica. No fija la coreografía, el diálogo ni el número de escenas.
 
 ### Mal definido (demasiado vago)
 
@@ -85,7 +85,7 @@ Una frase o párrafo breve. Lo bastante específico para que se sepa qué escrib
 |--------|--------|----------|
 | **scaffolder** (hub) | Fase 5 | Ayudar al usuario a definir los hechos de cada acto. Conocer el nivel de detalle que espera el workspace. |
 
-## Hechos lineales vs distribuidos `[D]`
+## En novelas: hechos lineales vs distribuidos `[D]`
 
 En el nivel del scaffolder, algunos hechos describen **patrones, rutinas o evoluciones** que no ocurren en un solo momento. Estos hechos no pueden escribirse como una escena secuencial: deben **respirar entre los hechos del acto**, filtrándose como beats dentro de las escenas de otros hechos.
 
@@ -139,6 +139,7 @@ H_0007 [D · H_0006–H_0010]: La búsqueda se vuelve sistemática...
 ## Relación con otros skills
 
 - `scaffolding-acto`: define el acto que contiene los hechos.
-- `scaffolding-relato` / `scaffolding-novela-simple` / `scaffolding-multi-hilo`: guían la conversación de estructura según escala. Todos deben conocer el formato `[D]`.
+- `scaffolding-relato`: aplica la excepción de relato; las pautas permanecen dentro del hecho, sin `[D]`.
+- `scaffolding-novela-simple` / `scaffolding-multi-hilo`: guían el uso de `[D]` en sus escalas.
 - `beats-estructura`: skill del workspace que define el formato de beats (B_XXXX) a partir de hechos.
-- `hechos-distribuidos`: skill del workspace que el guionista carga para procesar hechos `[D]`.
+- `hechos-distribuidos`: skill de los workspaces de novela que procesa hechos `[D]`.

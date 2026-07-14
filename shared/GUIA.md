@@ -6,7 +6,7 @@ Esta guía responde **qué comando usar según tu objetivo**. Para el contrato d
 
 | Quiero… | Usa | Cuándo | No uses |
 |---|---|---|---|
-| Afinar hechos antes de desarrollar | `/refinar-hechos` | Un hecho es vago, demasiado amplio o un `[D]` no tiene rango/anotaciones claros. | Para revisar el ritmo del guion ya creado. |
+| Afinar hechos antes de desarrollar | `/refinar-hechos` | Un hecho es vago, demasiado amplio o no deja claro qué evolución debe hacerse visible. | Para revisar el ritmo del guion ya creado. |
 | Comprobar que los hechos cuentan una historia coherente | `/validar-hechos` | Quieres detectar contradicciones, huecos, fugas de información o problemas de arco. | Para corregir prosa. |
 | Crear o continuar la obra | `/generar` | El workspace está en el flujo normal de diseño, componentes o escritura. | En una edición derivada con estado `correccion`. |
 | Revisar la estructura antes de escribir o cerrar | `/revisar-guion` | Hay dudas sobre beats, escenas operativas, ritmo, registros o salidas visibles. | Para cambiar solo la redacción de un beat. |
@@ -38,6 +38,7 @@ H_XXXX (hechos) → B_XXXX (beats globales) → E_XXXX (escenas operativas) → 
 ```
 
 - `H_XXXX` se asigna al crear `_actos.md` y no cambia durante la generación.
+- Un `H_XXXX` puede fijar una secuencia causal o una pauta que deba hacerse visible. El guionista construye el mapa global e intercala sus beats representativos con rutina, relación y consecuencias ya respaldadas; no existen `[D]` ni `cola_d.md`.
 - `B_XXXX` es una acción causal, sin prosa ni cuota de longitud. El rango de diseño es provisional; una vez persistido el guion, su identificador nunca se renumera.
 - `E_XXXX` agrupa beats contiguos en una unidad dramática que se escribe en una sola generación. Una situación amplia puede incluir varias escenas operativas.
 - La escena define un arco tonal; un beat solo añade `[registro: ...]` cuando requiere un tratamiento distinto, por ejemplo explícito o visceral.
@@ -57,7 +58,7 @@ Los cambios de hechos, diseño, guion, componentes, escritura, corrección y pub
 diseno → fichas → escritura → finalizado → publicado (hub)
 ```
 
-- `diseno`: permite afinar hechos y recurrencias. Los cambios autorizados de hechos actualizan `_actos.md` y su contador juntos; `/revisar-guion` aquí diagnostica los insumos y `/generar` construye el primer guion.
+- `diseno`: permite afinar hechos y el contexto de sus patrones. Los cambios autorizados de hechos actualizan `_actos.md` y su contador juntos; `/revisar-guion` aquí diagnostica los insumos y `/generar` construye el primer guion.
 - `fichas`: permite revisar y ajustar el guion antes de empezar prosa; `/revisar-guion` lo confirma de forma transaccional sin cambiar de estado.
 - `escritura`: confirma una escena completa por vez. El draft es un prefijo de escenas ya cerradas; `/revisar`, `/expandir` y `/corregir` solo modifican prosa de ese prefijo.
 - `finalizado`: el manuscrito está listo para compilar desde el hub.

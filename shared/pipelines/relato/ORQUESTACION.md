@@ -12,7 +12,7 @@
 
 | Agente | Entrada | Salida |
 |---|---|---|
-| guionista | hechos, beats o tramo señalado | mapa lineal, entradas de `cola_d.md`, inserciones `[D]`, escenas o reparación |
+| guionista | hechos, brief, beats o tramo señalado | mapa global de beats —incluidos patrones y contraste—, escenas o reparación |
 | auditor-beats | mapa de beats + hechos | un diagnóstico estructural priorizado |
 | escritor | escena `E_XXXX`, beats, contexto y fichas | escena completa con anclas invisibles `B_XXXX` |
 | validador | escena completa + contexto | problemas concretos por beat, sin scores |

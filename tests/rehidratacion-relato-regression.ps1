@@ -110,7 +110,7 @@ Ana recibe una llamada y debe decidir si abandona su rutina.
     Assert-True ($config.estado -eq "diseno") "reinicia en diseño"
     Assert-True ($config.ultimo_hecho_seq -eq 2 -and $config.ultimo_beat_seq -eq 0 -and $config.ultimo_escena_seq -eq 0) "reconstruye contadores canónicos"
     $actos = Get-Content -LiteralPath (Join-Path $target "_actos.md") -Raw
-    Assert-True ($actos -match "H_0001" -and $actos -match "H_0002" -and $actos -match "H_0001–H_0002") "asigna y normaliza IDs H"
+    Assert-True ($actos -match "H_0001" -and $actos -match "H_0002" -and $actos -notmatch "\[D" -and $actos -notmatch "H_0001–H_0002") "asigna IDs H y normaliza la marca [D] legada"
     Assert-True ((Get-Content -LiteralPath (Join-Path $target "MAPA.md") -Raw) -match "E_XXXX") "regenera el mapa con el contrato por escenas"
     Assert-True (-not (Test-Path -LiteralPath (Join-Path $target "relato.md"))) "no hereda manuscrito"
     Assert-True (-not (Test-Path -LiteralPath (Join-Path $target "guion.md"))) "no hereda guion"

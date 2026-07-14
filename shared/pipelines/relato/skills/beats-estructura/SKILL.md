@@ -16,7 +16,7 @@ description: Define beats globales de relato como acciones concretas sin invadir
 
 El registro es opcional y solo aparece si el beat necesita apartarse del arco tonal de su `E_XXXX`. Ejemplos: `contenido`, `tenso`, `revelación`, `explícito / visceral`, `íntimo`, `brutal`.
 
-No añadas etiquetas de hecho, `[D]`, extensión, número de palabras, POV, lugar ni encabezados narrativos al beat.
+No añadas etiquetas de hecho, extensión, número de palabras, POV, lugar ni encabezados narrativos al beat.
 
 ## Qué fija un beat
 
@@ -28,8 +28,8 @@ No añadas etiquetas de hecho, `[D]`, extensión, número de palabras, POV, luga
 
 - lugar, tiempo, POV, objetivo, resultado y arco tonal: `E_XXXX`;
 - ritmo, frases, diálogo, imágenes, sensorialidad y psicología: escritor;
-- cobertura de `H_XXXX`: comprobación temporal de diseño;
-- recurrencias `[D]`: `cola_d.md` durante diseño.
+- cobertura de `H_XXXX` y de sus pautas explícitas: comprobación temporal de diseño;
+- la decisión de intercalar beats de contraste, rutina o consecuencia cuando el arco los necesite.
 
 Un beat no es un resumen, una descripción, una emoción abstracta ni prosa parcialmente escrita.
 

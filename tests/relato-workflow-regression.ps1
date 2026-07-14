@@ -103,30 +103,9 @@ $actosDos = @'
 ### Hechos
 
 - H_0001 — Ana recibe una llamada que transforma su mañana.
-- H_0002 [D · H_0001–H_0002] — La inquietud de Ana crece mientras sigue la llamada.
+- H_0002 — Ana intenta sostener su rutina mientras la llamada vuelve imposible ignorar la cita.
 '@
-$colaCerrada = @'
-# Cola [D] — cerrada
-
-- Estado global: cerrada
-
-## H_0002 — La inquietud de Ana
-
-- Tipo: progresión
-- Rango: H_0001–H_0002
-- Curva: duda → decisión
-- Límites: no revelar la trampa antes de la calle.
-- Apariciones resueltas:
-  - Tras B_0001: la llamada rompe la rutina.
-  - Tras B_0002: Ana sale pese al riesgo.
-- Estado: resuelto
-'@
-$colaSinEntradas = @'
-# Cola [D] — cerrada
-
-- Estado global: cerrada
-- Sin recurrencias [D].
-'@
+$actosConMarcaD = $actosDos.Replace("H_0002 —", "H_0002 [D · H_0001–H_0002] —")
 
 try {
     $workspace = Join-Path $RunRoot "workspace"
@@ -137,23 +116,23 @@ try {
     Write-Config -Workspace $workspace -Estado "diseno" -UltimoHecho 1
     Write-Utf8 -Path (Join-Path $workspace "_actos.md") -Content $actosUno
 
-    # Hechos: ID y contador se confirman juntos, sin salir de diseño.
+    # Hechos: ID y contador se confirman juntos, sin salir de diseño; relato rechaza [D].
     & $helper -Accion Preparar -Operacion hechos | Out-Null
-    Write-Utf8 -Path (Join-Path $workspace ".forja-transaccion\siguiente\_actos.md") -Content $actosDos
+    Write-Utf8 -Path (Join-Path $workspace ".forja-transaccion\siguiente\_actos.md") -Content $actosConMarcaD
     Write-Config -Workspace (Join-Path $workspace ".forja-transaccion\siguiente") -Estado "diseno" -UltimoHecho 2
+    Assert-Throws { & $helper -Accion Confirmar } "relato rechaza hechos distribuidos [D]"
+    Write-Utf8 -Path (Join-Path $workspace ".forja-transaccion\siguiente\_actos.md") -Content $actosDos
     & $helper -Accion Confirmar | Out-Null
     Assert-Equal 2 ((Get-Content -Raw -LiteralPath (Join-Path $workspace "config.json") | ConvertFrom-Json).ultimo_hecho_seq) "hechos actualiza su contador"
 
-    # Diseño: la cola no puede omitirse ni quedar abierta.
+    # Diseño: solo requiere guion y estado; las recurrencias son beats ordinarios del mapa global.
     & $helper -Accion Preparar -Operacion diseno | Out-Null
+    Assert-Throws { & $helper -Accion Confirmar } "diseño sin guion debe fallar"
     Write-Utf8 -Path (Join-Path $workspace ".forja-transaccion\siguiente\guion.md") -Content $guionAbierto
     Write-Config -Workspace (Join-Path $workspace ".forja-transaccion\siguiente") -Estado "fichas"
-    Assert-Throws { & $helper -Accion Confirmar } "diseño sin cola debe fallar"
-    Write-Utf8 -Path (Join-Path $workspace ".forja-transaccion\siguiente\cola_d.md") -Content $colaSinEntradas
-    Assert-Throws { & $helper -Accion Confirmar } "cola cerrada sin su recurrencia debe fallar"
-    Write-Utf8 -Path (Join-Path $workspace ".forja-transaccion\siguiente\cola_d.md") -Content $colaCerrada
     & $helper -Accion Confirmar | Out-Null
     Assert-Equal "fichas" ((Get-Content -Raw -LiteralPath (Join-Path $workspace "config.json") | ConvertFrom-Json).estado) "diseño deja fichas"
+    Assert-True (-not (Test-Path -LiteralPath (Join-Path $workspace "cola_d.md"))) "diseño no persiste una cola de recurrencias"
 
     # Componentes: crea el prefijo vacío y cambia de estado junto con contexto.
     & $helper -Accion Preparar -Operacion componentes | Out-Null
@@ -226,6 +205,7 @@ Ana recibe una llamada y decide salir. En la calle descubre la trampa y cambia d
     # Inyección: el relato recibe el override local y no infraestructura de novela.
     $HubRoot = $RepoRoot
     . (Join-Path $RepoRoot "scripts\lib\common.ps1")
+    Assert-Throws { ConvertTo-RelatoHechoTexto -Texto "H_0002 [D · H_0001–H_0002]: pauta heredada" } "el creador de relato rechaza [D] en el brief"
     $injected = Join-Path $RunRoot "injected"
     foreach ($directory in @(".opencode\agents", ".opencode\skills", ".opencode\commands")) {
         New-Item -ItemType Directory -Force -Path (Join-Path $injected $directory) | Out-Null
@@ -233,6 +213,7 @@ Ana recibe una llamada y decide salir. En la calle descubre la trampa y cambia d
     Inject-Pipeline -TargetDir $injected -Escala "relato" -EstiloBase "contemporaneo"
     Assert-True (Test-Path -LiteralPath (Join-Path $injected "scripts\relato-transaccion.ps1")) "inyección incluye helper local"
     Assert-True (-not (Test-Path -LiteralPath (Join-Path $injected ".opencode\skills\qdrant"))) "relato no recibe qdrant"
+    Assert-True (-not (Test-Path -LiteralPath (Join-Path $injected ".opencode\skills\hechos-distribuidos"))) "relato no recibe el contrato [D] de novela"
     Assert-True ((Get-Content -Raw -LiteralPath (Join-Path $injected ".opencode\skills\mecanica-prosa\SKILL.md")) -match "única prosa cohesionada") "inyección aplica override de mecánica"
     Assert-True ((Get-Content -Raw -LiteralPath (Join-Path $injected ".opencode\commands\revisar.md")) -match "aún no fue escrita") "inyección aplica override de comandos de relato"
     Assert-True ((Get-Content -Raw -LiteralPath (Join-Path $injected ".opencode\agents\director.md")) -match 'Prepara `escritura`') "inyección aplica director transaccional"

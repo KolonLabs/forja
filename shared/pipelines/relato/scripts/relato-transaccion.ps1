@@ -15,11 +15,11 @@ $NextRoot = Join-Path $TransactionRoot "siguiente"
 $BackupRoot = Join-Path $TransactionRoot "respaldo"
 $ManifestPath = Join-Path $TransactionRoot "manifest.json"
 $Utf8NoBom = [System.Text.UTF8Encoding]::new($false)
-$KnownFiles = @("config.json", "_actos.md", "guion.md", "relato-draft.md", "contexto_narrativo.md", "cola_d.md", "correcciones.md", "relato.md")
+$KnownFiles = @("config.json", "_actos.md", "guion.md", "relato-draft.md", "contexto_narrativo.md", "correcciones.md", "relato.md")
 $OperationFiles = @{
     hechos = @("config.json", "_actos.md")
-    diseno = @("config.json", "guion.md", "cola_d.md")
-    guion = @("config.json", "guion.md", "cola_d.md")
+    diseno = @("config.json", "guion.md")
+    guion = @("config.json", "guion.md")
     componentes = @("config.json", "guion.md", "relato-draft.md", "contexto_narrativo.md")
     escritura = @("config.json", "guion.md", "relato-draft.md", "contexto_narrativo.md")
     correccion = @("config.json", "guion.md", "relato-draft.md", "contexto_narrativo.md", "correcciones.md")
@@ -230,6 +230,9 @@ function Assert-HechoContract {
     param([string]$ActosPath, $NextConfig)
 
     $actos = Get-Content -LiteralPath $ActosPath -Raw -Encoding UTF8
+    if ($actos -match '(?m)^-\s+H_\d{4}\b[^\r\n]*\[D(?:\s|·|\])') {
+        throw "Relato no admite hechos [D]: los patrones se materializan como beats ordinarios durante el diseño global."
+    }
     $ids = @([regex]::Matches($actos, '(?m)^-\s+(H_\d{4})\b[^\r\n]*?—') | ForEach-Object { $_.Groups[1].Value })
     if ($ids.Count -eq 0) {
         throw "_actos.md no contiene hechos H_XXXX compatibles."
@@ -287,47 +290,6 @@ function Assert-StateTransition {
                 throw "publicar requiere transición escritura|correccion → finalizado."
             }
         }
-    }
-}
-
-function Assert-ClosedCola {
-    param([string]$ColaPath, [string]$ActosPath)
-
-    if (-not (Test-Path -LiteralPath $ColaPath -PathType Leaf)) {
-        throw "El diseño y los ajustes de guion requieren cola_d.md."
-    }
-    $cola = Get-Content -LiteralPath $ColaPath -Raw -Encoding UTF8
-    if ($cola -notmatch '(?mi)^#\s*Cola\s+\[D\]\s*—\s*cerrada\s*$') {
-        throw "cola_d.md debe declarar el encabezado '# Cola [D] — cerrada'."
-    }
-    if ([regex]::Matches($cola, '(?mi)^-\s*Estado global:\s*cerrada\s*$').Count -ne 1) {
-        throw "cola_d.md debe declarar una sola vez 'Estado global: cerrada'."
-    }
-
-    $actos = Get-Content -LiteralPath $ActosPath -Raw -Encoding UTF8
-    $expected = @([regex]::Matches($actos, '(?m)^-\s+(H_\d{4})\b[^\r\n]*\[D(?:\s|·|\])') | ForEach-Object { $_.Groups[1].Value })
-    $entries = [regex]::Matches($cola, '(?m)^##\s+(H_\d{4})\s+—\s+.+?\s*$')
-    $seen = @{}
-    for ($entryIndex = 0; $entryIndex -lt $entries.Count; $entryIndex++) {
-        $entry = $entries[$entryIndex]
-        $id = $entry.Groups[1].Value
-        if ($seen.ContainsKey($id)) { throw "cola_d.md repite la entrada $id." }
-        $seen[$id] = $true
-        $end = if ($entryIndex + 1 -lt $entries.Count) { $entries[$entryIndex + 1].Index } else { $cola.Length }
-        $block = $cola.Substring($entry.Index + $entry.Length, $end - ($entry.Index + $entry.Length))
-        $state = [regex]::Match($block, '(?mi)^-\s*Estado:\s*(resuelto|pendiente|bloqueo)\s*$')
-        if (-not $state.Success -or $state.Groups[1].Value.ToLowerInvariant() -ne "resuelto") {
-            throw "La recurrencia $id debe estar en Estado: resuelto antes de cerrar la cola."
-        }
-    }
-    if ($expected.Count -eq 0 -and $cola -notmatch '(?mi)^-\s*Sin recurrencias\s+\[D\]\.\s*$') {
-        throw "Una cola sin [D] debe declarar 'Sin recurrencias [D].'."
-    }
-    if ($expected.Count -gt 0 -and $cola -match '(?mi)^-\s*Sin recurrencias\s+\[D\]\.\s*$') {
-        throw "cola_d.md declara que no hay [D], pero _actos.md sí contiene recurrencias."
-    }
-    if ($expected.Count -ne $seen.Count -or @($expected | Where-Object { -not $seen.ContainsKey($_) }).Count -gt 0) {
-        throw "cola_d.md debe contener exactamente una entrada resuelta por cada hecho [D] de _actos.md."
     }
 }
 
@@ -396,9 +358,6 @@ function Assert-Stage {
     Assert-StateTransition -Operation $Operation -NextConfig $nextConfig -CurrentConfig $currentConfig
 
     switch ($Operation) {
-        { $_ -in @("diseno", "guion") } {
-            Assert-ClosedCola -ColaPath (Join-Path $NextRoot "cola_d.md") -ActosPath (Join-Path $WorkspaceRoot "_actos.md")
-        }
         "componentes" {
             Assert-DraftContract -Escenas $escenas -DraftPath (Join-Path $NextRoot "relato-draft.md")
             Assert-NonEmptyFile -Path (Join-Path $NextRoot "contexto_narrativo.md") -Name "contexto_narrativo.md"
@@ -436,7 +395,7 @@ function Start-Transaction {
         }
     }
     Write-Manifest ([ordered]@{
-        version = 2
+        version = 3
         estado = "preparada"
         operacion = $Operation
         creada = (Get-Date).ToString("yyyy-MM-ddTHH:mm:ss")

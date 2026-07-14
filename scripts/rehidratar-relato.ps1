@@ -36,6 +36,20 @@ function Get-RelatoRehidratacionPremisa {
     return $premisa
 }
 
+function ConvertTo-RelatoRehidratacionHecho {
+    param([string]$Texto)
+
+    # Los IDs y la marca [D] pertenecen al contrato legado. El destino recibe
+    # IDs H nuevos y, desde ADR 0013, las pautas se expresan como un hecho
+    # ordinario que el guionista convertirá en beats representativos.
+    $normalizado = [regex]::Replace($Texto.Trim(), '^H_\d{1,4}\s*(?:[—:]\s*)?', '')
+    $normalizado = [regex]::Replace($normalizado, '^\[D(?:\s*·\s*H_\d{1,4}\s*[–-]\s*H_\d{1,4})?\]\s*[:—-]?\s*', '')
+    if ([string]::IsNullOrWhiteSpace($normalizado)) {
+        throw "Un hecho legado queda vacío después de retirar sus marcas de control: '$Texto'"
+    }
+    return $normalizado
+}
+
 function Get-RelatoRehidratacionActos {
     param([string]$ActosPath)
 
@@ -81,7 +95,7 @@ function Get-RelatoRehidratacionActos {
             continue
         }
         if ($enHechos -and $line -match '^-\s+(.+?)\s*$') {
-            $texto = $matches[1].Trim()
+            $texto = ConvertTo-RelatoRehidratacionHecho -Texto $matches[1]
             if (-not [string]::IsNullOrWhiteSpace($texto)) {
                 $actual.hechos += $texto
             }

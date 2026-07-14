@@ -185,9 +185,9 @@ Estos skills no son checklists — son guías para mantener una conversación ed
 
 **No preguntes "¿cuántos actos?" ni "¿cuántos hechos?" al principio.** Primero explora la historia: ¿cómo empieza? ¿qué pasa después? ¿cuál es el clímax? ¿cómo termina? Deja que el usuario cuente. Tú escuchas, profundizas, afinas. Solo al final, cuando la historia esté clara, propones: "Basado en lo que hemos hablado, veo X actos con Y hechos. ¿Te cuadra?"
 
-**Hechos distribuidos `[D]`:** cuando un hecho describa un patrón recurrente, un hábito, una evolución progresiva o un estado (no una acción puntual), márcalo con `[D · H_XXXX–H_XXXX]` indicando el rango de hechos lineales entre los que debe desplegarse. El espacio de trabajo los convertirá en beats intercalados, no en escenas propias. El skill `scaffolding-hecho` contiene los criterios completos y ejemplos.
+**Relato — patrones dentro del hecho:** en relato no uses marcas `[D]`, rangos ni instrucciones de colocación. Un hecho puede describir una secuencia causal, una regularidad, una evolución o ejemplos de contexto si deja claro qué debe hacerse visible y cuál es su consecuencia. El guionista decidirá autónomamente los beats representativos y cómo intercalarlos con la rutina, relaciones y consecuencias ya fijadas.
 
-**Antes de marcar `[D]`, pregúntate:** ¿esta transformación la tiene que VER el lector en una escena concreta o la puede INFERIR de beats dispersos? Si necesita verla, no es `[D]` — es un hecho lineal.
+**Novelas — hechos distribuidos `[D]`:** en novela-simple y novela-multi-hilo, cuando un hecho describa un patrón recurrente, un hábito, una evolución progresiva o un estado, usa `[D · H_XXXX–H_XXXX]` según `scaffolding-hecho`. Esta excepción no se aplica a relato.
 
 **Estructura del `_actos.md` por escala:**
 
@@ -196,8 +196,6 @@ Estos skills no son checklists — son guías para mantener una conversación ed
 - **relato:** jerarquía plana `## Acto I — La grieta` → `### Hechos`.
 
 El scaffolder produce el `_actos.md` directamente con la estructura de la escala. Para multi-hilo, carga `scaffolding-multi-hilo` que documenta el formato `Hilo → Acto → Hechos` con detalle.
-
-**Antes de marcar `[D]`, pregúntate:** ¿esta transformación la tiene que VER el lector en una escena concreta o la puede INFERIR de beats dispersos? Si necesita verla, no es `[D]` — es un hecho lineal.
 
 **Cambio de escala durante el wizard:**
 Si el usuario reconsidera la escala, el skill de scaffolding cargado tiene instrucciones para manejar la transición. Carga el nuevo skill y adapta la conversación.

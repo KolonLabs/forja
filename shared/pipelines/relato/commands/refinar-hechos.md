@@ -1,5 +1,5 @@
 ---
-description: Revisa y ajusta hechos y recurrencias de un relato antes de diseñar beats.
+description: Revisa y ajusta hechos de un relato antes de diseñar beats.
 agent: director
 ---
 
@@ -7,9 +7,9 @@ agent: director
 
 Disponible solo en `diseno`. Lee `_actos.md`, `BRIEF.md` y `config.json`.
 
-- Un hecho lineal debe declarar una acción o cambio narrable.
-- Un `[D]` debe tener rango válido, tipo posible (`evento`, `patrón`, `progresión` o `motivo`) e intención reconocible.
-- Si una culminación de `[D]` necesita una escena, debe existir un hecho lineal que la respalde.
+- Un hecho debe declarar una acción, un cambio o una secuencia causal narrable.
+- Puede incluir una pauta, evolución o ejemplos de contexto si aclaran qué debe hacerse visible; no usa marcas `[D]`, rangos ni instrucciones de colocación.
+- Debe distinguir lo innegociable de los ejemplos posibles y dejar una consecuencia narrativa clara.
 
 Presenta problemas concretos. Con aprobación del usuario, ajusta los hechos mediante:
 

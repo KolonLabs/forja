@@ -12,7 +12,7 @@ Comprueba:
 - causalidad y dependencias entre hechos;
 - información que debe reservarse;
 - coherencia de personajes y POV con el brief;
-- rangos, curva y límites de los `[D]`;
-- que los motivos no se confundan con eventos que exigen beats.
+- que las pautas, evoluciones y consecuencias que deban verse estén expresadas con suficiente contexto;
+- que un hecho no imponga beats, escenas, prosa ni una coreografía cerrada.
 
 En `diseno`, presenta bloqueos y mejoras; modifica hechos solo con aprobación del usuario. En estados posteriores es una auditoría de solo lectura.

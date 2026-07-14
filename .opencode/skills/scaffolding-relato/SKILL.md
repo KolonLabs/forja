@@ -49,7 +49,7 @@ Para cada bloque (acto):
 - **Tensión:** qué está en juego
 - **Hechos:** los eventos concretos que han emergido de la conversación
 
-**Hechos distribuidos `[D]`:** cuando un hecho describa un patrón recurrente, una evolución progresiva o una rutina que no puede escribirse en una sola escena, márcalo con `[D · H_XXXX–H_XXXX]`. El rango indica entre qué hechos lineales debe desplegarse. El workspace lo convertirá en beats intercalados, no en escenas propias. Ver `scaffolding-hecho` para criterios y ejemplos.
+En relato, un hecho puede contener una secuencia causal, un patrón o una evolución si deja claros los elementos irrenunciables y su consecuencia. No escribas beats, escenas, rangos ni marcas `[D]`: el guionista elegirá las instancias representativas y las intercalará con la rutina y las consecuencias ya fijadas por el arco.
 
 Pregunta: "¿Esto captura lo que tenías en mente? ¿Falta algo? ¿Sobra algo?"
 
@@ -61,8 +61,8 @@ Itera hasta que el usuario confirme.
 - ¿Hay hechos intercambiables (podrían ir en cualquier orden)?
 - ¿Hay vacíos narrativos (saltos sin justificar)?
 - ¿El final cierra algo — aunque sea una pregunta?
-- ¿Cada `[D]` tiene un rango coherente (al menos 2 hechos lineales dentro, fin ≥ inicio)?
-- ¿Los `[D]` no dominan el acto? Si un acto tiene más `[D]` que lineales, probablemente la granularidad es incorrecta.
+- ¿Cada hecho deja un cambio o una consecuencia que el guionista pueda volver visible?
+- Si un hecho incluye una pauta, ¿explica qué debe variar o deteriorarse sin imponer las escenas que la desarrollan?
 
 ## Sin infraestructura
 

@@ -24,17 +24,16 @@ Un beat contiene únicamente acción, consecuencia y, cuando difiere del arco to
 
 ## FASE 1 — Diseño (`diseno`)
 
-1. **Preparar.** El director verifica `H_XXXX`, restricciones y rangos `[D]`.
-2. **Mapa lineal provisional.** El director lee `ultimo_beat_seq`, fija el primer `B_XXXX` disponible y se lo comunica al guionista. El guionista genera los beats de hechos lineales y la cobertura temporal `H → B`. Mientras no se persista el guion, estos IDs son provisionales y no sobreviven a una interrupción.
-3. **Materializar recurrencias.** El guionista, en modo `recurrencias`, convierte cada `[D]` en una entrada completa de `cola_d.md`. El director abre el staging `diseno`, guarda allí la propuesta —o una cola explícitamente vacía— y pide el modo `distribuidos` leyendo esa copia. Inserta solo eventos, patrones y progresiones por función. Los motivos pasan como directrices de escena y no generan beats.
-4. **Diagnóstico único.** `auditor-beats` revisa cobertura, causalidad, atomicidad, fugas de información y ausencia de prosa en los beats. Solo los problemas bloqueantes se reparan, en una única pasada.
-5. **Escenas.** El guionista agrupa beats en `E_XXXX`. Una situación amplia puede contener varias escenas operativas si existe un giro de objetivo, información, poder, foco o resultado. Cada escena declara arco tonal y `Salida: continua | separador`.
-6. **Persistencia recuperable.** El director completa en el staging `guion.md`, `config.json` y `cola_d.md` cerrada. La cola declara `Estado global: cerrada`; todas sus entradas están resueltas o el diseño permanece bloqueado. Confirma solo si el helper valida estructura, cola, transición y contadores.
-7. **Gate mecánico.** El director comprueba pertenencia única de beats, orden narrativo y salidas coherentes. No hay una segunda auditoría estética por defecto.
+1. **Preparar.** El director verifica `H_XXXX` y restricciones. Un hecho puede contener una secuencia causal o un patrón que deba hacerse perceptible, pero relato no usa marcas `[D]` ni artefactos de recurrencia separados.
+2. **Mapa global provisional.** El director lee `ultimo_beat_seq`, fija el primer `B_XXXX` disponible y se lo comunica al guionista. El guionista lee el arco completo y genera un único mapa de beats con cobertura temporal `H → B`. Materializa los patrones explícitos de hechos y brief mediante beats ordinarios, escogiendo instancias representativas e intercalándolas con beats de rutina, relación o consecuencia ya respaldados por el arco. Mientras no se persista el guion, los IDs son provisionales y no sobreviven a una interrupción.
+3. **Diagnóstico único.** `auditor-beats` revisa cobertura, causalidad, atomicidad, fugas de información, ausencia de prosa y que una pauta explícita no quede como una sucesión plana o invisible. Solo los problemas bloqueantes se reparan, en una única pasada.
+4. **Escenas.** El guionista agrupa beats en `E_XXXX`. Una situación amplia puede contener varias escenas operativas si existe un giro de objetivo, información, poder, foco o resultado. Cada escena declara arco tonal y `Salida: continua | separador`.
+5. **Persistencia recuperable.** El director completa en el staging `guion.md` y `config.json`. Confirma solo si el helper valida estructura, transición y contadores.
+6. **Gate mecánico.** El director comprueba pertenencia única de beats, orden narrativo y salidas coherentes. No hay una segunda auditoría estética por defecto.
 
 Si un gate falla antes de confirmar, el director ejecuta `-Accion Descartar`; los artefactos vivos quedan intactos. Tras una interrupción, `-Accion Recuperar` restaura un commit interrumpido o conserva un staging preparado para reanudarlo. Solo se descarta ese staging si ya no es válido.
 
-Si falta un hecho lineal para culminar un `[D]`, el director presenta ese bloqueo: no inventa ni altera `H_XXXX` sin autorización.
+Si para hacer perceptible un patrón el guionista necesitara un giro irreversible, una relación, una revelación o un desenlace no contenidos en el arco, el director presenta ese bloqueo: no inventa ni altera `H_XXXX` sin autorización.
 
 **Transición:** `estado = fichas`, confirmada por `diseno`.
 
@@ -75,4 +74,4 @@ Por cada `E_XXXX`, en orden:
 - Al dividir una escena, la primera conserva su `E_XXXX` y la siguiente toma un ID nuevo. Al fusionarlas, sobrevive la primera y la otra queda retirada; ningún ID se reutiliza.
 - Si un draft heredado usa headings `## B_XXXX — ...`, el director los sustituye dentro del staging de corrección por `<!-- B_XXXX -->`, sin reescribir su prosa, antes de revisar, expandir o corregir.
 - Cada escena añade al contexto solo un delta breve. Tras una salida `separador`, el director compacta los deltas de la secuencia cerrada.
-- `cola_d.md` se cierra al terminar diseño y no se carga durante la escritura. Su cierre y la resolución de todas sus entradas son verificables por el helper.
+- Los beats recurrentes no conservan una etiqueta o cola propia: son beats ordinarios del mapa global y se validan junto con él.

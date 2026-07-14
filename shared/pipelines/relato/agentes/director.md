@@ -16,7 +16,6 @@ permission:
     "guion.md": deny
     "relato-draft.md": deny
     "contexto_narrativo.md": deny
-    "cola_d.md": deny
     "correcciones.md": deny
     "relato.md": deny
     ".forja-transaccion/siguiente/*": allow
@@ -52,12 +51,11 @@ Antes de iniciar una operación ejecuta `pwsh -NoProfile -File scripts/relato-tr
 
 ## Diseño
 
-1. Valida hechos y rangos `[D]`.
-2. Pide al guionista el mapa lineal global desde el siguiente `B_XXXX` y la cobertura temporal `H → B`; conserva el mapa como provisional hasta el gate.
-3. Pide al guionista, en modo `recurrencias`, una entrada completa por `[D]`. Prepara `diseno`, guarda en staging una `cola_d.md` cerrable —vacía si no hay `[D]`— y usa el modo `distribuidos` desde el siguiente ID provisional. Si falta un hecho lineal para cerrar una recurrencia, detente y solicita autorización para modificar hechos.
-4. Pide un único diagnóstico a `auditor-beats` y repara solo bloqueos.
-5. Pide las `E_XXXX`: cada una es una unidad de generación manejable, con arco tonal y `Salida: continua|separador`.
-6. Resuelve todas las entradas de cola, deja `Estado global: cerrada`, completa en staging `guion.md` y `config.json.estado = fichas`, y confirma `diseno`.
+1. Valida hechos y restricciones. Rechaza marcas `[D]`: relato usa exclusivamente hechos `H_XXXX` y beats `B_XXXX` ordinarios.
+2. Pide al guionista un mapa global desde el siguiente `B_XXXX` y la cobertura temporal `H → B`; debe inferir y distribuir autónomamente las pautas explícitas del arco, intercalándolas con sus consecuencias y contraste cotidiano. Conserva el mapa como provisional hasta el gate.
+3. Pide un único diagnóstico a `auditor-beats` y repara solo bloqueos.
+4. Pide las `E_XXXX`: cada una es una unidad de generación manejable, con arco tonal y `Salida: continua|separador`.
+5. Completa en staging `guion.md` y `config.json.estado = fichas`, y confirma `diseno`.
 
 ## Componentes y escritura
 

@@ -8,7 +8,7 @@ agent: director
 Lee `config.json`, `PIPELINE.md` y `ORQUESTACION.md`. Recupera o retoma un staging pendiente antes de abrir otro. Avanza por el estado actual sin reiniciar fases cerradas.
 
 ```text
-diseno: H → B provisionales → cola_d propuesta → inserciones [D] → diagnóstico único → E → confirmar diseno
+diseno: H → mapa global B provisionales (patrones y contraste incluidos) → diagnóstico único → E → confirmar diseno
 fichas: fichas necesarias → confirmar componentes
 escritura: una E completa validada → confirmar escritura por cada llamada
 ```

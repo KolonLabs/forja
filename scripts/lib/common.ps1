@@ -305,6 +305,9 @@ function ConvertTo-RelatoHechoTexto {
     # El briefing puede traer un prefijo H_XX/H_XXXX antiguo. El workspace es
     # dueño de la numeración global y lo sustituye al escribir _actos.md.
     $normalizado = [regex]::Replace($Texto.Trim(), '^H_\d{1,4}\s*(?:[—:]\s*)?', '')
+    if ($normalizado -match '\[D(?:\s|·|\])') {
+        throw "relato no admite hechos [D]; describe el patrón dentro del hecho para que el guionista lo materialice con beats ordinarios."
+    }
     return [regex]::Replace($normalizado, 'H_(\d{1,4})', {
         param($match)
         return ('H_{0:D4}' -f [int]$match.Groups[1].Value)
@@ -672,7 +675,7 @@ function Write-AgentsMd {
     if ($Escala -eq "relato") {
         $skillsActivos = @(
             "mecanica-prosa", "beats-estructura", "contexto-narrativo", "contexto-subagente",
-            "estructura-narrativa", "hechos-distribuidos", "plantilla-guion", "plantilla-draft", "plantilla-ficha",
+            "estructura-narrativa", "plantilla-guion", "plantilla-draft", "plantilla-ficha",
             "tonos-beat", "validacion-coherencia", "validacion-crudeza", "validacion-geometria",
             "validacion-sensorial", "validacion-tono", "estilo-$($Brief.estilo_base)"
         )

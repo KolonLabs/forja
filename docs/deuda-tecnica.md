@@ -20,6 +20,6 @@ Este registro contiene riesgos abiertos que requieren una correccion o una valid
 
 | ID | Resolución | Evidencia |
 |---|---|---|
-| DT-004 | Se añadió una regresión aislada del workflow de relato: hechos y contadores, cola obligatoria, componentes, draft parcial por escenas, corrección con registro, recuperación/descartado, publicación con prosa, inyección sin infraestructura de novela y edición derivada segura. | `pwsh -NoProfile -File tests/relato-workflow-regression.ps1` finaliza correctamente (2026-07-14). |
+| DT-004 | Se añadió una regresión aislada del workflow de relato: hechos y contadores, rechazo de marcas `[D]`, diseño sin cola de recurrencias, componentes, draft parcial por escenas, corrección con registro, recuperación/descartado, publicación con prosa, inyección sin infraestructura de novela y edición derivada segura. | `pwsh -NoProfile -File tests/relato-workflow-regression.ps1` finaliza correctamente (2026-07-14). |
 
 Las incidencias historicas resueltas permanecen en [plan-hechos-pendientes.md](plan-hechos-pendientes.md) como referencia, no como lista activa.
