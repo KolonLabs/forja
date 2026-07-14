@@ -9,6 +9,19 @@ Un **hecho** es una unidad causal de alto nivel que describe QUÉ debe hacerse v
 
 **Regla por escala:** relato usa solo hechos `H_XXXX`, sin marcas `[D]`; sus pautas se describen dentro del hecho y el guionista decide los beats que las hacen visibles. Novela-simple y novela-multi-hilo conservan los hechos distribuidos `[D]` descritos más abajo.
 
+## Prueba de derivación: entidad suficiente, no prosa
+
+Antes de aceptar un hecho, comprueba que un guionista pueda proponer **varios beats distintos** sin inventar el núcleo de la historia. Un hecho no se aprueba por ser largo: se aprueba si deja claro lo necesario para descomponerlo con libertad.
+
+| Debe aportar | Pregunta editorial | No debe aportar |
+|---|---|---|
+| Situación inicial o detonante | ¿Desde qué normalidad, hallazgo o presión arranca? | Coreografía, diálogo o una secuencia ya escenificada. |
+| Agencia y presión concreta | ¿Quién actúa, qué desea o evita y qué le fuerza a moverse? | Psicología genérica sin acción. |
+| Cambio causal | ¿Qué altera la decisión, la relación o las opciones del personaje? | Un mero tema o una intención. |
+| Consecuencia visible | ¿Qué nueva condición obliga al siguiente hecho? | El resultado exacto de cada beat. |
+
+Cuando el hecho expresa una pauta, rutina o evolución —especialmente en relato— añade también: el ámbito donde se filtra (rutina, relación, trabajo, secreto), las variaciones significativas que la vuelven dramática y la progresión o coste que evita repetir la misma instancia. Así el guionista puede alternar la pauta con contraste, consecuencia y vida ordinaria sin que el scaffolder le dicte cuántos beats, en qué escena ni cómo se narran.
+
 **Tipos de hechos:**
 
 | Tipo | Comportamiento | Genera |
@@ -20,7 +33,7 @@ Un **hecho** es una unidad causal de alto nivel que describe QUÉ debe hacerse v
 
 - ✅ Un cambio o secuencia causal con sujeto, acciones relacionadas y consecuencia: "Miguel presencia un encuentro sexual en el parking; la mirada de uno de los hombres rompe su indiferencia y vuelve a casa incapaz de retomar su rutina."
 - ✅ Algo que ocurre y cambia el estado de la historia.
-- ✅ Suficientemente detallado para poder descomponerlo en escenas y beats en el workspace.
+- ✅ Suficientemente contextualizado para superar la prueba de derivación y poder descomponerse en beats sin inventar su conflicto central.
 - ✅ Implica acción física o decisión del personaje.
 
 ## Qué NO es un hecho (lineal)
@@ -57,6 +70,14 @@ Un `[D]` no se evalúa como un lineal. No necesita «sujeto, acción, consecuenc
 
 → Esto puede convertirse en varios beats y, si el arco lo necesita, intercalarse con beats de su rutina doméstica. No fija la coreografía, el diálogo ni el número de escenas.
 
+### Pauta de relato bien definida
+
+```
+"Después del primer encuentro, Miguel busca de forma cada vez menos accidental espacios donde podría repetirse, pero mantiene intacta su rutina familiar para que nadie advierta el cambio. Las nuevas ocasiones difieren en riesgo y exposición; al normalizarlas, la doble vida deja de ser curiosidad y empieza a exigirle decisiones que deterioran su relación con Laura."
+```
+
+→ Fija el ámbito, la variación y el coste de la pauta. El guionista puede elegir qué instancias vuelven beats, alternarlas con vida ordinaria y decidir su realización, sin recibir una lista de escenas ni prosa prescrita.
+
 ### Mal definido (demasiado vago)
 
 ```
@@ -77,7 +98,7 @@ ve a dos hombres, uno de rodillas, el otro apoyado contra la pared, etc."
 
 ## Longitud
 
-Una frase o párrafo breve. Lo bastante específico para que se sepa qué escribir en el workspace, lo bastante abierto para que haya criterio sobre el CÓMO.
+Un párrafo breve suele ser preferible cuando hay una pauta, una transición compleja o una consecuencia que deba quedar fijada. Una sola frase solo basta si cubre la prueba de derivación. Debe ser específico sobre el qué y sus condiciones, y abierto sobre el cómo narrativo.
 
 ## Quién lo usa
 

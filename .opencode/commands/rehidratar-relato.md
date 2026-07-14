@@ -5,7 +5,7 @@ agent: scaffolder
 
 # /rehidratar-relato
 
-Recupera la **semilla editorial** de un relato antiguo y crea otro workspace en estado `diseno`, con el contrato actual de relato. No migra guion, fichas, draft, contexto ni manuscrito: esos materiales se archivan fuera del destino y se regeneran con el flujo nuevo.
+Recupera la **evidencia editorial** de un relato antiguo y, tras una reconstrucción editorial confirmada, crea otro workspace en estado `diseno` con el contrato actual de relato. No migra guion, fichas, draft, contexto ni manuscrito: esos materiales permanecen fuera del destino y se regeneran con el flujo nuevo.
 
 Argumentos recibidos: `$ARGUMENTS`
 
@@ -28,24 +28,25 @@ Argumentos recibidos: `$ARGUMENTS`
    .\scripts\rehidratar-relato.ps1 -Origen "<origen>" -Destino "<slug-destino>" -Actos "<actual|backup>"
    ```
 
-2. Lee el JSON devuelto. Las fases 1–5 ya están rellenadas por la semilla: comprueba escala, hechos, restricciones, estilo y posibles contradicciones. No pidas al usuario que repita el briefing; pregunta únicamente por lagunas o decisiones ambiguas.
+2. Lee el JSON devuelto como **evidencia**, no como el brief final. Conserva solo los no negociables que estén confirmados; identifica lagunas, contradicciones, simplificaciones y marcas técnicas retiradas. No pidas repetir el briefing: pregunta únicamente lo que pueda cambiar la reconstrucción.
 
-3. Realiza la **Fase 6 obligatoria**: presenta fortalezas, riesgos y decisiones conservadas o ajustadas para el flujo actual. No escribas beats, escenas ni prosa. Pide confirmación explícita.
+3. Carga `scaffolding-acto`, `scaffolding-hecho` y `scaffolding-relato`. Propón una nueva Fase 5, independiente de la cantidad, orden o literalidad de los actos heredados. Puedes añadir, fusionar, dividir, reordenar o descartar hechos para restituir arco, ritmo y causalidad.
 
-4. Tras la confirmación, construye un JSON con `fortalezas`, `riesgos` y `decisiones_usuario`, y ejecuta:
+   Cada hecho propuesto debe superar la **prueba de derivación**: ha de incluir situación o detonante, quién actúa bajo qué presión, qué cambio causal se produce y cuál es su consecuencia visible. Si expresa un patrón, añade el contexto de rutina o relación, variaciones significativas y su progresión o coste. El objetivo es que el guionista pueda derivar varios beats distintos sin inventar el núcleo del hecho; no redactes beats, escenas, diálogo ni prosa.
+
+4. Realiza la **Fase 6 obligatoria**: presenta fortalezas, riesgos, decisiones conservadas y las transformaciones propuestas frente a la semilla. Pide confirmación explícita.
+
+5. Tras la confirmación, construye el **brief JSON completo** de relato —incluidos los hechos reconstruidos, `_mapa` y `reflexion_agente`— y usa el creador canónico:
 
    ```powershell
-   $reflexionJson = @'
-   { "fortalezas": ["..."], "riesgos": ["..."], "decisiones_usuario": ["..."] }
-   '@
-   .\scripts\rehidratar-relato.ps1 -Origen "<origen>" -Destino "<slug-destino>" -Actos "<actual|backup>" -Crear -ReflexionJson $reflexionJson
+   $briefJson | .\scripts\new-project.ps1
    ```
 
-5. Indica que el destino está en `diseno` y debe abrirse para usar `/validar-hechos` y `/generar`.
+6. Indica que el destino está en `diseno` y debe abrirse para usar `/validar-hechos` y `/generar`.
 
 ## Límites
 
 - Lee del origen solo `config.json`, `BRIEF.md` y la semilla de actos elegida.
 - No lee ni copia `guion.md`, `relato-draft.md`, `relato.md`, `fichas/`, `contexto_narrativo.md`, `cola_d.md` ni instrucciones antiguas.
-- Regenera `MAPA.md`, `AGENTS.md`, `.opencode/`, `GUIA.md` y los contadores con el scaffolding vigente.
-- No es `/nueva-edicion`: una edición conserva y corrige una obra publicada; la rehidratación reinicia su desarrollo desde los hechos.
+- El extractor no crea el destino. El scaffolder crea después un brief nuevo mediante `new-project.ps1`, que regenera `MAPA.md`, `AGENTS.md`, `.opencode/`, `GUIA.md` y los contadores con el scaffolding vigente.
+- No es `/nueva-edicion`: una edición conserva y corrige una obra publicada; la rehidratación reinicia el desarrollo desde una propuesta editorial nueva, informada por la semilla.

@@ -1,4 +1,4 @@
-# rehidratacion-relato-regression.ps1 — Prueba aislada del reinicio desde semilla.
+# rehidratacion-relato-regression.ps1 — Prueba aislada de extracción de evidencia.
 [CmdletBinding()]
 param()
 
@@ -30,10 +30,6 @@ try {
     $source = Join-Path $hub "workspaces\origen"
     $target = Join-Path $hub "workspaces\origen-reinicio"
     New-Item -ItemType Directory -Force -Path $source | Out-Null
-    Copy-Item -LiteralPath (Join-Path $RepoRoot "shared") -Destination (Join-Path $hub "shared") -Recurse -Force
-    New-Item -ItemType Directory -Force -Path (Join-Path $hub "scripts\lib") | Out-Null
-    Copy-Item -LiteralPath (Join-Path $RepoRoot "scripts\new-relato.ps1") -Destination (Join-Path $hub "scripts\new-relato.ps1") -Force
-    Copy-Item -LiteralPath (Join-Path $RepoRoot "scripts\lib\common.ps1") -Destination (Join-Path $hub "scripts\lib\common.ps1") -Force
 
     $legacyConfig = [ordered]@{
         titulo = "Origen legado"
@@ -102,22 +98,21 @@ Ana recibe una llamada y debe decidir si abandona su rutina.
     Write-Utf8 -Path (Join-Path $source "relato.md") -Content "# Prosa que no debe heredarse`n"
     $sourceHash = (Get-FileHash -LiteralPath (Join-Path $source "_actos_backup_20260714.md") -Algorithm SHA256).Hash
 
-    $reflexion = @{ fortalezas = @("Semilla legible"); riesgos = @("Recurrencia que revisar en diseño"); decisiones_usuario = @("Reiniciar desde backup") } | ConvertTo-Json -Compress
-    & (Join-Path $RepoRoot "scripts\rehidratar-relato.ps1") -Origen "origen" -Destino "origen-reinicio" -Actos backup -Crear -ReflexionJson $reflexion -ForjaRootOverride $hub | Out-Null
+    $evidencia = & (Join-Path $RepoRoot "scripts\rehidratar-relato.ps1") -Origen "origen" -Destino "origen-reinicio" -Actos backup -ForjaRootOverride $hub | ConvertFrom-Json
 
-    Assert-True (Test-Path -LiteralPath $target) "crea el destino"
-    $config = Get-Content -LiteralPath (Join-Path $target "config.json") -Raw | ConvertFrom-Json
-    Assert-True ($config.estado -eq "diseno") "reinicia en diseño"
-    Assert-True ($config.ultimo_hecho_seq -eq 2 -and $config.ultimo_beat_seq -eq 0 -and $config.ultimo_escena_seq -eq 0) "reconstruye contadores canónicos"
-    $actos = Get-Content -LiteralPath (Join-Path $target "_actos.md") -Raw
-    Assert-True ($actos -match "H_0001" -and $actos -match "H_0002" -and $actos -notmatch "\[D" -and $actos -notmatch "H_0001–H_0002") "asigna IDs H y normaliza la marca [D] legada"
-    Assert-True ((Get-Content -LiteralPath (Join-Path $target "MAPA.md") -Raw) -match "E_XXXX") "regenera el mapa con el contrato por escenas"
-    Assert-True (-not (Test-Path -LiteralPath (Join-Path $target "relato.md"))) "no hereda manuscrito"
-    Assert-True (-not (Test-Path -LiteralPath (Join-Path $target "guion.md"))) "no hereda guion"
-    Assert-True (Test-Path -LiteralPath (Join-Path $target "scripts\relato-transaccion.ps1")) "inyecta el helper vigente"
+    Assert-True ($evidencia.esquema -eq "rehidratacion-relato-evidencia-v2") "devuelve el esquema de evidencia vigente"
+    Assert-True ($evidencia.origen -eq "origen" -and $evidencia.destino_sugerido -eq "origen-reinicio") "identifica origen y destino sugerido"
+    Assert-True ($evidencia.semilla.premisa -match "abandona su rutina") "recupera la premisa como evidencia"
+    $hechos = @($evidencia.semilla.actos[0].hechos)
+    Assert-True ($hechos.Count -eq 2 -and $hechos[0] -match "Ana recibe" -and $hechos[1] -notmatch "\[D" -and $hechos[1] -notmatch "H_0001–H_0002") "normaliza controles legados sin convertirlos en hechos finales"
+    Assert-True (@($evidencia.normalizaciones).Count -eq 2) "declara las normalizaciones aplicadas"
+    Assert-True ($evidencia.criterio_de_reconstruccion -match "situación o detonante" -and $evidencia.criterio_de_reconstruccion -match "consecuencia visible") "expone la regla de entidad de los hechos"
+    Assert-True (-not (Test-Path -LiteralPath $target)) "la vista previa no crea el destino"
     Assert-True ((Get-FileHash -LiteralPath (Join-Path $source "_actos_backup_20260714.md") -Algorithm SHA256).Hash -eq $sourceHash) "no modifica la semilla del origen"
     Assert-True ((Get-Content -LiteralPath (Join-Path $source "relato.md") -Raw) -match "no debe heredarse") "no modifica la prosa del origen"
-    Assert-Throws { & (Join-Path $RepoRoot "scripts\rehidratar-relato.ps1") -Origen "origen" -Destino "origen-reinicio" -Actos backup -Crear -ReflexionJson $reflexion -ForjaRootOverride $hub | Out-Null } "no sobreescribe un destino existente"
+
+    New-Item -ItemType Directory -Force -Path $target | Out-Null
+    Assert-Throws { & (Join-Path $RepoRoot "scripts\rehidratar-relato.ps1") -Origen "origen" -Destino "origen-reinicio" -Actos backup -ForjaRootOverride $hub | Out-Null } "no permite un destino existente"
 
     Write-Host "OK: regresión de rehidratación de relato superada."
 } finally {

@@ -49,7 +49,7 @@ Para cada bloque (acto):
 - **Tensión:** qué está en juego
 - **Hechos:** los eventos concretos que han emergido de la conversación
 
-En relato, un hecho puede contener una secuencia causal, un patrón o una evolución si deja claros los elementos irrenunciables y su consecuencia. No escribas beats, escenas, rangos ni marcas `[D]`: el guionista elegirá las instancias representativas y las intercalará con la rutina y las consecuencias ya fijadas por el arco.
+En relato, un hecho puede contener una secuencia causal, un patrón o una evolución si supera la prueba de derivación: situación o detonante, agencia bajo presión, cambio causal y consecuencia visible. Cuando haya una pauta, fija además el ámbito rutinario o relacional, sus variaciones significativas y su progresión o coste. No escribas beats, escenas, rangos ni marcas `[D]`: el guionista elegirá las instancias representativas y las intercalará con la rutina y las consecuencias ya fijadas por el arco.
 
 Pregunta: "¿Esto captura lo que tenías en mente? ¿Falta algo? ¿Sobra algo?"
 
@@ -63,6 +63,7 @@ Itera hasta que el usuario confirme.
 - ¿El final cierra algo — aunque sea una pregunta?
 - ¿Cada hecho deja un cambio o una consecuencia que el guionista pueda volver visible?
 - Si un hecho incluye una pauta, ¿explica qué debe variar o deteriorarse sin imponer las escenas que la desarrollan?
+- ¿Podrían proponerse varios beats distintos sin inventar el conflicto, la presión o la consecuencia? Si no, añade contexto editorial al hecho, no prosa.
 
 ## Sin infraestructura
 

@@ -1,7 +1,7 @@
-# rehidratar-relato.ps1 — reconstruye un relato legado como un scaffold vigente.
-# Lee exclusivamente la semilla editorial de un workspace existente y crea otro
-# workspace en estado `diseno`. Nunca modifica ni copia prosa, guion, fichas o
-# memoria del origen.
+# rehidratar-relato.ps1 — extrae evidencia editorial de un relato legado.
+# Lee exclusivamente una semilla editorial. No crea, modifica ni copia un
+# workspace: el scaffolder reconstruye después un brief nuevo y lo entrega al
+# dispatcher canónico `new-project.ps1` tras confirmación humana.
 
 [CmdletBinding()]
 param(
@@ -14,15 +14,23 @@ param(
     [ValidateSet("actual", "backup")]
     [string]$Actos = "actual",
 
-    [string]$ReflexionJson,
-
-    [switch]$Crear,
-
     # Solo para regresiones aisladas. La operación normal siempre parte del hub.
     [string]$ForjaRootOverride
 )
 
 $ErrorActionPreference = "Stop"
+
+function Get-RelatoRehidratacionCampo {
+    param(
+        [object]$Objeto,
+        [string]$Nombre
+    )
+
+    if ($Objeto.PSObject.Properties.Name -contains $Nombre) {
+        return $Objeto.$Nombre
+    }
+    return $null
+}
 
 function Get-RelatoRehidratacionPremisa {
     param([string]$BriefPath)
@@ -39,9 +47,9 @@ function Get-RelatoRehidratacionPremisa {
 function ConvertTo-RelatoRehidratacionHecho {
     param([string]$Texto)
 
-    # Los IDs y la marca [D] pertenecen al contrato legado. El destino recibe
-    # IDs H nuevos y, desde ADR 0013, las pautas se expresan como un hecho
-    # ordinario que el guionista convertirá en beats representativos.
+    # Los ID H y las marcas [D] son control técnico legado, no contenido
+    # editorial. La salida es solo una semilla normalizada: el scaffolder debe
+    # reformularla, ampliarla, dividirla o reordenarla si lo requiere el arco.
     $normalizado = [regex]::Replace($Texto.Trim(), '^H_\d{1,4}\s*(?:[—:]\s*)?', '')
     $normalizado = [regex]::Replace($normalizado, '^\[D(?:\s*·\s*H_\d{1,4}\s*[–-]\s*H_\d{1,4})?\]\s*[:—-]?\s*', '')
     if ([string]::IsNullOrWhiteSpace($normalizado)) {
@@ -114,67 +122,6 @@ function Get-RelatoRehidratacionActos {
     return @($actos | ForEach-Object { [pscustomobject]$_ })
 }
 
-function New-RelatoRehidratacionMapa {
-    param(
-        [string]$Titulo,
-        [string]$Origen,
-        [string]$FuenteActos
-    )
-
-    $lineas = @(
-        "# MAPA — $Titulo",
-        "",
-        '## Jerarquía narrativa',
-        "",
-        '```text',
-        '_actos.md (H_XXXX)',
-        '  → guion.md (B_XXXX agrupados en E_XXXX)',
-        '  → relato-draft.md (prosa por escena; anclas invisibles B_XXXX)',
-        '  → relato.md (manuscrito limpio)',
-        '```',
-        "",
-        '## Estado inicial',
-        "",
-        "Este workspace se ha rehidratado desde la semilla editorial de ``$Origen`` usando sus actos ``$FuenteActos``. Se inicia en ``diseno``: no hereda guion, prosa, fichas, contexto ni estado de publicación del origen.",
-        "",
-        '## Archivos',
-        "",
-        '| Archivo | Estado inicial | Función |',
-        '|---|---|---|',
-        '| `BRIEF.md` | creado | Contrato editorial recuperado. |',
-        '| `_actos.md` | creado | Hechos canónicos H_XXXX. |',
-        '| `guion.md` | pendiente | Beats globales y escenas operativas. |',
-        '| `fichas/` | vacío | Entidades derivadas del guion. |',
-        '| `relato-draft.md` | pendiente | Prosa por escena. |',
-        '| `contexto_narrativo.md` | pendiente | Memoria local durante la escritura. |',
-        '| `relato.md` | pendiente | Salida limpia al finalizar. |',
-        "",
-        '## Flujo',
-        "",
-        '`diseno → fichas → escritura → finalizado → publicado (hub)`'
-    )
-    return ($lineas -join "`n")
-}
-
-function ConvertFrom-RelatoRehidratacionReflexion {
-    param([string]$Json)
-
-    if ([string]::IsNullOrWhiteSpace($Json)) {
-        throw "-Crear requiere -ReflexionJson con la reflexión editorial confirmada."
-    }
-    try {
-        $reflexion = $Json | ConvertFrom-Json -ErrorAction Stop
-    } catch {
-        throw "-ReflexionJson no es JSON válido. $_"
-    }
-    foreach ($campo in @("fortalezas", "riesgos", "decisiones_usuario")) {
-        if (-not $reflexion.PSObject.Properties.Name.Contains($campo) -or $null -eq $reflexion.$campo) {
-            throw "-ReflexionJson requiere '$campo'."
-        }
-    }
-    return $reflexion
-}
-
 if ($Origen -notmatch '^[a-z0-9]+(-[a-z0-9]+)*$') {
     throw "Origen '$Origen' inválido. Debe ser el slug de un workspace."
 }
@@ -236,58 +183,52 @@ if (-not (Test-Path -LiteralPath $actosPath -PathType Leaf)) {
 
 $hechos = Get-RelatoRehidratacionActos -ActosPath $actosPath
 $premisa = Get-RelatoRehidratacionPremisa -BriefPath (Join-Path $sourcePath "BRIEF.md")
-$reflexion = if ($Crear) {
-    ConvertFrom-RelatoRehidratacionReflexion -Json $ReflexionJson
-} elseif ($sourceConfig.PSObject.Properties.Name.Contains("reflexion_agente")) {
-    $sourceConfig.reflexion_agente
-} else {
-    $null
+$actosOriginales = Get-Content -LiteralPath $actosPath -Raw -Encoding UTF8
+$normalizaciones = @()
+if ($actosOriginales -match '(?m)^\s*-\s+H_\d{1,4}\b') {
+    $normalizaciones += "Se retiraron los ID H legados: el destino asignará identificadores nuevos."
+}
+if ($actosOriginales -match '\[D(?:\s*·\s*H_\d{1,4}\s*[–-]\s*H_\d{1,4})?\]') {
+    $normalizaciones += "Se retiraron las marcas [D] y sus rangos: en relato los patrones se reformulan como contexto causal del hecho, sin pauta técnica."
 }
 
-$brief = [ordered]@{
-    slug = $Destino
+$semilla = [ordered]@{
     titulo = $sourceConfig.titulo
     escala = "relato"
     estilo_base = $sourceConfig.estilo_base
-    estilo_secundario = if ($sourceConfig.PSObject.Properties.Name.Contains("estilo_secundario")) { $sourceConfig.estilo_secundario } else { $null }
-    logline = $sourceConfig.logline
+    estilo_secundario = Get-RelatoRehidratacionCampo -Objeto $sourceConfig -Nombre "estilo_secundario"
+    logline = Get-RelatoRehidratacionCampo -Objeto $sourceConfig -Nombre "logline"
     premisa = $premisa
-    genero = $sourceConfig.genero
-    subgenero = if ($sourceConfig.PSObject.Properties.Name.Contains("subgenero")) { $sourceConfig.subgenero } else { $null }
-    tono = $sourceConfig.tono
-    atmosfera = if ($sourceConfig.PSObject.Properties.Name.Contains("atmosfera")) { $sourceConfig.atmosfera } else { $null }
-    explicitud = $sourceConfig.explicitud
-    pov = $sourceConfig.pov
-    extension_estimada = $sourceConfig.extension_estimada
-    protagonistas = $sourceConfig.protagonistas
-    personajes_clave = $sourceConfig.personajes_clave
-    antagonista_o_conflicto = if ($sourceConfig.PSObject.Properties.Name.Contains("antagonista_o_conflicto")) { $sourceConfig.antagonista_o_conflicto } else { $null }
-    setting = $sourceConfig.setting
-    temas = $sourceConfig.temas
-    referencias = if ($sourceConfig.PSObject.Properties.Name.Contains("referencias")) { $sourceConfig.referencias } else { $null }
-    restricciones = $sourceConfig.restricciones
-    puntos_conexion = if ($sourceConfig.PSObject.Properties.Name.Contains("puntos_conexion")) { $sourceConfig.puntos_conexion } else { $null }
-    hechos = $hechos
-    _mapa = New-RelatoRehidratacionMapa -Titulo $sourceConfig.titulo -Origen $Origen -FuenteActos $Actos
-    reflexion_agente = $reflexion
-}
-$briefObject = [pscustomobject]$brief
-
-if (-not $Crear) {
-    $briefObject | ConvertTo-Json -Depth 16
-    return
+    genero = Get-RelatoRehidratacionCampo -Objeto $sourceConfig -Nombre "genero"
+    subgenero = Get-RelatoRehidratacionCampo -Objeto $sourceConfig -Nombre "subgenero"
+    tono = Get-RelatoRehidratacionCampo -Objeto $sourceConfig -Nombre "tono"
+    atmosfera = Get-RelatoRehidratacionCampo -Objeto $sourceConfig -Nombre "atmosfera"
+    explicitud = Get-RelatoRehidratacionCampo -Objeto $sourceConfig -Nombre "explicitud"
+    pov = Get-RelatoRehidratacionCampo -Objeto $sourceConfig -Nombre "pov"
+    extension_estimada = Get-RelatoRehidratacionCampo -Objeto $sourceConfig -Nombre "extension_estimada"
+    protagonistas = Get-RelatoRehidratacionCampo -Objeto $sourceConfig -Nombre "protagonistas"
+    personajes_clave = Get-RelatoRehidratacionCampo -Objeto $sourceConfig -Nombre "personajes_clave"
+    antagonista_o_conflicto = Get-RelatoRehidratacionCampo -Objeto $sourceConfig -Nombre "antagonista_o_conflicto"
+    setting = Get-RelatoRehidratacionCampo -Objeto $sourceConfig -Nombre "setting"
+    temas = Get-RelatoRehidratacionCampo -Objeto $sourceConfig -Nombre "temas"
+    referencias = Get-RelatoRehidratacionCampo -Objeto $sourceConfig -Nombre "referencias"
+    restricciones = Get-RelatoRehidratacionCampo -Objeto $sourceConfig -Nombre "restricciones"
+    actos = $hechos
 }
 
-# Reutiliza el creador canónico para que el destino reciba exactamente la misma
-# inyección y los mismos contadores que un relato creado hoy desde el hub.
-. (Join-Path $HubRoot "scripts\lib\common.ps1")
-$Brief = $briefObject
-. (Join-Path $HubRoot "scripts\new-relato.ps1")
+$evidencia = [ordered]@{
+    esquema = "rehidratacion-relato-evidencia-v2"
+    origen = $Origen
+    destino_sugerido = $Destino
+    fuente_actos = $Actos
+    semilla = [pscustomobject]$semilla
+    normalizaciones = $normalizaciones
+    limites = @(
+        "Esta salida es evidencia editorial, no un brief final ni un contrato de hechos.",
+        "El destino debe reconstruirse con hechos nuevos y suficientemente contextualizados; puede añadir, fusionar, dividir, reordenar o descartar elementos de la semilla.",
+        "No se ha leído ni debe usarse guion, prosa, fichas, memoria, cola ni instrucciones antiguas del origen."
+    )
+    criterio_de_reconstruccion = "Conserva solo los no negociables confirmados. Cada hecho final debe ofrecer situación o detonante, agencia y presión concreta, cambio causal y consecuencia visible; los patrones añaden contexto de rutina, variación y progresión, sin convertirse en beats, escenas ni prosa."
+}
 
-Write-Host ""
-Write-Host "=== Relato rehidratado: $targetPath ==="
-Write-Host "  Origen:       $Origen (sin modificar)"
-Write-Host "  Actos usados: $Actos"
-Write-Host "  Estado:       diseno"
-Write-Host "  Siguiente:    opencode --cwd `"workspaces\$Destino`""
-Write-Host "                /validar-hechos"
+[pscustomobject]$evidencia | ConvertTo-Json -Depth 16

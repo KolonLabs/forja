@@ -115,7 +115,7 @@ Usa este flujo cuando quieras descartar la producción de un relato creado con u
 /rehidratar-relato <origen> <slug-destino> [--actos actual|backup]
 ```
 
-El scaffolder lee `config.json`, `BRIEF.md` y los actos elegidos; valida la semilla, presenta una nueva reflexión editorial y pide confirmación. Solo entonces crea el destino en `diseno` con `H_XXXX`, agentes, skills, comandos y transacciones vigentes. Nunca incorpora guion, draft, fichas, memoria ni manuscrito del origen, y tampoco modifica el origen.
+El extractor lee `config.json`, `BRIEF.md` y los actos elegidos, pero devuelve solo evidencia editorial. El scaffolder conserva los no negociables confirmados y propone una estructura nueva: puede añadir, fusionar, dividir, reordenar o descartar los hechos heredados. Cada hecho final fija situación o detonante, agencia bajo presión, cambio causal y consecuencia visible; las pautas añaden contexto de rutina o relación, variación y progresión, sin convertirse en beats ni prosa. Tras la reflexión y confirmación, crea el destino en `diseno` con `H_XXXX`, agentes, skills, comandos y transacciones vigentes. Nunca incorpora guion, draft, fichas, memoria ni manuscrito del origen, y tampoco modifica el origen.
 
 El destino debe tener un slug nuevo. Si después quieres sustituir el workspace legado, archiva primero el origen y realiza el intercambio como una operación explícita separada.
 
