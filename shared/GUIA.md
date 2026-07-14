@@ -83,10 +83,11 @@ Vuelve a la raíz de Forja para estas operaciones:
 |---|---|
 | Abrir una edición corregible de un relato publicado | `/nueva-edicion <origen> <slug-edicion>` |
 | Reiniciar un relato legado desde su semilla editorial | `/rehidratar-relato <origen> <slug-destino>` |
+| Recuperar una obra desde notas o guiones libres | `/importar-relato <slug-destino> --fuente "<ruta>"` |
 | Crear un libro desde una obra terminada | `/crear-libro <slug-libro> <workspace...>` |
 | Añadir o regenerar EPUB/PDF sin cambiar el texto | `/recompilar-libro <slug-libro> --epub/--pdf` |
 
-`/recompilar-libro` no cambia contenido. Una corrección textual requiere `/nueva-edicion` (solo relatos por ahora). `/rehidratar-relato` es distinto: vuelve a crear un workspace de diseño desde `config.json`, `BRIEF.md` y los actos del legado, sin incorporar prosa ni guion antiguos.
+`/recompilar-libro` no cambia contenido. Una corrección textual requiere `/nueva-edicion` (solo relatos por ahora). `/rehidratar-relato` vuelve a crear un workspace desde una semilla Forja; `/importar-relato` analiza notas o guiones libres y conserva sus evidencias fuera del workspace antes de crear el brief confirmado.
 
 ## Antes de actuar
 

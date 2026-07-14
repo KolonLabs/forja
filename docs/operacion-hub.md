@@ -4,7 +4,7 @@ Esta guia describe como operar el hub. Los workspaces son autonomos: este docume
 
 ## Antes de empezar
 
-Ejecuta `/nuevo-proyecto`, `/rehidratar-relato`, `/nueva-edicion` y `/crear-libro` desde la raiz del hub. Abre un workspace existente con:
+Ejecuta `/nuevo-proyecto`, `/rehidratar-relato`, `/importar-relato`, `/nueva-edicion` y `/crear-libro` desde la raiz del hub. Abre un workspace existente con:
 
 ```powershell
 opencode --cwd "workspaces/<slug>"
@@ -119,6 +119,18 @@ El scaffolder lee `config.json`, `BRIEF.md` y los actos elegidos; valida la semi
 
 El destino debe tener un slug nuevo. Si después quieres sustituir el workspace legado, archiva primero el origen y realiza el intercambio como una operación explícita separada.
 
+## Flujo 6: importar fuentes narrativas libres
+
+Usa este flujo para ideas dispersas, notas, escaletas, guiones parciales o borradores que no sean un workspace Forja:
+
+```text
+/importar-relato <slug-destino> --fuente "<ruta-1>" [--fuente "<ruta-2>" ...]
+```
+
+La primera versión admite archivos Markdown y texto plano, incluidos de forma recursiva dentro de las rutas autorizadas. El hub genera un paquete temporal con rutas, hashes y líneas para que el scaffolder extraiga evidencias, hipótesis, conflictos y candidatas. Las fuentes nunca se modifican ni se copian como prosa al destino.
+
+Si hay varias historias o versiones incompatibles, el scaffolder pide elegir antes de generar un brief. Si hay una candidata clara, completa el briefing, recomienda la escala adecuada y solicita la reflexión editorial y confirmación habituales. Tras crear el workspace, elimina el paquete temporal salvo que se pida conservar el informe.
+
 ## Formatos y requisitos de salida
 
 | Salida | Opcion | Requisitos |
@@ -147,6 +159,7 @@ El formato predeterminado es `paperback`. Si Pandoc no esta en el `PATH`, el com
 | El workspace no esta en estado `finalizado`. | Ejecuta `/publicar` dentro del workspace antes de compilar. |
 | Quiero corregir contenido de un relato `publicado`. | Crea `/nueva-edicion`; `/recompilar-libro` no modifica texto. |
 | Quiero reiniciar un relato legado desde su brief y hechos. | Usa `/rehidratar-relato`; no usa ni conserva su producción antigua. |
+| Tengo notas, escaletas o guiones sin estructura Forja. | Usa `/importar-relato` con rutas autorizadas; primero valida la semilla recuperada. |
 | Falta `relato.md` o `novela.md`. | Publica la obra; no pases archivos ni rutas manuales al comando. |
 | Se mezclan relatos y novelas. | Compila una novela sola o usa exclusivamente relatos para la antologia. |
 | Falta Pandoc. | Instala Pandoc o define `PANDOC_PATH`/`PANDOC`. |

@@ -24,7 +24,8 @@ Forja/
 │       ├── crear-libro.md             # /crear-libro
 │       ├── nueva-edicion.md           # /nueva-edicion (relato)
 │       ├── recompilar-libro.md        # /recompilar-libro
-│       └── rehidratar-relato.md       # /rehidratar-relato (relato legado)
+│       ├── rehidratar-relato.md       # /rehidratar-relato (relato legado)
+│       └── importar-relato.md         # /importar-relato (fuentes libres)
 ├── shared/                            # Fuente de verdad del pipeline de ficción
 │   ├── GUIA.md                        # Ayuda de comandos inyectada en cada workspace nuevo
 │   ├── .opencode/
@@ -44,6 +45,7 @@ Forja/
 │   ├── crear-libro.ps1                # Ensambla libro desde workspaces finalizados
 │   ├── new-edicion-relato.ps1         # Deriva una edición corregible de un relato publicado
 │   ├── rehidratar-relato.ps1          # Creador desde semilla editorial legado
+│   ├── preparar-importacion-relato.ps1 # Empaqueta fuentes libres para análisis editorial
 │   ├── recompilar-libro.ps1           # Regenera formatos desde un libro publicado
 │   ├── build-pdf.ps1                  # Compila PDF con Pandoc y un motor local
 │   ├── templates/forja-kdp.typ         # Plantilla PDF reutilizable
@@ -61,7 +63,7 @@ Forja/
 
 | Agente | Modelo | Fuente | Rol |
 |--------|--------|--------|-----|
-| **scaffolder** | `deepseek-v4-pro` | `.opencode/agents/scaffolder.md` | Wizard de briefing editorial y rehidratación de relatos legados. NO escribe ficción. Crea workspaces. |
+| **scaffolder** | `deepseek-v4-pro` | `.opencode/agents/scaffolder.md` | Wizard de briefing editorial, rehidratación e importación de fuentes libres. NO escribe ficción. Crea workspaces. |
 | **bibliotecario** | `deepseek-v4-flash` | `.opencode/agents/bibliotecario.md` | Deriva ediciones de relatos publicados, ensambla libros desde workspaces finalizados y recompila formatos. No escribe ni edita contenido narrativo. |
 
 Ninguno de los dos **se inyecta en workspaces**. Ambos viven solo en el hub.
@@ -75,6 +77,7 @@ Ninguno de los dos **se inyecta en workspaces**. Ambos viven solo en el hub.
 | `/nueva-edicion` | Deriva un relato publicado en un workspace de corrección independiente |
 | `/recompilar-libro` | Añade o regenera EPUB/PDF desde el Markdown congelado de un libro publicado |
 | `/rehidratar-relato` | Reconstruye un relato legado desde su semilla editorial en un workspace nuevo de diseño |
+| `/importar-relato` | Descubre una semilla editorial desde archivos libres y crea un workspace tras validarla |
 
 Los comandos de escritura (`/generar`, `/corregir`, `/revisar`, `/expandir`, `/publicar`) operan **dentro de un workspace** y los ejecuta el director de esa escala.
 
@@ -105,6 +108,8 @@ Para añadir o regenerar EPUB/PDF de un libro ya publicado se usa `/recompilar-l
 Si cambia el contenido de un relato publicado, se usa `/nueva-edicion <workspace-publicado> <slug-edicion> [--titulo "..."] [--motivo "..."]`. Crea un workspace derivado en estado `correccion`, con `relato-edicion-anterior.md` como referencia inmutable. Tras `/corregir` y `/publicar`, la edición queda `finalizado` y se compila con un slug de libro nuevo. Este flujo no está disponible todavía para novelas.
 
 Para reiniciar un relato legado con el pipeline vigente, se usa `/rehidratar-relato <origen> <slug-destino> [--actos actual|backup]` desde el hub. Solo reutiliza `config.json`, `BRIEF.md` y los actos indicados; no migra prosa ni guion y nunca modifica el origen.
+
+Para recuperar ideas desde notas, escaletas o guiones libres se usa `/importar-relato <slug-destino> --fuente "<ruta>" [--fuente "<ruta>" ...]`. Analiza fuentes autorizadas en modo lectura, separa evidencia de hipótesis y solo crea el workspace tras la reflexión editorial y una confirmación explícita.
 
 ## Reglas del hub
 
