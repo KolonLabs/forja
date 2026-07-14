@@ -1,10 +1,10 @@
-# importacion-relato-regression.ps1 — Prueba aislada del empaquetado de fuentes libres.
+# importacion-proyecto-regression.ps1 — Prueba aislada del empaquetado de fuentes libres.
 [CmdletBinding()]
 param()
 
 $ErrorActionPreference = "Stop"
 $RepoRoot = Split-Path -Parent $PSScriptRoot
-$RunRoot = Join-Path ([System.IO.Path]::GetTempPath()) ("forja-importacion-regression-" + [guid]::NewGuid().ToString("N"))
+$RunRoot = Join-Path ([System.IO.Path]::GetTempPath()) ("forja-importacion-proyecto-regression-" + [guid]::NewGuid().ToString("N"))
 $Utf8NoBom = [System.Text.UTF8Encoding]::new($false)
 
 function Write-Utf8 {
@@ -37,7 +37,7 @@ try {
     Write-Utf8 -Path (Join-Path $segundaFuente "mundo.txt") -Content "La ciudad está vacía cuando llega el amanecer."
     $sourceHash = (Get-FileHash -LiteralPath (Join-Path $fuentes "nota.md") -Algorithm SHA256).Hash
 
-    $resultado = & (Join-Path $RepoRoot "scripts\preparar-importacion-relato.ps1") -Fuente @($fuentes, $segundaFuente) -Salida $salida | ConvertFrom-Json
+    $resultado = & (Join-Path $RepoRoot "scripts\preparar-importacion-proyecto.ps1") -Fuente @($fuentes, $segundaFuente) -Salida $salida | ConvertFrom-Json
     Assert-True ($resultado.fuentes_canonicas -eq 3) "incluye fuentes canónicas de varias rutas"
     Assert-True ($resultado.duplicados -eq 1) "deduplica por hash"
     Assert-True ($resultado.omitidos -ge 2) "registra directorios y formatos excluidos"
@@ -46,9 +46,9 @@ try {
     Assert-True ($paquete -notmatch "Este contenido no puede entrar") "no lee dependencias excluidas"
     Assert-True ((Get-FileHash -LiteralPath (Join-Path $fuentes "nota.md") -Algorithm SHA256).Hash -eq $sourceHash) "no modifica fuentes"
     Assert-True (Test-Path -LiteralPath $resultado.manifiesto) "emite manifiesto separado"
-    Assert-Throws { & (Join-Path $RepoRoot "scripts\preparar-importacion-relato.ps1") -Fuente @($fuentes, $segundaFuente) -Salida (Join-Path $RunRoot "demasiado-grande.md") -MaxCaracteres 10 | Out-Null } "no trunca fuentes al superar el límite"
+    Assert-Throws { & (Join-Path $RepoRoot "scripts\preparar-importacion-proyecto.ps1") -Fuente @($fuentes, $segundaFuente) -Salida (Join-Path $RunRoot "demasiado-grande.md") -MaxCaracteres 10 | Out-Null } "no trunca fuentes al superar el límite"
 
-    Write-Host "OK: regresión de importación de relato superada."
+    Write-Host "OK: regresión de importación de proyecto superada."
 } finally {
     if (Test-Path -LiteralPath $RunRoot) {
         Remove-Item -LiteralPath $RunRoot -Recurse -Force

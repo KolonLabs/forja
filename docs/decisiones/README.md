@@ -23,4 +23,5 @@ Este directorio conserva decisiones arquitectonicas y operativas que deben sobre
 | [0008](0008-contratos-ejecutables-de-relato.md) | Relato materializa IDs, aísla sus skills y usa anclas invisibles de beat dentro de prosa por escena. | Aceptada |
 | [0009](0009-integridad-transaccional-de-relato.md) | Relato persiste recurrencias y estructura de forma transaccional; las ediciones derivadas validan y regeneran su contrato. | Aceptada |
 | [0010](0010-rehidratacion-de-relatos-legados.md) | Un relato legado se reinicia desde su semilla editorial en un destino nuevo; no migra prosa ni guion. | Aceptada |
-| [0011](0011-importacion-de-fuentes-narrativas-libres.md) | Fuentes libres se analizan como evidencia trazable antes de construir un brief confirmado. | Aceptada |
+| [0011](0011-importacion-de-fuentes-narrativas-libres.md) | Fuentes libres se analizan como evidencia trazable antes de construir un brief confirmado. | Sustituida por ADR 0012 |
+| [0012](0012-importacion-general-y-extraccion-editorial.md) | La importación es transversal a escalas y usa una skill para extraer evidencia antes de proponer la escala. | Aceptada |

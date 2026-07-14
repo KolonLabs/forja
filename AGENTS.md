@@ -18,14 +18,15 @@ Forja/
 │   │   ├── scaffolding-relato/        # Conversación de estructura (relato)
 │   │   ├── scaffolding-novela-simple/ # Conversación de estructura (novela)
 │   │   ├── scaffolding-multi-hilo/    # Conversación de estructura (multi-hilo)
-│   │   └── scaffolding-mapa/          # Estructura de MAPA.md por escala (Fase 7)
+│   │   ├── scaffolding-mapa/          # Estructura de MAPA.md por escala (Fase 7)
+│   │   └── importacion-fuentes/       # Extracción trazable desde fuentes libres
 │   └── commands/
 │       ├── nuevo-proyecto.md          # /nuevo-proyecto
 │       ├── crear-libro.md             # /crear-libro
 │       ├── nueva-edicion.md           # /nueva-edicion (relato)
 │       ├── recompilar-libro.md        # /recompilar-libro
 │       ├── rehidratar-relato.md       # /rehidratar-relato (relato legado)
-│       └── importar-relato.md         # /importar-relato (fuentes libres)
+│       └── importar-proyecto.md       # /importar-proyecto (fuentes libres)
 ├── shared/                            # Fuente de verdad del pipeline de ficción
 │   ├── GUIA.md                        # Ayuda de comandos inyectada en cada workspace nuevo
 │   ├── .opencode/
@@ -45,7 +46,7 @@ Forja/
 │   ├── crear-libro.ps1                # Ensambla libro desde workspaces finalizados
 │   ├── new-edicion-relato.ps1         # Deriva una edición corregible de un relato publicado
 │   ├── rehidratar-relato.ps1          # Creador desde semilla editorial legado
-│   ├── preparar-importacion-relato.ps1 # Empaqueta fuentes libres para análisis editorial
+│   ├── preparar-importacion-proyecto.ps1 # Empaqueta fuentes libres para análisis editorial
 │   ├── recompilar-libro.ps1           # Regenera formatos desde un libro publicado
 │   ├── build-pdf.ps1                  # Compila PDF con Pandoc y un motor local
 │   ├── templates/forja-kdp.typ         # Plantilla PDF reutilizable
@@ -77,7 +78,7 @@ Ninguno de los dos **se inyecta en workspaces**. Ambos viven solo en el hub.
 | `/nueva-edicion` | Deriva un relato publicado en un workspace de corrección independiente |
 | `/recompilar-libro` | Añade o regenera EPUB/PDF desde el Markdown congelado de un libro publicado |
 | `/rehidratar-relato` | Reconstruye un relato legado desde su semilla editorial en un workspace nuevo de diseño |
-| `/importar-relato` | Descubre una semilla editorial desde archivos libres y crea un workspace tras validarla |
+| `/importar-proyecto` | Descubre una semilla editorial desde archivos libres y crea un workspace tras validarla |
 
 Los comandos de escritura (`/generar`, `/corregir`, `/revisar`, `/expandir`, `/publicar`) operan **dentro de un workspace** y los ejecuta el director de esa escala.
 
@@ -109,7 +110,7 @@ Si cambia el contenido de un relato publicado, se usa `/nueva-edicion <workspace
 
 Para reiniciar un relato legado con el pipeline vigente, se usa `/rehidratar-relato <origen> <slug-destino> [--actos actual|backup]` desde el hub. Solo reutiliza `config.json`, `BRIEF.md` y los actos indicados; no migra prosa ni guion y nunca modifica el origen.
 
-Para recuperar ideas desde notas, escaletas o guiones libres se usa `/importar-relato <slug-destino> --fuente "<ruta>" [--fuente "<ruta>" ...]`. Analiza fuentes autorizadas en modo lectura, separa evidencia de hipótesis y solo crea el workspace tras la reflexión editorial y una confirmación explícita.
+Para recuperar ideas desde notas, escaletas o guiones libres se usa `/importar-proyecto <slug-destino> --fuente "<ruta>" [--fuente "<ruta>" ...]`. Analiza fuentes autorizadas en modo lectura, separa evidencia de hipótesis y solo crea el workspace tras la reflexión editorial y una confirmación explícita. La skill `importacion-fuentes` guía qué extraer; el scaffolder propone la escala y la persona usuaria la confirma.
 
 ## Reglas del hub
 
