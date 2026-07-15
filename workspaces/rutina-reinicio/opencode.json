@@ -1,0 +1,5 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "default_agent": "director",
+  "model": "opencode-go/glm-5.2"
+}
