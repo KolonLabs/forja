@@ -108,8 +108,9 @@ No cambia `stable_id`; una reescritura conserva identidad y posición salvo reor
 3. Entidades relevantes por `stable_id`.
 4. `stable_id` del hilo implícito si existe como entidad.
 5. Objetivo del capítulo.
+6. Referencias `tipo=referencia` relevantes al objetivo del capítulo (máx. 2; resumen, no contenido completo).
 
-Output: briefing estructurado por L4 → L3 → L2 → entidades → relaciones, mostrando stable IDs y posición.
+Output: briefing estructurado por L4 → L3 → L2 → entidades → relaciones → referencias, mostrando stable IDs y posición.
 
 ## Cronista — modo único
 

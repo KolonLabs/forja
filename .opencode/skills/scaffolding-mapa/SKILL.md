@@ -72,6 +72,7 @@ Añadir respecto al relato:
 - `capitulos/cap-NN-slug/` (guion.md, draft.md, capitulo.md)
 - `novela.md` como salida publicable
 - `contexto.md` en vez de `contexto_narrativo.md`
+- `referencias/` (material de referencia no-narrativo si el proyecto fue importado; vacío si no hay)
 - Agentes: añadir memoria, cronista
 - Skills extra: qdrant, neo4j, auditoria-neo4j, hechos-estructura, plantilla-arco
 - Sin `contexto-narrativo`: esa skill es la memoria Markdown de relato
@@ -86,6 +87,7 @@ Añadir respecto a novela simple:
 - `fichas/conexion_<slug>.md`
 - `guion-novela.md` con tabla `## Trenzado`
 - `capitulos/cap-NN-slug/cola_d.md` (hechos `[D]` pendientes de posicionar; efímero por capítulo)
+- `referencias/` (material de referencia no-narrativo si el proyecto fue importado; vacío si no hay)
 - Skills extra: diseno-hilo, plantilla-hilo, trenzado-narrativo, validacion-cross-hilo
 - Transiciones: diseno → diseno_hilos → trenzado → fichas → escritura → publicacion → finalizado
   (`publicado` lo asigna el hub con `/crear-libro`, nunca el director)

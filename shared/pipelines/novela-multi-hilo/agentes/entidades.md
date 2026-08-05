@@ -30,7 +30,15 @@ organizacion
 arco
 evento
 grupo
+referencia
 ```
+
+**Tipo `referencia` — contrato especial:**
+
+- Representa material de referencia no-narrativo (biblia científica, universo previo, modelo de negocio, etc.) importado vía `/importar-proyecto`.
+- Solo tiene `fijo.contenido` (Markdown completo del archivo fuente). **No tiene `dinamico`**: es inmutable.
+- Tags: incluye `relevancia_por_hilo:<stable_id_hilo>` por cada hilo al que la referencia es directamente relevante. El agente `memoria` filtra por este tag.
+- Ingestión: en FASE 0.1.0, el director invoca `entidades` para ingestar cada archivo de `referencias/` como una entidad `tipo=referencia`. No genera ficha Markdown (el archivo en `referencias/` ya es la fuente legible).
 
 No uses `persona` ni variantes. No inventes tipos nuevos.
 

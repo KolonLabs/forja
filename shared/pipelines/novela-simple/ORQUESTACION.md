@@ -142,6 +142,9 @@ FASE 0 diseño
   director → guionista(modo: estructura-novela)
   IN:  BRIEF.md, _actos.md, config.json
   OUT: guion-novela.md (actos, caps, hechos H_NNNN)
+  [si referencias/ existe]
+  director → entidades (×N): ingestar referencias/ como tipo=referencia
+    fijo.contenido = Markdown del archivo, sin dinamico, inmutable
   estado → "diseno" → "fichas"
 
 FASE 1 componentes
@@ -152,9 +155,10 @@ FASE 1 componentes
   estado → "escritura"
 
 FASE 2 escritura (por capítulo)
-  2.1 director → memoria
+2.1 director → memoria
       IN:  config.json, entidades relevantes del cap
-      OUT: briefing ~600 tokens (L4 → L3 → L2 recientes → entidades → relaciones)
+      OUT: briefing ~600 tokens (L4 → L3 → L2 recientes → entidades → relaciones
+           + referencias tipo=referencia relevantes, máx. 2)
 
   2.2 director → guionista(modo: capitulo)
       IN:  cap-NN-slug, hechos H_XXXX, briefing memoria
@@ -278,6 +282,7 @@ Briefing esperado: ~600 tokens. Estructura:
   3. Últimos 3 L2 (capítulos previos)
   4. Entidades del capítulo (fijo + dinámico desde Qdrant)
   5. Relaciones activas (Neo4j) de personajes del capítulo
+  6. [Opcional] Referencias tipo=referencia relevantes al objetivo del capítulo (máx. 2; resumen, no contenido completo)
 ```
 
 ### → cronista

@@ -107,7 +107,23 @@ Colecciones disponibles:
 
 - `beats`: acción, prosa y posición de beats.
 - `summaries`: L1, L2, L3 y L4.
-- `entidades`: personajes, lugares, objetos, animales, seres sobrenaturales, hilos, organizaciones, arcos, eventos y grupos.
+- `entidades`: personajes, lugares, objetos, animales, seres sobrenaturales, hilos, organizaciones, arcos, eventos, grupos y **referencias**.
+
+### Referencias (`tipo=referencia`)
+
+Las entidades `tipo=referencia` contienen material no-narrativo (biblia científica, universo previo, etc.) en `fijo.contenido`. Son inmutables: no tienen `dinamico`.
+
+Para incluir una referencia en el briefing, consulta por tipo y filtra por relevancia:
+
+```bash
+python scripts/qdrant.py query-entities \
+  --proyecto "$PROYECTO" \
+  --tipo referencia
+```
+
+Filtra los resultados por el tag `relevancia_por_hilo:<stable_id_hilo>` cuando el capítulo tenga hilos activos. En novela-simple sin hilos explícitos, incluye las referencias cuyo contenido sea semánticamente relevante al objetivo del capítulo (máximo 2).
+
+No incluyas el `fijo.contenido` completo en el briefing: extrae un resumen de 2-3 frases del contenido o el fragmento directamente relevante al objetivo del capítulo. Cuenta dentro del presupuesto de ~600 tokens.
 
 ## Consultas Neo4j
 
@@ -156,6 +172,9 @@ Hilos activos:
 ### Relaciones clave — Neo4j
 - Laura (a1b2c3d4) → SENTIMIENTO_HACIA[amor] → Diego (9a8b7c6d)
 - Laura (a1b2c3d4) → VIVE_EN → Casa de Laura (e5f6a7b8)
+
+### Referencias [opcional — solo si existen y son relevantes]
+- [Título] (stable_id: 99887766; tipo: referencia): [resumen de 2-3 frases del fragmento relevante]
 
 ### Objetivo de este capítulo
 [Objetivo extraído del guion]

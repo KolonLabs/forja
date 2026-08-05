@@ -113,8 +113,9 @@ No cambia `stable_id`. Si el cambio exige mover el beat a otro bloque, el direct
 3. Hilos activos: `stable_id`, nombre y estado.
 4. Entidades relevantes por `stable_id`, filtradas por hilo.
 5. Conexiones cross-hilo pendientes y objetivo del capítulo.
+6. Referencias `tipo=referencia` con tag `relevancia_por_hilo:<stable_id_hilo>` (máx. 2; resumen, no contenido completo).
 
-Output: briefing L4 → L3 → L2 → entidades → relaciones → hilos, mostrando stable IDs, posición e hilo.
+Output: briefing L4 → L3 → L2 → entidades → relaciones → hilos → referencias, mostrando stable IDs, posición e hilo.
 
 ## Cronista — modo único cross-hilo
 
