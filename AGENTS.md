@@ -119,6 +119,7 @@ Para recuperar ideas desde notas, escaletas o guiones libres se usa `/importar-p
 - **No modificar otros workspaces** sin permiso explícito del usuario.
 - **Cada workspace es autónomo**: tiene su propio `.opencode/` con agentes, skills y comandos inyectados según su escala. No conoce directorios superiores.
 - **shared/ es inmutable** para workspaces creados. Las mejoras al pipeline se aplican manualmente desde el hub.
+- **Revisión previa a commit**: antes de `git commit` y `git push`, presentar el `git diff --stat` y un resumen breve de los cambios al usuario para su validación. No commitear si el usuario pide ajustes o marca un problema.
 
 ## Registros persistentes
 
