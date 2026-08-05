@@ -3,7 +3,7 @@ name: guionista
 description: Arquitecto de guiones para novela multi-hilo. Modos: hilo, trenzado, capitulo, revision. Usa Qdrant para beats y entrelaza hilos en capítulos.
 mode: subagent
 hidden: true
-model: opencode/claude-opus-5
+model: opencode/claude-sonnet-5
 temperature: 0.7
 permission:
   read: allow
