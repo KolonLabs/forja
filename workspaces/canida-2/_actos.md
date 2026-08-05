@@ -133,60 +133,65 @@
 
 ### Acto I -- La rutina
 
-**Objetivo narrativo:** Vega vive entre dos mundos que no se tocan: el laboratorio de terapia genica y la protectora del Valles. El primer perro raro es solo una nota mental.
+**Objetivo narrativo:** Vega vive entre dos mundos que no se tocan: el laboratorio de terapia genica y la protectora del Valles. El primer perro raro es solo una nota mental. Pero antes, necesitamos ver a Vega cuando no trabaja.
 
-**Que debe sentir el lector:** Normalidad profesional. El lector entra en el mundo de Vega sin saber todavia que lo que parece rutina es la antesala de un descubrimiento.
+**Que debe sentir el lector:** Normalidad. El lector entra en la vida de Vega sin saber todavia que lo que parece rutina es la antesala de un descubrimiento.
 
-**Tension:** Vega no busca nada. Simplemente hace su trabajo en dos sitios distintos.
+**Tension:** Vega no busca nada. Simplemente hace su trabajo en dos sitios distintos. Pero la soledad de su piso en Gracia no es neutral -- es una acumulacion lenta que ella no se para a medir.
 
 #### Hechos
 
-- H_0045: Vega, investigadora postdoc en terapia genica veterinaria con vectores AAV, vive entre el laboratorio de Bernat Roig en la UB y la protectora del Valles donde es voluntaria los sabados. Boira en casa -- su perra, sin nada que ver con ningun vector. Contrato de dos años, el segundo en curso.
-- H_0046: Quim, coordinador de la protectora, le señala un perro nuevo: documentacion incompleta. Vega le toma la temperatura por costumbre -- ligeramente alta y constante. Reflejos pupilares atipicos. Lo apunta sin darle importancia. Pero la nota mental se queda mas tiempo del que deberia.
+- H_0045: Vega Quintana, 35 años. Investigadora postdoc en terapia genica veterinaria con vectores AAV en el grupo de Bernat Roig (UB). Contrato de dos años --el segundo en curso-- sin plaza fija. Vive sola en Gracia con Boira, una mestiza de siete años que adopto durante el doctorado y que no tiene nada que ver con ningun vector. Soltera desde que Marc se canso de competir con el laboratorio hace dos años. Su amiga Cris lleva un bar en el barrio --el unico sitio donde Vega no habla de ciencia. Sus padres en Tarragona siguen sin entender por que a los 35 no tiene un sueldo estable. En el laboratorio comparte mesa con Laia, otra postdoc en su misma situacion --mismo contrato, mismo reloj--, y con Hugo, un doctorando que aun no tiene nada que perder. Los sabados, voluntaria en la protectora del Valles.
+- H_0046: Sabado noche en el bar de Cris. Vega cena sola en la barra mientras Cris atiende mesas. Cris le pregunta por que sigue soltera: 'No es el laboratorio, eres tu que no dejas hueco.' Un cliente le tira los tejos. Vega se rie, incomoda, responde con monosilabos. Se va pronto. De vuelta a casa, Boira la espera en la puerta. El silencio del piso le pesa mas de lo que admite. Se duerme en el sofa con Boira encima.
+- H_0047: Quim, veterano coordinador de la protectora, le señala un perro nuevo: documentacion incompleta, llegada sin aviso. Vega le toma la temperatura por costumbre --ligeramente alta y constante. Reflejos pupilares atipicos. Lo apunta sin darle importancia. Pero la nota mental se queda mas tiempo del que deberia.
+- H_0048: Llamada de los padres. Su padre: '¿Has mirado lo del CSIC? A tu edad, Vega...' Cuelga con un 'luego os llamo' que nunca llega. Boira apoya el hocico en su rodilla. Al dia siguiente, en el laboratorio, Hugo la nota rara: '¿Todo bien?' 'Si, dormi mal.'
 
 ### Acto II -- La duda
 
-**Objetivo narrativo:** El patron insiste. Vega pasa de notar algo a no poder dejar de notarlo. Bernat le resta importancia -- ella decide investigar de todas formas.
+**Objetivo narrativo:** El patron insiste. Vega pasa de notar algo a no poder dejar de notarlo. Pero mientras la investigacion tira de ella, la vida fuera del laboratorio se resquebraja -- y las dos cosas se alimentan.
 
-**Que debe sentir el lector:** Tension profesional. El lector ve a Vega elegir entre su carrera y su instinto.
+**Que debe sentir el lector:** Tension profesional y personal entrelazadas. El lector ve a Vega elegir entre su carrera y su instinto, mientras la vida que ha construido empieza a pedirle cuentas.
 
 **Tension:** Si pregunto oficialmente, tengo que explicar que he estado haciendo pruebas no autorizadas. Si no pregunto, se que hay algo y no hago nada.
 
 #### Hechos
 
-- H_0047: La duda profesional. Reconoce vagamente un patron que le suena de su propia investigacion con AAV para epilepsia canina. Lo descarta -- es del campo en el que trabaja, claro que le suena.
-- H_0048: Meses despues, otro perro, otra protectora, el mismo patron exacto. Ya no puede ser coincidencia. Empieza a tomar notas en serio, fuera de cualquier protocolo oficial.
-- H_0049: Le menciona el patron a Bernat. El resta importancia: tiene un paper pendiente y una renovacion de contrato que depende de publicar, no de perseguir corazonadas de protectora.
+- H_0049: Otro perro, misma protectora, el mismo patron exacto --temperatura, pupilas, esa calma que no es calma sino regulacion forzada. Ya no puede descartarlo como casualidad. Reconoce vagamente algo que le suena de su propia investigacion con AAV para epilepsia canina. Empieza a tomar notas en serio, fuera de cualquier protocolo oficial.
+- H_0050: Se cruza con Marc en Gracia. El va con alguien --una mujer que no es mas joven ni mas guapa, solo es otra. Intercambio de tres frases incomodas. '¿Que tal Boira?' 'Bien.' 'Me alegro.' Vega vuelve a casa y esa noche duerme peor de lo normal. Boira se sube a la cama sin pedir permiso. A la mañana siguiente, Vega revisa las notas del perro raro con mas atencion de la que deberia --no por el perro, por no pensar en otra cosa.
+- H_0051: Le menciona el patron a Bernat. El resta importancia: tiene un paper pendiente y una renovacion de contrato que depende de publicar, no de perseguir corazonadas de protectora. Vega asiente. No discute. Pero esa noche, en casa, abre las notas y sigue.
+- H_0052: Laia se acerca. Ha notado que Vega esta rara --sale antes, llega tarde, ya no se toma cafe con el grupo. La invita a comer. Vega esta a punto de contarselo. No lo hace. Esa mentira por omision duele porque Laia no es enemiga --es la unica persona en el laboratorio que entiende exactamente su situacion, y aun asi Vega no puede confiar en ella.
 
 ### Acto III -- Cruzar la linea
 
-**Objetivo narrativo:** Vega hace pruebas no autorizadas, encuentra el vector, y Quim la ayuda a rastrear el origen desde fuera de la ciencia.
+**Objetivo narrativo:** Vega hace pruebas no autorizadas, encuentra el vector. Pero cada paso que acerca la verdad pone en riesgo no solo su contrato, sino a las personas que confiaron en ella.
 
-**Que debe sentir el lector:** La satisfaccion de ver a una cientifica competente hacer su trabajo, mezclada con la ansiedad de saber que cada paso la acerca a perderlo todo.
+**Que debe sentir el lector:** La satisfaccion de ver a una cientifica competente hacer su trabajo, mezclada con la ansiedad de saber que Hugo es complice sin quererlo, que Laia pagaria las consecuencias, y que Bernat no va a protegerla.
 
-**Tension:** Si sigo, arriesgo exactamente lo que he construido. Si paro, vivire con la pregunta para siempre.
+**Tension:** Si sigo, arriesgo exactamente lo que he construido --y no es solo mio. Si paro, vivire con la pregunta para siempre.
 
 #### Hechos
 
-- H_0050: Vega hace pruebas informales con los perros de la protectora -- analisis de sangre fuera de cualquier autorizacion oficial, usando el acceso al laboratorio que tiene por su puesto.
-- H_0051: Encuentra trazas de un vector AAV. No es el suyo. Misma familia tecnica, distinto -- mas refinado en algunos aspectos, mas opaco en otros.
-- H_0052: Quim ayuda desde fuera de la ciencia: rastrea la red informal de protectoras y galgueros sobre el origen de los casos que Vega le señala.
-- H_0053: Aparece un patron de procedencia: varios casos llegan de cesiones informales rastreables hasta galgueros de varias provincias. Sin nombre de empresa todavia, solo un patron de origen.
+- H_0053: Vega hace pruebas informales con los perros de la protectora --analisis de sangre fuera de cualquier autorizacion oficial, usando el acceso al laboratorio que tiene por su puesto. Lo hace de noche, cuando el edificio esta vacio.
+- H_0054: Encuentra trazas de un vector AAV. No es el suyo. Misma familia tecnica, distinto --mas refinado en algunos aspectos, mas opaco en otros. La confirmacion le da vertigo. Ya no es una corazonada.
+- H_0055: Quim ayuda desde fuera de la ciencia: rastrea la red informal de protectoras y galgueros sobre el origen de los casos que Vega le señala. No entiende lo que ella busca, pero entiende de donde vienen los perros.
+- H_0056: Hugo se da cuenta. Ha notado que faltan reactivos, que Vega esta en el laboratorio a horas raras. La confronta sin agresividad, con preocupacion: 'No se que estas haciendo, pero si te pillan...' Vega le pide que no diga nada. Hugo accede. Pero ahora Vega no solo arriesga su contrato: arriesga el de Hugo si alguien descubre que el lo sabia.
+- H_0057: Aparece un patron de procedencia: varios casos llegan de cesiones informales rastreables hasta galgueros de varias provincias. Sin nombre de empresa todavia, solo un patron de origen.
+- H_0058: Bernat presiona. Ya no es 'dejalo estar'. Es 'Vega, si el comite de etica se entera de que has usado el laboratorio para pruebas no autorizadas, nos cierran a todos. No es tu contrato --es Laia, es Hugo, soy yo.' Vega no responde. Esa noche, en casa, con Boira a los pies de la cama, se formula por primera vez la pregunta: 'Si yo tuviera los recursos de quien diseño este vector, ¿habria hecho algo distinto?' No le gusta la respuesta que encuentra.
 
 ### Acto IV -- El cerco y el cruce
 
-**Objetivo narrativo:** Bernat revela sin querer que el mundo que Vega investiga no le es ajeno. El correo de Sara llega y Vega reconoce los marcadores.
+**Objetivo narrativo:** Bernat revela sin querer que el mundo que Vega investiga no le es ajeno. El correo de Sara llega. Vega ya no puede limitarse a observar.
 
-**Que debe sentir el lector:** El lector ve converger dos investigaciones que nacieron separadas. La pregunta ya no es 'existe esto' sino 'que hago ahora'
+**Que debe sentir el lector:** El lector ve converger dos investigaciones que nacieron separadas. Pero tambien ve a Vega tomar una decision que no es cientifica --es personal. Responder a Sara es cruzar una linea de la que no hay vuelta atras.
 
-**Tension:** Alguien mas ya esta viviendo las consecuencias de lo que yo solo documentaba. Ya no puedo limitarme a observar.
+**Tension:** Alguien mas, fuera de la ciencia, ya esta viviendo las consecuencias de lo que yo solo documentaba. Y yo ya he decidido que no voy a mirar hacia otro lado.
 
 #### Hechos
 
-- H_0054: Vega insiste con Bernat, esta vez con datos. El se incomoda mas de lo esperado -- menciona haber oido hablar de un grupo privado años atras en algun congreso. Le pide que no comprometa la reputacion del laboratorio.
-- H_0055: El correo de Sara llega a Bernat preguntando por sintomas de un perro llamado Viento. Bernat, sin interes, reenvia el contacto de Vega. Sin saberlo, le entrega la pieza que le faltaba.
-- H_0056: Vega reconoce en la descripcion de Sara exactamente los marcadores que lleva meses rastreando. Es el primer punto de contacto real entre las dos investigaciones.
-- H_0057: Por primera vez, la pregunta que Vega llevaba meses evitando deja de ser teorica: alguien mas, fuera de la ciencia, ya esta viviendo las consecuencias de lo que ella solo documentaba.
+- H_0059: Vega insiste con Bernat, esta vez con datos. El se incomoda mas de lo esperado --menciona haber oido hablar de un grupo privado años atras en algun congreso. Le pide que no comprometa la reputacion del laboratorio. Es la primera vez que Vega siente que Bernat no la protege a ella --se protege a si mismo.
+- H_0060: El correo de Sara llega a Bernat preguntando por sintomas de un perro llamado Viento. Bernat, sin interes, reenvia el contacto de Vega. Sin saberlo, le entrega la pieza que le faltaba.
+- H_0061: Vega reconoce en la descripcion de Sara exactamente los marcadores que lleva meses rastreando. Es el primer punto de contacto real entre las dos investigaciones.
+- H_0062: Vega escribe su primer correo a Sara. Pero antes, hay un momento sola en el laboratorio, de madrugada, con los datos sobre la mesa y Boira dormida a sus pies. Piensa en Laia, en Hugo, en Bernat. En Marc. En lo que ha construido. Sabe que responder a Sara es cruzar una linea de la que no hay vuelta atras --no profesional, personal. Le da a enviar.
 
 ## Hilo: Vidal — slug: hilo-vidal
 
