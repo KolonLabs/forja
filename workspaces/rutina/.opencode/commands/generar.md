@@ -1,55 +1,29 @@
 ---
-description: Inicia o continúa el pipeline de generación desde el estado actual del workspace.
+description: Genera o continúa un relato según su estado, usando beats globales y escenas operativas.
 agent: director
 ---
 
-# /generar
+# /generar — Relato
 
-Inicia o continúa el pipeline de generación desde `config.json.estado`. El director lee `PIPELINE.md` y `ORQUESTACION.md` y orquesta los agentes según la fase actual.
+Lee `config.json`, `PIPELINE.md` y `ORQUESTACION.md`. Recupera o retoma un staging pendiente antes de abrir otro. Avanza por el estado actual sin reiniciar fases cerradas.
 
-## Sintaxis
-
+```text
+diseno: H → mapa global B provisionales (patrones y contraste incluidos) → diagnóstico único → E → confirmar diseno
+fichas: fichas necesarias → confirmar componentes
+escritura: una E completa validada → confirmar escritura por cada llamada
 ```
-/generar
-```
 
-## Qué hace
+El director decide autónomamente dentro del brief. Solo pide dirección si modificaría un hecho, desenlace, restricción o relación fijada. En `correccion`, usa `/corregir`, `/revisar` o `/expandir`; no reinicia el pipeline.
 
-El director:
-1. Lee `config.json.estado` para saber en qué fase está
-2. Lee `PIPELINE.md` para conocer las fases y gates de su escala
-3. Sigue el contrato en `ORQUESTACION.md` para spawnear subagentes
-4. Avanza secuencialmente por las fases hasta completar el pipeline
+## Gate de publicación (parada blanda)
 
-## Fases por escala
+`/generar` **no publica automáticamente**. Cuando la última `E_XXXX` del guion queda escrita y confirmada, el relato permanece en estado `escritura` y el director **se detiene y cede el control a la persona usuaria**. No ejecuta `/publicar` ni pasa a `finalizado` por su cuenta.
 
-### Relato (4 fases)
-- **FASE 1 — Diseño**: guionista genera `guion.md` (actos → escenas → hechos → beats)
-- **FASE 2 — Componentes**: entidades crea fichas en `fichas/`, director reconcilia, crea `contexto_narrativo.md` + `relato-draft.md`
-- **FASE 3 — Beat a beat**: escritor → validador → ±integrador por cada beat. Director actualiza `contexto_narrativo.md` por escena
-- **FASE 4 — Publicar**: `/publicar` genera `relato.md` limpio
+Al detenerse, el director presenta un cierre de fase:
 
-### Novela simple (6 fases)
-- **FASE 0 — Diseño**: guionista genera `guion-novela.md`
-- **FASE 1 — Componentes**: entidades en Qdrant + Neo4j
-- **FASE 2 — Escritura por capítulo**: memoria → guionista → beat a beat → validador global → cronista
-- **FASE 3 — Publicar**: `/publicar` genera `capitulo.md` por cap + `novela.md`
+- Confirma que el draft está completo: todas las `E_XXXX` del guion tienen su tramo en `relato-draft.md`, cada `B_XXXX` con su ancla única, y el draft es un prefijo ordenado y continuo.
+- Ofrece un resumen breve del draft (número de escenas, y cualquier punto que convenga revisar antes de publicar: continuidad, arco, tiempo verbal, verosimilitud).
+- Invita explícitamente a revisar y, si hace falta, a usar `/regenerar`, `/revisar`, `/corregir` o `/expandir` antes de publicar.
+- Indica que la publicación es un paso manual y separado: solo cuando la persona usuaria esté conforme, ejecutará `/publicar`, que produce `relato.md` y cierra a `finalizado`.
 
-### Novela multi-hilo (8 fases)
-- **FASE 0 — Diseño global**: hilos, puntos de conexión
-- **FASE 0.1-0.3 — Hilos + Trenzado**: guionista genera `guion-hilo.md` por hilo, luego tabla de trenzado
-- **FASE 1-2 — Componentes**: entidades + conexiones cross-hilo
-- **FASE 3 — Beat a beat cross-hilo**: por capítulo según trenzado
-- **FASE 4 — Publicar**: `/publicar` genera `capitulo.md` por cap + `novela.md`
-
-## Output
-
-Cada workspace produce en su raíz:
-- **Relato**: `relato.md` (texto limpio continuo)
-- **Novela**: `novela.md` (capítulos concatenados)
-
-## Notas
-
-- El director tiene iniciativa editorial: propone cambios, detecta problemas, sugiere mejoras
-- En novelas, la memoria persistente (Qdrant + Neo4j) mantiene coherencia entre capítulos
-- El usuario puede interrumpir en cualquier fase para ajustar dirección
+La publicación nunca es un efecto secundario de `/generar`: es una decisión editorial explícita que la persona usuaria toma tras revisar el draft completo.

@@ -1,106 +1,49 @@
 ---
 name: mecanica-prosa
-description: Mecánica invariable de formato narrativo: guiones de diálogo (—), división de párrafos, líneas críticas (⚡), cursiva interior. Sin vocabulario ni crudeza. El escritor y el integrador lo cargan siempre.
+description: Formato mínimo de prosa por escena para relato, sin volver a dividirla por beats.
 compatibility: opencode
 ---
 
-# Skill: mecanica-prosa
+# Mecánica de prosa — Relato
 
-## Qué es
+Escribe una única prosa cohesionada por `E_XXXX`. Los beats solo se señalan con
+`<!-- B_XXXX -->` antes del primer pasaje que realiza su acción: no son headings,
+subsecciones, cuotas ni unidades de escritura.
 
-Define la mecánica invariable de formato para cualquier prosa narrativa. No contiene vocabulario, estilo ni reglas de crudeza — solo formato. Es agnóstico al contenido.
+- Usa raya (`—`) para el diálogo cuando haya diálogo.
+- Conserva párrafos y pensamiento interior solo cuando beneficien a la voz de la
+  escena; no impongas una longitud ni una alternancia mecánica.
+- No añadas líneas `⚡`, extensiones, notas del escritor, títulos de beat ni
+  marcadores `ESCENA`: el director añade únicamente el marcador de escena al
+  persistir la respuesta.
 
----
+## Omisión del sujeto: no repitas el nombre ni el rol en cada frase
 
-## Formato de diálogo
+El español omite el sujeto cuando ya se conoce. Repetir el nombre («Miguel… Miguel… Miguel…») o la referencia por rol («el hombre… el hombre… el hombre…») al inicio de frases y párrafos consecutivos suena mecánico y delata prosa automática. El lector conserva el sujeto sin que se lo recuerdes en cada oración.
 
-### Párrafo independiente
+### Cuándo SÍ nombrar
 
-Cada intervención de diálogo va en su propio párrafo, separado de la narración por una línea en blanco. Con guion largo (—).
+- Primera mención en una escena nueva o tras un cambio de escenario.
+- Cuando hay dos personajes en escena y omitir el sujeto crearía ambigüedad real sobre quién actúa.
+- Tras un párrafo largo (6+ líneas) sin referencia al personaje, para reanclar.
+- En el POV alterno de este relato, al reanudar el foco en Miguel o en Elena después de haber estado en el otro.
 
-```
-Fernando se puso en pie con los hombros tensos.
+### Cuándo NO nombrar
 
-—Cállate —dijo, y la miró fijo.
-```
+- Verbos consecutivos con el mismo sujeto: «Se giró. Buscó la sombra. La encontró.»
+- Sensaciones o gestos inequívocamente suyos: «El latido en las sienes. Se recolocó la corbata.»
+- Dentro de un mismo párrafo, una vez fijado el sujeto: las frases siguientes lo heredan.
 
-Diálogos ultracortos (`—Métela.`, `—Más.`, `—No pares.`) van solos en su párrafo, sin acotación salvo atributo brevísimo (`—Más —dijo ella.`).
+### Referencias por rol (el otro personaje)
 
-### Líneas críticas (⚡)
-
-Si el beat del guion contiene una línea marcada con ⚡, esa frase exacta DEBE aparecer en el texto. Puede expandirse con acotación o reacción, pero la frase en sí no se altera.
-
-### Reflexión interior en cursiva
-
-Los pensamientos del personaje se escriben en cursiva, en párrafo propio:
-
-```
-Daniel apartó la vista de la losa.
-
-*No es tinnitus. Es ella.*
-```
-
----
-
-## División de párrafos narrativos
-
-Partir en párrafo nuevo cuando la narración cambia de foco:
-- Acción → sensación
-- Sensación → reacción interna
-- Un cuerpo → otro cuerpo
-
-Si un párrafo supera 6-7 líneas, buscar el cambio de foco y partir.
-
----
-
-## Uso del nombre del personaje en 3ª persona limitada
-
-Cuando el relato se narra en 3ª persona limitada anclada a un solo personaje, **no repitas su nombre en cada frase**. El lector ya sabe quién es el sujeto.
-
-### Cuándo SÍ usar el nombre
-- Primera mención en una escena nueva o tras un cambio de escenario
-- Cuando hay otro personaje del mismo género en escena y hay ambigüedad
-- Tras un párrafo largo (6+ líneas) sin referencias al personaje
-
-### Cuándo NO usar el nombre
-- Verbos consecutivos sin cambio de sujeto: «Se giró. Buscó la sombra. La encontró.»
-- Sensaciones físicas inequívocamente suyas: «El latido en las sienes. En el pecho.»
-- Gestos automáticos ya establecidos como suyos: «Se recolocó la corbata.»
+Cuando un personaje se designa por rol —«el hombre», «el desconocido», «el otro»— aplica la misma economía. No abras varias frases seguidas con la misma etiqueta. Alterna entre omisión del sujeto (cuando la acción es claramente suya), un rasgo concreto ya establecido («los dedos gruesos», «la voz grave») y la etiqueta de rol solo cuando haga falta desambiguar. La variación no es adorno: evita que el cuerpo del otro se reduzca a una muletilla repetida.
 
 ### Ejemplo
 
-❌ *Miguel se pegó a la columna. Miguel sintió el latido en las sienes. Miguel se recolocó la corbata.*
+❌ *Miguel se pegó a la columna. Miguel sintió el latido en las sienes. El hombre lo miró. El hombre no se detuvo. El hombre siguió empujando.*
 
-✅ *Se pegó a la columna. El latido en las sienes. En el pecho. Más abajo. Se recolocó la corbata sin darse cuenta. Los dedos temblaban.*
+✅ *Se pegó a la columna. El latido en las sienes, en el pecho, más abajo. El hombre lo miró sin detenerse; los dedos gruesos apretaron con más fuerza y las embestidas no perdieron el ritmo.*
 
----
+### Límite
 
-## Nota del escritor
-
-Cuando el escritor toma una decisión que se desvía del beat original (extensión, contenido, ritmo), lo documenta al final del texto, entre el último párrafo y el siguiente heading:
-
-```markdown
-*Nota del escritor: extendí de BREVE a MEDIA por clímax emocional.*
-```
-
-Esta nota se elimina en `/publicar`. Sirve para trazabilidad durante el pipeline.
-
----
-
-## Estructura del beat generado
-
-### Beat normal
-```
-## B_XX — Acción breve
-
-...texto del beat...
-```
-
-### Primer beat de escena nueva
-```
-<!-- ESCENA N: Nombre -->
-
-## B_XX — Acción breve
-
-...texto del beat...
-```
+Esta es una guía de economía, no una prohibición. Un nombre repetido a propósito —para marcar énfasis, distancia o un cambio deliberado de registro— es válido. Lo que se corrige es la repetición por inercia, no la intencionada.

@@ -1,39 +1,14 @@
 ---
-description: Expande un beat existente con más detalle narrativo, sensorial o emocional.
+description: Expande un tramo de prosa anclado de un relato sin alterar su acción nuclear.
 agent: director
 ---
 
-# /expandir
+# /expandir — Relato
 
-Expande un beat con más detalle. El director invoca al escritor en modo expansión, valida y guarda.
+Solicitud recibida: $ARGUMENTS
 
-## Sintaxis
+Disponible solo en `escritura` o `correccion`. En `diseno` o `fichas`, dirige a `/revisar-guion` o `/generar`. En `finalizado` o `publicado`, indica volver al hub y ejecutar `/nueva-edicion <origen> <slug-edicion>`.
 
-```
-/expandir [B_NNN] [instrucciones sobre qué expandir]
-```
+Extrae un `B_XXXX`; si falta, pide esa referencia antes de modificar. Solo actúa si la `E_XXXX` correspondiente ya existe en el prefijo de `relato-draft.md`; una escena pendiente se genera antes con `/generar`.
 
-## Ejemplos
-
-```
-/expandir B_23 más detalle sensorial del sótano
-/expandir B_45 expande el monólogo interior de Daniel
-/expandir B_78 más descripción física de la escena
-```
-
-## Flujo
-
-1. Identificar proyecto y beat
-2. Backup automático
-3. Escritor (modo expansión) → validador → ±integrador
-4. Reemplazo del beat en el draft
-
-## Modo expansión del escritor
-
-El escritor recibe:
-- El beat original completo
-- El beat del guión (acción, tono, extensión)
-- El enfoque de expansión (qué aspecto desarrollar)
-- El contexto narrativo (fichas, últimos beats, briefing de memoria si es novela)
-
-Debe **mantener** la acción, los personajes y el tono original. Solo **añade** detalle en la dirección indicada.
+El director prepara `correccion`, normaliza headings heredados solo en staging y entrega al escritor su tramo anclado, vecinos y enfoque. Añade desarrollo sin alterar acción nuclear, hechos, arco tonal ni salida. Reemplaza el tramo en staging, actualiza contexto y `correcciones.md`, confirma y comprueba continuidad; no usa cuotas de palabras ni puntuaciones. Si la expansión requiere otra acción o un cambio estructural, dirige a `/corregir estructura <instrucción>`.

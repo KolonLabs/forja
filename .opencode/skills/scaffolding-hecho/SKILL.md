@@ -19,8 +19,20 @@ Antes de aceptar un hecho, comprueba que un guionista pueda proponer **varios be
 | Agencia y presión concreta | ¿Quién actúa, qué desea o evita y qué le fuerza a moverse? | Psicología genérica sin acción. |
 | Cambio causal | ¿Qué altera la decisión, la relación o las opciones del personaje? | Un mero tema o una intención. |
 | Consecuencia visible | ¿Qué nueva condición obliga al siguiente hecho? | El resultado exacto de cada beat. |
+| Intensidad acotada | ¿El hecho fija la magnitud del cambio —su coste, intensidad, irreversibilidad o alcance—, o puede satisfacerse con su versión más tenue sin incumplirse? | La coreografía exacta de esa intensidad. |
+
+Un hecho **derivable a la baja** es tan defectuoso como uno vago, pero por el motivo contrario: no le falta información para generar beats, le falta acotar la magnitud del efecto que promete. Como el guionista tiene prohibido escalar la intensidad por su cuenta, ante un rango abierto elegirá el extremo más tenue y esa tibieza queda congelada desde el brief hasta la prosa. Esto no depende del tipo de hecho: aplica igual a la violencia («se enfrenta a los guardias» admite desde un forcejeo hasta un primer asesinato), al coste emocional («rompe con su hermana» admite desde un portazo hasta perder a la familia), a la revelación («comprende que el testigo mintió» admite desde una deducción tranquila hasta el derrumbe de toda su teoría) o al deseo y el poder. Cuando detectes un rango de intensidad abierto, **concreta el suelo**: qué debe ocurrir como mínimo para que el hecho cumpla su función dramática, sin dictar cómo se narra.
 
 Cuando el hecho expresa una pauta, rutina o evolución —especialmente en relato— añade también: el ámbito donde se filtra (rutina, relación, trabajo, secreto), las variaciones significativas que la vuelven dramática y la progresión o coste que evita repetir la misma instancia. Así el guionista puede alternar la pauta con contraste, consecuencia y vida ordinaria sin que el scaffolder le dicte cuántos beats, en qué escena ni cómo se narran.
+
+### Frontera ejecutiva: dirección de la pauta, no lista de instancias
+
+Una pauta se define por su **dirección**, no por su inventario. El scaffolder da el ámbito, la variación y el coste; el guionista elige qué instancias concretas hacer visibles y cómo alternarlas. Enumerar las instancias dentro del hecho invade el terreno ejecutivo del workspace: convierte un contrato de contenido en una escaleta encubierta y anula la elección del guionista, que se limita a transcribir la lista en vez de componer.
+
+Señal de alarma: si el hecho contiene una cadena de sucesos concretos unidos por «; luego…; después…; también…», ya no es una pauta, es una escaleta. Divídelo en hechos lineales si cada suceso es un evento propio con consecuencia, o resúmelo a su dirección si son variaciones de un mismo patrón.
+
+- ❌ **Enumera instancias (escaleta encubierta):** «La nueva jerarquía se despliega: Miguel llega a casa y encuentra a Elena en una cadena de tres; luego Ricardo le ordena irse porque quiere follar a Elena a solas; después le hacen presenciar sin participar y limpiar los fluidos; otros hombres lo follan bajo dirección; Elena lo penetra con un arnés.» → El scaffolder ya ha escrito las escenas. El guionista no decide nada.
+- ✅ **Da dirección (pauta):** «La nueva jerarquía se filtra en lo doméstico: la casa y las sesiones con Ricardo se vuelven espacios donde Miguel sirve, observa o es usado según lo disponen Elena y Ricardo. Cada instancia sube la exposición o la entrega —de presenciar a servir, de servir a ser usado— y su coste es que la vida conyugal ordinaria y la jerarquía dejan de distinguirse.» → Fija ámbito, variación y coste. El guionista elige qué actos concretos muestran esa escalada, cuántos y en qué orden.
 
 **Tipos de hechos:**
 
@@ -99,6 +111,15 @@ ve a dos hombres, uno de rodillas, el otro apoyado contra la pared, etc."
 ## Longitud
 
 Un párrafo breve suele ser preferible cuando hay una pauta, una transición compleja o una consecuencia que deba quedar fijada. Una sola frase solo basta si cubre la prueba de derivación. Debe ser específico sobre el qué y sus condiciones, y abierto sobre el cómo narrativo.
+
+## Cierre de bucle: los riesgos deben volver a los hechos
+
+Un riesgo detectado en la reflexión editorial (Fase 6) no puede quedar solo como una nota en `reflexion_agente`. El workspace no recibe esos riesgos como criterio de vigilancia: si un riesgo no se traduce en un hecho más exigente, se pierde. Antes de cerrar la estructura, para cada riesgo que dependa de la definición de un hecho —un personaje que puede quedar plano, un giro que puede no pesar, una transformación que puede no verse— comprueba una de dos salidas:
+
+- **Reforzar el hecho:** que el hecho afectado acote la intensidad o la agencia que neutraliza el riesgo. Ejemplo: si el riesgo es «el personaje dominante puede quedar reducido a un dispositivo», el hecho de su entrada debe fijar qué ejerce, no solo que «guía».
+- **Dejar constancia deliberada:** si el riesgo se resuelve necesariamente en la prosa y no en el hecho, decláralo así en la reflexión, no como pendiente huérfano.
+
+Un riesgo que ni refuerza un hecho ni se declara resuelto es un defecto silencioso: el sistema lo vio y no hizo nada con él.
 
 ## Quién lo usa
 

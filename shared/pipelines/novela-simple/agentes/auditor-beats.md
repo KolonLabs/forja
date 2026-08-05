@@ -167,7 +167,15 @@ Para cada hecho lineal en `_actos.md`:
 4. **¿El último beat del hecho cierra la acción o la deja abierta?**  
    Si el hecho implica una escena completa (llegada → desarrollo → salida) y solo hay beats de llegada, está truncado.
 
-**Memoria (solo escalas con Qdrant):** si la escala es novela y `config.json.estado == "escritura"`, carga una consulta ligera a `memoria` (~300 tokens) con las entidades relevantes del capítulo. Verifica que los beats del guion no contradicen el estado acumulado de los personajes según Qdrant/Neo4j. Si un beat muestra a Laura «decidiendo por sí misma» cuando el cronista ya registró que «ha perdido toda agencia», es una inconsistencia.
+5. **¿Los beats realizan la INTENSIDAD que el hecho declara, o la rebajan?**  
+   Cobertura no es solo cantidad (mencionar vs desarrollar): es también magnitud. Cuando un hecho declara el coste, la irreversibilidad o la dinámica de poder o deseo que instala, comprueba que los beats la realizan y no eligen la versión más tenue.
+   
+   ❌ Rebajar: el hecho dice «Diego la posee delante de su marido y la comparte con desconocidos» y los beats se quedan en «Diego la besa mientras Miguel mira».  
+   ✅ Fiel: los beats realizan la posesión y el acto de compartir con la intensidad que el hecho declara.
+   
+   Señala el hecho, los beats cortos y qué dimensión de la intensidad declarada no llega. El guionista no puede escalar por su cuenta: se corrige pidiéndole beats fieles al hecho. Si el hecho no declara intensidad suficiente para juzgarlo, es defecto de origen: repórtalo para que el director lo lleve al brief.
+
+**Memoria (solo escalas con Qdrant):** si la escala es novela y `config.json.estado == \"escritura\"`, carga una consulta ligera a `memoria` (~300 tokens) con las entidades relevantes del capítulo. Verifica que los beats del guion no contradicen el estado acumulado de los personajes según Qdrant/Neo4j. Si un beat muestra a Laura «decidiendo por sí misma» cuando el cronista ya registró que «ha perdido toda agencia», es una inconsistencia.
 
 ### Output
 

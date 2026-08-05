@@ -1,52 +1,14 @@
 ---
-description: Revisa y mejora un beat específico de un relato o novela. Scope unificado (completa/media/ligera + alias de usuario).
+description: Revisa un tramo de prosa anclado de un relato sin cambiar su estructura.
 agent: director
 ---
 
-# /revisar
+# /revisar — Relato
 
-Revisa un beat de un proyecto existente. El director localiza el beat, aplica correcciones, valida y guarda.
+Solicitud recibida: $ARGUMENTS
 
-## Sintaxis
+Disponible solo en `escritura` o `correccion`. En `diseno` o `fichas`, dirige a `/revisar-guion` o `/generar`. En `finalizado` o `publicado`, indica volver al hub y ejecutar `/nueva-edicion <origen> <slug-edicion>`.
 
-```
-/revisar [B_NNN] [instrucciones opcionales]
-```
+Extrae un `B_XXXX`; si falta, pide esa referencia antes de modificar. Comprueba que su `E_XXXX` ya tiene marcador en `relato-draft.md`. Si aún no fue escrita, explica que `/generar` debe confirmar esa escena primero.
 
-## Ejemplos
-
-```
-/revisar B_07 la geometría no es clara
-/revisar B_14 falta más detalle sensorial, especialmente olfato
-/revisar B_29 el diálogo suena pasivo, dale más tensión
-/revisar cuando Elena se arrodilla la posición no queda clara
-```
-
-## Scope
-
-El director deduce el scope según las instrucciones del usuario:
-
-| Si el usuario habla de... | Scope aplicado |
-|--------------------------|----------------|
-| vocabulario, crudeza, eufemismos | `crudeza` sola |
-| fluidez, ritmo, frases, puntuación | `geometria` sola |
-| descripción, sentidos, sensorial | `sensorial` sola |
-| diálogo, voces, personajes hablando | `geometria + tono` |
-| varios temas o no especifica | `completa` (5 dimensiones) |
-
-**Scope canónico** (compatible con `/generar --revision`):
-- `completa` → crudeza, tono, geometria, coherencia, sensorial
-- `media` → crudeza, coherencia, sensorial
-- `ligera` → corrección directa sin validador
-
-## Flujo
-
-1. Identificar proyecto y beat
-2. Backup automático
-3. Corrección → validador → ±integrador
-4. Reemplazo quirúrgico del beat en el draft (solo ese bloque)
-
-## Notas
-
-- El director mantiene coherencia: si el beat corregido afecta a fichas de entidades, propone actualizarlas
-- En novelas, las correcciones se reflejan en Qdrant en la siguiente ejecución del cronista
+El director prepara `correccion`, normaliza headings heredados solo en staging, localiza la ancla y pasa al integrador instrucción y tramos vecinos. Reemplaza únicamente ese tramo, comprueba acción nuclear, continuidad inmediata y arco tonal, actualiza contexto y `correcciones.md`, y confirma. No cambia hechos, beats ni estructura; si la petición lo exige, dirige a `/corregir estructura <instrucción>`.

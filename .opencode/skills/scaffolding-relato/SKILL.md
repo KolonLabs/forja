@@ -63,6 +63,8 @@ Itera hasta que el usuario confirme.
 - ¿El final cierra algo — aunque sea una pregunta?
 - ¿Cada hecho deja un cambio o una consecuencia que el guionista pueda volver visible?
 - Si un hecho incluye una pauta, ¿explica qué debe variar o deteriorarse sin imponer las escenas que la desarrollan?
+- ¿Algún hecho enumera instancias concretas encadenadas («…; luego…; después…; también…»)? Si es una escaleta encubierta, divídelo en hechos lineales o resúmelo a su dirección (ámbito, variación, coste). Ver la frontera ejecutiva en `scaffolding-hecho`.
+- ¿Cada hecho fija la magnitud de lo que promete —coste, intensidad, irreversibilidad—, o es derivable a la baja? Si el guionista podría satisfacerlo con su versión más tenue, concreta el suelo.
 - ¿Podrían proponerse varios beats distintos sin inventar el conflicto, la presión o la consecuencia? Si no, añade contexto editorial al hecho, no prosa.
 
 ## Sin infraestructura

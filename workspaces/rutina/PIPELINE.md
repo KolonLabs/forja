@@ -1,122 +1,77 @@
 # Pipeline — Relato (4 fases)
 
-Escala `relato`. Pipeline ligero sin Qdrant/Neo4j. Una línea temporal, sin hilos.
+Relato trabaja solo con archivos Markdown locales. No usa Qdrant, Neo4j ni identidad opaca.
 
-> Rutas: ver `MAPA.md` · Spawn y contratos: `ORQUESTACION.md` · Estado: `config.json` + `guion.md` statuses
+## Contrato canónico
 
-## Jerarquía narrativa
-
-```
-_actos.md (estructura: actos con objetivo, tensión y hechos)
-  └── guion.md (escenas + hechos H_NNNN + beats B_NNNN — generado por el guionista)
-        └── relato-draft.md (prosa desarrollada desde beats, secciones ## B_NNNN)
-```
-
-## Hechos y beats
-
-| ID | Qué es | Dónde |
-|----|--------|-------|
-| `H_NNNN` | Hecho narrativo definido en `_actos.md` | `_actos.md` → `guion.md` |
-| `B_NNNN` | Acción concreta que el escritor desarrolla en prosa | `guion.md` (bajo un hecho) |
-
-- IDs locales de 4 dígitos por relato. Sin hechos globales.
-- Estados: ✅ completo · 🔄 en progreso · ⬜ pendiente.
-- Skills: `beats-estructura`, `tonos-beat`, `estructura-narrativa`.
-
----
-
-## Fases
-
-### FASE 1 — Diseño (`estado: diseno`)
-
-| Paso | Agente | Skill | Entrada | Salida |
-|------|--------|-------|---------|--------|
-| 1.1 Estructura | `guionista` modo `estructura` | `estructura-narrativa`, `plantilla-guion` | `BRIEF.md`, `_actos.md` | Estructura de actos con escenas (agrupando hechos) |
-| 1.2 Escenas | `guionista` modo `escena` | `beats-estructura`, `tonos-beat`, `plantilla-guion` | Estructura confirmada + fichas existentes | `guion.md` (escenas + hechos + beats) |
-
-**Gate:** `guion.md` completo con ≥1 escena y beats definidos.
-
-**Transición:** `config.json.estado = "fichas"`.
-
----
-
-### FASE 2 — Componentes (`estado: fichas`)
-
-| Paso | Agente | Acción |
-|------|--------|--------|
-| 2.1 Extraer entidades | director | Lee `guion.md`, identifica todas las entidades |
-| 2.2 Crear fichas | `entidades` (×N) | Crea `fichas/<tipo>_<slug>.md` para cada entidad |
-| 2.3 Reconciliación | director | Verifica sin contradicciones entre fichas |
-| 2.4 Inicializar | director | Crea `contexto_narrativo.md` (vacío) + `relato-draft.md` (vacío) |
-
-**Gate:** Todas las entidades del guion tienen ficha. Sin contradicciones.
-
-**Transición:** `config.json.estado = "escritura"`.
-
----
-
-### FASE 3 — Beat a beat (`estado: escritura`)
-
-Por cada beat `⬜` en `guion.md`, en orden secuencial:
-
-| Paso | Agente | Acción |
-|------|--------|--------|
-| 3.1 Marcar | director | `🔄` en guion |
-| 3.2 Escribir | `escritor` | Genera prosa → `relato-draft.md` (append `## B_NNNN`) |
-| 3.3 Validar | `validador` (read-only) | Scope `completa` por defecto. 5 dimensiones |
-| 3.4 Corregir | `integrador` (condicional) | Si score < 7 o dimensión < 5. Reescribe beat |
-| 3.5 Confirmar | director | ✅ en guion. Actualiza `config.json.ultimo_beat_global` |
-| 3.6 Actualizar | director | Si último beat de escena: actualiza `contexto_narrativo.md` (2-3 frases) |
-
-**Umbral validador:** `score_global ≥ 8` y todas dimensiones ≥ 7 para aprobación directa sin integrador.
-
-**Gate:** Todos los beats ✅. `contexto_narrativo.md` actualizado por escena.
-
-**Transición:** `config.json.estado = "publicado"`.
-
----
-
-### FASE 4 — Publicar (`estado: publicacion`)
-
-| Paso | Acción |
-|------|--------|
-| 4.1 Limpiar | `relato-draft.md` → `relato.md`: conserva título, convierte marcadores de escena en `---`, elimina headings `## B_XX` |
-| 4.2 Verificar | Sin headings residuales, sin dobles separadores, archivo > 0 bytes |
-
-**Gate:** `relato.md` existe y es válido.
-
----
-
-## Transiciones de estado
-
-```
-diseno → fichas → escritura → publicacion → publicado
+```text
+H_XXXX (hechos de briefing)
+  → B_XXXX (beats globales: acción, no prosa)
+  → E_XXXX (escenas operativas, manejables para una generación)
+  → relato-draft.md (prosa continua por E, con anclas invisibles de B)
+  → relato.md (manuscrito limpio)
 ```
 
-## Agentes activos
+| ID | Función |
+|---|---|
+| `H_XXXX` | Hecho del briefing. Se congela al iniciar la escritura. |
+| `B_XXXX` | Acción causal mínima. Es global, único y no se renumera tras persistirse. |
+| `E_XXXX` | Unidad dramática y de generación. Agrupa beats contiguos y no se renumera tras persistirse. |
 
-`director`, `guionista`, `escritor`, `validador`, `integrador`, `entidades`
+El orden en `guion.md` es el orden narrativo. Los IDs solo identifican: no existen `stable_id`, `parent_id`, `seq` ni UUID. `config.json.ultimo_hecho_seq`, `ultimo_beat_seq` y `ultimo_escena_seq` son los contadores canónicos: el director asigna desde contador + 1 y los actualiza al persistir, sin recalcularlos ni reutilizar IDs retirados.
 
-**No aplican:** `memoria`, `cronista`
+Un beat contiene únicamente acción, consecuencia y, cuando difiere del arco tonal de su escena, un registro opcional: `[registro: explícito / visceral]`. No contiene hecho de origen, prosa, extensión, sensorialidad ni psicología.
 
-## Skills activos (30 skills)
+## FASE 1 — Diseño (`diseno`)
 
-`mecanica-prosa`, `beats-estructura`, `estructura-narrativa`, `tonos-beat`, `plantilla-guion`, `plantilla-ficha`, `plantilla-personaje`, `plantilla-lugar`, `plantilla-objeto`, `plantilla-animal`, `plantilla-arco`, `plantilla-evento`, `plantilla-organizacion`, `validacion-crudeza`, `validacion-coherencia`, `validacion-geometria`, `validacion-sensorial`, `validacion-tono`, `consistencia-narrativa`, `contexto-subagente`, `desarrollo-narrativa`, `fichas-personajes`, `estilo-explicito`, `estilo-contemporaneo`, `estilo-erotico`, `estilo-fantasia`, `estilo-noir`, `estilo-romantico`, `estilo-thriller`, `estilo-prosa`
+1. **Preparar.** El director verifica `H_XXXX` y restricciones. Un hecho puede contener una secuencia causal o un patrón que deba hacerse perceptible, pero relato no usa marcas `[D]` ni artefactos de recurrencia separados.
+2. **Mapa global provisional.** El director lee `ultimo_beat_seq`, fija el primer `B_XXXX` disponible y se lo comunica al guionista. El guionista lee el arco completo y genera un único mapa de beats con cobertura temporal `H → B`. Materializa los patrones explícitos de hechos y brief mediante beats ordinarios, escogiendo instancias representativas e intercalándolas con beats de rutina, relación o consecuencia ya respaldados por el arco. Mientras no se persista el guion, los IDs son provisionales y no sobreviven a una interrupción.
+3. **Diagnóstico único.** `auditor-beats` revisa cobertura, causalidad, atomicidad, fugas de información, ausencia de prosa, que una pauta explícita no quede como una sucesión plana o invisible, y que los beats realicen la intensidad declarada por el hecho sin rebajarla a su versión más tenue. Solo los problemas bloqueantes se reparan; una derivación a la baja de intensidad es una observación que el director puede llevar al guionista (beats fieles) o, si el hecho no declara intensidad suficiente, al brief. Una única pasada.
+4. **Escenas.** El guionista agrupa beats en `E_XXXX`. Una situación amplia puede contener varias escenas operativas si existe un giro de objetivo, información, poder, foco o resultado. Cada escena declara arco tonal y `Salida: continua | separador`.
+5. **Persistencia recuperable.** El director completa en el staging `guion.md` y `config.json`. Confirma solo si el helper valida estructura, transición y contadores.
+6. **Gate mecánico.** El director comprueba pertenencia única de beats, orden narrativo y salidas coherentes. No hay una segunda auditoría estética por defecto.
 
-**No aplican (7 skills):** `qdrant`, `neo4j`, `auditoria-neo4j`, `diseno-hilo`, `trenzado-narrativo`, `validacion-cross-hilo`, `plantilla-hilo`
+Si un gate falla antes de confirmar, el director ejecuta `-Accion Descartar`; los artefactos vivos quedan intactos. Tras una interrupción, `-Accion Recuperar` restaura un commit interrumpido o conserva un staging preparado para reanudarlo. Solo se descarta ese staging si ya no es válido.
 
-## Comandos
+Si para hacer perceptible un patrón el guionista necesitara un giro irreversible, una relación, una revelación o un desenlace no contenidos en el arco, el director presenta ese bloqueo: no inventa ni altera `H_XXXX` sin autorización.
 
-- `/generar` — inicia o continúa desde `config.json.estado`
-- `/revisar B_NNNN [instrucciones]` — revisión puntual de un beat
-- `/expandir B_NNNN [instrucciones]` — expansión de un beat
-- `/publicar` — salida limpia
+**Transición:** `estado = fichas`, confirmada por `diseno`.
 
-## Infraestructura
+## FASE 2 — Componentes (`fichas`)
 
-**Sin Qdrant. Sin Neo4j.** Memoria en `contexto_narrativo.md`. Fichas en markdown local.
+1. El director crea las fichas necesarias para la primera escena y las entidades recurrentes o críticas para continuidad.
+2. Las fichas restantes se crean bajo demanda cuando una escena las necesita.
+3. Prepara una transacción `componentes`, inicializa en staging `contexto_narrativo.md` y `relato-draft.md` mediante `plantilla-draft`, deja `config.json.estado = "escritura"` y confirma el conjunto.
 
-## Política de reintentos
+**Gate:** la próxima escena puede escribirse con información consistente. No se ficha toda mención incidental del guion.
 
-Máximo 3 reintentos por beat. Tipos: formato, contenido, timeout. Ver `ORQUESTACION.md` para detalle.
+**Transición:** `estado = escritura`, confirmada por `componentes`.
 
+## FASE 3 — Escritura por escena (`escritura`)
+
+Por cada `E_XXXX`, en orden:
+
+1. El director prepara fichas, contexto y la escena siguiente. Los estados `🔄` son efímeros: no se persisten por separado.
+2. El escritor genera la **escena completa** en una respuesta. El director la valida y, si procede, obtiene los reemplazos del integrador antes de abrir persistencia.
+3. El director prepara una transacción `escritura` y persiste solo en staging la escena bajo `<!-- ESCENA E_XXXX: nombre | salida: continua|separador -->`, con una ancla `<!-- B_XXXX -->` antes del primer pasaje que realiza cada beat.
+4. Verifica la misma `Salida`, anclas únicas y ordenadas, y prosa no vacía tras cada ancla. También comprueba que la escena realiza cada acción nuclear. Las anclas no dividen la escena en prosas independientes.
+5. El validador evalúa la escena completa: continuidad, arco tonal, ritmo y crudeza cuando aplique. Devuelve problemas concretos por `B_XXXX`, no puntuaciones. Si hay correcciones, el integrador reescribe solo los bloques señalados y el director vuelve a comprobar las invariantes afectadas.
+6. En el mismo staging marca los beats `✅`, actualiza el delta de contexto y confirma. Solo una contradicción factual o una restricción imposible bloquea el avance.
+
+**Gate final de fase:** cada `B_XXXX` del guion tiene exactamente una ancla en el draft y todas las escenas están cerradas sin contradicciones factuales. Durante la fase, el draft es un prefijo ordenado y completo por escena: solo contiene las `E_XXXX` ya confirmadas.
+
+## FASE 4 — Finalizar
+
+1. Verifica que cada `E_XXXX` del guion tenga un único marcador de draft, en el mismo orden y con la misma `Salida`; cada marcador debe contener exactamente sus `B_XXXX`, una vez y en orden. Rechaza escenas, anclas o beats huérfanos.
+2. Prepara una transacción `publicar`, genera en su staging `relato.md` con el título de `config.json` y deja `config.json.estado = "finalizado"`.
+3. Elimina anclas `B_XXXX` y marcadores de escena. Convierte en `---` solo los marcadores con `salida: separador`; los de `continua` se eliminan sin corte visible. Confirma la transacción; el helper rechaza IDs de control, separadores duplicados, título sin prosa y manuscrito vacío.
+
+**Transición:** `estado = finalizado`. El hub asigna `publicado` tras compilar.
+
+## Correcciones y memoria
+
+- En `fichas`, `/revisar-guion` puede ajustar el guion con la transacción `guion`, sin iniciar prosa. En `escritura` o `correccion`, una corrección actualiza mediante staging transaccional el guion, el prefijo de escenas del draft afectado, el contexto desde la primera `E_XXXX` modificada y el registro. `/revisar` y `/expandir` solo actúan sobre escenas ya presentes en ese prefijo.
+- Al dividir una escena, la primera conserva su `E_XXXX` y la siguiente toma un ID nuevo. Al fusionarlas, sobrevive la primera y la otra queda retirada; ningún ID se reutiliza.
+- Si un draft heredado usa headings `## B_XXXX — ...`, el director los sustituye dentro del staging de corrección por `<!-- B_XXXX -->`, sin reescribir su prosa, antes de revisar, expandir o corregir.
+- Cada escena añade al contexto solo un delta breve. Tras una salida `separador`, el director compacta los deltas de la secuencia cerrada.
+- Los beats recurrentes no conservan una etiqueta o cola propia: son beats ordinarios del mapa global y se validan junto con él.

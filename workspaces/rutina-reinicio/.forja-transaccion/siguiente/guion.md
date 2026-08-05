@@ -295,7 +295,7 @@
 
 #### Beats
 
-⬜ B_0031 — Elena encuentra en el bolsillo de la chaqueta de Miguel un preservativo sin abrir mientras recoge la ropa para lavar; lo deja donde estaba sin decir nada y se queda mirando el tambor de la lavadora.
+✅ B_0031 — Elena encuentra en el bolsillo de la chaqueta de Miguel un preservativo sin abrir mientras recoge la ropa para lavar; lo deja donde estaba sin decir nada y se queda mirando el tambor de la lavadora.
 
 ### E_0023 — Diviértete
 
@@ -308,7 +308,7 @@
 
 #### Beats
 
-⬜ B_0032 — Ricardo cita a Miguel en un parking de las afueras a las once de la noche; Miguel le dice a Elena que tiene una cena de empresa; ella responde «diviértete» sin levantar la vista del libro.
+✅ B_0032 — Ricardo cita a Miguel en un parking de las afueras a las once de la noche; Miguel le dice a Elena que tiene una cena de empresa; ella responde «diviértete» sin levantar la vista del libro.
 
 ### E_0024 — Ya no espero nada
 
@@ -321,7 +321,7 @@
 
 #### Beats
 
-⬜ B_0033 — Elena, después de que Miguel cancele un plan de fin de semana por tercera vez, se sienta en el borde de la cama y comprende que ya no espera nada de él; en lugar de llorar, abre una app de contactos. [registro: revelación]
+✅ B_0033 — Elena, después de que Miguel cancele un plan de fin de semana por tercera vez, se sienta en el borde de la cama y comprende que ya no espera nada de él; en lugar de llorar, abre una app de contactos. [registro: revelación]
 
 ### E_0025 — Javier
 
@@ -334,7 +334,7 @@
 
 #### Beats
 
-⬜ B_0034 — Elena queda con Javier, un hombre de su edad conocido en un foro de lectura, en un hotel del centro; ella toma la iniciativa, le guía las manos y eyacula por primera vez en meses sin fingir. [registro: explícito / visceral]
+✅ B_0034 — Elena queda con Javier, un hombre de su edad conocido en un foro de lectura, en un hotel del centro; ella toma la iniciativa, le guía las manos y eyacula por primera vez en meses sin fingir. [registro: explícito / visceral]
 
 ### E_0026 — La devolución al cuerpo
 
@@ -347,7 +347,7 @@
 
 #### Beats
 
-⬜ B_0035 — Elena repite con Javier y añade a un segundo hombre sin culpa ni ocultación excesiva; descubre que decidir con quién, cuándo y cómo la devuelve a su cuerpo.
+✅ B_0035 — Elena repite con Javier y añade a un segundo hombre sin culpa ni ocultación excesiva; descubre que decidir con quién, cuándo y cómo la devuelve a su cuerpo.
 
 ### E_0027 — La bolsa en el armario
 
@@ -360,7 +360,7 @@
 
 #### Beats
 
-⬜ B_0036 — Elena compra lencería que no es para que Miguel la vea; al volver a casa, él está mirando el móvil en el salón y no levanta la cabeza; ella cuelga la bolsa en el armario sin hacer ruido. [registro: contenido]
+✅ B_0036 — Elena compra lencería que no es para que Miguel la vea; al volver a casa, él está mirando el móvil en el salón y no levanta la cabeza; ella cuelga la bolsa en el armario sin hacer ruido. [registro: contenido]
 
 ### E_0028 — El centro comercial
 
@@ -373,7 +373,7 @@
 
 #### Beats
 
-⬜ B_0037 — Elena tiene sexo con un desconocido en los baños de un centro comercial tras un cruce de miradas en la cola de la cafetería; la excitación de ser deseada por un extraño y decidir en el momento le confirma que ya no necesita que Miguel regrese. [registro: explícito / visceral]
+✅ B_0037 — Elena tiene sexo con un desconocido en los baños de un centro comercial tras un cruce de miradas en la cola de la cafetería; la excitación de ser deseada por un extraño y decidir en el momento le confirma que ya no necesita que Miguel regrese. [registro: explícito / visceral]
 
 ### E_0029 — El mensaje de R
 
@@ -386,8 +386,8 @@
 
 #### Beats
 
-⬜ B_0038 — Miguel deja el móvil desbloqueado sobre la mesa del salón al ir al baño; Elena lo coge por inercia y lee un mensaje de «R»: «mañana 20:00, aparcamiento C.C. Norte, tercera planta, esperas de rodillas junto al ascensor».
-⬜ B_0039 — Elena baja el móvil despacio y siente un calor entre las piernas; no es rabia: es la imagen de Miguel de rodillas esperando órdenes de un hombre, y la excitación la atraviesa antes de que pueda nombrarla.
+✅ B_0038 — Miguel deja el móvil desbloqueado sobre la mesa del salón al ir al baño; Elena lo coge por inercia y lee un mensaje de «R»: «mañana 20:00, aparcamiento C.C. Norte, tercera planta, esperas de rodillas junto al ascensor».
+✅ B_0039 — Elena baja el móvil despacio y siente un calor entre las piernas; no es rabia: es la imagen de Miguel de rodillas esperando órdenes de un hombre, y la excitación la atraviesa antes de que pueda nombrarla.
 
 ### E_0030 — La tercera planta
 
@@ -400,8 +400,8 @@
 
 #### Beats
 
-⬜ B_0040 — Elena aparca a las 19:45 en la tercera planta del centro comercial indicado y espera dentro del coche con las luces apagadas.
-⬜ B_0041 — Elena observa a Miguel llegar, arrodillarse junto al ascensor exactamente como decía el mensaje y esperar; Ricardo aparece a los diez minutos y, sin hablar, le coloca una mano en la nuca; Miguel baja la cabeza.
+✅ B_0040 — Elena aparca a las 19:45 en la tercera planta del centro comercial indicado y espera dentro del coche con las luces apagadas.
+✅ B_0041 — Elena observa a Miguel llegar, arrodillarse junto al ascensor exactamente como decía el mensaje y esperar; Ricardo aparece a los diez minutos y, sin hablar, le coloca una mano en la nuca; Miguel baja la cabeza.
 
 ### E_0031 — El portal
 
@@ -414,7 +414,7 @@
 
 #### Beats
 
-⬜ B_0042 — Elena sigue a ambos hasta el portal del piso de Ricardo a distancia prudencial, memoriza el número y vuelve a casa antes que Miguel; se acuesta simulando dormir, pero se masturba con la imagen de su marido arrodillado. [registro: explícito / visceral]
+✅ B_0042 — Elena sigue a ambos hasta el portal del piso de Ricardo a distancia prudencial, memoriza el número y vuelve a casa antes que Miguel; se acuesta simulando dormir, pero se masturba con la imagen de su marido arrodillado. [registro: explícito / visceral]
 
 ### E_0032 — Soy la mujer de Miguel
 
@@ -427,10 +427,10 @@
 
 #### Beats
 
-⬜ B_0043 — Elena se presenta en el piso de Ricardo dos días después, sin avisar; cuando él abre, ella dice «soy la mujer de Miguel» y espera en el umbral a que él decida si dejarla pasar.
-⬜ B_0044 — Ricardo la invita a entrar; Elena pregunta si es él quien da órdenes a su marido, pero Ricardo no se defiende: pregunta a su vez qué ha sentido ella al verlo, y Elena responde la verdad.
-⬜ B_0045 — Ricardo le pregunta si quiere probar lo que siente Miguel; Elena responde que no quiere obedecer, quiere entender. Ricardo la besa y ella le devuelve el beso; el encuentro que sigue es activo, con Elena marcando el ritmo. [registro: explícito / visceral]
-⬜ B_0046 — Ricardo y Elena, desnudos en la cama tras el encuentro, hablan con franqueza: él explica que no quiere quitarle el marido, ella dice que no quiere recuperarlo sino poseerlo de otra manera; acuerdan que sus deseos no compiten.
+✅ B_0043 — Elena se presenta en el piso de Ricardo dos días después, sin avisar; cuando él abre, ella dice «soy la mujer de Miguel» y espera en el umbral a que él decida si dejarla pasar.
+✅ B_0044 — Ricardo la invita a entrar; Elena pregunta si es él quien da órdenes a su marido, pero Ricardo no se defiende: pregunta a su vez qué ha sentido ella al verlo, y Elena responde la verdad.
+✅ B_0045 — Ricardo le pregunta si quiere probar lo que siente Miguel; Elena responde que no quiere obedecer, quiere entender. Ricardo la besa y ella le devuelve el beso; el encuentro que sigue es activo, con Elena marcando el ritmo. [registro: explícito / visceral]
+✅ B_0046 — Ricardo y Elena, desnudos en la cama tras el encuentro, hablan con franqueza: él explica que no quiere quitarle el marido, ella dice que no quiere recuperarlo sino poseerlo de otra manera; acuerdan que sus deseos no compiten.
 
 ### E_0033 — La orden de Elena
 
@@ -443,7 +443,7 @@
 
 #### Beats
 
-⬜ B_0047 — Elena y Ricardo diseñan el encuentro de revelación: día, lugar, quién estará, qué orden dará ella cuando Miguel entre; Elena se excita al ensayar su propia orden en voz alta y Ricardo sonríe.
+✅ B_0047 — Elena y Ricardo diseñan el encuentro de revelación: día, lugar, quién estará, qué orden dará ella cuando Miguel entre; Elena se excita al ensayar su propia orden en voz alta y Ricardo sonríe.
 
 ### E_0034 — La puerta entreabierta
 
@@ -456,10 +456,10 @@
 
 #### Beats
 
-⬜ B_0048 — Miguel llega al piso de Ricardo a la hora acordada; la puerta está entreabierta y oye gemidos masculinos y una voz de mujer que reconoce.
-⬜ B_0049 — Miguel empuja la puerta y ve a Elena en cuatro patas sobre la cama, siendo penetrada por un hombre mientras chupa la polla de otro; Ricardo, de pie junto a la cama, gira la cabeza hacia Miguel y dice «cierra la puerta». [registro: explícito / visceral]
-⬜ B_0050 — Miguel se paraliza en el umbral con la mano aún en el picaporte; Elena, sin perder el ritmo del hombre que la folla, gira la cabeza, le sostiene la mirada y ordena: «Desnúdate y chúpasela al que tienes al lado».
-⬜ B_0051 — Tras cinco segundos de inmovilidad absoluta, Miguel se desnuda mecánicamente, se arrodilla ante el hombre más próximo —señalado por Ricardo con un gesto de barbilla— y le chupa la polla; su erección confirma la obediencia antes de que su mente procese la escena. [registro: explícito / visceral]
+✅ B_0048 — Miguel llega al piso de Ricardo a la hora acordada; la puerta está entreabierta y oye gemidos masculinos y una voz de mujer que reconoce.
+✅ B_0049 — Miguel empuja la puerta y ve a Elena en cuatro patas sobre la cama, siendo penetrada por un hombre mientras chupa la polla de otro; Ricardo, de pie junto a la cama, gira la cabeza hacia Miguel y dice «cierra la puerta». [registro: explícito / visceral]
+✅ B_0050 — Miguel se paraliza en el umbral con la mano aún en el picaporte; Elena, sin perder el ritmo del hombre que la folla, gira la cabeza, le sostiene la mirada y ordena: «Desnúdate y chúpasela al que tienes al lado».
+✅ B_0051 — Tras cinco segundos de inmovilidad absoluta, Miguel se desnuda mecánicamente, se arrodilla ante el hombre más próximo —señalado por Ricardo con un gesto de barbilla— y le chupa la polla; su erección confirma la obediencia antes de que su mente procese la escena. [registro: explícito / visceral]
 
 ### E_0035 — Las nuevas reglas
 
@@ -472,9 +472,9 @@
 
 #### Beats
 
-⬜ B_0052 — Con los otros hombres ya idos, Miguel, aún desnudo y con restos de semen en la cara, pregunta a Elena si esto es una venganza; ella responde «no» sin añadir nada más. [registro: explícito / visceral]
-⬜ B_0053 — Ricardo, sentado en un sillón, explica los términos: consentimiento revocable en cualquier momento, palabra de seguridad compartida, nada fuera de lo acordado; Elena añade que la casa sigue siendo suya, pero que dentro de este piso las reglas las ponen ellos dos.
-⬜ B_0054 — Miguel, tras un silencio de minutos, pregunta quién manda; Elena y Ricardo intercambian una mirada y Elena responde «yo»; Ricardo asiente. Miguel baja la cabeza —no derrotado: aliviado—.
+✅ B_0052 — Con los otros hombres ya idos, Miguel, aún desnudo y con restos de semen en la cara, pregunta a Elena si esto es una venganza; ella responde «no» sin añadir nada más. [registro: explícito / visceral]
+✅ B_0053 — Ricardo, sentado en un sillón, explica los términos: consentimiento revocable en cualquier momento, palabra de seguridad compartida, nada fuera de lo acordado; Elena añade que la casa sigue siendo suya, pero que dentro de este piso las reglas las ponen ellos dos.
+✅ B_0054 — Miguel, tras un silencio de minutos, pregunta quién manda; Elena y Ricardo intercambian una mirada y Elena responde «yo»; Ricardo asiente. Miguel baja la cabeza —no derrotado: aliviado—.
 
 ### E_0036 — El salón de su casa
 
@@ -487,7 +487,7 @@
 
 #### Beats
 
-⬜ B_0055 — Miguel vuelve del trabajo un jueves y encuentra a Elena en cuatro patas en el salón de su propia casa, siendo penetrada por un desconocido que a su vez es penetrado por otro; Ricardo, sentado en el sofá, indica a Miguel que se arrodille y espere sin tocar. [registro: explícito / visceral]
+✅ B_0055 — Miguel vuelve del trabajo un jueves y encuentra a Elena en cuatro patas en el salón de su propia casa, siendo penetrada por un desconocido que a su vez es penetrado por otro; Ricardo, sentado en el sofá, indica a Miguel que se arrodille y espere sin tocar. [registro: explícito / visceral]
 
 ### E_0037 — La declaración de la renta
 
@@ -500,7 +500,7 @@
 
 #### Beats
 
-⬜ B_0056 — A la mañana siguiente, Miguel prepara el desayuno mientras Elena consulta el extracto del banco en la tablet; hablan de la declaración de la renta como si la noche anterior no hubiera ocurrido. [registro: contenido]
+✅ B_0056 — A la mañana siguiente, Miguel prepara el desayuno mientras Elena consulta el extracto del banco en la tablet; hablan de la declaración de la renta como si la noche anterior no hubiera ocurrido. [registro: contenido]
 
 ### E_0038 — El rellano
 
@@ -513,7 +513,7 @@
 
 #### Beats
 
-⬜ B_0057 — Ricardo interrumpe una sesión donde Miguel lame a Elena por orden suya, le indica que se vista y espere fuera del piso durante una hora; Miguel obedece sin preguntar y se sienta en el rellano, oyendo los gemidos de su mujer al otro lado de la puerta.
+✅ B_0057 — Ricardo interrumpe una sesión donde Miguel lame a Elena por orden suya, le indica que se vista y espere fuera del piso durante una hora; Miguel obedece sin preguntar y se sienta en el rellano, oyendo los gemidos de su mujer al otro lado de la puerta.
 
 ### E_0039 — Limpia
 
@@ -526,7 +526,7 @@
 
 #### Beats
 
-⬜ B_0058 — Ricardo y Elena dirigen una escena con dos desconocidos que usan a Miguel mientras ellos observan vestidos; al terminar, Elena señala los fluidos en el suelo y en los muslos de los desconocidos y dice «limpia»; Miguel se arrodilla y pasa la lengua por el muslo del primer hombre. [registro: explícito / visceral]
+✅ B_0058 — Ricardo y Elena dirigen una escena con dos desconocidos que usan a Miguel mientras ellos observan vestidos; al terminar, Elena señala los fluidos en el suelo y en los muslos de los desconocidos y dice «limpia»; Miguel se arrodilla y pasa la lengua por el muslo del primer hombre. [registro: explícito / visceral]
 
 ### E_0040 — Sin Ricardo
 
@@ -539,7 +539,7 @@
 
 #### Beats
 
-⬜ B_0059 — Elena, sin Ricardo presente, recibe a un hombre en el piso conyugal y le ordena follar a Miguel mientras ella observa desde el sillón del salón con las piernas cruzadas. [registro: explícito / visceral]
+✅ B_0059 — Elena, sin Ricardo presente, recibe a un hombre en el piso conyugal y le ordena follar a Miguel mientras ella observa desde el sillón del salón con las piernas cruzadas. [registro: explícito / visceral]
 
 ### E_0041 — La manta
 
@@ -552,7 +552,7 @@
 
 #### Beats
 
-⬜ B_0060 — Elena y Miguel ven juntos una serie después de cenar; en la pausa para el café, ella le pide que le suba la manta que se le ha caído y él lo hace sin que el gesto parezca distinto al de cualquier matrimonio. [registro: contenido]
+✅ B_0060 — Elena y Miguel ven juntos una serie después de cenar; en la pausa para el café, ella le pide que le suba la manta que se le ha caído y él lo hace sin que el gesto parezca distinto al de cualquier matrimonio. [registro: contenido]
 
 ### E_0042 — El arnés
 
@@ -565,7 +565,7 @@
 
 #### Beats
 
-⬜ B_0061 — Elena, con un arnés comprado esa misma tarde, ordena a Miguel colocarse en cuatro patas en el dormitorio conyugal y lo penetra por primera vez; Ricardo no está presente y la sesión tiene una intimidad distinta: no es cruising, es matrimonio reconfigurado. [registro: íntimo]
+✅ B_0061 — Elena, con un arnés comprado esa misma tarde, ordena a Miguel colocarse en cuatro patas en el dormitorio conyugal y lo penetra por primera vez; Ricardo no está presente y la sesión tiene una intimidad distinta: no es cruising, es matrimonio reconfigurado. [registro: íntimo]
 
 ### E_0043 — Los celos
 
@@ -578,8 +578,8 @@
 
 #### Beats
 
-⬜ B_0062 — En el piso de Ricardo, él y Elena follan a solas mientras Miguel observa sentado en una silla, sin instrucciones de participar; el deseo entre ambos es evidente y no lo incluye. [registro: explícito / visceral]
-⬜ B_0063 — Miguel siente un pellizco de celos cuando Ricardo susurra algo al oído de Elena que la hace gemir más fuerte; el pellizco muta en orgullo al ver que su mujer y su guía se desean, y en alivio al confirmar que él sigue en la habitación por voluntad de ambos.
+✅ B_0062 — En el piso de Ricardo, él y Elena follan a solas mientras Miguel observa sentado en una silla, sin instrucciones de participar; el deseo entre ambos es evidente y no lo incluye. [registro: explícito / visceral]
+✅ B_0063 — Miguel siente un pellizco de celos cuando Ricardo susurra algo al oído de Elena que la hace gemir más fuerte; el pellizco muta en orgullo al ver que su mujer y su guía se desean, y en alivio al confirmar que él sigue en la habitación por voluntad de ambos.
 
 ### E_0044 — Los tres en la cocina
 
@@ -592,7 +592,7 @@
 
 #### Beats
 
-⬜ B_0064 — Tras el encuentro, los tres beben agua en la cocina desnudos; Ricardo pregunta a cada uno si quiere continuar con la relación triangular; Elena responde «sí», Miguel responde «sí» y Ricardo asiente.
+✅ B_0064 — Tras el encuentro, los tres beben agua en la cocina desnudos; Ricardo pregunta a cada uno si quiere continuar con la relación triangular; Elena responde «sí», Miguel responde «sí» y Ricardo asiente.
 
 ### E_0045 — No hace falta
 
@@ -605,9 +605,9 @@
 
 #### Beats
 
-⬜ B_0065 — Una noche, sin Ricardo, Elena y Miguel están sentados en el sofá; Miguel intenta articular una explicación y ella le pone un dedo en los labios y dice «no hace falta»; él entiende que ella ya sabe lo que él es.
-⬜ B_0066 — Miguel, en voz baja, dice «me gusta obedeceros»; es la primera vez que lo formula en palabras y no se derrumba; Elena le apoya una mano en la nuca y la presión del pulgar es respuesta suficiente.
-⬜ B_0067 — Esa noche, Miguel se duerme sin mentiras que sostener por primera vez desde que entró en aquel parking; Elena duerme a su lado con la respiración de quien ya no espera nada porque ya lo tiene todo.
+✅ B_0065 — Una noche, sin Ricardo, Elena y Miguel están sentados en el sofá; Miguel intenta articular una explicación y ella le pone un dedo en los labios y dice «no hace falta»; él entiende que ella ya sabe lo que él es.
+✅ B_0066 — Miguel, en voz baja, dice «me gusta obedeceros»; es la primera vez que lo formula en palabras y no se derrumba; Elena le apoya una mano en la nuca y la presión del pulgar es respuesta suficiente.
+✅ B_0067 — Esa noche, Miguel se duerme sin mentiras que sostener por primera vez desde que entró en aquel parking; Elena duerme a su lado con la respiración de quien ya no espera nada porque ya lo tiene todo.
 
 ### E_0046 — La ropa limpia
 
@@ -620,7 +620,7 @@
 
 #### Beats
 
-⬜ B_0068 — Un sábado por la tarde, Miguel dobla la ropa limpia en el dormitorio mientras Elena lee en el salón; el gesto es idéntico al de hace meses, pero ahora lo ejecuta con la atención de quien sirve, no con la inercia de quien cumple.
+✅ B_0068 — Un sábado por la tarde, Miguel dobla la ropa limpia en el dormitorio mientras Elena lee en el salón; el gesto es idéntico al de hace meses, pero ahora lo ejecuta con la atención de quien sirve, no con la inercia de quien cumple.
 
 ### E_0047 — Allí estaremos
 
@@ -633,4 +633,4 @@
 
 #### Beats
 
-⬜ B_0069 — Elena recibe un mensaje de Ricardo —«os espero a los dos a las ocho»— y se lo lee a Miguel en voz alta desde la puerta del dormitorio; Miguel levanta la vista, sonríe sin tensión y dice «allí estaremos».
+✅ B_0069 — Elena recibe un mensaje de Ricardo —«os espero a los dos a las ocho»— y se lo lee a Miguel en voz alta desde la puerta del dormitorio; Miguel levanta la vista, sonríe sin tensión y dice «allí estaremos».

@@ -1,61 +1,38 @@
 ---
 name: beats-estructura
-description: Estructura de beats para relato. Formato, reglas y prohibiciones. Cárgalo al generar o revisar beats.
+description: Define beats globales de relato como acciones concretas sin invadir la prosa.
 ---
 
-# Skill — Estructura de Beats (Relato)
+# Beats — Relato
 
-## Reglas fundamentales
+`B_XXXX` es un ID global y durable **desde que el guion queda persistido**. Antes de ese gate, el director puede asignar un rango provisional que no sobrevive a una interrupción. Ya persistido, su posición es la que ocupa en el guion; no se renumera, reutiliza ni deriva de una escena.
 
-- **Una sola frase con acción concreta narrable** por beat
-- **Sin títulos de bloque** en la propuesta
-- **Sin número fijo** de beats por bloque, pero sin excederse
-- **IDs secuenciales**: `B_0001`, `B_0002`... a través de todo el relato
+## Formato
 
-## Formato de beat
-
-```
-- ⬜ B_0001 — [acción concreta narrable] `[Tono — EXTENSIÓN]`
+```text
+⬜ B_0001 — Ana borra el aviso antes de que Luis lo vea.
+⬜ B_0002 — Luis pregunta qué estaba mirando Ana. [registro: tenso]
 ```
 
-Solo dos componentes: la acción narrable y el tono con su extensión. Sin anotaciones de personajes, zona, props ni hilos.
+El registro es opcional y solo aparece si el beat necesita apartarse del arco tonal de su `E_XXXX`. Ejemplos: `contenido`, `tenso`, `revelación`, `explícito / visceral`, `íntimo`, `brutal`.
 
-### Ejemplos
+No añadas etiquetas de hecho, extensión, número de palabras, POV, lugar ni encabezados narrativos al beat.
 
-```
-- ✅ B_0001 — Desembarca en Villaverde arrastrando la mochila por el muelle `[Contemplativo — MEDIA]`
-- 🔄 B_0002 — Observa a los trabajadores portuarios descargar la mercancía `[Tenso — BREVE]`
-- ⬜ B_0003 — Descubre el cuerpo flotando entre dos barcazas `[Revelación — EXTENSA]`
-- ⬜ B_0004 — Decide no avisar a nadie y sigue caminando `[Clínico — BREVE]`
-```
+## Qué fija un beat
 
-Estados: ✅ completo · 🔄 en progreso · ⬜ pendiente
+- quién hace qué;
+- qué cambia o qué consecuencia deja;
+- la acción mínima que la prosa debe realizar.
 
-## Extensiones y tonos
+## Qué pertenece a la escena o al escritor
 
-La extensión (`BREVE`, `MEDIA`, `EXTENSA`) y el catálogo de tonos están definidos en el skill `tonos-beat`. El guionista asigna la etiqueta; el escritor la desarrolla. El beat en el guion siempre es UNA LÍNEA.
+- lugar, tiempo, POV, objetivo, resultado y arco tonal: `E_XXXX`;
+- ritmo, frases, diálogo, imágenes, sensorialidad y psicología: escritor;
+- cobertura de `H_XXXX` y de sus pautas explícitas: comprobación temporal de diseño;
+- la decisión de intercalar beats de contraste, rutina o consecuencia cuando el arco los necesite.
 
-## Qué debe tener un beat
+Un beat no es un resumen, una descripción, una emoción abstracta ni prosa parcialmente escrita.
 
-- **Sujeto que actúa** (quién hace qué)
-- **Acción concreta** (verbo en tiempo narrativo)
-- **Consecuencia o cambio** (qué ocurre después)
+## Reparaciones
 
-## Qué NO debe tener un beat
-
-- Estados de ánimo sin acción
-- Resumen de intenciones
-- Descripciones de escenario sin evento
-- Reflexiones abstractas del narrador
-
-## Evaluación de beats
-
-Al revisar beats, verificar:
-
-| # | Criterio | ¿Pasa? |
-|---|----------|--------|
-| 1 | ¿Hay un sujeto claro que actúa? | |
-| 2 | ¿La acción es narrable (se puede escribir como escena)? | |
-| 3 | ¿Tiene consecuencia en la trama? | |
-| 4 | ¿No repite información de beats anteriores? | |
-| 5 | ¿Progresa el arco narrativo? | |
+Al insertar un acontecimiento causal nuevo, asigna el siguiente `B_XXXX` y colócalo donde corresponda. Conserva los IDs supervivientes. Si la inserción altera una agrupación, reevalúa las escenas afectadas sin inventar una jerarquía adicional.
