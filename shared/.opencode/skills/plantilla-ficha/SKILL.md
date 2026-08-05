@@ -124,13 +124,20 @@ Rellena solo las secciones de tu tipo. Omite las que no apliquen.
 
 Material de referencia no-narrativo importado desde fuentes libres (biblia científica, universo previo, modelo de negocio, etc.).
 
+> **El archivo original queda intacto en `referencias/` como fuente de verdad legible.** Qdrant solo almacena un índice estructurado del archivo, no el contenido completo.
+
 **Título:** nombre legible del documento fuente.
-**Origen:** ruta o URL de la fuente original (del manifiesto de importación).
-**Resumen:** 2-3 frases que describen qué contiene y para qué sirve.
-**Contenido:** Markdown completo del archivo fuente (campo `fijo.contenido`).
-**Relevancia por hilo:** lista de slugs de hilos a los que este material es directamente relevante (se usa para filtrar en el briefing de memoria).
+**Origen:** ruta relativa del archivo en `referencias/` (campo `fijo.origen`).
+**Resumen:** 2-3 frases ejecutivas que describen qué contiene y para qué sirve (campo `fijo.resumen`).
+**Temas:** lista de unidades temáticas (campo `fijo.temas[]`):
+- **Título del tema:** nombre corto de la unidad temática.
+- **Palabras clave:** 3-5 tokens que identifican este tema.
+- **Descripción:** 1-2 frases del contenido del tema.
+**Relevancia por hilo:** lista de slugs de hilos a los que algún tema del documento es directamente relevante (se usa como tag `relevancia_por_hilo:<hilo>` para filtrar en el briefing de memoria).
 
 > **Sin `dinamico`.** Este tipo es inmutable: no tiene estado evolutivo ni registro de desarrollo. Solo se crea una vez; nunca se actualiza durante la escritura.
+
+> **Normalización:** el director (vía agente `entidades`) lee el archivo Markdown original, identifica los temas y construye el índice. La fidelidad del índice depende del análisis; si un tema no se recoge en el índice, `memoria` no podrá encontrarlo en consultas semánticas.
 
 ---
 

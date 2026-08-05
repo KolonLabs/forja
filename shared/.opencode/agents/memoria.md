@@ -111,19 +111,23 @@ Colecciones disponibles:
 
 ### Referencias (`tipo=referencia`)
 
-Las entidades `tipo=referencia` contienen material no-narrativo (biblia científica, universo previo, etc.) en `fijo.contenido`. Son inmutables: no tienen `dinamico`.
+Las entidades `tipo=referencia` contienen un **índice temático estructurado** (no el contenido completo del archivo) en `fijo`. El archivo original vive intacto en `referencias/` y `fijo.origen` apunta a su ruta relativa. Son inmutables: no tienen `dinamico`.
 
-Para incluir una referencia en el briefing, consulta por tipo y filtra por relevancia:
+Para incluir una referencia en el briefing:
 
-```bash
-python scripts/qdrant.py query-entities \
-  --proyecto "$PROYECTO" \
-  --tipo referencia
-```
+1. Busca referencias por tipo:
 
-Filtra los resultados por el tag `relevancia_por_hilo:<stable_id_hilo>` cuando el capítulo tenga hilos activos. En novela-simple sin hilos explícitos, incluye las referencias cuyo contenido sea semánticamente relevante al objetivo del capítulo (máximo 2).
+   ```bash
+   python scripts/qdrant.py query-entities \
+     --proyecto "$PROYECTO" \
+     --tipo referencia
+   ```
 
-No incluyas el `fijo.contenido` completo en el briefing: extrae un resumen de 2-3 frases del contenido o el fragmento directamente relevante al objetivo del capítulo. Cuenta dentro del presupuesto de ~600 tokens.
+2. Filtra los resultados por el tag `relevancia_por_hilo:<stable_id_hilo>` cuando el capítulo tenga hilos activos. En novela-simple sin hilos explícitos, haz búsqueda semántica con `query-entities-by-text` usando el objetivo del capítulo como consulta y queda con los 2 resultados con mayor score.
+3. El `fijo` devuelto contiene el índice (`titulo`, `origen`, `resumen`, `temas[]` con `palabras_clave` y `descripcion`). Identifica el tema más relevante al objetivo del capítulo comparando `palabras_clave` y `descripcion` con el objetivo.
+4. Si necesitas el contenido detallado del tema, lee el archivo en `referencias/` usando `fijo.origen` y localiza el pasaje por el título del tema. No cargues el archivo entero en el briefing: selecciona solo el pasaje pertinente.
+
+No incluyas el contenido completo en el briefing: extrae un resumen del tema relevante (2-3 frases del `fijo.temas[].descripcion` o un pasaje corto del archivo `referencias/`). Cuenta dentro del presupuesto de ~600 tokens.
 
 ## Consultas Neo4j
 

@@ -36,9 +36,33 @@ referencia
 **Tipo `referencia` — contrato especial:**
 
 - Representa material de referencia no-narrativo (biblia científica, universo previo, modelo de negocio, etc.) importado vía `/importar-proyecto`.
-- Solo tiene `fijo.contenido` (Markdown completo del archivo fuente). **No tiene `dinamico`**: es inmutable.
-- Tags: incluye `relevancia_por_hilo:<stable_id_hilo>` por cada hilo al que la referencia es directamente relevante. El agente `memoria` filtra por este tag.
-- Ingestión: en FASE 0.1.0, el director invoca `entidades` para ingestar cada archivo de `referencias/` como una entidad `tipo=referencia`. No genera ficha Markdown (el archivo en `referencias/` ya es la fuente legible).
+- **No tiene `dinamico`**: es inmutable.
+- **El archivo original queda intacto en `referencias/`** como fuente de verdad legible.
+- **`fijo` es un índice temático estructurado** (JSON serializado), no el Markdown completo. Estructura del payload a construir:
+
+  ```json
+  {
+    "titulo": "Biblia científica Cánida",
+    "origen": "referencias/01-biblia-cientifica.md",
+    "resumen": "2-3 frases ejecutivas del documento",
+    "temas": [
+      {
+        "titulo": "Fisiología del galguero",
+        "palabras_clave": ["galguero", "fisiología", "Aurelio"],
+        "descripcion": "1-2 frases del tema"
+      }
+    ]
+  }
+  ```
+
+- Ingestión (FASE 0.1.0): el director invoca `entidades` por cada archivo de `referencias/`.
+  1. Lee el archivo Markdown completo.
+  2. Identifica los temas principales (cada unidad conceptual autónoma del documento).
+  3. Construye el índice: resumen ejecutivo + lista de temas con título, palabras clave y descripción.
+  4. Asigna `relevancia_por_hilo:<stable_id_hilo>` a los tags de la entidad por cada hilo al que algún tema del documento sea directamente relevante.
+  5. Ejecuta `upsert-entity` con el índice serializado en `--fijo-file`. No genera ficha Markdown: el archivo en `referencias/` ya es la fuente legible.
+
+  No incluyas el contenido extenso del archivo en `fijo`: eso diluye el embedding. El `fijo` es un índice curado, no una copia del archivo.
 
 No uses `persona` ni variantes. No inventes tipos nuevos.
 

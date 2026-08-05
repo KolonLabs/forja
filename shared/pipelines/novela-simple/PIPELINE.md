@@ -39,7 +39,7 @@ fichas/<tipo>_<slug>.md (entidades en markdown, primarias en Qdrant)
 | Paso | Agente | Skill | Entrada | Salida |
 |------|--------|-------|---------|--------|
 | 0.1 | `director` | `scaffolding-hecho`, `hechos-distribuidos` | `_actos.md` | Anotaciones `🎬 Director:` bajo hechos `[D]` en `_actos.md` |
-| 0.1b Referencias | `entidades` (×N) | — | `referencias/` (si existe) | **Solo si `referencias/` existe:** ingestar cada archivo como entidad `tipo=referencia` en Qdrant (`fijo.contenido` = Markdown, sin `dinamico`). |
+| 0.1b Referencias | `entidades` (×N) | — | `referencias/` (si existe) | **Solo si `referencias/` existe:** por cada archivo Markdown en `referencias/`, leer el contenido, identificar temas principales, construir un índice estructurado (`resumen` + `temas[]` con título, palabras clave y descripción) y persistirlo en Qdrant como entidad `tipo=referencia` (`fijo` = índice serializado, sin `dinamico`). El archivo original queda intacto en `referencias/` como fuente legible. |
 | 0.2 Seed entidades | `director` → `entidades` (×N) + `neo4j.py` | — | `_actos.md`, `BRIEF.md` | Entidades básicas en Qdrant (stable_id, tipo, nombre, fijo). Relaciones básicas en Neo4j |
 | 0.3 Estructura | `guionista` modo `estructura-novela` | `estructura-narrativa`, `beats-estructura`, `plantilla-guion` [+ `hechos-distribuidos` si hay `[D]`] | `BRIEF.md`, `_actos.md` (con anotaciones) | `guion-novela.md` (actos, capítulos, hechos estimados + inyección `[D]`) |
 
