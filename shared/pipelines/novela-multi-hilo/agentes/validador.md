@@ -2,7 +2,7 @@
 name: validador
 description: Valida un beat o el draft completo en novelas multi-hilo. Soporta modo beat y modo global con Qdrant y validación cross-hilo.
 mode: subagent
-model: deepseek/deepseek-v4-pro
+model: opencode/glm-5.2
 temperature: 0.2
 top_p: 0.9
 hidden: true

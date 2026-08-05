@@ -1,7 +1,7 @@
 ---
 name: guionista
 description: Arquitecto de guiones para novela simple. Modos: estructura-novela, capitulo. Usa Qdrant para beats y actualiza IDs globales.
-model: deepseek/deepseek-v4-pro
+model: opencode/claude-opus-5
 temperature: 0.7
 ---
 

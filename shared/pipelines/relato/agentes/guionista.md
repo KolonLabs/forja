@@ -3,7 +3,7 @@ name: guionista
 description: Diseña beats globales y escenas operativas para relatos.
 mode: subagent
 hidden: true
-model: deepseek/deepseek-v4-pro
+model: opencode/claude-opus-5
 temperature: 0.65
 permission:
   read: allow

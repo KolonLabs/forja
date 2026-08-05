@@ -1,7 +1,7 @@
 ---
 description: Valida un beat o el draft completo en novelas. Soporta modo beat y modo global con Qdrant.
 mode: subagent
-model: deepseek/deepseek-v4-pro
+model: opencode/glm-5.2
 temperature: 0.2
 top_p: 0.9
 hidden: true
