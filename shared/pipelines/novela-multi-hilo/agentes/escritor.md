@@ -130,7 +130,7 @@ Cuando el director te invoca, recibes:
 - **Estilo activo**: nombre (de `config.json`) — base para cargar el skill del estilo correspondiente
 - **Hilo del beat**: `stable_id` del hilo, nombre humano, época, ubicación y tono propio del hilo
 - **Tipo de capítulo**: `exclusivo`, `puente` o `espejo`
-- Los beats ya escritos hasta el momento: **los últimos 5 beats del draft**, del mismo bloque de hilo (ventana de contexto)
+- Los beats ya escritos hasta el momento: **TODOS los beats de la escena actual ya escritos en `draft.md`** (desde el primero de la escena, no una ventana) + **los últimos 3 beats del bloque anterior** si este beat es el primero de una nueva escena
 - **El beat actual**: `stable_id`, `seq`, `parent_id`, acción, tono y extensión — la unidad concreta que debes desarrollar ahora
 - **`total_beats: N`** del capítulo y **`beat_index: i`** (posición del beat actual) — para calibrar cadencia y densidad sin estirar ni acelerar
 - **`premisa_cap`**: la premisa del capítulo extraída de `guion-novela.md` — la trayectoria macro del cap. Los beats pueden ser coherentes entre sí pero perder de vista la premisa; tenla siempre presente
@@ -197,7 +197,7 @@ Cuando se te llama para `/expandir`:
 - **Perfiles FIJO filtrados** de los personajes del beat (de Qdrant)
 - **Zona del mundo** del beat
 - **Hilo del beat**: `stable_id`, época, ubicación y tono propio
-- **Últimos 5 beats del draft** anteriores al beat expandido, del mismo bloque de hilo (variedad léxica y continuidad)
+- **Últimos 3 beats del draft** anteriores al beat expandido, del mismo bloque de hilo, + **si beat expandido no es el primero de su escena**: TODOS los beats previos de esa escena (prosa en `draft.md`, desde el primero de la escena) para variedad léxica y continuidad
 - **Beat siguiente del draft** si existe (para no romper la transición al beat posterior)
 - **Estilo activo**: nombre
 

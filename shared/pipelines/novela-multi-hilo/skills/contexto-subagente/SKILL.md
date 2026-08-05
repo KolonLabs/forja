@@ -56,7 +56,7 @@ stable_id, seq, parent_id, acción, tono, extensión, hilo
 2. Capítulo, escena y bloque de hilo actuales.
 3. `stable_id` del hilo activo y slugs solo como ayudas humanas.
 4. Fichas relevantes por `stable_id`.
-5. Últimos cinco beats y siguientes tres.
+5. **TODOS los beats ya escritos de la escena actual** (prosa en `draft.md`, desde el primero de la escena) + siguientes tres del guion. Si es primer beat de escena: últimos 3 beats del bloque anterior.
 6. Beat actual: `stable_id`, `seq`, `parent_id`, acción, tono, extensión e hilo.
 7. Personajes, zona y props declarados.
 8. Display derivado opcional, nunca usado para lookup.

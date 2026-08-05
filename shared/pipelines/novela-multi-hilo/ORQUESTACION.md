@@ -296,7 +296,7 @@ Estilo: [estilo_base] — cargar skill estilo-<nombre>
 {{#if estilo_secundario}}+ fusionar con estilo-<nombre>{{/if}}
 Beat N de M en el capítulo (total_beats, beat_index)
 Premisa del capítulo: [extraída de guion-novela.md]
-Últimos 5 beats: [del mismo bloque de hilo]
+Prosa ya escrita de la escena actual: [TODOS los beats de esta escena en draft.md, desde el primero] | Si primer beat de escena: últimos 3 beats del bloque anterior
 {{#if puente o espejo}}Otro hilo: [qué acaba de ocurrir allí] + fichas/conexion-*.md{{/if}}
 {{#if espejo}}Beat contrario: [texto del beat del otro hilo con el que hace paralelismo]{{/if}}
 No marcar ✅ en guion — solo prosa en draft

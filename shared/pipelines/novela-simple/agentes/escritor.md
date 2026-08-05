@@ -98,7 +98,7 @@ Cuando el director te invoca, recibes:
 - **Perfiles `fijo` filtrados** de los personajes del beat actual (de las entidades Qdrant `per-<id>`)
 - **Zona del mundo relevante** (de la entidad Qdrant `lug-<id>` correspondiente a la zona del beat)
 - **Estilo activo**: nombre (de `config.json`) — base para cargar el skill del estilo correspondiente
-- Los beats ya escritos hasta el momento: **los últimos 5 beats del draft** (ventana de contexto)
+- Los beats ya escritos hasta el momento: **TODOS los beats de la escena actual ya escritos en `draft.md`** (desde el primero de la escena, no una ventana) + **los últimos 3 beats de la escena anterior** si este beat es el primero de una nueva escena
 - **El beat actual**: ID, acción, tono y extensión — la unidad concreta que debes desarrollar ahora
 - **`total_beats: N`** del capítulo y **`beat_index: i`** (posición del beat actual) — para calibrar cadencia y densidad sin estirar ni acelerar
 - **`premisa_cap`**: la premisa del capítulo extraída de `guion-novela.md` — la trayectoria macro del cap. Los beats pueden ser coherentes entre sí pero perder de vista la premisa; tenla siempre presente
@@ -162,7 +162,7 @@ Cuando se te llama para `/expandir`:
 - El enfoque de expansión (instrucción del usuario)
 - **Perfiles FIJO filtrados** de los personajes del beat (de Qdrant)
 - **Zona del mundo** del beat
-- **Últimos 5 beats del draft** anteriores al beat expandido (variedad léxica y continuidad)
+- **Últimos 3 beats del draft** anteriores al beat expandido + **si beat expandido no es el primero de su escena**: TODOS los beats previos de esa escena (prosa en `draft.md`, desde el primero de la escena) para variedad léxica y continuidad
 - **Beat siguiente del draft** si existe (para no romper la transición al beat posterior)
 - **Estilo activo**: nombre
 

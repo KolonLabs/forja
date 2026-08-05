@@ -54,7 +54,7 @@ stable_id, seq, parent_id, acción, tono, extensión
 1. `proyecto`.
 2. Guion de la escena actual.
 3. Fichas relevantes inline por `stable_id`.
-4. Últimos cinco beats del draft y siguientes tres del guion.
+4. **TODOS los beats ya escritos de la escena actual** (prosa en `draft.md`, desde el primero de la escena) + siguientes tres del guion. Si es primer beat de escena: últimos 3 beats de la escena anterior.
 5. Beat actual: `stable_id`, `seq`, `parent_id`, acción, tono y extensión.
 6. Personajes, zona y props declarados.
 7. Display derivado opcional, nunca usado para lookup.

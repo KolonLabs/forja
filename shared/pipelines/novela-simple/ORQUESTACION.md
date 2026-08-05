@@ -222,6 +222,7 @@ Estilo base: [nombre] — cargar skill estilo-<nombre>
 Beat: B_NNNN | Hecho padre: H_NNNN
 Leer: capitulos/.../guion.md (línea beat), contexto.md, fichas/[lista]
 Briefing memoria: [~600 tokens desde agente memoria]
+Prosa ya escrita de la escena actual: [TODOS los beats de esta escena en draft.md, desde el primero] | Si primer beat de escena: últimos 3 beats de la escena anterior
 Escribir: capitulos/.../draft.md — sección ## B_NNNN (append; crear archivo si no existe)
 Tono: [BREVE|MEDIA|EXTENSA] + [tono de tonos-beat] + [⚡ línea crítica si hay]
 Estilo: [estilo_base] — cargar skill estilo-<nombre>
