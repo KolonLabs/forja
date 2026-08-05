@@ -76,7 +76,7 @@
 
 #### Hechos
 
-- H_0020: Sara, 35, maestra en Madrid, lleva 14 meses sola en el piso tras dejar a David -- seis años de abuso psicologico que la convencieron de que estaba loca. Funciona: trabaja, duerme, come. La vida tiene textura de carton.
+- H_0020: Sara, 35, auxiliar de enfermeria en Madrid, lleva 14 meses sola en el piso tras dejar a David -- seis años de abuso psicologico que la convencieron de que estaba loca. Funciona: trabaja, duerme, come. La vida tiene textura de carton.
 - H_0021: Visita a Elena y su perro Bruno. Sara ve lo que le falta sin poder nombrarlo -- alguien que ya no esta solo. De camino a casa, no sabe por que tiene ganas de llorar.
 - H_0022: Adopta a Viento: galgo oscuro, costillas marcadas, 4 meses en la protectora sin acercarse a nadie. Sara firma los papeles porque Viento la nota primero -- levanta la cabeza y la mira, un gesto minimo que nadie habia visto en meses. Reconoce algo en ese gesto porque sabe lo que cuesta hacerlo.
 - H_0023 [D · H_0022-H_0028]: Viento no se acerca. Come poco. Sara duerme mejor desde el primer dia pero no lo conecta con nada. Le manda fotos a Bea. Primer mensaje raro: Viento en la puerta 40 segundos antes de que suene el telefonillo. 'Casualidad' Bea: 'Sara, es un perro.'
@@ -87,14 +87,14 @@
 
 **Que debe sentir el lector:** Intriga con una capa de negacion. El lector sabe mas que Sara pero entiende por que ella duda.
 
-**Tension:** Sara no sabe si lo que ve es real o si esta exagerando -- exactamente lo que David le enseÃ±o a creer.
+**Tension:** Sara no sabe si lo que ve es real o si esta exagerando -- exactamente lo que David le enseñó a creer.
 
 #### Hechos
 
 - H_0024: Elena le manda un paper sobre neuroplasticidad canina. Sara lo lee a medias, lo deja en el escritorio. No lo tira.
-- H_0025: La noche antes de la vista oral del piso, Viento no duerme. La vigila toda la noche. Sara manda un audio a Bea a las 2am.
+- H_0025: La noche antes de la vista oral del piso --la ultima batalla legal contra David, el piso es lo unico que el aun puede quitarle--, Viento no duerme. La vigila toda la noche. Sara manda un audio a Bea a las 2am.
 - H_0026: Gana el plazo del piso. De camino a casa escribe un mensaje que no llega a mandar: 'Es mio esto' Lo borra. El lector no lo olvida.
-- H_0027: Las anomalias se acumulan: Viento detecta a David cerca del juzgado antes de que Sara lo vea, sale de la habitacion antes de que suene el telefono. Bea empieza a hacer preguntas en lugar de restar importancia.
+- H_0027: Las anomalias se acumulan en lo cotidiano: Viento sale de la habitacion antes de que suene el telefono, espera junto a la puerta antes de que ella decida salir. Bea empieza a hacer preguntas en lugar de restar importancia. Sara aun las despacha como casualidades -- es lo que aprendio a hacer con su propia percepcion.
 - H_0028: Curiosea el chip de Viento: antes del galguero hubo una transferencia desde una empresa en Barcelona. Lo deja estar. En los servidores de Helix, esa consulta genera una notificacion automatica sobre un descarte con vector integrado.
 
 ### Acto III -- La resistencia invisible
@@ -103,17 +103,17 @@
 
 **Que debe sentir el lector:** Rabia contenida. El lector ve a Sara luchar contra un enemigo que ni siquiera necesita atacarla directamente.
 
-**Tension:** Cada vez que Sara esta a punto de avanzar, algo --el colegio, David, un profesional que se calla-- la frena. No sabe si es casualidad o si alguien esta moviendo los hilos.
+**Tension:** Cada vez que Sara esta a punto de avanzar, algo --el hospital, David, un profesional que se calla-- la frena. No sabe si es casualidad o si alguien esta moviendo los hilos.
 
 #### Hechos
 
-- H_0029: Episodio de Viento mientras Sara esta en el colegio. La vecina llama asustada. Sara elige a Viento sobre la fecha limite del banco para la hipoteca.
+- H_0029: Viento sufre un episodio mientras Sara esta en el hospital: convulsiones leves, temperatura alta, desorientacion. La vecina llama asustada al oirlo aullar. Sara sale del turno sin avisar -- por primera vez, elige a Viento por encima de una obligacion. La fecha limite del banco para la hipoteca vence ese mismo dia. No llega.
 - H_0030: El veterinario no sabe que es: temperatura elevada, pupilas atipicas, sin clasificacion. La deriva a un especialista en neurologia veterinaria. El especialista, al oir la mencion de la empresa de Barcelona, se queda callado y le pasa el contacto de una veterinaria de Madrid.
-- H_0031: Helix evalua: la notificacion del chip activa una respuesta interna. Objetivo: hacer que el coste de seguir investigando supere lo que Sara puede pagar. Friccion calibrada, sin contacto directo.
-- H_0032: Queja anonima en el colegio. El director convoca a Sara. Nada que prospere, pero una semana de distraccion y la sensacion de que el suelo no es firme.
+- H_0031: Tras la consulta del chip, pequeñas fricciones empiezan a acumularse: llamadas que cuelgan, citas que se reprograman sin explicacion, un administrativo que le pide documentacion que ya entrego. Sara no sabe si es mala suerte o si alguien esta poniendo obstaculos. La duda es exactamente el arma que usaba David.
+- H_0032: Queja anonima en el hospital. La supervisora convoca a Sara. Nada que prospere, pero una semana de distraccion y la sensacion de que el suelo no es firme.
 - H_0033: La veterinaria de Madrid responde con una linea: 'Lo siento, no puedo ayudarte.' Sin explicacion. Los profesionales se callan.
 - H_0034: David aprieta -- por su cuenta. Nuevo informe pericial que debilita la posicion de Sara. No es Helix. Es David siendo David. El lector sospecha de Helix. Sara tambien. Las dos se equivocan en este punto.
-- H_0035: Bea le dice la frase: 'Eso lo decias tambien con David.' Algo se rompe. Sara entiende que dudar de si misma no es prudencia -- es una costumbre que alguien le enseÃ±o a tener. No se detiene.
+- H_0035: Sara, agotada, le dice a Bea: 'Igual estoy exagerando. Igual es un perro normal y soy yo que me monto peliculas, como...' Bea la corta: 'Eso lo decias tambien con David.' Algo se rompe. Sara entiende que dudar de si misma no es prudencia -- es una costumbre que alguien le enseño a tener. No se detiene.
 
 ### Acto IV -- La decision
 
@@ -125,9 +125,9 @@
 
 #### Hechos
 
-- H_0036: Vuelve al paper de Elena. Escribe al autor de correspondencia preguntando sobre los sintomas de Viento. El catedratico, sin interes, le pasa el contacto de Vega.
-- H_0037: Vega explica: el vector, el programa, lo que produce Viento, lo que hace en Sara. La pregunta que Sara borro vuelve con todo su peso: 'Es mio esto' Y debajo: puedo fiarme de mi propio criterio para saberlo
-- H_0038: Sara elige a Viento con toda la informacion. El piso es suyo. Viento es suyo. Nada es perfectamente limpio y todo es completamente suyo.
+- H_0036: Vuelve al paper de Elena. Escribe al autor de correspondencia preguntando por los sintomas de Viento. Adjunta capturas de las pupilas, la temperatura, lo que el veterinario no supo clasificar. El catedratico, sin interes, le pasa el contacto de Vega --una investigadora postdoc en Barcelona-- en una sola linea.
+- H_0037: Vega responde por correo: los marcadores que Sara describe coinciden con algo que lleva meses rastreando. Le explica el vector, el programa, lo que produce Viento, lo que hace en Sara --todo por escrito, en un intercambio tenso y preciso que se extiende durante dias. La pregunta que Sara borro vuelve con todo su peso: 'Es mio esto' Y debajo: puedo fiarme de mi propio criterio para saberlo.
+- H_0038: Vega le ha explicado lo que Viento es: un perro modificado geneticamente, diseñado para regular las emociones de su dueño. La pregunta no es si lo que siente por Viento es real o fabricado. La pregunta es si le importa. Sara decide que no. El piso es suyo. Viento es suyo. Nada es perfectamente limpio y todo es completamente suyo. Responde al ultimo correo de Vega con una sola linea: 'Me lo quedo.'
 
 ## Hilo: Vega — slug: hilo-vega
 
