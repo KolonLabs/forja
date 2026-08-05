@@ -63,25 +63,29 @@ El `draft.md` de cada capítulo usa **una sola forma de encabezado**:
 
 | Paso | Agente | Acción |
 |------|--------|--------|
-| 0.0 | director | **Identificar hechos `[D]`** en `_actos.md`. Cargar `hechos-distribuidos`. Anotar granularidad y distribución (+ hilo si aplica). |
-| 0.1 | director + usuario | Identificar hilos: nombre, slug, época, ubicación, personajes, conflicto, tono |
-| 0.2 | director + usuario | Identificar puntos de conexión cross-hilo (objetos, personajes, revelaciones) |
-| 0.3 | director + usuario | Definir partes de la novela |
-| 0.4 | director | Sembrar `config.json.hilos[]` y `puntos_conexion` |
-| 0.5 Seed entidades | director → `entidades` (×N) + `neo4j.py` | Inferir entidades semilla de `_actos.md` + `BRIEF.md` + hilos. Crear en Qdrant (stable_id, tipo, nombre, fijo) + Neo4j (relaciones básicas, cross-hilo) |
+| 0.0 Referencias | director | **Solo si `referencias/` existe:** leer los archivos Markdown directamente (sin Qdrant). Extraer información relevante del universo, biblia científica, personajes y conflictos previos que informará las decisiones de hilos y hechos. **Qdrant no se alimenta aquí** — la ingestión con índice estructurado ocurre en FASE 0.1 paso 0.1.2. |
+| 0.1 `[D]` | director | **Identificar hechos `[D]`** en `_actos.md`. Cargar `hechos-distribuidos`. Anotar granularidad y distribución (+ hilo si aplica). |
+| 0.2 Hilos | director + usuario | Identificar hilos: nombre, slug, época, ubicación, personajes, conflicto, tono. **Informado por las referencias leídas** (si existen). El director cruza el material de `referencias/` con el brief para proponer hilos fundados. |
+| 0.3 Conexiones | director + usuario | Identificar puntos de conexión cross-hilo (objetos, personajes, revelaciones) |
+| 0.4 Partes | director + usuario | Definir partes de la novela |
+| 0.5 Sembrar config | director | Sembrar `config.json.hilos[]` y `puntos_conexion` |
+| 0.6 Seed entidades | director → `entidades` (×N) + `neo4j.py` | Inferir entidades semilla de `_actos.md` + `BRIEF.md` + hilos. Crear en Qdrant (stable_id, tipo, nombre, fijo) + Neo4j (relaciones básicas, cross-hilo) |
 
 **Gate:** Todos los hilos identificados con conflicto propio. `config.json.hilos[]` poblado.
 
 ---
 
-### FASE 0.1 — Componentes iniciales (`estado: diseno`)
+### FASE 0.1 — Refinamiento de hechos (`estado: diseno`)
+
+Objetivo: revisar los hechos del brief (del scaffolder) a la luz de las referencias leídas y los hilos confirmados, antes de comprometerlos a `guion-hilo.md`. Es un diálogo con el usuario.
 
 | Paso | Agente | Acción |
 |------|--------|--------|
-| 0.1.0 Referencias | `entidades` (×N) | **Solo si `referencias/` existe:** por cada archivo Markdown en `referencias/`, leer el contenido, identificar temas principales, construir un índice estructurado (`resumen` + `temas[]` con título, palabras clave y descripción) y persistirlo en Qdrant como entidad `tipo=referencia` (`fijo` = índice serializado, sin `dinamico`). El archivo original queda intacto en `referencias/` como fuente legible. Asignar tag `relevancia_por_hilo:<stable_id_hilo>` por cada hilo al que algún tema del documento sea relevante. |
-| 0.1.1 | `entidades` (×N, incremental) | Fichas básicas en Qdrant + `fichas/<tipo>_<slug>.md` para entidades clave |
+| 0.1.1 Revisión de hechos | director + usuario | El director presenta los hechos de `_actos.md` al usuario. A la luz de las referencias leídas (paso 0.0), los hilos confirmados (paso 0.2) y las conexiones (paso 0.3), el director propone ajustes: añadir, eliminar, fusionar, dividir o reescribir hechos. El usuario confirma, rechaza o pide cambios adicionales. El director aplica los cambios vía guionista si la reescritura es estructural. Itera hasta que el usuario confirma el conjunto. |
+| 0.1.2 Ingesta referencias | `entidades` (×N) | Ingestar cada archivo de `referencias/` en Qdrant como `tipo=referencia`: leer el Markdown, identificar temas, construir el índice estructurado (`fijo` = `resumen` + `temas[]`), asignar tags `relevancia_por_hilo`. |
+| 0.1.3 Fichas básicas | `entidades` (×N, incremental) | Fichas básicas en Qdrant + `fichas/<tipo>_<slug>.md` para entidades clave |
 
-**Gate:** Entidades clave de cada hilo fichadas (básico). Si hay `referencias/`, todas ingresadas en Qdrant.
+**Gate:** Hechos refinados y confirmados por el usuario. Referencias ingeridas en Qdrant. Entidades clave de cada hilo fichadas (básico).
 
 **Transición:** `config.json.estado = "diseno_hilos"`.
 
@@ -160,7 +164,7 @@ Itera por cada capítulo en el orden de la tabla de Trenzado:
 | Paso | Agente | Acción |
 |------|--------|--------|
 | 3.2.1 | `guionista` modo `capitulo`, pasada 1 | Recibe briefing memoria + fila Trenzado + `guion-hilo.md` de hilos implicados + IDs → **crea directorio** `capitulos/cap-NN-slug/` y escribe `capitulos/cap-NN-slug/guion.md` |
-| | | **Descompone todos los hechos lineales del cap en beats.** Los `[D]` no generan beats: se anotan en `cola_d.md` y se devuelven al director. **No inserta marcadores `<!-- ESCENA ... -->` en esta pasada.** Salida: beats en bruto, sin agrupar en escenas. |
+| | | **Descompone en beats los hechos asignados a este capítulo en la tabla de Trenzado**, no los hechos de cada hilo completo. Los `[D]` no generan beats: se anotan en `cola_d.md` y se devuelven al director. **No inserta marcadores `<!-- ESCENA ... -->` en esta pasada.** Salida: beats en bruto, sin agrupar en escenas. |
 | | | Puente (≥2 hilos): los beats de cada hilo van en bloques sin marcador de escena todavía. Espejo: beats alternados entre hilos. |
 | 3.2.2 | `guionista` modo `capitulo`, pasada 2 | **Agrupa los beats ya generados en escenas.** Con independencia total del hecho de origen (la procedencia del hecho es irrelevante — el hecho ya cumplió su función de planificar y no existe en este paso). Inserta los marcadores `<!-- ESCENA <stable_id>: Nombre \| hilo: <stable_id_hilo> -->`. En puente, cada escena = bloque de hilo delimitado por `---`. En espejo, las escenas de los dos hilos se alternan. |
 | 3.2.3 | director + usuario | **Checkpoint obligatorio.** El director presenta al usuario la estructura de escenas propuesta (número de escenas, beats por escena, hilo, corte). El usuario valida o pide ajustes. El director puede invocar al guionista (modo `capitulo` o `revision`) para corregir la agrupación. **No se avanza a 3.2b sin confirmación del usuario.** |

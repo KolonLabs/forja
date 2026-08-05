@@ -140,13 +140,21 @@ FASE 4 publicar
 
 ```
 FASE 0 diseño
+  [si referencias/ existe]
+  director: lee referencias/ directamente (Markdown, sin Qdrant)
   director → guionista(modo: estructura-novela)
   IN:  BRIEF.md, _actos.md, config.json
   OUT: guion-novela.md (actos, caps, hechos H_NNNN)
-  [si referencias/ existe]
+
+FASE 0.1 refinamiento de hechos
+  director + usuario: revisan hechos de guion-novela.md a la luz de
+                      referencias/ leídas (paso 0.0)
+                      el director propone, el usuario confirma/ajusta
+                      director aplica cambios vía guionista si estructural
   director → entidades (×N): ingestar referencias/ como tipo=referencia
-    fijo.contenido = Markdown del archivo, sin dinamico, inmutable
-  estado → "diseno" → "fichas"
+    índice estructurado en fijo (resumen + temas[]), sin dinámico
+  director → entidades (×N, incremental): fichas básicas
+  estado → "fichas"
 
 FASE 1 componentes
   director → entidades (×N entidades)
@@ -162,8 +170,9 @@ FASE 2 escritura (por capítulo)
            + referencias tipo=referencia relevantes, máx. 2)
 
 2.2 director → guionista(modo: capitulo, pasada 1)
-      IN:  cap-NN-slug, hechos H_XXXX, briefing memoria
-      OUT: capitulos/cap-NN-slug/guion.md (crear carpeta, beats en bruto, SIN escenas)
+      IN:  cap-NN-slug, hechos H_XXXX de este capítulo, briefing memoria
+      OUT: capitulos/cap-NN-slug/guion.md (crear carpeta, beats en bruto
+           de los hechos de este capítulo, no de la novela completa; SIN escenas)
 
   2.2.2 director → guionista(modo: capitulo, pasada 2)
        IN:  capitulos/cap-NN-slug/guion.md (beats en bruto)

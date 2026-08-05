@@ -183,7 +183,8 @@ FASE 3 beat a beat cross-hilo (bucle por capítulo)       estado: escritura
 
 3.2 director → guionista(modo: capitulo, pasada 1)
       IN:  briefing memoria + fila Trenzado + guion-hilo.md implicados
-      OUT: capitulos/cap-NN-slug/guion.md (beats de hechos lineales, SIN escenas)
+      OUT: capitulos/cap-NN-slug/guion.md (beats de los hechos de este capítulo,
+           no de los hilos completos; SIN escenas)
            + cola_d.md con los [D] pendientes
       exclusivo: 1 hilo | puente: bloques por hilo | espejo: beats alternados
 

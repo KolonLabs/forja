@@ -38,12 +38,26 @@ fichas/<tipo>_<slug>.md (entidades en markdown, primarias en Qdrant)
 
 | Paso | Agente | Skill | Entrada | Salida |
 |------|--------|-------|---------|--------|
-| 0.1 | `director` | `scaffolding-hecho`, `hechos-distribuidos` | `_actos.md` | Anotaciones `🎬 Director:` bajo hechos `[D]` en `_actos.md` |
-| 0.1b Referencias | `entidades` (×N) | — | `referencias/` (si existe) | **Solo si `referencias/` existe:** por cada archivo Markdown en `referencias/`, leer el contenido, identificar temas principales, construir un índice estructurado (`resumen` + `temas[]` con título, palabras clave y descripción) y persistirlo en Qdrant como entidad `tipo=referencia` (`fijo` = índice serializado, sin `dinamico`). El archivo original queda intacto en `referencias/` como fuente legible. |
+| 0.0 Referencias | `director` | — | `referencias/` (si existe) | **Solo si `referencias/` existe:** leer los archivos Markdown directamente (sin Qdrant). Extraer información relevante para personajes, mundo y conflictos que informará las decisiones de hechos. **Qdrant no se alimenta aquí** — la ingestión con índice estructurado ocurre en FASE 0.1 paso 0.1.2. |
+| 0.1 `[D]` | `director` | `scaffolding-hecho`, `hechos-distribuidos` | `_actos.md` | Anotaciones `🎬 Director:` bajo hechos `[D]` en `_actos.md` |
 | 0.2 Seed entidades | `director` → `entidades` (×N) + `neo4j.py` | — | `_actos.md`, `BRIEF.md` | Entidades básicas en Qdrant (stable_id, tipo, nombre, fijo). Relaciones básicas en Neo4j |
 | 0.3 Estructura | `guionista` modo `estructura-novela` | `estructura-narrativa`, `beats-estructura`, `plantilla-guion` [+ `hechos-distribuidos` si hay `[D]`] | `BRIEF.md`, `_actos.md` (con anotaciones) | `guion-novela.md` (actos, capítulos, hechos estimados + inyección `[D]`) |
 
 **Gate:** Cada capítulo tiene función narrativa clara. Hechos estimados asignados.
+
+---
+
+### FASE 0.1 — Refinamiento de hechos (`estado: diseno`)
+
+Objetivo: revisar los hechos del guion a la luz de las referencias leídas, antes de comprometerlos.
+
+| Paso | Agente | Acción |
+|------|--------|--------|
+| 0.1.1 Revisión de hechos | director + usuario | El director presenta los hechos de `guion-novela.md` al usuario. A la luz de las referencias leídas (paso 0.0), el director propone ajustes: añadir, eliminar, fusionar, dividir o reescribir hechos. El usuario confirma, rechaza o pide cambios. El director aplica vía guionista si la reescritura es estructural. Itera hasta confirmación. |
+| 0.1.2 Ingesta referencias | `entidades` (×N) | **Solo si `referencias/` existe:** ingestar cada archivo como `tipo=referencia` en Qdrant (`fijo` = índice estructurado con `resumen` + `temas[]`, sin `dinamico`). El archivo original queda intacto en `referencias/` como fuente legible. |
+| 0.1.3 Fichas básicas | `entidades` (×N) | Fichas básicas en Qdrant + `fichas/<tipo>_<slug>.md` para entidades clave |
+
+**Gate:** Hechos refinados y confirmados por el usuario. Referencias ingeridas en Qdrant. Fichas básicas de entidades clave.
 
 **Transición:** `config.json.estado = "fichas"`.
 
@@ -81,7 +95,7 @@ Itera por cada capítulo en `guion-novela.md`, en orden secuencial:
 
 | Paso | Agente | Acción |
 |------|--------|--------|
-| 2.2.1 | `guionista` modo `capitulo`, pasada 1 | Recibe briefing memoria + estructura cap + contexto anterior + IDs → **crea directorio** `capitulos/cap-NN-slug/` y escribe `capitulos/cap-NN-slug/guion.md`. **Descompone todos los hechos del cap en beats.** **No inserta marcadores `<!-- ESCENA ... -->` en esta pasada.** Salida: beats en bruto, sin agrupar en escenas. |
+| 2.2.1 | `guionista` modo `capitulo`, pasada 1 | Recibe briefing memoria + estructura cap + contexto anterior + IDs → **crea directorio** `capitulos/cap-NN-slug/` y escribe `capitulos/cap-NN-slug/guion.md`. **Descompone en beats los hechos de este capítulo** (extraídos de `guion-novela.md`, no de toda la novela). **No inserta marcadores `<!-- ESCENA ... -->` en esta pasada.** Salida: beats en bruto, sin agrupar en escenas. |
 | 2.2.2 | `guionista` modo `capitulo`, pasada 2 | **Agrupa los beats ya generados en escenas.** Con independencia total del hecho de origen (la procedencia del hecho es irrelevante — el hecho ya cumplió su función de planificar y no existe en este paso). Inserta los marcadores `<!-- ESCENA <stable_id>: Nombre -->`. |
 | 2.2.3 | director + usuario | **Checkpoint obligatorio.** El director presenta la estructura de escenas propuesta al usuario (número de escenas, beats por escena, corte). El usuario valida o pide ajustes. **No se avanza a 2.2.4 sin confirmación.** |
 | 2.2.4 | `auditor-beats` (atomizar → transiciones → limpieza) | Valida `capitulos/cap-NN-slug/guion.md`. Diagnostica: beats inconclusos, huecos, prosa. Director → guionista corrige |
