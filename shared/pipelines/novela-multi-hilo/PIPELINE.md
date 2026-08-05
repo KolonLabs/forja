@@ -155,14 +155,15 @@ Itera por cada capítulo en el orden de la tabla de Trenzado:
 |------|--------|--------|
 | 3.1.1 | `memoria` (deepseek-v4-flash) | Consulta Qdrant (L4, L3 por arco, L2 recientes cross-hilo, entidades) + Neo4j (relaciones activas) → briefing ~600 tokens filtrado por hilo(s) activo(s) |
 
-#### 3.2 Guion del capítulo — pasada 1 (hechos lineales)
+#### 3.2 Guion del capítulo — pasada 1 (beats de hechos lineales)
 
 | Paso | Agente | Acción |
 |------|--------|--------|
 | 3.2.1 | `guionista` modo `capitulo`, pasada 1 | Recibe briefing memoria + fila Trenzado + `guion-hilo.md` de hilos implicados + IDs → **crea directorio** `capitulos/cap-NN-slug/` y escribe `capitulos/cap-NN-slug/guion.md` |
-| | | **Solo beats de hechos lineales.** Los `[D]` no generan beats: se anotan en `cola_d.md` y se devuelven al director |
-| | | Si puente (≥2 hilos): bloques por hilo con `---` |
-| | | Si espejo: beats alternados entre hilos |
+| | | **Descompone todos los hechos lineales del cap en beats.** Los `[D]` no generan beats: se anotan en `cola_d.md` y se devuelven al director. **No inserta marcadores `<!-- ESCENA ... -->` en esta pasada.** Salida: beats en bruto, sin agrupar en escenas. |
+| | | Puente (≥2 hilos): los beats de cada hilo van en bloques sin marcador de escena todavía. Espejo: beats alternados entre hilos. |
+| 3.2.2 | `guionista` modo `capitulo`, pasada 2 | **Agrupa los beats ya generados en escenas.** Con independencia total del hecho de origen (la procedencia del hecho es irrelevante — el hecho ya cumplió su función de planificar y no existe en este paso). Inserta los marcadores `<!-- ESCENA <stable_id>: Nombre \| hilo: <stable_id_hilo> -->`. En puente, cada escena = bloque de hilo delimitado por `---`. En espejo, las escenas de los dos hilos se alternan. |
+| 3.2.3 | director + usuario | **Checkpoint obligatorio.** El director presenta al usuario la estructura de escenas propuesta (número de escenas, beats por escena, hilo, corte). El usuario valida o pide ajustes. El director puede invocar al guionista (modo `capitulo` o `revision`) para corregir la agrupación. **No se avanza a 3.2b sin confirmación del usuario.** |
 
 #### 3.2b Distribución de `[D]` (director)
 
@@ -173,7 +174,7 @@ Itera por cada capítulo en el orden de la tabla de Trenzado:
 
 **Gate:** todo `[D]` de `cola_d.md` tiene posición concreta con `stable_id`. Si falta alguna, se repite 3.2b — no se avanza.
 
-#### 3.2c Guion del capítulo — pasada 2 (inyección `[D]`)
+#### 3.2c Guion del capítulo — pasada 3 (inyección `[D]`)
 
 | Paso | Agente | Acción |
 |------|--------|--------|

@@ -46,7 +46,8 @@ Referencia para **director** y subagentes. Rutas en `MAPA.md`. Fases en `PIPELIN
 | Modo | Lee | Escribe | Actualiza config |
 |------|-----|---------|------------------|
 | `estructura-novela` | `BRIEF.md, _actos.md`, `config.json` | `guion-novela.md` (actos, caps, hechos `H_NNNN`) | `ultimo_hecho_seq`; director pone `estado=fichas` |
-| `capitulo` | `guion-novela.md` (tramo cap), `contexto.md`, `fichas/`, briefing (cap N, rango H) | `capitulos/cap-NN-slug/guion.md` (crear carpeta) | `ultimo_hecho_seq`, `ultimo_beat_seq` |
+| `capitulo` pasada 1 | `guion-novela.md` (tramo cap), `contexto.md`, `fichas/`, briefing (cap N, rango H) | `capitulos/cap-NN-slug/guion.md` (crear carpeta, beats en bruto, sin escenas) | `ultimo_hecho_seq`, `ultimo_beat_seq` |
+| `capitulo` pasada 2 | `capitulos/cap-NN-slug/guion.md` (beats en bruto) | `capitulos/cap-NN-slug/guion.md` (inserta marcadores `<!-- ESCENA ... -->` agrupando beats por contexto, no por hecho) | — (mismos IDs) |
 | `revision` | `capitulos/cap-NN-slug/guion.md` (tramo + contexto), `AGENTS.md` [+ `memoria` si `estado==escritura`] | `capitulos/cap-NN-slug/guion.md` (reemplaza tramo) | — (mismos IDs) |
 
 ---
@@ -160,9 +161,18 @@ FASE 2 escritura (por capítulo)
       OUT: briefing ~600 tokens (L4 → L3 → L2 recientes → entidades → relaciones
            + referencias tipo=referencia relevantes, máx. 2)
 
-  2.2 director → guionista(modo: capitulo)
+2.2 director → guionista(modo: capitulo, pasada 1)
       IN:  cap-NN-slug, hechos H_XXXX, briefing memoria
-      OUT: capitulos/cap-NN-slug/guion.md (crear carpeta, hechos + beats + Qdrant upsert-beat)
+      OUT: capitulos/cap-NN-slug/guion.md (crear carpeta, beats en bruto, SIN escenas)
+
+  2.2.2 director → guionista(modo: capitulo, pasada 2)
+       IN:  capitulos/cap-NN-slug/guion.md (beats en bruto)
+       OUT: capitulos/cap-NN-slug/guion.md con marcadores <!-- ESCENA ... -->
+       (agrupa beats por coherencia de contexto, no por hecho de origen)
+
+  2.2.3 director + usuario — CHECKPOINT OBLIGATORIO
+       presenta estructura de escenas propuesta; usuario valida o pide ajustes
+       GATE: sin confirmación, no se avanza a 2.2.4
 
   2.2b director → auditor-beats(modo: atomizar) → auditor-beats(modo: transiciones) → auditor-beats(modo: limpieza)
       IN:  capitulos/cap-NN-slug/guion.md, _actos.md, AGENTS.md
@@ -203,7 +213,7 @@ FASE 3 publicar
 ### → guionista
 
 ```
-Modo: [estructura | escena | estructura-novela | capitulo] [pasada: 1 | 2]
+Modo: [estructura | escena | estructura-novela | capitulo] [pasada: 1 | 1b]
 Workspace: [cwd]
 Leer: [lista rutas relativas]
 Escribir: [ruta salida]
@@ -214,6 +224,8 @@ Contexto posterior: [beat siguiente al punto de inserción, solo pasada 2]
 Criterio: [función narrativa del cap]
 Estilo base: [nombre] — cargar skill estilo-<nombre>
 {{#if estilo_secundario}}Estilo secundario: [nombre] — fusionar con estilo-<nombre>{{/if}}
+{{#if pasada 1}}Sin marcadores <!-- ESCENA ... -->. Salida: beats en bruto.{{/if}}
+{{#if pasada 2}}Agrupa los beats ya generados en escenas (con independencia del hecho de origen). Genera stable_id para cada escena nueva. Inserta marcadores <!-- ESCENA <stable_id>: Nombre -->. No modifiques los beats.{{/if}}
 ```
 
 ### → escritor (novela, con Qdrant)

@@ -30,7 +30,7 @@ stable_id, seq, parent_id, acción, tono, extensión, hilo
 3. `BRIEF.md`.
 4. `config.json`, hilos activos por `stable_id` y estilo.
 
-### Modo capítulo — pasada 1
+### Modo capítulo — pasada 1 (beats)
 
 1. `proyecto`.
 2. Capítulo: `stable_id`, `seq`, `parent_id`, función y tipo de trenzado.
@@ -38,8 +38,19 @@ stable_id, seq, parent_id, acción, tono, extensión, hilo
 4. Hechos por `stable_id [seq]` y `stable_id` de hilo.
 5. Últimos 5-8 beats del capítulo anterior con contrato común.
 6. Briefing de memoria y estilo.
+7. **Sin marcadores `<!-- ESCENA ... -->`**. Salida: beats en bruto, sin agrupar en escenas. Las escenas se deciden en pasada 1b.
 
-### Modo capítulo — pasada 2, inyección `[D]`
+### Modo capítulo — pasada 2 (escenas)
+
+1. `proyecto`, capítulo e hilos activos por `stable_id`.
+2. `capitulos/cap-NN-slug/guion.md` con los beats ya generados en pasada 1.
+3. Criterio de agrupación: coherencia de contexto (mismo espacio, tiempo y cast). Una escena puede envolver beats de varios hechos del mismo hilo; un hecho largo puede fraccionarse en dos escenas si hay corte de contexto.
+4. En puente, cada escena = bloque de hilo delimitado por `---`. En espejo, las escenas de los dos hilos se alternan.
+5. Generar `stable_id` opaco para cada escena nueva.
+6. Insertar `<!-- ESCENA <stable_id>: Nombre | hilo: <stable_id_hilo> -->` antes del primer beat de cada escena. **No modificar los beats** — solo agrupar.
+7. No hay renumeración: la posición de los beats no cambia.
+
+### Modo capítulo — pasada 3, inyección `[D]`
 
 1. `proyecto`, capítulo e hilos activos por `stable_id`.
 2. `cola_d.md` con `tras <stable_id> (B_NNNN) en Escena N`.

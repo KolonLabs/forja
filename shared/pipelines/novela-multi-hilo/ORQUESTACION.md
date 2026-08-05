@@ -39,8 +39,9 @@ Referencia para **director** y subagentes. Rutas en `MAPA.md`. Fases en `PIPELIN
 |------|-----|---------|------------------|
 | `hilo` | `hilos/hilo-S/diseno-hilo.md`, `BRIEF.md`, briefing (slug hilo) | `hilos/hilo-S/guion-hilo.md` (solo hechos) | `ultimo_hecho_seq`; director actualiza `hilos[].estado` |
 | `trenzado` | Todos `guion-hilo.md`, `guion-novela.md`, `config.json.hilos` | `guion-novela.md` (tabla `## Trenzado`) | — (director pone `estado=trenzado`) |
-| `capitulo` pasada 1 | Tabla trenzado, `guion-hilo.md` de hilos del cap, `contexto.md`, `fichas/` | `capitulos/cap-NN-slug/guion.md` (solo hechos lineales) + `cola_d.md` | `ultimo_hecho_seq`, `ultimo_beat_seq` |
-| `capitulo` pasada 2 | `cola_d.md` anotado por el director, `guion.md` del cap | `capitulos/cap-NN-slug/guion.md` (inyecta beats `[D]`) | `ultimo_beat_seq` |
+| `capitulo` pasada 1 | Tabla trenzado, `guion-hilo.md` de hilos del cap, `contexto.md`, `fichas/` | `capitulos/cap-NN-slug/guion.md` (beats de hechos lineales, sin escenas) + `cola_d.md` | `ultimo_hecho_seq`, `ultimo_beat_seq` |
+| `capitulo` pasada 2 | `capitulos/cap-NN-slug/guion.md` (beats en bruto) | `capitulos/cap-NN-slug/guion.md` (inserta marcadores `<!-- ESCENA ... -->` agrupando beats por contexto, con independencia del hecho de origen) | — |
+| `capitulo` pasada 3 | `cola_d.md` anotado por el director, `guion.md` del cap | `capitulos/cap-NN-slug/guion.md` (inyecta beats `[D]` en escenas existentes, respeta marcadores) | `ultimo_beat_seq` |
 | `revision` | `capitulos/cap-NN-slug/guion.md` (tramo + contexto bilateral), `AGENTS.md` [+ `memoria` si `estado==escritura`] | `capitulos/cap-NN-slug/guion.md` (reemplaza tramo) | — (mismos `stable_id`) |
 
 ---
@@ -180,18 +181,28 @@ FASE 3 beat a beat cross-hilo (bucle por capítulo)       estado: escritura
            + referencias tipo=referencia cuyo tag relevancia_por_hilo
              incluya el hilo activo (máx. 2; solo si existen)
 
-  3.2 director → guionista(modo: capitulo, pasada 1)
+3.2 director → guionista(modo: capitulo, pasada 1)
       IN:  briefing memoria + fila Trenzado + guion-hilo.md implicados
-      OUT: capitulos/cap-NN-slug/guion.md (solo hechos lineales)
+      OUT: capitulos/cap-NN-slug/guion.md (beats de hechos lineales, SIN escenas)
            + cola_d.md con los [D] pendientes
-      exclusivo: 1 hilo | puente: bloques con --- | espejo: alternado
+      exclusivo: 1 hilo | puente: bloques por hilo | espejo: beats alternados
+
+  3.2.2 director → guionista(modo: capitulo, pasada 2)
+       IN:  capitulos/cap-NN-slug/guion.md (beats en bruto)
+       OUT: capitulos/cap-NN-slug/guion.md con marcadores <!-- ESCENA ... -->
+            (agrupa beats por coherencia de contexto, no por hecho de origen)
+
+  3.2.3 director + usuario — CHECKPOINT OBLIGATORIO
+       presenta estructura de escenas propuesta (número, beats/escena, hilo, corte)
+       usuario valida o pide ajustes; director → guionista (revision) si corrige
+       GATE: sin confirmación del usuario, no se avanza a 3.2b
 
   3.2b director [+ memoria si estado==escritura]
       evalúa cada [D] por función narrativa y escenas porosas
       OUT: cola_d.md anotado — "tras <stable_id> (B_NNNN) en Escena N"
       GATE: todo [D] con posición concreta; si no, repetir 3.2b
 
-  3.2c director → guionista(modo: capitulo, pasada 2)
+  3.2c director → guionista(modo: capitulo, pasada 3)
       inyecta beats [D] y aplica renumber-siblings (parent_id + hilo)
 
   3.2d director → auditor-beats × 4 modos secuenciales
@@ -259,24 +270,26 @@ FASE 4 publicar                                          estado: publicacion
 ### → guionista
 
 ```
-Modo: [hilo | trenzado | capitulo | revision] [pasada: 1 | 2]
+Modo: [hilo | trenzado | capitulo | revision] [pasada: 1 | 1b | 2]
 Workspace: [cwd]
 Leer: [lista rutas relativas]
 Escribir: [ruta salida]
 IDs: asignar seq desde config ultimo_hecho_seq=[X] ultimo_beat_seq=[Y]
      generar stable_id opaco (8 hex) para cada elemento nuevo
-Capítulo: cap-NN-slug (stable_id, seq, parent_id) — si aplica
-Hilo(s) activo(s): [nombre] (stable_id: [8hex]) — si aplica
-Tipo de capítulo: [exclusivo | puente | espejo] — si aplica
+Capítulo: cap-NN-slug (stable_id, seq, parent_id) - si aplica
+Hilo(s) activo(s): [nombre] (stable_id: [8hex]) - si aplica
+Tipo de capítulo: [exclusivo | puente | espejo] - si aplica
 Contexto previo: [últimos 5-8 beats del bloque anterior, contrato común]
-Contexto posterior: [beat siguiente al punto de inserción, solo pasada 2]
+Contexto posterior: [beat siguiente al punto de inserción, solo pasada 3]
 Criterio: [función narrativa del cap/hilo]
-Estilo base: [nombre] — cargar skill estilo-<nombre>
-{{#if estilo_secundario}}Estilo secundario: [nombre] — fusionar con estilo-<nombre>{{/if}}
+Estilo base: [nombre] - cargar skill estilo-<nombre>
+{{#if estilo_secundario}}Estilo secundario: [nombre] - fusionar con estilo-<nombre>{{/if}}
 Puntos de conexión: [lista, referenciados por stable_id]
-{{#if pasada 2}}cola_d.md: [ruta] — anotado con "tras <stable_id> (B_NNNN) en Escena N"
+{{#if pasada 1}}Sin marcadores <!-- ESCENA ... -->. Salida: beats en bruto.{{/if}}
+{{#if pasada 2}}Agrupa los beats ya generados en escenas (con independencia del hecho de origen). Genera stable_id para cada escena nueva. Inserta marcadores <!-- ESCENA <stable_id>: Nombre | hilo: <stable_id> -->. No modifiques los beats.{{/if}}
+{{#if pasada 3}}cola_d.md: [ruta] - anotado con "tras <stable_id> (B_NNNN) en Escena N"
 Renumeración: renumber-siblings solo cambia seq, dentro del mismo parent_id e hilo{{/if}}
-{{#if modo revision}}Tramo: beats [stable_id...] — instrucción: [problema concreto]
+{{#if modo revision}}Tramo: beats [stable_id...] - instrucción: [problema concreto]
 Memoria: briefing ligero (~300t){{/if}}
 ```
 
@@ -436,7 +449,9 @@ Output: Qdrant (upsert-entity) + fichas/<tipo>_<slug>.md
 | Corregir prosa tras fallo | **integrador** |
 | Validar | **validador** (read-only, solo JSON) |
 | Anotar posiciones de `[D]` en `cola_d.md` | **director** (FASE 3.2b) |
-| Inyectar beats `[D]` | **guionista** modo `capitulo` pasada 2 |
+| Inyectar beats `[D]` | **guionista** modo `capitulo` pasada 3 |
+| Agrupar beats en escenas | **guionista** modo `capitulo` pasada 2 |
+| Validar estructura de escenas del cap | **director** + usuario (checkpoint 3.2.3) |
 | Auditar beats, trenzado y rachas | **auditor-beats** (read-only) |
 | Publicar limpio | **director** en FASE 4 (vía `/publicar`) |
 | Crear entidades | **entidades** (Qdrant + `fichas/<tipo>_<slug>.md`) |

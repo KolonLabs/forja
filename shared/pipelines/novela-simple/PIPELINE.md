@@ -81,8 +81,10 @@ Itera por cada capítulo en `guion-novela.md`, en orden secuencial:
 
 | Paso | Agente | Acción |
 |------|--------|--------|
-| 2.2.1 | `guionista` modo `capitulo` | Recibe briefing memoria + estructura cap + contexto anterior + IDs → **crea directorio** `capitulos/cap-NN-slug/` y escribe `capitulos/cap-NN-slug/guion.md` |
-| 2.2.2 | `auditor-beats` (atomizar → transiciones → limpieza) | Valida `capitulos/cap-NN-slug/guion.md`. Diagnostica: beats inconclusos, huecos, prosa. Director → guionista corrige |
+| 2.2.1 | `guionista` modo `capitulo`, pasada 1 | Recibe briefing memoria + estructura cap + contexto anterior + IDs → **crea directorio** `capitulos/cap-NN-slug/` y escribe `capitulos/cap-NN-slug/guion.md`. **Descompone todos los hechos del cap en beats.** **No inserta marcadores `<!-- ESCENA ... -->` en esta pasada.** Salida: beats en bruto, sin agrupar en escenas. |
+| 2.2.2 | `guionista` modo `capitulo`, pasada 2 | **Agrupa los beats ya generados en escenas.** Con independencia total del hecho de origen (la procedencia del hecho es irrelevante — el hecho ya cumplió su función de planificar y no existe en este paso). Inserta los marcadores `<!-- ESCENA <stable_id>: Nombre -->`. |
+| 2.2.3 | director + usuario | **Checkpoint obligatorio.** El director presenta la estructura de escenas propuesta al usuario (número de escenas, beats por escena, corte). El usuario valida o pide ajustes. **No se avanza a 2.2.4 sin confirmación.** |
+| 2.2.4 | `auditor-beats` (atomizar → transiciones → limpieza) | Valida `capitulos/cap-NN-slug/guion.md`. Diagnostica: beats inconclusos, huecos, prosa. Director → guionista corrige |
 
 #### 2.3 Beat a beat
 

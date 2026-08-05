@@ -57,13 +57,29 @@ ACTO V — EPÍLOGO
 
 ### Jerarquía narrativa
 
+Un capítulo tiene **dos vistas independientes** sobre los mismos beats, no una jerarquía mixta.
+
+**En el GUION (planificación):**
+
 ```
-Novela
- └── Acto I, II, III...
-      └── Capítulo (cap-NN-slug)
-           └── Hecho narrativo (H_NNNN)
-                └── Beat (B_NNNN)
+Capítulo
+ ├── Hecho (H_NNNN)
+ │    └── Beat (B_NNNN)
+ └── Hecho (H_NNNN)
+      └── Beat (B_NNNN)
 ```
+
+**En el DRAFT (prosa):**
+
+```
+Capítulo
+ ├── Escena (L1 en Qdrant)
+ │    └── Beat (B_NNNN)
+ └── Escena (L1 en Qdrant)
+      └── Beat (B_NNNN)
+```
+
+Un beat pertenece a **UN** hecho (en el guion) y a **UNA** escena (en el draft). El hecho y la escena no tienen relación entre sí. La agrupación de beats en escenas se hace con independencia total del hecho de origen, en FASE 2.2.2.
 
 #### Capítulos
 
@@ -75,8 +91,16 @@ Novela
 
 - Identificador de 4 dígitos, global a toda la novela: `H_0001`
 - Unidad intermedia entre capítulo y beat
-- Cada hecho agrupa beats que forman una unidad dramática coherente
-- Cada hecho se desarrolla en una escena (1 hecho = 1 escena), que contiene sus beats
+- Cada hecho agrupa beats que forman una unidad dramática coherente en el **guion**
+- No se persiste como nivel en Qdrant — es planificación pura
+
+#### Escenas
+
+La escena es la **unidad de prosa**: agrupa beats en el `draft.md` por coherencia de lectura (mismo espacio, tiempo y cast; o corte explícito). Se persiste como L1 en Qdrant al cerrar el capítulo (FASE 2.5).
+
+**La procedencia del hecho es irrelevante.** El hecho ya no existe en el momento de la agrupación. Una escena puede contener beats de varios hechos porque solo importa la coherencia del contexto narrativo, no el origen de planificación.
+
+El flujo es: hechos del capítulo → beats (FASE 2.2.1, guionista pasada 1) → agrupación de beats en escenas (FASE 2.2.2, guionista pasada 2) → checkpoint del usuario → prosa.
 
 #### Beats (B_NNNN)
 
@@ -199,9 +223,20 @@ Ella notó el calor antes del contacto, una fracción de segundo de anticipació
 Recordó la primera vez que alguien la había tocado así, sin preguntar.
 ```
 
-### Escenas y hechos
+### Escenas, hechos y beats
 
-Cada escena se compone de **beats**, agrupados en **hechos narrativos** (H_NNNN) que forman unidades dramáticas dentro del capítulo.
+**Hecho** (H_NNNN) y **escena** son dos unidades independientes que agrupan beats con propósitos distintos. No tienen relación entre sí:
+
+| Unidad | Agrupa | Dónde vive | Cuándo nace |
+|--------|--------|-----------|-------------|
+| Hecho | beats | `guion-novela.md` | FASE 0.3 (guionista modo `estructura-novela`) |
+| Escena | beats | `draft.md` (y L1 en Qdrant) | FASE 2.2.2 (guionista modo `capitulo`, pasada 2) |
+
+**Hecho = unidad de planificación.** Agrupa beats por intención dramática en el guion. No se persiste como nivel en Qdrant.
+
+**Escena = unidad de prosa.** Agrupa beats por coherencia de lectura en el draft. Se persiste como L1 en Qdrant al cerrar el capítulo (FASE 2.5).
+
+**La procedencia del hecho es irrelevante al agrupar beats en escenas.** Una misma escena puede contener beats de varios hechos porque el hecho ya cumplió su función (planificar) y no existe en el momento de la agrupación. No hay límite fijo de escenas por capítulo ni de beats por escena; la coherencia de contexto (mismo espacio, tiempo y cast, o corte explícito) es el único criterio.
 
 Cada beat debe ser:
 - **Factual**: declara QUÉ ocurre físicamente — quién hace qué a quién
@@ -212,10 +247,14 @@ Cada beat debe ser:
 Cada hecho debe tener:
 - **Propósito**: qué avanza en la trama o en el arco de personaje
 - **Beats**: mínimo 3-8 beats que formen una unidad dramática
-- **Transición**: cómo enlaza con el siguiente hecho
+- **Transición** (en planificación): cómo enlaza con el siguiente hecho
+
+Cada escena debe tener:
+- **Beats**: los beats agrupados en ella, con independencia del hecho de origen
+- **Coherencia de contexto**: mismo espacio, tiempo y cast; o corte explícito
 
 Cada capítulo debe tener:
-- **Hechos**: mínimo 3-10 hechos narrativos
+- **Beats**: todos los beats de sus hechos, agrupados en escenas tras FASE 2.2.2
 - **Función narrativa**: qué aporta al arco del acto (presentación, desarrollo, giro, clímax parcial, transición, etc.)
 
 ## Integración con agentes

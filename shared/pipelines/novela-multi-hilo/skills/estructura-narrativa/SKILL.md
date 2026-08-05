@@ -59,15 +59,31 @@ ACTO V — DESENLACE
 
 ### Jerarquía narrativa
 
+Un capítulo tiene **dos vistas independientes** sobre los mismos beats, no una jerarquía mixta.
+
+**En el GUION (planificación):**
+
 ```
-Novela Multi-Hilo
- └── Acto I, II, III, IV, V
-      └── Capítulo (cap-NN-slug)
-           ├── [Modo exclusivo: un solo hilo]
-           └── [Modo puente/espejo: 2+ hilos]
-                └── Hecho narrativo (H_NNNN)
-                     └── Beat (B_NNNN)
+Capítulo
+ ├── [Modo exclusivo/puente/espejo]
+ ├── Hecho (H_NNNN)
+ │    └── Beat (B_NNNN)
+ └── Hecho (H_NNNN)
+      └── Beat (B_NNNN)
 ```
+
+**En el DRAFT (prosa):**
+
+```
+Capítulo
+ ├── [Modo exclusivo/puente/espejo]
+ ├── Escena (L1 en Qdrant)
+ │    └── Beat (B_NNNN)
+ └── Escena (L1 en Qdrant)
+      └── Beat (B_NNNN)
+```
+
+Un beat pertenece a **UN** hecho (en el guion) y a **UNA** escena (en el draft). El hecho y la escena no tienen relación entre sí. La agrupación de beats en escenas se hace con independencia total del hecho de origen, en FASE 3.2.2.
 
 #### Capítulos
 
@@ -198,9 +214,22 @@ Ella notó el calor antes del contacto, una fracción de segundo de anticipació
 Recordó la primera vez que alguien la había tocado así, sin preguntar.
 ```
 
-### Escenas y hechos
+### Escenas, hechos y beats
 
-Cada escena se compone de **beats**, agrupados en **hechos narrativos** (H_NNNN) que forman unidades dramáticas dentro del capítulo. Cada hecho pertenece a un hilo.
+**Hecho** (H_NNNN) y **escena** son dos unidades independientes que agrupan beats con propósitos distintos. No tienen relación entre sí:
+
+| Unidad | Agrupa | Dónde vive | Cuándo nace |
+|--------|--------|-----------|-------------|
+| Hecho | beats | `guion-hilo.md`, tabla de Trenzado en `guion-novela.md` | FASE 0.2 (guionista modo `hilo`) |
+| Escena | beats | `draft.md` (y L1 en Qdrant) | FASE 3.2.2 (guionista modo `capitulo`, pasada 2) |
+
+**Hecho = unidad de planificación.** Agrupa beats por intención dramática en el guion. No se persiste como nivel en Qdrant.
+
+**Escena = unidad de prosa.** Agrupa beats por coherencia de lectura en el draft. Se persiste como L1 en Qdrant al cerrar el capítulo (FASE 3.5).
+
+**La procedencia del hecho es irrelevante al agrupar beats en escenas.** Una misma escena puede contener beats de varios hechos del mismo hilo porque el hecho ya cumplió su función (planificar) y no existe en el momento de la agrupación. En un **capítulo puente**, cada escena es un bloque de hilo delimitado por `---`. En un **capítulo espejo**, las escenas de los dos hilos se alternan.
+
+### Beats (B_NNNN)
 
 Cada beat debe ser:
 - **Factual**: declara QUÉ ocurre físicamente — quién hace qué a quién
@@ -208,14 +237,26 @@ Cada beat debe ser:
 - **Sin sensoriales**: temperatura, olfato, textura, emociones internas son del escritor
 - **Diálogo solo si es crítico de trama**: marcado con ⚡, máximo 1 por beat
 
+### Hechos (H_NNNN)
+
 Cada hecho debe tener:
 - **Propósito**: qué avanza en la trama o en el arco del hilo
 - **Hilo**: a qué hilo pertenece este hecho
 - **Beats**: mínimo 3-8 beats que formen una unidad dramática
-- **Transición**: cómo enlaza con el siguiente hecho (mismo hilo u otro hilo si es capítulo puente)
+- **Transición** (en planificación): cómo enlaza con el siguiente hecho (mismo hilo u otro hilo si es capítulo puente)
+
+### Escenas
+
+Cada escena debe tener:
+- **Beats**: los beats agrupados en ella, con independencia del hecho de origen
+- **Coherencia de contexto**: mismo espacio, tiempo y cast; o corte explícito (cambio de hilo, elipsis temporal, cambio de POV)
+- **Tamaño razonable**: ni 1-2 beats ni >12 beats por escena
+- **En multi-hilo**: respeta el límite de hilo — una escena no mezcla hilios
+
+### Capítulos
 
 Cada capítulo debe tener:
-- **Hechos**: mínimo 3-10 hechos narrativos
+- **Beats**: todos los beats de sus hechos, agrupados en escenas tras FASE 3.2.2
 - **Función narrativa**: qué aporta al arco del acto y al trenzado global
 - **Hilos activos**: qué hilos aparecen y en qué modo (exclusivo, puente o espejo)
 

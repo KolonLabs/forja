@@ -29,7 +29,7 @@ stable_id, seq, parent_id, acción, tono, extensión
 3. `BRIEF.md`.
 4. `config.json` y estilo.
 
-### Modo capítulo — pasada 1
+### Modo capítulo — pasada 1 (beats)
 
 1. `proyecto`.
 2. Capítulo: `stable_id`, `seq`, `parent_id` y función narrativa.
@@ -37,15 +37,16 @@ stable_id, seq, parent_id, acción, tono, extensión
 4. Últimos 5-8 beats del capítulo anterior con contrato común.
 5. Briefing de memoria.
 6. Estilo activo.
+7. **Sin marcadores `<!-- ESCENA ... -->`**. Salida: beats en bruto, sin agrupar en escenas.
 
-### Modo capítulo — pasada 2, inyección `[D]`
+### Modo capítulo — pasada 2 (escenas)
 
-1. `proyecto` y capítulo actual.
-2. `cola_d.md` con `tras <stable_id> (B_NNNN) en Escena N`.
-3. Beats anterior y posterior con contrato común.
-4. Escena receptora: `stable_id`, `seq`, `parent_id`, objetivo, tensión y tono.
-5. `BRIEF.md`.
-6. Instrucción de `renumber-siblings`: solo `seq`, local al mismo padre.
+1. `proyecto`, capítulo actual.
+2. `capitulos/cap-NN-slug/guion.md` con los beats ya generados en pasada 1.
+3. Criterio de agrupación: coherencia de contexto (mismo espacio, tiempo y cast). Una escena puede envolver beats de varios hechos; un hecho largo puede fraccionarse en dos escenas si hay corte de contexto.
+4. Generar `stable_id` opaco para cada escena nueva.
+5. Insertar `<!-- ESCENA <stable_id>: Nombre -->` antes del primer beat de cada escena. **No modificar los beats** — solo agrupar.
+6. No hay renumeración: la posición de los beats no cambia.
 
 ## Escritor
 
