@@ -27,7 +27,7 @@ Referencia para **director** y subagentes. Rutas en `MAPA.md`. Fases en `PIPELIN
 | **validador** | director | Briefing + texto del beat, `guion.md`, `contexto.md`, `fichas/` | — (solo JSON) | — | `opencode/glm-5.2` |
 | **integrador** | director | Briefing + `draft.md` (beat), JSON validador | `draft.md` (reemplaza sección beat) | — | `deepseek-v4-pro` |
 | **memoria** | director (solo novelas) | `config.json`, especificación de entidades del cap | — (solo briefing de ~600 tokens) | — | `deepseek-v4-flash` |
-| **cronista** | director (solo novelas, cierre de cap) | `draft.md` completo, `config.json` | Qdrant (summaries L1-L4 + entidades `dinamico`), `config.json` (contadores) | — | `deepseek-v4-flash` |
+| **cronista** | director (solo novelas, cierre de cap) | `draft.md` completo, `config.json` | Qdrant (summaries L1-L4 + entidades `dinamico`), Neo4j (relaciones por escena), `config.json` (contadores) | — | `deepseek-v4-flash` |
 | **entidades** | director (ambas escalas) | Nombre, tipo, descripción de entidad + contexto narrativo | Qdrant (`upsert-entity`, novelas) + `fichas/<tipo>_<slug>.md` (ambas) | — | `deepseek-v4-pro` |
 
 ---
@@ -181,13 +181,13 @@ FASE 2 escritura (por capítulo)
       OUT: JSON con problemas_globales
       si falla: iterar beats problemáticos
 
-  2.5 director → cronista
-      IN:  draft.md, config.json
-      OUT: Qdrant L1 (escena), L2 (capítulo), L3 (si cierre arco), L4 (cada 10 caps)
-           + entidades dinámico actualizado
-           + auditoría Neo4j (solo lectura, discrepancias al director)
-           + config.json: capitulos_completados++
-      si quedan capítulos → volver a 2.1
+2.5 director → cronista
+       IN:  draft.md, config.json
+       OUT: por escena: Qdrant L1 + entidades dinámico + Neo4j relaciones
+            tras escena: L2 (capítulo), L3 (si cierre arco), L4 (cada 10 caps)
+            + auditoría Neo4j read-only (discrepancias residuales)
+            + config.json: capitulos_completados++
+       si quedan capítulos → volver a 2.1
 
   estado → "publicacion"
 
@@ -291,14 +291,19 @@ Briefing esperado: ~600 tokens. Estructura:
 Capítulo completado: cap-NN-slug
 Leer: capitulos/cap-NN/draft.md (completo), config.json
 Tareas:
-  1. Para cada escena en el draft → upsert-summary L1 en Qdrant
+  1. Por cada escena en el draft (en orden):
+     a. upsert-summary L1 en Qdrant
+     b. Actualizar dinámico de entidades con cambio inequívoco en la escena
+     c. Detectar relaciones materializadas (nuevas, rotas, cambio de rol) y
+        aplicarlas con neo4j.py upsert-relationship
   2. upsert-summary L2 del capítulo completo
   3. Si cierre de arco → upsert-summary L3
   4. Si cap % 10 == 0 → upsert-summary L4
-  5. Para cada entidad modificada → actualizar dinámico en Qdrant
-  6. Auditoría Neo4j (skill auditoria-neo4j): detectar discrepancias draft ↔ grafo
-  7. Actualizar config.json: capitulos_completados++
-  8. NO escribir en Neo4j (solo lectura). Devolver discrepancias al director.
+  5. Auditoría Neo4j (skill auditoria-neo4j): detectar discrepancias
+     residuales no corregibles desde el draft. Esto es read-only.
+  6. Actualizar config.json: capitulos_completados++
+  7. Devolver JSON con summaries, entidades, relaciones aplicadas,
+     discrepancias residuales.
 ```
 
 ### → entidades
@@ -346,7 +351,8 @@ Output: Qdrant (upsert-entity) + fichas/<tipo>_<slug>.md
 | Validar | **validador** (read-only, solo JSON) |
 | Publicar limpio | `/publicar` |
 | Crear entidades | **entidades** (novela: Qdrant + markdown; relato: solo markdown) |
-| Actualizar Qdrant post-capítulo | **cronista** |
+| Actualizar Qdrant post-escena | **cronista** |
+| Actualizar Neo4j post-escena (relaciones) | **cronista** |
 | Compilar briefing de memoria | **memoria** |
 | Escribir contexto_narrativo.md (relato) | **director** (al cerrar escena) |
 | Escribir contexto.md (novela) | **director** (al cerrar capítulo) |

@@ -219,7 +219,7 @@ RETURN type(r), r.rol, b.stable_id, b.tipo, b.nombre
 - Repetir una operación no crea nodos duplicados por el constraint `(proyecto, stable_id)`.
 - Los nodos creados o reconciliados deben llevar `Entity`, la label derivada y las propiedades canónicas.
 - Las relaciones no se infieren del nombre o del slug.
-- El director resuelve discrepancias; el cronista audita y no escribe en Neo4j.
+- El director resuelve discrepancias residuales; el cronista escribe relaciones por escena y audita el grafo en solo lectura tras escribir.
 - Si `tipo`, `type` o `rol` no pertenecen al vocabulario cerrado, la operación falla y no se sustituye por un valor inventado.
 
 ## Grafo compartido, backup y setup

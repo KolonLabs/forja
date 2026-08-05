@@ -106,14 +106,14 @@ Por cada beat `⬜`:
 
 | Paso | Agente | Acción |
 |------|--------|--------|
-| 2.5.1 | `cronista` (deepseek-v4-flash) | Qdrant: upsert L1 (por escena), L2 (capítulo), L3 (si cierre arco), L4 (cada 10 caps), actualiza dinámico entidades |
-| 2.5.2 | `cronista` + `auditoria-neo4j` | Auditoría Neo4j (solo lectura). Devuelve discrepancias |
+| 2.5.1 | `cronista` (deepseek-v4-flash) | Por cada escena (L1) del draft: upsert L1 en Qdrant, actualizar `dinamico` de entidades con cambio inequívoco, aplicar nuevas relaciones o cambios de rol en Neo4j (`upsert-relationship`) |
+| 2.5.2 | `cronista` + `auditoria-neo4j` | Tras procesar todas las escenas: upsert L2 (capítulo), L3 (si cierre arco), L4 (cada 10 caps). Auditoría Neo4j (solo lectura): detectar discrepancias residuales |
 | 2.5.3 | `cronista` | Actualiza `config.json`: `capitulos_completados++`, `ultimo_beat_seq` |
-| 2.5.4 | director | Resuelve discrepancias Neo4j devueltas por el cronista |
+| 2.5.4 | director | Revisa discrepancias residuales; si son errores de lectura del cronista, las descarta; si son contradictorias, decide |
 
 **Umbral validador:** `score_global ≥ 8` y todas dimensiones ≥ 7 para aprobación directa sin integrador.
 
-**Gate del capítulo:** Todos los beats ✅, Qdrant actualizado (L1+L2), Neo4j auditado.
+**Gate del capítulo:** Todos los beats ✅, Qdrant actualizado (L1+L2+entidades), Neo4j actualizado (relaciones por escena) y auditado.
 
 **Bucle:** Si quedan capítulos, vuelve a 2.1. Si es el último capítulo → `publicacion`.
 
@@ -144,7 +144,7 @@ diseno → fichas → escritura → publicacion → finalizado
 
 **Creación de directorios:** el `guionista` en modo `capitulo` crea el directorio `capitulos/cap-NN-slug/`. El `escritor` escribe `draft.md` dentro de ese directorio (append).
 
-**Relaciones Neo4j:** el `entidades` las crea inicialmente (FASE 0-1). Durante la escritura, el `cronista` audita Neo4j (solo lectura) y reporta discrepancias al `director`, quien decide si invoca a `entidades` para corregir relaciones. Las nuevas relaciones detectadas por el cronista se sugieren en el JSON de salida (`relaciones_neo4j_sugeridas`).
+**Relaciones Neo4j:** el `entidades` las crea inicialmente (FASE 0-1). Durante la escritura, el `cronista` **escribe** en Neo4j por escena (FASE 2.5.1): detecta relaciones materializadas en el draft y las aplica con `upsert-relationship`. Tras escribir, audita (solo lectura) y reporta discrepancias residuales al `director`. El director solo delega en `entidades` si una discrepancia requiere reestructurar el grafo.
 
 ## Agentes activos (9 agentes)
 

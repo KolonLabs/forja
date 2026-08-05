@@ -28,7 +28,7 @@ Referencia para **director** y subagentes. Rutas en `MAPA.md`. Fases en `PIPELIN
 | **validador** | director | Briefing + texto del beat, `guion.md`, `contexto.md`, `fichas/` | — (solo JSON) | — | `opencode/glm-5.2` |
 | **integrador** | director | Briefing + `draft.md` (beat), JSON validador | `draft.md` (reemplaza sección beat) | — | `deepseek-v4-pro` |
 | **memoria** | director | `config.json`, especificación de entidades del cap, hilo(s) activo(s) | — (solo briefing de ~600 tokens) | — | `deepseek-v4-flash` |
-| **cronista** | director (cierre de cap) | `draft.md` completo, `config.json`, hilo(s) activo(s) | Qdrant (summaries L1-L4 + entidades `dinamico`), `config.json` (contadores) | — | `deepseek-v4-flash` |
+| **cronista** | director (cierre de cap) | `draft.md` completo, `config.json`, hilo(s) activo(s) | Qdrant (summaries L1-L4 + entidades `dinamico`), Neo4j (relaciones por escena), `config.json` (contadores) | — | `deepseek-v4-flash` |
 | **entidades** | director | Nombre, tipo, descripción de entidad + contexto narrativo | Qdrant (`upsert-entity`) + `fichas/<tipo>_<slug>.md` | — | `deepseek-v4-pro` |
 
 ---
@@ -223,13 +223,16 @@ FASE 3 beat a beat cross-hilo (bucle por capítulo)       estado: escritura
            activos, fichas/conexion-*
       si falla: corrige beats señalados vía integrador
 
-  3.5 director → cronista (invocación única, sin submodos)
-      IN:  Instrucción concreta + draft.md, guion.md, config.json,
-           fichas, diseños de hilo, conexiones
-      OUT: L1 por escena (con hilo), L2 del capítulo, L3 si cierra arco,
-           L4 si toca; dinamico de entidades; auditoría Neo4j read-only
-           + config.json (capitulos_completados, hilos[].ultimo_capitulo)
-      director: resuelve discrepancias de Neo4j
+3.5 director → cronista (invocación única, sin submodos)
+       IN:  Instrucción concreta + draft.md, guion.md, config.json,
+            fichas, diseños de hilo, conexiones
+       OUT: por escena (L1): upsert L1 (con hilo), actualizar dinámico
+            de entidades, aplicar relaciones en Neo4j (upsert-relationship)
+            tras escena: L2 del capítulo, L3 si cierra arco, L4 si toca
+            + auditoría Neo4j cross-hilo read-only (discrepancias residuales)
+            + config.json (capitulos_completados, hilos[].ultimo_capitulo)
+       director: revisa discrepancias residuales (errores de lectura → descarta;
+                 contradictorias → decide o invoca entidades si reestructurar)
 
   3.6 cada 3 capítulos y al cerrar el último:
       director → auditor-beats(modo: trenzado) sobre guion-novela.md
@@ -357,14 +360,20 @@ Summaries: buscar por (nivel, parent_id, seq[, hilo]); el UUID nunca es entrada
 Capítulo completado: cap-NN-slug
 Leer: capitulos/cap-NN/draft.md (completo), config.json, hilo(s) activo(s)
 Tareas:
-  1. Para cada escena en el draft → upsert-summary L1 en Qdrant
+  1. Por cada escena en el draft (en orden):
+     a. upsert-summary L1 en Qdrant (etiquetado por hilo)
+     b. Actualizar dinámico de entidades con cambio inequívoco en la escena
+     c. Detectar relaciones materializadas (nuevas, rotas, cambio de rol) y
+        aplicarlas con neo4j.py upsert-relationship
   2. upsert-summary L2 del capítulo completo
   3. Si cierre de arco → upsert-summary L3
   4. Si cap % 10 == 0 → upsert-summary L4
-  5. Para cada entidad modificada → actualizar dinámico en Qdrant
-  6. Auditoría Neo4j (skill auditoria-neo4j): detectar discrepancias draft ↔ grafo
-  7. Actualizar config.json: capitulos_completados++, hilos[].ultimo_capitulo
-  8. NO escribir en Neo4j (solo lectura). Devolver discrepancias al director.
+  5. Auditoría Neo4j cross-hilo (skill auditoria-neo4j): detectar discrepancias
+     residuales no corregibles desde el draft (relaciones que el grafo tiene
+     pero el draft contradice). Esto es read-only.
+  6. Actualizar config.json: capitulos_completados++, hilos[].ultimo_capitulo
+  7. Devolver JSON con summaries, entidades, relaciones aplicadas,
+     discrepancias residuales.
 ```
 
 ### → entidades
@@ -430,7 +439,8 @@ Output: Qdrant (upsert-entity) + fichas/<tipo>_<slug>.md
 | Auditar beats, trenzado y rachas | **auditor-beats** (read-only) |
 | Publicar limpio | **director** en FASE 4 (vía `/publicar`) |
 | Crear entidades | **entidades** (Qdrant + `fichas/<tipo>_<slug>.md`) |
-| Actualizar Qdrant post-capítulo | **cronista** |
+| Actualizar Qdrant post-escena | **cronista** |
+| Actualizar Neo4j post-escena (relaciones) | **cronista** |
 | Compilar briefing de memoria | **memoria** |
 | Escribir `diseno-hilo.md` | **director** + skill `diseno-hilo` |
 | Escribir `guion-hilo.md` | **guionista** modo `hilo` |

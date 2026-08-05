@@ -221,10 +221,10 @@ Por cada beat `⬜`:
 
 | Paso | Agente | Acción |
 |------|--------|--------|
-| 3.5.1 | `cronista` (deepseek-v4-flash) | Qdrant: upsert L1 (por escena, etiquetado por hilo), L2, L3 (si cierre arco), L4 (cada 10 caps), actualiza dinámico entidades |
-| 3.5.2 | `cronista` + `auditoria-neo4j` | Auditoría Neo4j cross-hilo (solo lectura). Devuelve discrepancias |
+| 3.5.1 | `cronista` (deepseek-v4-flash) | Por cada escena (L1) del draft: upsert L1 en Qdrant (etiquetado por hilo), actualizar `dinamico` de entidades con cambio inequívoco, aplicar nuevas relaciones o cambios de rol en Neo4j (`upsert-relationship`) |
+| 3.5.2 | `cronista` + `auditoria-neo4j` | Tras procesar todas las escenas: upsert L2 (capítulo), L3 (si cierre arco), L4 (cada 10 caps). Auditoría Neo4j cross-hilo (solo lectura): detectar discrepancias residuales no materializables desde el draft |
 | 3.5.3 | `cronista` | Actualiza `config.json`: `capitulos_completados++`, `ultimo_beat_seq`, `hilos[].ultimo_capitulo` |
-| 3.5.4 | director | Resuelve discrepancias Neo4j |
+| 3.5.4 | director | Revisa discrepancias residuales; si son errores de lectura del cronista, las descarta; si son contradictorias, decide |
 
 #### 3.6 Auditoría de trenzado y rachas (cada 3 capítulos y al cerrar el último)
 
@@ -236,7 +236,7 @@ Por cada beat `⬜`:
 
 **Umbral validador:** `score_global ≥ 8` y todas dimensiones ≥ 7 para aprobación directa sin integrador.
 
-**Gate del capítulo:** Todos los beats ✅, Qdrant actualizado, Neo4j auditado cross-hilo.
+**Gate del capítulo:** Todos los beats ✅, Qdrant actualizado (L1+L2+entidades), Neo4j actualizado (relaciones por escena) y auditado cross-hilo.
 
 **Bucle:** Si quedan capítulos en tabla Trenzado, vuelve a 3.1. Si no → `publicacion`.
 
@@ -274,7 +274,7 @@ Al avanzar FASE 0.2, el director escribe `config.json.estado = "diseno_hilos"`. 
 
 **Creación de directorios:** el `guionista` en modo `capitulo` crea el directorio `capitulos/cap-NN-slug/`. El `escritor` escribe `draft.md` dentro de ese directorio (append).
 
-**Relaciones Neo4j:** el `entidades` las crea inicialmente (FASE 0, FASE 2). Durante la escritura, el `cronista` audita Neo4j cross-hilo (solo lectura) y reporta discrepancias al `director`, quien decide si invoca a `entidades` para corregir relaciones. Las nuevas relaciones cross-hilo detectadas se sugieren en el JSON de salida del cronista (`relaciones_neo4j_sugeridas`).
+**Relaciones Neo4j:** el `entidades` las crea inicialmente (FASE 0, FASE 2). Durante la escritura, el `cronista` **escribe** en Neo4j por escena (FASE 3.5.1): detecta relaciones materializadas en el draft y las aplica con `upsert-relationship`. Tras escribir, audita cross-hilo (solo lectura) y reporta discrepancias residuales al `director`. El director solo delega en `entidades` si una discrepancia requiere reestructurar el grafo (corrección de tipo relacional, no detección de nueva relación).
 
 ## Agentes activos (9 agentes)
 
