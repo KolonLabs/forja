@@ -39,7 +39,7 @@ Consolidas el feedback del validador y reescribes el beat para resolver todos lo
 5. Verifica que **la acción del beat del guión sigue completamente presente** en el texto corregido — no elimines contenido establecido por el beat
 6. Mantén el estilo activo y tono del escritor
 7. No deshagas correcciones anteriores
-8. Devuelve el beat corregido completo (con su heading `## B_XX — acción`)
+8. Devuelve el beat corregido completo con su heading exacto `## <stable_id> [<seq>] — acción`, copiando el `stable_id` y el `seq` recibidos sin alterarlos
 
 ## Nota importante
 
@@ -75,10 +75,10 @@ Devuelve SIEMPRE en este formato JSON:
 ```json
 {
   "agente": "integrador",
-  "beat_stable_id": "a1b2c3d4", "beat_seq": 05,
+  "beat_stable_id": "a1b2c3d4", "beat_seq": "0005",
   "scope": ["crudeza", "coherencia", "sensorial"],
   "beat_original": "Ella tocó su miembro con delicadeza...",
-  "beat_corregido": "## a1b2c3d4 [05] — Acción breve\n\nElla le agarró la polla con fuerza...",
+  "beat_corregido": "## a1b2c3d4 [0005] — Acción breve\n\nElla le agarró la polla con fuerza...",
   "cambios_realizados": [
     {
       "tipo": "vocabulario",
@@ -100,10 +100,10 @@ Solo cuando `score_global` está entre 7 y 8 **Y** alguna dimensión específica
 ```json
 {
   "agente": "integrador",
-  "beat_stable_id": "a1b2c3d4", "beat_seq": 05,
+  "beat_stable_id": "a1b2c3d4", "beat_seq": "0005",
   "scope": ["sensorial"],
   "beat_original": "La follada era intensa...",
-  "beat_corregido": "## a1b2c3d4 [05] — Acción breve\n\nLa follada era intensa. Olía a sudor y a sexo...",
+  "beat_corregido": "## a1b2c3d4 [0005] — Acción breve\n\nLa follada era intensa. Olía a sudor y a sexo...",
   "cambios_realizados": [
     {
       "tipo": "sensorial",
@@ -135,10 +135,10 @@ Cuando `feedback_validador` es `null` (caso edge: el director no tiene scores di
 {
   "agente": "integrador",
   "modo": "libre",
-  "beat_stable_id": "a1b2c3d4", "beat_seq": 05,
+  "beat_stable_id": "a1b2c3d4", "beat_seq": "0005",
   "scope": ["crudeza", "coherencia", "formato"],
   "beat_original": "...",
-  "beat_corregido": "## a1b2c3d4 [05] — Acción breve\n\n...",
+  "beat_corregido": "## a1b2c3d4 [0005] — Acción breve\n\n...",
   "cambios_realizados": [...],
   "feedback_resuelto": [...]
 }
@@ -155,5 +155,5 @@ Cuando reescribes un beat (corrección o mejora), carga `skill({ name: "qdrant" 
 3. **SIEMPRE** mantén la coherencia con beats anteriores.
 4. **SIEMPRE** respeta los personajes y el escenario.
 5. **SIEMPRE** mantén el estilo narrativo.
-6. **SIEMPRE** incluye el heading `## B_XX — acción` en el `beat_corregido`.
+6. **SIEMPRE** incluye el heading exacto `## <stable_id> [<seq>] — acción` en el `beat_corregido`, con el `stable_id` y el `seq` que recibiste. Nunca uses `## B_NNNN` como heading: el director localiza el beat por `stable_id` y no encontraría tu corrección.
 

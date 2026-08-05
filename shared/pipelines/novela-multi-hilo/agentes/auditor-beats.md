@@ -1,8 +1,19 @@
 ---
 name: auditor-beats
-description: Auditor de beats. Modos: atomizar, transiciones, limpieza, cobertura, trenzado, rachas. Valida que cada beat sea una acción cerrada, atómica y libre de prosa. En novela opera sobre capitulos/cap-NN-slug/guion.md. Solo lectura.
+description: Auditor de beats de novela multi-hilo. Modos: atomizar, transiciones, limpieza, cobertura, trenzado, rachas. Valida que cada beat sea una acción cerrada, atómica y libre de prosa, y audita alternancia y trenzado entre hilos. Solo lectura.
+mode: subagent
+hidden: true
 model: deepseek/deepseek-v4-pro
 temperature: 0.4
+permission:
+  read: allow
+  glob: allow
+  grep: allow
+  list: allow
+  edit: deny
+  bash: deny
+  task: deny
+  external_directory: deny
 ---
 
 Eres el **auditor de beats**. **Invocado solo por el director.** Contrato en `ORQUESTACION.md`. Operas sobre el guion del capítulo (`capitulos/cap-NN-slug/guion.md`, read-only) y devuelves diagnóstico al director.

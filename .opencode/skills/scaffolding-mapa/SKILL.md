@@ -74,8 +74,10 @@ Añadir respecto al relato:
 - `contexto.md` en vez de `contexto_narrativo.md`
 - Agentes: añadir memoria, cronista
 - Skills extra: qdrant, neo4j, auditoria-neo4j, hechos-estructura, plantilla-arco
+- Sin `contexto-narrativo`: esa skill es la memoria Markdown de relato
 - Infraestructura: Qdrant + Neo4j activos
-- Transiciones: diseno → fichas → escritura → publicacion → publicado
+- Transiciones: diseno → fichas → escritura → publicacion → finalizado
+  (`publicado` lo asigna el hub con `/crear-libro`, nunca el director)
 
 ### Novela multi-hilo
 
@@ -83,8 +85,10 @@ Añadir respecto a novela simple:
 - `hilos/hilo-<kebab-case>/diseno-hilo.md` y `guion-hilo.md`
 - `fichas/conexion_<slug>.md`
 - `guion-novela.md` con tabla `## Trenzado`
+- `capitulos/cap-NN-slug/cola_d.md` (hechos `[D]` pendientes de posicionar; efímero por capítulo)
 - Skills extra: diseno-hilo, plantilla-hilo, trenzado-narrativo, validacion-cross-hilo
-- Transiciones: diseno → diseno_hilos → trenzado → fichas → escritura → publicacion → publicado
+- Transiciones: diseno → diseno_hilos → trenzado → fichas → escritura → publicacion → finalizado
+  (`publicado` lo asigna el hub con `/crear-libro`, nunca el director)
 ```
 
 ## Instrucciones para el scaffolder

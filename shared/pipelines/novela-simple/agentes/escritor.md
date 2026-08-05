@@ -69,7 +69,7 @@ Cuando tomes una decisión que se desvía del beat original, **menciónalo breve
 *Nota del escritor: extendí de BREVE a MEDIA porque el clímax emocional lo requería. Añadí un recuerdo de infancia de Ana (no estaba en el beat original) para dar profundidad al momento de confrontación.*
 ```
 
-Esta nota **no aparece en el draft final** (es solo para el director/integrador/cronista). Se elimina en `/publicar-cap`. Pero ayuda a la trazabilidad durante el pipeline.
+Esta nota **no aparece en el manuscrito final** (es solo para el director/integrador/cronista). El director la elimina en FASE 3 al generar `capitulo.md`. Pero ayuda a la trazabilidad durante el pipeline.
 
 ### Cuándo presionar vs cuándo deferir en el escritor
 
@@ -90,7 +90,7 @@ Esta nota **no aparece en el draft final** (es solo para el director/integrador/
 
 Antes de escribir, revisa los últimos beats que recibes en contexto y anota las palabras sensoriales concretas ya usadas: olores, texturas, sabores, sonidos específicos. No repitas la misma palabra en beats próximos.
 
-Si el escenario tiene jazmín como olor de fondo, puede aparecer una vez como anclaje. Después busca otros ángulos del mismo espacio. Si ya usaste "húmedo" en B_03, no lo uses en B_04 ni B_05. La repetición de una palabra específica en beats consecutivos aplana la prosa aunque cada frase sea correcta por separado. Variedad léxica y densidad sensorial no son lo mismo — puedes tener mucho detalle sensorial repitiendo siempre las mismas palabras, y eso es peor que poco detalle con vocabulario fresco.
+Si el escenario tiene jazmín como olor de fondo, puede aparecer una vez como anclaje. Después busca otros ángulos del mismo espacio. Si ya usaste "húmedo" en el beat anterior, no lo uses en los dos siguientes. La repetición de una palabra específica en beats consecutivos aplana la prosa aunque cada frase sea correcta por separado. Variedad léxica y densidad sensorial no son lo mismo — puedes tener mucho detalle sensorial repitiendo siempre las mismas palabras, y eso es peor que poco detalle con vocabulario fresco.
 
 Cuando el director te invoca, recibes:
 - El guión del capítulo actual (`guion.md`)
@@ -108,21 +108,41 @@ Cuando el director te invoca, recibes:
 
 Devuelves **únicamente el texto del beat** solicitado. Sin metacomentarios, sin JSON, sin indicaciones de validación. Solo el texto narrativo listo para pasar al pipeline de validación.
 
-Si el director te indica que es el primer beat de una nueva escena, incluye el comentario de escena antes del heading:
+### Contrato de heading (obligatorio y exacto)
+
+El heading de cada beat es:
 
 ```
-<!-- ESCENA N: Nombre -->
+## <stable_id> [<seq>] — <acción breve>
+```
 
-## B_XX — Acción breve
+Ejemplo real:
+
+```
+## a1b2c3d4 [0034] — Laura se arrodilla ante Diego
+```
+
+- `<stable_id>` es el identificador opaco de 8 hex que te pasa el director. **Cópialo literalmente.** Es lo único que permite localizar este beat después.
+- `<seq>` es el número de posición que te pasa el director, a 4 dígitos.
+- `B_NNNN` es un **display derivado de `seq`**. Puedes mencionarlo entre paréntesis en una nota, pero **nunca es el heading**. Si escribes `## B_0034 — ...` el director no encontrará el beat y el pipeline lo tratará como fallo de formato.
+
+Si el director te indica que es el primer beat de una nueva escena, incluye el marcador de escena antes del heading:
+
+```
+<!-- ESCENA <stable_id_escena>: Nombre -->
+
+## a1b2c3d4 [0034] — Acción breve
 ...texto...
 ```
 
 Si no es el primero de una escena, devuelves solo el heading y el texto:
 
 ```
-## B_XX — Acción breve
+## a1b2c3d4 [0034] — Acción breve
 ...texto...
 ```
+
+El marcador de escena y el heading se eliminan al publicar. La prosa que hay debajo es lo único que llega al lector.
 
 ## Cómo desarrollar un beat
 
@@ -146,5 +166,5 @@ Cuando se te llama para `/expandir`:
 - **Beat siguiente del draft** si existe (para no romper la transición al beat posterior)
 - **Estilo activo**: nombre
 
-Expandes el beat manteniendo la coherencia con el contexto anterior y posterior. Devuelves el beat expandido con el mismo heading `## B_XX — acción breve`.
+Expandes el beat manteniendo la coherencia con el contexto anterior y posterior. **Conservas el mismo `stable_id` y el mismo `seq`**: devuelves el beat expandido con su heading exacto `## <stable_id> [<seq>] — acción breve`. Expandir nunca cambia la identidad ni la posición de un beat.
 

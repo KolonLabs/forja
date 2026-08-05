@@ -31,7 +31,7 @@ Forja/
 │   ├── GUIA.md                        # Ayuda de comandos inyectada en cada workspace nuevo
 │   ├── .opencode/
 │   │   ├── agents/                    # Agentes fijos: memoria, cronista (solo novelas)
-│   │   ├── skills/                    # 36 skills: invariantes + exclusivos por escala
+│   │   ├── skills/                    # 41 skills invariantes (+ exclusivos por escala)
 │   │   └── commands/                  # /generar, /revisar, /expandir, /publicar
 │   └── pipelines/                     # Pipeline por escala
 │       ├── relato/                    # agentes/ + skills/ + commands/ + PIPELINE + ORQUESTACION
@@ -132,8 +132,8 @@ Para recuperar ideas desde notas, escaletas o guiones libres se usa `/importar-p
 |-----------|-----------|
 | `shared/.opencode/agents/` | 2 agentes fijos: memoria, cronista (solo se inyectan en novelas) |
 | `shared/.opencode/skills/` | 41 skills: invariantes + exclusivos por escala |
-| `shared/GUIA.md` | Guía de decisión para la persona usuaria, copiada como `GUIA.md` en cada workspace nuevo |
-| `shared/.opencode/commands/` | 8 comandos: generar, revisar, expandir, corregir, publicar, refinar-hechos, revisar-guion, validar-hechos |
+| `shared/GUIA.md` | Guía de decisión por defecto (relato). Si la escala define `shared/pipelines/<escala>/GUIA.md`, prevalece esa |
+| `shared/.opencode/commands/` | 8 comandos: generar, revisar, expandir, corregir, publicar, refinar-hechos, revisar-guion, validar-hechos. `corregir` solo se inyecta en relato |
 | `shared/pipelines/<escala>/` | Agentes, skills, scripts y overrides de comandos propios de escala + `PIPELINE.md` + `ORQUESTACION.md` |
 
 Al crear un workspace, el script inyecta agentes y skills de su escala y aplica, después de los comandos comunes, los overrides de comando que correspondan. Los agentes escala-específicos (director, guionista, escritor, validador, integrador, entidades) viven en `shared/pipelines/<escala>/agentes/`.
@@ -142,9 +142,9 @@ Al crear un workspace, el script inyecta agentes y skills de su escala y aplica,
 
 | Escala | Fases | Qdrant/Neo4j | Hilos | Agentes | Skills (~) |
 |--------|-------|:---:|:---:|:---:|:---:|
-| **relato** | 4 fases | No | No | 7 | 33 |
-| **novela-simple** | 4 fases | Sí | No | 9 | 39 |
-| **novela-multi-hilo** | 8 fases | Sí | Sí (mín. 2) | 9 | 45 |
+| **relato** | 4 fases | No | No | 7 | 15 (+1 por estilo secundario) |
+| **novela-simple** | 4 fases | Sí | No | 9 | 40 |
+| **novela-multi-hilo** | 8 fases | Sí | Sí (mín. 2) | 9 | 44 |
 
 ## Jerarquía narrativa
 

@@ -17,13 +17,30 @@ guion-novela.md
   └── puntos de conexión
 
 capitulos/cap-NN-slug/
-  ├── guion.md         (hechos del cap + beats B_NNNN; puente: bloques con ---)
-  ├── draft.md         (prosa desde beats, secciones ## B_NNNN)
+  ├── guion.md         (hechos del cap + beats; puente: bloques con ---)
+  ├── cola_d.md        (hechos [D] pendientes de posicionar; efímero por capítulo)
+  ├── draft.md         (prosa; secciones "## <stable_id> [<seq>] — acción")
   └── capitulo.md      (publicable)
 
-fichas/<tipo>_<slug>.md     (entidades en markdown, primarias en Qdrant)
+contexto.md                  (resumen legible por hilo que mantiene el director)
+fichas/<tipo>_<slug>.md      (entidades en markdown, primarias en Qdrant)
 fichas/conexion-*.md         (documentación de puntos cross-hilo)
 ```
+
+## Contrato del draft
+
+El `draft.md` de cada capítulo usa **una sola forma de encabezado**:
+
+```
+<!-- ESCENA <stable_id_escena>: Nombre | hilo: <stable_id_hilo> -->
+
+## <stable_id> [<seq>] — acción breve
+...prosa...
+```
+
+- El escritor y el integrador escriben exactamente ese heading. `B_NNNN` es display derivado de `seq`, nunca encabezado.
+- El director localiza cada beat por `stable_id`, no por posición ni por display.
+- En FASE 4 se eliminan headings, marcadores de escena y notas del escritor. Solo sobrevive la prosa y los `---` entre bloques de hilo.
 
 ## Hechos y beats
 
@@ -137,14 +154,49 @@ Itera por cada capítulo en el orden de la tabla de Trenzado:
 |------|--------|--------|
 | 3.1.1 | `memoria` (deepseek-v4-flash) | Consulta Qdrant (L4, L3 por arco, L2 recientes cross-hilo, entidades) + Neo4j (relaciones activas) → briefing ~600 tokens filtrado por hilo(s) activo(s) |
 
-#### 3.2 Guion del capítulo
+#### 3.2 Guion del capítulo — pasada 1 (hechos lineales)
 
 | Paso | Agente | Acción |
 |------|--------|--------|
-| 3.2.1 | `guionista` modo `capitulo` | Recibe briefing memoria + fila Trenzado + `guion-hilo.md` de hilos implicados + IDs → **crea directorio** `capitulos/cap-NN-slug/` y escribe `capitulos/cap-NN-slug/guion.md` |
+| 3.2.1 | `guionista` modo `capitulo`, pasada 1 | Recibe briefing memoria + fila Trenzado + `guion-hilo.md` de hilos implicados + IDs → **crea directorio** `capitulos/cap-NN-slug/` y escribe `capitulos/cap-NN-slug/guion.md` |
+| | | **Solo beats de hechos lineales.** Los `[D]` no generan beats: se anotan en `cola_d.md` y se devuelven al director |
 | | | Si puente (≥2 hilos): bloques por hilo con `---` |
 | | | Si espejo: beats alternados entre hilos |
-| 3.2.2 | `auditor-beats` (atomizar → transiciones → limpieza → [trenzado si primer cap] → [rachas si puente/espejo]) | Valida `capitulos/cap-NN-slug/guion.md`. Diagnostica: beats inconclusos, huecos, prosa, coherencia cross-hilo. Director → guionista corrige |
+
+#### 3.2b Distribución de `[D]` (director)
+
+| Paso | Agente | Acción |
+|------|--------|--------|
+| 3.2b.1 | director [+ `memoria` si `estado==escritura`] | Revisa la estructura real de escenas. Evalúa cada `[D]` por función narrativa, no por número. Reconoce escenas porosas (montajes que absorben varios beats no consecutivos) |
+| 3.2b.2 | director | Anota en `cola_d.md` la posición exacta de cada beat `[D]`: `tras <stable_id> (B_NNNN) en Escena N`, + `stable_id` del hilo |
+
+**Gate:** todo `[D]` de `cola_d.md` tiene posición concreta con `stable_id`. Si falta alguna, se repite 3.2b — no se avanza.
+
+#### 3.2c Guion del capítulo — pasada 2 (inyección `[D]`)
+
+| Paso | Agente | Acción |
+|------|--------|--------|
+| 3.2c.1 | `guionista` modo `capitulo`, pasada 2 | Recibe `cola_d.md` anotado. Inyecta los beats `[D]` en las posiciones indicadas, revisa transiciones y aplica `renumber-siblings` por `parent_id` e `hilo` (solo cambia `seq`) |
+
+#### 3.2d Auditoría de beats del capítulo
+
+| Paso | Agente | Acción |
+|------|--------|--------|
+| 3.2d.1 | `auditor-beats` modo `cobertura` | Hechos subdesarrollados: compara `_actos.md` contra `guion.md` |
+| 3.2d.2 | `auditor-beats` modo `atomizar` | Beats inconclusos o sobrecargados |
+| 3.2d.3 | `auditor-beats` modo `transiciones` | Huecos, incluidos cambios de bloque de hilo. Carga `hechos-distribuidos` si hay `[D]` |
+| 3.2d.4 | `auditor-beats` modo `limpieza` | Prosa del escritor infiltrada en los beats |
+
+Cualquier corrección la aplica el `guionista` (modo `capitulo` o `revision`) y usa `renumber-siblings` atómico.
+
+**Gate:** beats atómicos, cerrados y sin prosa. `[D]` validados. Sin hechos subdesarrollados.
+
+#### 3.2e Persistencia temprana (director + `cronista-ops`)
+
+| Paso | Agente | Acción |
+|------|--------|--------|
+| 3.2e.1 | director | `qdrant.py update-entity` para `dinamico` de entidades con cambio de estado inequívoco en los beats |
+| 3.2e.2 | director | `qdrant.py upsert-summary-by-position` L1 por `(nivel, parent_id, seq, hilo)` si hay estructura de escenas o bloques de hilo |
 
 #### 3.3 Beat a beat
 
@@ -152,7 +204,7 @@ Por cada beat `⬜`:
 
 | Paso | Agente | Acción |
 |------|--------|--------|
-| 3.3.1 | `escritor` | Genera prosa → `draft.md` (append `## B_NNNN`) |
+| 3.3.1 | `escritor` | Genera prosa → `draft.md` (append `## <stable_id> [<seq>]`) |
 | 3.3.2 | `validador` (read-only) | Scope `completa`. Si ≥2 hilos en cap: + `validacion-cross-hilo` |
 | 3.3.3 | `integrador` (condicional) | Si score < 7 o dimensión < 5 |
 | 3.3.4 | director | ✅ en `guion.md`. Actualiza `config.json.ultimo_beat_seq` |
@@ -173,13 +225,19 @@ Por cada beat `⬜`:
 | 3.5.3 | `cronista` | Actualiza `config.json`: `capitulos_completados++`, `ultimo_beat_seq`, `hilos[].ultimo_capitulo` |
 | 3.5.4 | director | Resuelve discrepancias Neo4j |
 
+#### 3.6 Auditoría de trenzado y rachas (cada 3 capítulos y al cerrar el último)
+
+| Paso | Agente | Acción |
+|------|--------|--------|
+| 3.6.1 | `auditor-beats` modo `trenzado` | `guion-novela.md` sigue reflejando los capítulos escritos. Sin hechos huérfanos. Puntos de conexión materializados o con plazo |
+| 3.6.2 | `auditor-beats` modo `rachas` | Racha máx. 3 caps sin un hilo. Bloques `---` bien formados en puentes. Paralelismo real en espejos |
+| 3.6.3 | director | Desviación en capítulos futuros → `guionista` modo `trenzado`. Desviación en un tramo escrito → `guionista` modo `revision` |
+
 **Umbral validador:** `score_global ≥ 8` y todas dimensiones ≥ 7 para aprobación directa sin integrador.
 
 **Gate del capítulo:** Todos los beats ✅, Qdrant actualizado, Neo4j auditado cross-hilo.
 
 **Bucle:** Si quedan capítulos en tabla Trenzado, vuelve a 3.1. Si no → `publicacion`.
-
-**Transición:** `config.json.estado = "publicado"`.
 
 ---
 
@@ -187,18 +245,22 @@ Por cada beat `⬜`:
 
 | Paso | Agente | Acción |
 |------|--------|--------|
-| 4.1 Limpiar capítulos | director | `draft.md` → `capitulo.md` por capítulo (elimina headings `## B_XX`, conserva `---` entre hilos) |
+| 4.1 Limpiar capítulos | director | `draft.md` → `capitulo.md` por capítulo (elimina headings `## <stable_id> [<seq>]`, marcadores `<!-- ESCENA ... -->` y notas del escritor; conserva `---` entre hilos) |
 | 4.2 Concatenar | director | Todos los `capitulo.md` → `novela.md` |
 
-**Gate:** `capitulo.md` por capítulo + `novela.md`.
+**Gate:** `capitulo.md` por capítulo + `novela.md`. Sin headings, comentarios ni notas residuales.
+
+**Transición:** `config.json.estado = "finalizado"`.
 
 ---
 
 ## Transiciones de estado
 
 ```
-diseno → diseno_hilos → trenzado → fichas → escritura → publicacion → publicado
+diseno → diseno_hilos → trenzado → fichas → escritura → publicacion → finalizado
 ```
+
+`finalizado` es el estado terminal del workspace. `publicado` lo asigna solo el hub con `/crear-libro`, que además exige `finalizado` como estado de entrada. El director nunca escribe `publicado`.
 
 **Sub-estados y detección:** `config.json.estado` refleja el estado principal. Los sub-estados de diseño (`diseno`, `diseno_hilos`, `trenzado`) comparten el valor `"diseno"` en el arranque inicial. El director detecta el progreso por:
 - `config.json.hilos[].estado` → `"pendiente"`: falta FASE 0.2
@@ -217,21 +279,31 @@ Al avanzar FASE 0.2, el director escribe `config.json.estado = "diseno_hilos"`. 
 
 `director`, `guionista`, `auditor-beats`, `escritor`, `validador`, `integrador`, `memoria`, `cronista`, `entidades`
 
-## Skills activos (45 skills — TODOS los del repositorio)
+## Skills activos (44)
 
-Comunes: `mecanica-prosa`, `beats-estructura`, `estructura-narrativa`, `tonos-beat`, `hechos-estructura`, `hechos-distribuidos`, `plantilla-guion`, `plantilla-ficha`, `plantilla-personaje`, `plantilla-lugar`, `plantilla-objeto`, `plantilla-animal`, `plantilla-arco`, `plantilla-evento`, `plantilla-organizacion`, `plantilla-grupo`, `plantilla-ser-sobrenatural`, `validacion-crudeza`, `validacion-coherencia`, `validacion-geometria`, `validacion-sensorial`, `validacion-tono`, `consistencia-narrativa`, `contexto-subagente`, `contexto-narrativo`, `desarrollo-narrativa`, `fichas-personajes`, `cronista-ops`, `estilo-explicito`, `estilo-contemporaneo`, `estilo-erotico`, `estilo-fantasia`, `estilo-noir`, `estilo-romantico`, `estilo-thriller`, `estilo-prosa`, `qdrant`, `neo4j`, `auditoria-neo4j`, `scaffolding-hecho`, `scaffolding-acto`
+**Invariantes del hub (40).** Se inyectan desde `shared/.opencode/skills/`:
 
-Multi-hilo: `diseno-hilo`, `trenzado-narrativo`, `validacion-cross-hilo`, `plantilla-hilo`
+`mecanica-prosa`, `hechos-estructura`, `hechos-distribuidos`, `tonos-beat`, `plantilla-ficha`, `plantilla-personaje`, `plantilla-lugar`, `plantilla-objeto`, `plantilla-animal`, `plantilla-arco`, `plantilla-evento`, `plantilla-organizacion`, `plantilla-grupo`, `plantilla-ser-sobrenatural`, `validacion-crudeza`, `validacion-coherencia`, `validacion-geometria`, `validacion-sensorial`, `validacion-tono`, `consistencia-narrativa`, `desarrollo-narrativa`, `fichas-personajes`, `cronista-ops`, `estilo-explicito`, `estilo-contemporaneo`, `estilo-erotico`, `estilo-fantasia`, `estilo-noir`, `estilo-romantico`, `estilo-thriller`, `estilo-prosa`, `qdrant`, `neo4j`, `auditoria-neo4j`, `scaffolding-hecho`, `scaffolding-acto`, `diseno-hilo`, `trenzado-narrativo`, `validacion-cross-hilo`, `plantilla-hilo`
+
+**Exclusivos de escala (4).** Definidos solo en `shared/pipelines/novela-multi-hilo/skills/`; no existe versión común de estos cuatro. Si una escala futura declara uno con el mismo nombre en `shared/`, el de escala prevalece:
+
+`beats-estructura`, `estructura-narrativa`, `plantilla-guion`, `contexto-subagente`
+
+**No se inyecta** `contexto-narrativo`: es la memoria Markdown de la escala relato. Aquí la memoria es Qdrant + Neo4j, con `contexto.md` como resumen legible del director.
+
+Los cuatro últimos son los que hacen a esta escala consciente de los hilos: definen el campo `hilo` en el beat, la jerarquía con bloques de hilo, la estructura de `guion-hilo.md` y el contrato de briefing con `stable_id` de hilo.
 
 ## Comandos
 
-- `/refinar-hechos` — revisa y afina los hechos de _actos.md antes de generar
+- `/refinar-hechos` — revisa y afina los hechos de `_actos.md` antes de generar
 - `/validar-hechos` — valida coherencia narrativa entre hechos, detecta problemas de interpretación y propone mejoras
 - `/generar` — inicia o continúa desde `config.json.estado`
-- `/revisar-guion` — revisa la coherencia de guion.md (escenas, arcos, ritmo, transiciones)
-- `/revisar B_NNNN [instrucciones]` — revisión puntual de un beat (incluye cross-hilo si aplica)
+- `/revisar-guion` — revisa la coherencia estructural (trenzado, reparto por hilo, arcos, ritmo, transiciones)
+- `/revisar B_NNNN [instrucciones]` — revisión puntual de un beat (incluye cross-hilo si el capítulo tiene ≥2 hilos)
 - `/expandir B_NNNN [instrucciones]` — expansión de un beat
-- `/publicar` — salida limpia (`capitulo.md` por capítulo + `novela.md`)
+- `/publicar` — salida limpia (`capitulo.md` por capítulo + `novela.md`), deja el workspace en `finalizado`
+
+`/corregir` no se inyecta en esta escala: contempla solo ediciones derivadas de relato.
 
 ## Infraestructura
 

@@ -24,7 +24,8 @@ try {
         "$TargetDir\.opencode\agents",
         "$TargetDir\.opencode\skills",
         "$TargetDir\.opencode\commands",
-        "$TargetDir\fichas"
+        "$TargetDir\fichas",
+        "$TargetDir\capitulos"
     )
     foreach ($d in $dirs) { New-Item -Force -ItemType Directory $d | Out-Null }
 
@@ -49,6 +50,10 @@ Write-MapaMd -TargetDir $TargetDir -Brief $Brief
 $now = (Get-Date).ToString("yyyy-MM-ddTHH:mm:ss")
 $opsHilos = New-OperationalHilos -BriefHilos $Brief.hilos -Now $now
 Seed-HiloFolders -TargetDir $TargetDir -OperationalHilos $opsHilos -Brief $Brief
+
+# Artefactos globales. El guionista (modo trenzado) rellena la tabla y el
+# director mantiene contexto.md; el pipeline los referencia desde FASE 0.
+Write-NovelaGlobalScaffold -TargetDir $TargetDir -Brief $Brief -OperationalHilos $opsHilos
 
 # Registrar hilos en config
 $config = Get-Content (Join-Path $TargetDir "config.json") -Raw | ConvertFrom-Json

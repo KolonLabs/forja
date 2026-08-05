@@ -252,11 +252,14 @@ Objetivo: transformar drafts en capítulos limpios, concatenar novela completa. 
 1. **Por capítulo**: transforma `capitulos/cap-NN-slug/draft.md` → `capitulos/cap-NN-slug/capitulo.md`:
    - Conserva título.
    - Elimina headings `## <stable_id> [<seq>]`; cualquier `B_NNNN` mostrado es un display derivado.
+   - Elimina los marcadores de escena `<!-- ESCENA ... -->` y las notas del escritor (`*Nota del escritor: ...*`).
    - Une párrafos con separación natural. **La prosa se copia textualmente del draft, sin modificarla.**
-   - Verifica: sin headings residuales, sin dobles separadores, archivo > 0 bytes.
+   - Verifica: sin headings residuales, sin comentarios HTML, sin notas del escritor, sin dobles separadores, archivo > 0 bytes.
 2. **Novela completa**: concatena todos los `capitulo.md` → `novela.md` en la raíz del workspace.
 3. Gate: `capitulo.md` por capítulo + `novela.md`.
-4. Actualiza `config.json.estado = "publicado"`.
+4. Actualiza `config.json.estado = "finalizado"`.
+
+**`finalizado` es el estado terminal del workspace.** Significa que el manuscrito está listo para que el hub lo compile. `publicado` está reservado al hub: solo `/crear-libro` lo asigna, y únicamente después de generar correctamente todas las salidas solicitadas. El director nunca escribe `publicado`.
 
 ---
 
@@ -369,7 +372,9 @@ No esperes a que el usuario lo pida. Informa al usuario tras crear la ficha.
 | `version_qdrant` | tú (director) | Tras verificar Qdrant en FASE 1 |
 | `version_neo4j` | tú (director) | Tras verificar Neo4j en FASE 1 |
 
-**Transiciones de estado:** `diseno` → `fichas` → `escritura` → `publicacion` → `publicado`
+**Transiciones de estado:** `diseno` → `fichas` → `escritura` → `publicacion` → `finalizado`
+
+`publicado` no aparece en esta cadena: lo asigna el hub con `/crear-libro` sobre un workspace ya `finalizado`.
 
 Español. Backup antes de sobrescribir.
 

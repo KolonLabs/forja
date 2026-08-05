@@ -116,26 +116,28 @@ Por cada beat `⬜`:
 
 **Bucle:** Si quedan capítulos, vuelve a 2.1. Si es el último capítulo → `publicacion`.
 
-**Transición:** `config.json.estado = "publicado"`.
-
 ---
 
 ### FASE 3 — Publicar (`estado: publicacion`)
 
 | Paso | Agente | Acción |
 |------|--------|--------|
-| 3.1 Limpiar capítulos | director | `draft.md` → `capitulo.md` por capítulo (elimina headings `## B_XX`, conserva título) |
+| 3.1 Limpiar capítulos | director | `draft.md` → `capitulo.md` por capítulo (elimina headings `## <stable_id> [<seq>]`, marcadores `<!-- ESCENA ... -->` y notas del escritor; conserva título) |
 | 3.2 Concatenar | director | Todos los `capitulo.md` → `novela.md` |
 
-**Gate:** `capitulo.md` por capítulo + `novela.md`.
+**Gate:** `capitulo.md` por capítulo + `novela.md`. Sin headings, comentarios ni notas residuales.
+
+**Transición:** `config.json.estado = "finalizado"`.
 
 ---
 
 ## Transiciones de estado
 
 ```
-diseno → fichas → escritura → publicacion → publicado
+diseno → fichas → escritura → publicacion → finalizado
 ```
+
+`finalizado` es el estado terminal del workspace. `publicado` lo asigna solo el hub con `/crear-libro`, que además exige `finalizado` como estado de entrada. El director nunca escribe `publicado`.
 
 **Bucle en FASE 2:** itera capítulo por capítulo. `config.json.capitulos_completados` avanza.
 
@@ -147,9 +149,17 @@ diseno → fichas → escritura → publicacion → publicado
 
 `director`, `guionista`, `auditor-beats`, `escritor`, `validador`, `integrador`, `memoria`, `cronista`, `entidades`
 
-## Skills activos (39 skills)
+## Skills activos (40)
 
-`mecanica-prosa`, `beats-estructura`, `estructura-narrativa`, `tonos-beat`, `hechos-estructura`, `hechos-distribuidos`, `plantilla-guion`, `plantilla-ficha`, `plantilla-personaje`, `plantilla-lugar`, `plantilla-objeto`, `plantilla-animal`, `plantilla-arco`, `plantilla-evento`, `plantilla-organizacion`, `plantilla-grupo`, `plantilla-ser-sobrenatural`, `validacion-crudeza`, `validacion-coherencia`, `validacion-geometria`, `validacion-sensorial`, `validacion-tono`, `consistencia-narrativa`, `contexto-subagente`, `contexto-narrativo`, `desarrollo-narrativa`, `fichas-personajes`, `cronista-ops`, `estilo-explicito`, `estilo-contemporaneo`, `estilo-erotico`, `estilo-fantasia`, `estilo-noir`, `estilo-romantico`, `estilo-thriller`, `estilo-prosa`, `qdrant`, `neo4j`, `auditoria-neo4j`
+**Invariantes del hub (36).** Se inyectan desde `shared/.opencode/skills/`:
+
+`mecanica-prosa`, `tonos-beat`, `hechos-estructura`, `hechos-distribuidos`, `plantilla-ficha`, `plantilla-personaje`, `plantilla-lugar`, `plantilla-objeto`, `plantilla-animal`, `plantilla-arco`, `plantilla-evento`, `plantilla-organizacion`, `plantilla-grupo`, `plantilla-ser-sobrenatural`, `validacion-crudeza`, `validacion-coherencia`, `validacion-geometria`, `validacion-sensorial`, `validacion-tono`, `consistencia-narrativa`, `desarrollo-narrativa`, `fichas-personajes`, `cronista-ops`, `estilo-explicito`, `estilo-contemporaneo`, `estilo-erotico`, `estilo-fantasia`, `estilo-noir`, `estilo-romantico`, `estilo-thriller`, `estilo-prosa`, `qdrant`, `neo4j`, `auditoria-neo4j`, `scaffolding-hecho`, `scaffolding-acto`
+
+**Exclusivos de escala (4).** Definidos solo en `shared/pipelines/novela-simple/skills/`; no existe versión común de estos cuatro. Si una escala futura declara uno con el mismo nombre en `shared/`, el de escala prevalece:
+
+`beats-estructura`, `estructura-narrativa`, `plantilla-guion`, `contexto-subagente`
+
+**No se inyectan** `contexto-narrativo` (memoria Markdown de la escala relato; aquí la memoria es Qdrant + Neo4j con `contexto.md` como resumen legible) ni las skills de hilo (`diseno-hilo`, `plantilla-hilo`, `trenzado-narrativo`, `validacion-cross-hilo`), exclusivas de multi-hilo.
 
 **No aplican (4 skills):** `diseno-hilo`, `trenzado-narrativo`, `validacion-cross-hilo`, `plantilla-hilo`
 

@@ -119,7 +119,7 @@ Estructura:
 ...
 ```
 
-El scaffolder produce el `_actos.md` directamente con esta estructura. El director, en FASE 0.6, lee cada `## Hilo:` y crea la entidad de hilo en Qdrant. Por cada `### Acto I` dentro de un hilo, crea un L3 con `hilo: <stable_id del hilo>`.
+El scaffolder produce el `_actos.md` directamente con esta estructura. El director, en FASE 0 (paso 6, siembra de entidades), lee cada `## Hilo:` y crea la entidad de hilo en Qdrant. Por cada `### Acto I` dentro de un hilo, crea un L3 con `hilo: <stable_id del hilo>`.
 
 **Recordatorio:** los hilos NO son un nivel estructural en la jerarquía Qdrant. Son un campo `hilo` en L1 y L3. La jerarquía sigue siendo L0 (beat) → L1 → L2 → L3 → L4.
 

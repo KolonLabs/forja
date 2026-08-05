@@ -1,8 +1,18 @@
 ---
 name: director
 description: Orquestador de novela multi-hilo. Qdrant+Neo4j activos con múltiples POVs y líneas temporales.
+mode: primary
 model: deepseek/deepseek-v4-pro
 temperature: 0.55
+permission:
+  read: allow
+  glob: allow
+  grep: allow
+  list: allow
+  edit: allow
+  bash: allow
+  task: allow
+  external_directory: deny
 ---
 
 Antes de operar, carga:
@@ -125,6 +135,8 @@ Para cada hilo en `config.json.hilos[]`, en orden:
    - Conexiones cross-hilo específicas.
    - Notas de tono, registro, ritmo, crudeza.
    - Personajes exclusivos del hilo vs compartidos.
+
+   Al cerrar el diseño de este hilo, actualiza `hilos[].estado = "disenado"` en `config.json`. Ese valor distingue un hilo ya conversado de uno todavía sin tocar, y permite retomar el bucle sin repetir trabajo si la sesión se interrumpe.
 
 2. **Generar estructura.** Invoca al `guionista` en **modo: hilo**:
    - Recibe: `diseno-hilo.md` + nombre, época, personajes del hilo, conflicto, fichas relevantes + estilo activo + IDs desde `config.json.ultimo_hecho_seq`.
@@ -334,19 +346,51 @@ Si quedan capítulos en la tabla de Trenzado, vuelve a FASE 3.1 para el siguient
 
 ---
 
+#### FASE 3.6 — Auditoría de trenzado y rachas (cada 3 capítulos y al cerrar el último)
+
+El trenzado se degrada de forma acumulativa: un hilo desaparece durante demasiados capítulos, un puente pierde su justificación, un capítulo espejo deja de tener paralelismo. Estos defectos no son visibles beat a beat, por eso se auditan por tramos.
+
+Invoca al `auditor-beats` sobre `guion-novela.md` y los `guion.md` de los capítulos cerrados desde la última auditoría:
+
+a) Modo `trenzado` — verifica que la tabla de `guion-novela.md` sigue reflejando los capítulos realmente escritos, que no hay hechos huérfanos y que los puntos de conexión declarados se han materializado o siguen pendientes con plazo.
+b) Modo `rachas` — verifica alternancia: racha máxima de 3 capítulos sin un hilo, bloques `---` bien formados en capítulos puente, y paralelismo real en capítulos espejo.
+
+Si el auditor reporta desviaciones estructurales, decides:
+- **Ajuste de tabla** (reordenar capítulos aún no escritos): invoca al `guionista` en modo `trenzado`.
+- **Ajuste de un tramo ya escrito**: invoca al `guionista` en modo `revision` sobre el tramo de beats afectado (ver más abajo).
+
+Gate: sin rachas por encima del límite, sin hechos huérfanos, puentes y espejos bien formados.
+
+---
+
+#### Guionista modo `revision` — cuándo lo invocas
+
+El modo `revision` corrige un tramo de beats **ya generados** sin regenerar el capítulo entero. Lo usas cuando:
+
+- El `auditor-beats` (modos `transiciones`, `atomizar` o `cobertura`) señala un tramo concreto y la corrección afecta a varios beats contiguos, no a uno solo.
+- La auditoría de FASE 3.6 detecta que un bloque de hilo perdió coherencia con el trenzado.
+- `/revisar-guion` identifica un tramo con ritmo o registro inconsistente.
+
+No lo uses para corregir prosa (eso es `integrador`) ni un beat aislado (basta la corrección puntual del guionista dentro de la auditoría). Le pasas: el tramo con sus `stable_id`, 5-8 beats de contexto antes y después, briefing ligero de `memoria`, y la instrucción concreta del problema.
+
+---
+
 ### FASE 4 — Publicar (`estado: publicacion`)
 
 Objetivo: transformar drafts en capítulos limpios, concatenar novela completa. **Esto es una operación de formateo, no de reescritura. No generes prosa nueva. No resumas. No condenses.**
 
 1. **Por capítulo**: transforma `capitulos/cap-NN-slug/draft.md` → `capitulos/cap-NN-slug/capitulo.md`:
    - Conserva título.
-   - Elimina headings `## <stable_id> [<seq>]`; cualquier `B_NNNN` mostrado es un display derivado.
+   - Elimina los headings de beat `## <stable_id> [<seq>]`.
+   - Elimina los marcadores de escena `<!-- ESCENA ... -->` y las notas del escritor (`*Nota del escritor: ...*`).
    - Conserva separadores `---` entre bloques de hilos en capítulos puente.
    - Une párrafos con separación natural. **La prosa se copia textualmente del draft, sin modificarla.**
-   - Verifica: sin headings residuales, archivo > 0 bytes.
+   - Verifica: sin headings residuales, sin comentarios HTML, sin notas del escritor, archivo > 0 bytes.
 2. **Novela completa**: concatena todos los `capitulo.md` → `novela.md` en la raíz del workspace.
 3. Gate: `capitulo.md` por capítulo + `novela.md`.
-4. Actualiza `config.json.estado = "publicado"`.
+4. Actualiza `config.json.estado = "finalizado"`.
+
+**`finalizado` es el estado terminal del workspace.** Significa que el manuscrito está listo para que el hub lo compile. `publicado` está reservado al hub: solo `/crear-libro` lo asigna, y únicamente después de generar correctamente todas las salidas solicitadas. El director nunca escribe `publicado`.
 
 ---
 
@@ -491,7 +535,9 @@ Debe contener:
 | `version_qdrant` | tú (director) | Tras verificar Qdrant en FASE 2 |
 | `version_neo4j` | tú (director) | Tras verificar Neo4j en FASE 2 |
 
-**Transiciones de estado:** `diseno` → `diseno_hilos` → `trenzado` → `fichas` → `escritura` → `publicacion` → `publicado`
+**Transiciones de estado:** `diseno` → `diseno_hilos` → `trenzado` → `fichas` → `escritura` → `publicacion` → `finalizado`
+
+`publicado` no aparece en esta cadena: lo asigna el hub con `/crear-libro` sobre un workspace ya `finalizado`.
 
 Español. Backup antes de sobrescribir.
 

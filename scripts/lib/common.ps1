@@ -144,8 +144,12 @@ function Inject-Pipeline {
     # 5. ORQUESTACION.md
     Copy-Item -LiteralPath (Join-Path $ScaleDir "ORQUESTACION.md") -Destination (Join-Path $TargetDir "ORQUESTACION.md") -Force
 
-    # 6. Guía de uso para la persona usuaria
-    $userGuide = Join-Path $SharedDir "GUIA.md"
+    # 6. Guía de uso para la persona usuaria. Cada escala tiene la suya; la de
+    # relato describe escenas operativas y transacciones que no existen en novela.
+    $userGuide = Join-Path $ScaleDir "GUIA.md"
+    if (-not (Test-Path -LiteralPath $userGuide -PathType Leaf)) {
+        $userGuide = Join-Path $SharedDir "GUIA.md"
+    }
     if (Test-Path -LiteralPath $userGuide -PathType Leaf) {
         Copy-Item -LiteralPath $userGuide -Destination (Join-Path $TargetDir "GUIA.md") -Force
     }
@@ -179,7 +183,11 @@ function Inject-Pipeline {
         }
         $allowed += "mecanica-prosa"
     } elseif ($Escala -eq "novela-simple") {
-        $excluded = @("diseno-hilo","plantilla-hilo","trenzado-narrativo","validacion-cross-hilo")
+        # contexto-narrativo es la memoria Markdown de relato; las novelas usan
+        # Qdrant + contexto.md y no deben recibir ese contrato.
+        $excluded = @("diseno-hilo","plantilla-hilo","trenzado-narrativo","validacion-cross-hilo","contexto-narrativo")
+    } elseif ($Escala -eq "novela-multi-hilo") {
+        $excluded = @("contexto-narrativo")
     }
 
     if (Test-Path -LiteralPath $hubSkills) {
@@ -203,11 +211,17 @@ function Inject-Pipeline {
         }
     }
 
-    # 9. Comandos comunes
+    # 9. Comandos comunes. /corregir solo contempla ediciones derivadas de
+    # relato; inyectarlo en una novela ofrece un comando que siempre rechaza.
+    $excludedCommands = @()
+    if ($Escala -ne "relato") {
+        $excludedCommands += "corregir.md"
+    }
     $hubCommands = Join-Path $SharedDir ".opencode\commands"
     $wsCommands = Join-Path $targetOC "commands"
     if (Test-Path -LiteralPath $hubCommands) {
         Get-ChildItem -LiteralPath $hubCommands -File -Filter "*.md" | ForEach-Object {
+            if ($_.Name -in $excludedCommands) { return }
             Copy-Item -LiteralPath $_.FullName -Destination (Join-Path $wsCommands $_.Name) -Force
         }
     }
@@ -682,7 +696,8 @@ function Write-AgentsMd {
     } else {
         $skillsActivos = @(
             "mecanica-prosa", "beats-estructura", "estructura-narrativa", "tonos-beat",
-            "hechos-distribuidos", "estilo-$($Brief.estilo_base)"
+            "hechos-estructura", "hechos-distribuidos", "plantilla-guion",
+            "contexto-subagente", "cronista-ops", "estilo-$($Brief.estilo_base)"
         )
     }
     if ($Brief.PSObject.Properties.Name.Contains("estilo_secundario") -and $Brief.estilo_secundario) {
@@ -690,14 +705,30 @@ function Write-AgentsMd {
     }
     if ($Escala -ne "relato") {
         $skillsActivos += @(
-            "plantilla-personaje", "plantilla-lugar", "plantilla-objeto", "plantilla-animal",
-            "plantilla-evento", "plantilla-organizacion", "consistencia-narrativa",
+            "plantilla-ficha", "plantilla-personaje", "plantilla-lugar", "plantilla-objeto",
+            "plantilla-animal", "plantilla-evento", "plantilla-organizacion", "plantilla-grupo",
+            "plantilla-ser-sobrenatural", "consistencia-narrativa",
             "desarrollo-narrativa", "fichas-personajes", "estilo-prosa"
+        )
+        $skillsActivos += @(
+            "validacion-crudeza", "validacion-coherencia", "validacion-geometria",
+            "validacion-sensorial", "validacion-tono"
         )
         $skillsActivos += @("plantilla-arco", "qdrant", "neo4j", "auditoria-neo4j")
     }
     if ($Escala -eq "novela-multi-hilo") {
         $skillsActivos += @("plantilla-hilo", "diseno-hilo", "trenzado-narrativo", "validacion-cross-hilo")
+    }
+    # La lista documentada debe coincidir con lo realmente inyectado: si no,
+    # AGENTS.md anuncia skills inexistentes u omite las que los agentes cargan.
+    $skillsDir = Join-Path $TargetDir ".opencode\skills"
+    if (Test-Path -LiteralPath $skillsDir -PathType Container) {
+        $instalados = @(Get-ChildItem -LiteralPath $skillsDir -Directory | Select-Object -ExpandProperty Name)
+        $fantasma = @($skillsActivos | Where-Object { $_ -notin $instalados })
+        if ($fantasma.Count -gt 0) {
+            throw "Write-AgentsMd: AGENTS.md declara skills no inyectados en '$Escala': $($fantasma -join ', ')"
+        }
+        $skillsActivos = @($instalados | Sort-Object)
     }
     $skillsStr = ($skillsActivos -join ", ")
     $estiloRef = "``estilo-$($Brief.estilo_base)``"
@@ -821,6 +852,94 @@ function New-OperationalHilos {
     # Preserve la colección aunque solo haya un hilo; de otro modo PowerShell
     # entrega el diccionario escalar y rompe Count, foreach y config.json.
     Write-Output -NoEnumerate $ops
+}
+
+function Write-NovelaGlobalScaffold {
+    # Crea los artefactos globales que el pipeline referencia desde la primera
+    # fase. Sin ellos el director apunta a rutas inexistentes.
+    # $OperationalHilos solo se pasa en multi-hilo.
+    param(
+        [string]$TargetDir,
+        $Brief,
+        $OperationalHilos = $null
+    )
+
+    $utf8NoBom = [System.Text.UTF8Encoding]::new($false)
+    $esMultiHilo = ($null -ne $OperationalHilos)
+
+    # guion-novela.md: lo rellena el guionista (modo trenzado en multi-hilo,
+    # modo estructura-novela en simple). Aqui solo se deja el esqueleto.
+    $guionPath = Join-Path $TargetDir "guion-novela.md"
+    if (-not (Test-Path -LiteralPath $guionPath -PathType Leaf)) {
+        $lines = @()
+        $lines += "# Guion de novela - $($Brief.titulo)"
+        $lines += ""
+        $lines += "> Esqueleto creado al generar el workspace."
+        if ($esMultiHilo) {
+            $lines += "> La tabla ``## Trenzado`` la escribe el guionista en modo trenzado (FASE 0.3)."
+            $lines += "> No edites la tabla a mano: se deriva de los ``guion-hilo.md`` de cada hilo."
+            $lines += ""
+            $lines += "## Hilos"
+            $lines += ""
+            $lines += "| Hilo | Slug | Epoca | Conflicto |"
+            $lines += "|---|---|---|---|"
+            foreach ($h in $OperationalHilos) {
+                $lines += "| $($h.nombre) | $($h.slug) | $($h.epoca) | $($h.conflicto) |"
+            }
+            $lines += ""
+            $lines += "## Puntos de conexion"
+            $lines += ""
+            if ($Brief.PSObject.Properties.Name -contains "puntos_conexion" -and $Brief.puntos_conexion) {
+                $lines += (Get-ListText $Brief.puntos_conexion)
+            } else {
+                $lines += "(Pendiente: se definen con el usuario en FASE 0)"
+            }
+            $lines += ""
+            $lines += "## Trenzado"
+            $lines += ""
+            $lines += "(Pendiente: guionista modo trenzado, FASE 0.3)"
+            $lines += ""
+            $lines += "| Cap | Hilo(s) | Hechos | Tipo | Conexiones |"
+            $lines += "|---|---|---|---|---|"
+        } else {
+            $lines += "> Lo escribe el guionista en modo estructura-novela (FASE 0)."
+            $lines += "> Contiene actos, capitulos y los hechos asignados a cada uno."
+            $lines += ""
+            $lines += "## Estructura"
+            $lines += ""
+            $lines += "(Pendiente: guionista modo estructura-novela, FASE 0)"
+        }
+        $lines += ""
+        [System.IO.File]::WriteAllText($guionPath, (($lines -join "`n") + "`n"), $utf8NoBom)
+    }
+
+    # contexto.md: memoria de apoyo del director entre capitulos. La memoria
+    # principal es Qdrant; este archivo es el resumen legible.
+    $contextoPath = Join-Path $TargetDir "contexto.md"
+    if (-not (Test-Path -LiteralPath $contextoPath -PathType Leaf)) {
+        $lines = @()
+        $lines += "# Contexto narrativo - $($Brief.titulo)"
+        $lines += ""
+        $lines += "> Resumen legible que mantiene el director al cerrar cada capitulo."
+        $lines += "> La memoria operativa vive en Qdrant y Neo4j; esto es apoyo humano."
+        $lines += ""
+        if ($esMultiHilo) {
+            $lines += "## Estado por hilo"
+            $lines += ""
+            foreach ($h in $OperationalHilos) {
+                $lines += "### $($h.nombre) (``$($h.slug)``)"
+                $lines += ""
+                $lines += "- Ultimo capitulo: -"
+                $lines += "- Situacion: (pendiente de escritura)"
+                $lines += ""
+            }
+        }
+        $lines += "## Capitulos cerrados"
+        $lines += ""
+        $lines += "(Se anota uno por capitulo al completarlo)"
+        $lines += ""
+        [System.IO.File]::WriteAllText($contextoPath, (($lines -join "`n") + "`n"), $utf8NoBom)
+    }
 }
 
 function Seed-HiloFolders {

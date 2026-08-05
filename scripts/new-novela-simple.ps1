@@ -24,7 +24,8 @@ try {
         "$TargetDir\.opencode\agents",
         "$TargetDir\.opencode\skills",
         "$TargetDir\.opencode\commands",
-        "$TargetDir\fichas"
+        "$TargetDir\fichas",
+        "$TargetDir\capitulos"
     )
     foreach ($d in $dirs) { New-Item -Force -ItemType Directory $d | Out-Null }
 
@@ -44,6 +45,9 @@ Write-BriefMd -TargetDir $TargetDir -Brief $Brief
 Write-ActosMd -TargetDir $TargetDir -Brief $Brief
 Write-AgentsMd -TargetDir $TargetDir -Brief $Brief -Escala "novela-simple"
 Write-MapaMd -TargetDir $TargetDir -Brief $Brief
+
+# Artefactos globales que el pipeline referencia desde FASE 0.
+Write-NovelaGlobalScaffold -TargetDir $TargetDir -Brief $Brief
 
 # Infraestructura
 Write-Host "Inicializando Qdrant + Neo4j..."
