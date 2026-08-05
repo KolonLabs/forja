@@ -79,7 +79,7 @@ Añade el beat siguiente del draft para conservar la transición. La expansión 
 2. Texto del beat.
 3. Beat de guion: `stable_id`, `seq`, `parent_id`, acción, tono y extensión.
 4. Fichas relevantes.
-5. Escena, ventana anterior y siguientes tres beats.
+5. TODOS los beats ya escritos de la escena actual (prosa en `draft.md`, desde el primero) + el beat actual + siguientes tres del guion. Si el beat actual abre escena: últimos 3 beats de la escena anterior.
 6. Scores previos, scope, personajes, zona, props y estilo.
 
 ### Modo global
@@ -96,7 +96,7 @@ Añade el beat siguiente del draft para conservar la transición. La expansión 
 2. Beat localizado por `stable_id`.
 3. Feedback del validador.
 4. Beat de guion con contrato común.
-5. Fichas, ventanas anterior/posterior, escena y estilo.
+5. Fichas, TODOS los beats ya escritos de la escena actual (prosa en `draft.md`) + el beat a reescribir + siguientes tres del guion y estilo.
 6. `instruccion_usuario` si aplica.
 
 No cambia `stable_id`; una reescritura conserva identidad y posición salvo reordenamiento explícito.

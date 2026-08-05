@@ -82,7 +82,7 @@ Añade el beat siguiente y su hilo. La expansión conserva `stable_id` y `seq` s
 2. Texto del beat.
 3. Beat de guion: `stable_id`, `seq`, `parent_id`, acción, tono, extensión e hilo.
 4. Fichas relevantes.
-5. Escena, ventana anterior y siguientes tres beats.
+5. TODOS los beats ya escritos de la escena actual (prosa en `draft.md`, desde el primero) + el beat actual + siguientes tres del guion. Si el beat actual abre escena: últimos 3 beats del bloque anterior.
 6. Hilos activos por `stable_id`, personajes, zona, props, scores, scope y estilo.
 7. Contexto cross-hilo si el capítulo tiene más de un hilo.
 
@@ -101,7 +101,7 @@ Añade el beat siguiente y su hilo. La expansión conserva `stable_id` y `seq` s
 2. Beat localizado por `stable_id`.
 3. Feedback del validador.
 4. Beat de guion con contrato común, incluido hilo.
-5. Fichas, ventanas, escena, trenzado y estilo.
+5. Fichas, TODOS los beats ya escritos de la escena actual (prosa en `draft.md`) + el beat a reescribir + siguientes tres del guion, trenzado y estilo.
 6. `instruccion_usuario` si aplica.
 
 No cambia `stable_id`. Si el cambio exige mover el beat a otro bloque, el director decide el nuevo `parent_id` e hilo y renumera `seq` de forma atómica.

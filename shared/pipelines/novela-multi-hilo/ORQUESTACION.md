@@ -308,6 +308,7 @@ No escribir el separador --- entre bloques (lo pone el director)
 Modo: read-only [beat | global]
 Beat: stable_id=[8hex] seq=[NNNN] (o modo global)
 Texto: [fragmento o ruta draft.md, sección localizada por stable_id]
+Escena actual (modo beat): TODOS los beats ya escritos de la escena del beat en draft.md (desde el primero) + siguientes tres del guion
 Dimensiones: ["coherencia", "sensorial", ...] — lista concreta (preferido)
   o Scope: [completa|media|ligera] — formato heredado (se normaliza a dimensiones)
 Leer coherencia: contexto.md, fichas/[... por stable_id], guion.md
@@ -326,13 +327,13 @@ Salida: solo JSON (sin editar archivos). Incluir dimensiones_evaluadas, umbral_a
 Beat: stable_id=[8hex] seq=[NNNN] parent_id=[8hex]
 Leer: draft.md sección localizada por stable_id, JSON validador adjunto
 Escribir: reemplazar la sección "## <stable_id> [<seq>]" en draft.md
-Hilo: [nombre] (stable_id: [8hex]) — época, ubicación, tono propio
+Hilo: [nombre] (stable_id: [8hex]) - época, ubicación, tono propio
 Tipo de capítulo: [exclusivo | puente | espejo]
 Mantener acción nuclear del beat; aplicar mecanica-prosa + estilo
 Conservar stable_id y seq sin cambios en el heading devuelto
-Estilo: [estilo_base] — cargar skill estilo-<nombre>
+Estilo: [estilo_base] - cargar skill estilo-<nombre>
 {{#if estilo_secundario}}+ fusionar con estilo-<nombre>{{/if}}
-Últimos 5 beats del mismo bloque de hilo + beat siguiente (siempre)
+TODOS los beats ya escritos de la escena actual (prosa en draft.md, desde el primero) + siguientes tres del guion (siempre)
 {{#if espejo}}Beat contrario del otro hilo: [texto] — conservar el eco{{/if}}
 {{#if instruccion_usuario}}instruccion_usuario: [texto] — prioridad absoluta{{/if}}
 ```

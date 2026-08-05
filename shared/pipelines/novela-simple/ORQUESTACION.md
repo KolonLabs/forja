@@ -253,6 +253,7 @@ No marcar ✅ en guion — solo prosa en draft
 Modo: read-only
 Beat: B_NNNN (o modo global)
 Texto: [fragmento o ruta draft.md sección B_NNNN]
+Escena actual (modo beat): TODOS los beats ya escritos de la escena del beat en draft.md (desde el primero) + siguientes tres del guion
 Dimensiones: ["coherencia", "sensorial", ...] — lista concreta (preferido)
   o Scope: [completa|media|ligera] — formato heredado (se normaliza a dimensiones)
 Leer coherencia: contexto.md (o contexto_narrativo.md), fichas/[...], guion.md
@@ -265,10 +266,11 @@ Salida: solo JSON (sin editar archivos). Incluir dimensiones_evaluadas, umbral_a
 ```
 Beat: B_NNNN
 Leer: draft.md sección B_NNNN, JSON validador adjunto
-Escribir: reemplazar sección ## B_NNNN en draft.md
+Escribir: reemplazar seccción ## B_NNNN en draft.md
 Mantener acción nuclear del beat; aplicar mecanica-prosa + estilo
-Estilo: [estilo_base] — cargar skill estilo-<nombre>
+Estilo: [estilo_base] - cargar skill estilo-<nombre>
 {{#if estilo_secundario}}+ fusionar con estilo-<nombre>{{/if}}
+TODOS los beats ya escritos de la escena actual (prosa en draft.md, desde el primero) + siguientes tres del guion
 ```
 
 ### → memoria
