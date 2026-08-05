@@ -5,7 +5,7 @@ description: Estructura unificada para fichas de entidad narrativa. Soporta 10 t
 
 # Ficha: [NOMBRE]
 
-**Tipo:** persona | lugar | objeto | animal | ser_sobrenatural | organizacion | hilo | arco | evento | grupo
+**Tipo:** persona | lugar | objeto | animal | ser_sobrenatural | organizacion | hilo | arco | evento | grupo | referencia
 **Proyecto:** [título del relato/novela o "banco" si es genérica]
 **Versión:** `[YYYYMMDD_HHmm]-[hash8]`
 **Tags:** [tag1] [tag2] [tag3]
@@ -119,6 +119,18 @@ Rellena solo las secciones de tu tipo. Omite las que no apliquen.
 **Dinámica interna:** relaciones de poder, roles.
 **Función narrativa:** propósito del grupo en la trama.
 **Historia:** origen del grupo, evolución.
+
+### Tipo: referencia
+
+Material de referencia no-narrativo importado desde fuentes libres (biblia científica, universo previo, modelo de negocio, etc.).
+
+**Título:** nombre legible del documento fuente.
+**Origen:** ruta o URL de la fuente original (del manifiesto de importación).
+**Resumen:** 2-3 frases que describen qué contiene y para qué sirve.
+**Contenido:** Markdown completo del archivo fuente (campo `fijo.contenido`).
+**Relevancia por hilo:** lista de slugs de hilos a los que este material es directamente relevante (se usa para filtrar en el briefing de memoria).
+
+> **Sin `dinamico`.** Este tipo es inmutable: no tiene estado evolutivo ni registro de desarrollo. Solo se crea una vez; nunca se actualiza durante la escritura.
 
 ---
 

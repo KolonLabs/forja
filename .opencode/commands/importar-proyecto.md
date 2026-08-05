@@ -49,6 +49,21 @@ Argumentos recibidos: `$ARGUMENTS`
    $briefJson | .\scripts\new-project.ps1
    ```
 
+   Después de que el script termine con éxito, copia los archivos de referencia al workspace:
+
+   ```powershell
+   # Solo para escalas novela-simple y novela-multi-hilo
+   $refDest = Join-Path "workspaces\$slug" "referencias"
+   $manifiesto = Get-Content $resultado.manifiesto -Raw | ConvertFrom-Json
+   foreach ($fc in $manifiesto.fuentes_canonicas) {
+       if ($fc.tipo -eq "archivo" -and (Test-Path -LiteralPath $fc.ruta)) {
+           Copy-Item -LiteralPath $fc.ruta -Destination $refDest -Force
+       }
+   }
+   ```
+
+   Solo se copian entradas de `tipo=archivo` con ruta local; las fuentes de tipo URL ya tienen su contenido completo en el paquete y no generan archivo temporal. Si la escala es `relato`, omite la copia — los relatos no usan Qdrant y no tienen directorio `referencias/`.
+
 8. Elimina `$resultado.paquete` y `$resultado.manifiesto` al terminar o cancelar, salvo que el usuario pida conservar el informe de evidencia.
 
 ## Límites

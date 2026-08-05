@@ -127,6 +127,10 @@ FASE 0 diseño global                                     estado: diseno
   GATE: cada hilo con conflicto propio; hilos[] poblado; semillas creadas
 
 FASE 0.1 componentes iniciales                           estado: diseno
+  [si referencias/ existe]
+  director → entidades (×N): ingestar referencias/ como tipo=referencia
+    fijo.contenido = Markdown del archivo, sin dinamico, inmutable
+    tags incluyen relevancia_por_hilo de cada hilo confirmado
   director → entidades (×N, incremental): fichas básicas
   OUT: Qdrant + fichas/<tipo>_<slug>.md de entidades clave
   GATE: protagonistas de cada hilo, lugares principales y objetos
@@ -173,6 +177,8 @@ FASE 3 beat a beat cross-hilo (bucle por capítulo)       estado: escritura
       IN:  config.json, stable_id de hilos activos, entidades del cap
       OUT: briefing ~600 tokens (L4 → L3 → L2 → entidades → relaciones
            → estado de hilos activos), filtrado por hilo
+           + referencias tipo=referencia cuyo tag relevancia_por_hilo
+             incluya el hilo activo (máx. 2; solo si existen)
 
   3.2 director → guionista(modo: capitulo, pasada 1)
       IN:  briefing memoria + fila Trenzado + guion-hilo.md implicados
@@ -341,6 +347,7 @@ Briefing esperado: ~600 tokens. Estructura:
   4. Entidades del capítulo (fijo + dinámico desde Qdrant), por stable_id
   5. Relaciones activas (Neo4j) de personajes del capítulo
   6. Hilos activos, su estado y sus conexiones cross-hilo pendientes
+  7. [Opcional] Referencias tipo=referencia con tag relevancia_por_hilo=<hilo_activo> (máx. 2; incluir solo si aportan contexto no cubierto por los summaries; contar en el presupuesto de ~600 tokens)
 Summaries: buscar por (nivel, parent_id, seq[, hilo]); el UUID nunca es entrada
 ```
 

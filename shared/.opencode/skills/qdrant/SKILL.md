@@ -159,11 +159,19 @@ organizacion
 arco
 evento
 grupo
+referencia
 ```
+
+**Tipo `referencia` — contrato especial:**
+
+- Representa material de referencia no-narrativo (biblia científica, universo previo, modelo de negocio, etc.) importado vía `/importar-proyecto`.
+- Solo tiene `fijo.contenido` (Markdown completo del archivo fuente). **No tiene `dinamico`**: es inmutable durante toda la escritura.
+- El agente `entidades` lo ingesta en FASE 0.1 desde los archivos en `referencias/`.
+- El agente `memoria` lo incluye en el briefing **solo** cuando el hilo activo del capítulo tiene el flag `relevancia_por_hilo` hacia esa referencia. No contamina el briefing de capítulos sin relación directa.
 
 Los IDs de entidad son UUIDs opacos. El tipo, el nombre, el proyecto y el slug no se codifican dentro del ID. Están prohibidos los IDs con prefijos semánticos (`per-`, `lug-`, `obj-`, `hilo-`, etc.).
 
-`fichas` en beats y summaries contiene exclusivamente `stable_id` de entidades. Para conocer nombre o tipo se consulta `entidades`; nunca se deducen del ID.
+`fichas` en beats y summaries contiene exclusivamente `stable_id` de entidades narrativas (no `referencia`). Para conocer nombre o tipo se consulta `entidades`; nunca se deducen del ID.
 
 Índices de payload: `proyecto`, `stable_id`, `tipo`, `tags`.
 

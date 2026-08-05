@@ -78,9 +78,10 @@ El `draft.md` de cada capítulo usa **una sola forma de encabezado**:
 
 | Paso | Agente | Acción |
 |------|--------|--------|
+| 0.1.0 Referencias | `entidades` (×N) | **Solo si `referencias/` existe:** ingestar cada archivo de `referencias/` como entidad `tipo=referencia` en Qdrant (`fijo.contenido` = Markdown, sin `dinamico`). Anotar `relevancia_por_hilo` en los tags según los hilos confirmados en `config.json.hilos[]`. |
 | 0.1.1 | `entidades` (×N, incremental) | Fichas básicas en Qdrant + `fichas/<tipo>_<slug>.md` para entidades clave |
 
-**Gate:** Entidades clave de cada hilo fichadas (básico).
+**Gate:** Entidades clave de cada hilo fichadas (básico). Si hay `referencias/`, todas ingresadas en Qdrant.
 
 **Transición:** `config.json.estado = "diseno_hilos"`.
 

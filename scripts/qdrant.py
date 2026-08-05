@@ -729,6 +729,7 @@ def cmd_renumber_siblings(args):
 ENTITY_VALID_TIPOS = {
     "personaje", "lugar", "objeto", "animal",
     "ser_sobrenatural", "hilo", "organizacion", "arco", "evento", "grupo",
+    "referencia",
 }
 
 
