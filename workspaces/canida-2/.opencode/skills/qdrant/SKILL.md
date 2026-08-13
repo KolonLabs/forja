@@ -122,8 +122,8 @@ Jerarquía:
 |-------|-----------|-------|------------------|
 | `L1` | Escena | `stable_id` del L2 del capítulo | `E_{seq:03d}` |
 | `L2` | Capítulo | `stable_id` del L3 del arco | `C_{seq:03d}` |
-| `L3` | Arco | `stable_id` del L4 global | `A_{seq:03d}` |
-| `L4` | Proyecto completo | raíz/global | Derivado por presentación si se necesita |
+| `L3` | Arco | `stable_id` del L4 (UUID8 opaco, obtenido con `query-l4-current`) | `A_{seq:03d}` |
+| `L4` | Proyecto completo | raíz (`parent_id` vacío) | Derivado por presentación si se necesita |
 
 `seq` vuelve a empezar para cada padre. Dos escenas de capítulos distintos pueden tener `seq: 1` sin colisión porque su `parent_id` es diferente. En multi-hilo, `hilo` desambigua posiciones del mismo nivel y padre.
 

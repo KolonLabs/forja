@@ -16,48 +16,61 @@ stable_id, seq, parent_id, acción, tono, extensión, hilo
 
 - `stable_id` es inmutable.
 - `seq` siempre es local a `parent_id`.
-- `hilo` es el `stable_id` de una entidad `tipo=hilo`; `[Hilos: hilo-S]` es solo anotación humana.
+- `hilo` es el `stable_id` de una entidad `tipo=hilo`; `[Hilos: hilo-<slug>]` es solo anotación humana.
 - `i9j0k1l2 [34]` se deriva de `seq: 34` para presentación y nunca es identidad.
 - Renumerar cambia solo `seq`, filtrado por `parent_id` y `hilo` cuando aplique.
 - Summaries se buscan por `(nivel, parent_id, seq[, hilo])`; el UUID físico nunca es entrada.
 
 ## Guionista
 
-### Modo estructura-novela
+Cuatro modos: `hilo`, `hilo-capitulo`, `trenzado`, `revision`. Cada uno recibe **solo** lo que necesita — nunca `diseno-hilo.md` ni `guion-hilo.md` íntegros salvo en modo `hilo`.
+
+### Modo `hilo`
 
 1. `proyecto`.
-2. Hechos de `_actos.md`, con `stable_id`, `seq`, `parent_id` y `hilo` cuando estén materializados.
+2. `hilos/hilo-<slug>/diseno-hilo.md` (decisiones firmes de diseño de este hilo).
 3. `BRIEF.md`.
-4. `config.json`, hilos activos por `stable_id` y estilo.
+4. `config.json`: hilos, estilo activo, `ultimo_hecho_seq`.
 
-### Modo capítulo — pasada 1 (beats)
+Salida: `hilos/hilo-<slug>/guion-hilo.md` — solo hechos `H_NNNN` agrupados por acto, sin beats.
+
+### Modo `hilo-capitulo`
 
 1. `proyecto`.
-2. Capítulo: `stable_id`, `seq`, `parent_id`, función y tipo de trenzado.
-3. Hilos activos: nombre, slug humano y `stable_id` canónico.
-4. Hechos por `stable_id [seq]` y `stable_id` de hilo.
-5. Últimos 5-8 beats del capítulo anterior con contrato común.
-6. Briefing de memoria y estilo.
-7. **Sin marcadores `<!-- ESCENA ... -->`**. Salida: beats en bruto, sin agrupar en escenas. Las escenas se deciden en pasada 1b.
+2. Capítulo-borrador actual: rango de hechos (`stable_id [seq]`), objetivo narrativo y tensión — campos cortos, **no** `diseno-hilo.md` ni `guion-hilo.md` íntegros.
+3. Últimos beats del capítulo-borrador anterior del mismo hilo (contrato de continuidad).
+4. Resumen compacto de entidades y relaciones relevantes (estilo `memoria`).
+5. Si el rango contiene `[D]`: `hilos/hilo-<slug>/cola_d.md` (instancias ya escritas en capítulos-borrador anteriores del mismo `[D]`, con `stable_id` + escena + resumen — no solo el conteo).
+6. IDs: asignar `seq` desde `ultimo_beat_seq`; generar `stable_id` opaco para cada beat y escena nuevos.
 
-### Modo capítulo — pasada 2 (escenas)
+Flujo:
+- **Sin `[D]` en el rango**: una sola pasada — genera beats de todos los hechos del rango y agrúpalos en escenas por coherencia de contexto. Marcador `<!-- ESCENA <stable_id>: Nombre -->`. Sin renumeración (posiciones nuevas).
+- **Con `[D]` en el rango**: primero **Checkpoint 1** — propone el plan de instancias (qué y cuántas, sin fórmula fija) sin escribir beats todavía. Tras validación del director + usuario: genera la secuencia completa (lineales + `[D]` entretejidos) en una sola pasada y agrupa en escenas — **Checkpoint 2** revisa el resultado contra `cola_d.md`.
 
-1. `proyecto`, capítulo e hilos activos por `stable_id`.
-2. `capitulos/cap-NN-slug/guion.md` con los beats ya generados en pasada 1.
-3. Criterio de agrupación: coherencia de contexto (mismo espacio, tiempo y cast). Una escena puede envolver beats de varios hechos del mismo hilo; un hecho largo puede fraccionarse en dos escenas si hay corte de contexto.
-4. En puente, cada escena = bloque de hilo delimitado por `---`. En espejo, las escenas de los dos hilos se alternan.
-5. Generar `stable_id` opaco para cada escena nueva.
-6. Insertar `<!-- ESCENA <stable_id>: Nombre | hilo: <stable_id_hilo> -->` antes del primer beat de cada escena. **No modificar los beats** — solo agrupar.
-7. No hay renumeración: la posición de los beats no cambia.
+Salida: `hilos/hilo-<slug>/cap-NN/guion.md`. El director (no el guionista) actualiza `cola_d.md` tras el Checkpoint 2.
 
-### Modo capítulo — pasada 3, inyección `[D]`
+### Modo `trenzado`
 
-1. `proyecto`, capítulo e hilos activos por `stable_id`.
-2. `cola_d.md` con `tras <stable_id> (B_NNNN) en Escena N`.
-3. Beats anterior y posterior con contrato común.
-4. Escena receptora: `stable_id`, `seq`, `parent_id`, `hilo`, objetivo, tensión y tono.
-5. `BRIEF.md`.
-6. Instrucción de `renumber-siblings`: cambiar solo `seq` dentro del mismo `parent_id` e hilo.
+1. `proyecto`.
+2. Todos `hilos/hilo-*/cap-NN/guion.md` (contenido **completo**: beats, personajes, objetos — no solo metadatos; `[D]` ya resuelto).
+3. `guion-novela.md`, sección `## Puntos de conexión` — pista temática escrita en FASE 0, antes de que existiera ninguna escena; no es una lista a verificar mecánicamente.
+4. `config.json.hilos` (stable_id de cada hilo).
+5. Reglas de alternancia (skill `trenzado-narrativo`): máx. 2 hilos/capítulo, racha máx. 3 caps sin un hilo, clímax en capítulo exclusivo.
+
+Tarea: descubre en el contenido real dónde se materializa cada conexión —y cualquier eco orgánico no previsto—, no solo lo ya anotado.
+
+Salida: mueve cada bloque de escena completo a `capitulos/cap-NN-slug/guion.md` (`renumber-siblings` en `parent_id`/`seq`; `stable_id` no cambia), genera la tabla `## Trenzado`, reescribe `## Puntos de conexión` con `stable_id` de escena concretos.
+
+### Modo `revision`
+
+1. `proyecto`.
+2. Tramo: beats `[stable_id...]` con sus acciones actuales.
+3. Contexto bilateral: 5-8 beats antes y después del tramo.
+4. `AGENTS.md`.
+5. Si `estado==escritura`: briefing ligero de `memoria` (~300 tokens).
+6. Instrucción concreta: qué problema corregir (costura cross-hilo, transición brusca, cobertura insuficiente, tono inconsistente).
+
+Salida: reemplaza solo el tramo indicado, en el mismo archivo leído (`capitulos/cap-NN-slug/guion.md` tras el trenzado, o `hilos/hilo-<slug>/cap-NN/guion.md` si es previo). Mismos `stable_id` salvo que la instrucción pida añadir/eliminar beats.
 
 ## Escritor
 
@@ -144,4 +157,3 @@ Carga `cronista-ops`, `qdrant` y `auditoria-neo4j`. Persiste summaries por `(niv
 2. `stable_id` si actualiza; UUID nuevo opaco si crea.
 3. Hilos afectados por `stable_id`.
 4. Contexto narrativo, campos y registro de desarrollo.
-

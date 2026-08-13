@@ -36,12 +36,14 @@ fichas/<tipo>_<slug>.md (entidades en markdown, primarias en Qdrant)
 
 ### FASE 0 — Diseño global (`estado: diseno`)
 
+Los pasos internos de esta fase usan letras (`0.a`–`0.d`) para no chocar con la numeración de las fases mayores que siguen (`FASE 0.1`, `FASE 1`...).
+
 | Paso | Agente | Skill | Entrada | Salida |
 |------|--------|-------|---------|--------|
-| 0.0 Referencias | `director` | — | `referencias/` (si existe) | **Solo si `referencias/` existe:** leer los archivos Markdown directamente (sin Qdrant). Extraer información relevante para personajes, mundo y conflictos que informará las decisiones de hechos. **Qdrant no se alimenta aquí** — la ingestión con índice estructurado ocurre en FASE 0.1 paso 0.1.2. |
-| 0.1 `[D]` | `director` | `scaffolding-hecho`, `hechos-distribuidos` | `_actos.md` | Anotaciones `🎬 Director:` bajo hechos `[D]` en `_actos.md` |
-| 0.2 Seed entidades | `director` → `entidades` (×N) + `neo4j.py` | — | `_actos.md`, `BRIEF.md` | Entidades básicas en Qdrant (stable_id, tipo, nombre, fijo). Relaciones básicas en Neo4j |
-| 0.3 Estructura | `guionista` modo `estructura-novela` | `estructura-narrativa`, `beats-estructura`, `plantilla-guion` [+ `hechos-distribuidos` si hay `[D]`] | `BRIEF.md`, `_actos.md` (con anotaciones) | `guion-novela.md` (actos, capítulos, hechos estimados + inyección `[D]`) |
+| 0.a Referencias | `director` | — | `referencias/` (si existe) | **Solo si `referencias/` existe:** leer los archivos Markdown directamente (sin Qdrant). Extraer información relevante para personajes, mundo y conflictos que informará las decisiones de hechos. **Qdrant no se alimenta aquí** — la ingestión con índice estructurado ocurre en FASE 0.1 paso 0.1.2. |
+| 0.b `[D]` | `director` | `scaffolding-hecho`, `hechos-distribuidos` | `_actos.md` | Anotaciones `🎬 Director:` bajo hechos `[D]` en `_actos.md` |
+| 0.c Seed entidades | `director` → `entidades` (×N) + `neo4j.py` | — | `_actos.md`, `BRIEF.md` | Entidades básicas en Qdrant (stable_id, tipo, nombre, fijo). Relaciones básicas en Neo4j |
+| 0.d Estructura | `guionista` modo `estructura-novela` | `estructura-narrativa`, `beats-estructura`, `plantilla-guion` [+ `hechos-distribuidos` si hay `[D]`] | `BRIEF.md`, `_actos.md` (con anotaciones) | `guion-novela.md` (actos, capítulos, hechos estimados + inyección `[D]`) |
 
 **Gate:** Cada capítulo tiene función narrativa clara. Hechos estimados asignados.
 
@@ -53,7 +55,7 @@ Objetivo: revisar los hechos del guion a la luz de las referencias leídas, ante
 
 | Paso | Agente | Acción |
 |------|--------|--------|
-| 0.1.1 Revisión de hechos | director + usuario | El director presenta los hechos de `guion-novela.md` al usuario. A la luz de las referencias leídas (paso 0.0), el director propone ajustes: añadir, eliminar, fusionar, dividir o reescribir hechos. El usuario confirma, rechaza o pide cambios. El director aplica vía guionista si la reescritura es estructural. Itera hasta confirmación. |
+| 0.1.1 Revisión de hechos | director + usuario | El director presenta los hechos de `guion-novela.md` al usuario. A la luz de las referencias leídas (paso 0.a), el director propone ajustes: añadir, eliminar, fusionar, dividir o reescribir hechos. El usuario confirma, rechaza o pide cambios. El director aplica vía guionista si la reescritura es estructural. Itera hasta confirmación. |
 | 0.1.2 Ingesta referencias | `entidades` (×N) | **Solo si `referencias/` existe:** ingestar cada archivo como `tipo=referencia` en Qdrant (`fijo` = índice estructurado con `resumen` + `temas[]`, sin `dinamico`). El archivo original queda intacto en `referencias/` como fuente legible. |
 | 0.1.3 Fichas básicas | `entidades` (×N) | Fichas básicas en Qdrant + `fichas/<tipo>_<slug>.md` para entidades clave |
 

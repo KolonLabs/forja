@@ -163,7 +163,7 @@ def validate_type_and_rol(type_: str, rol: Optional[str]) -> None:
         for t in sorted(ALL_VALID_TYPES):
             print(f"    {t}", file=sys.stderr)
         print(
-            f"  → The cronista must pause and notify the user. "
+            f"  -> The cronista must pause and notify the user. "
             f"The user decides whether to add '{type_}' to the vocabulary.",
             file=sys.stderr,
         )
@@ -190,7 +190,7 @@ def validate_type_and_rol(type_: str, rol: Optional[str]) -> None:
                 file=sys.stderr,
             )
             print(
-                f"  → The cronista must pause and notify the user. "
+                f"  -> The cronista must pause and notify the user. "
                 f"The user decides whether to add '{rol}' to the vocabulary.",
                 file=sys.stderr,
             )
@@ -398,7 +398,7 @@ def cmd_export(args):
     else:
         with open(args.output, "w", encoding="utf-8") as f:
             json.dump(backup, f, ensure_ascii=False, indent=2)
-        print(f"exported  {args.proyecto}  →  {args.output}  ({len(relationships)} relationships)")
+        print(f"exported  {args.proyecto}  ->  {args.output}  ({len(relationships)} relationships)")
 
 
 def cmd_import(args):
@@ -448,8 +448,6 @@ def cmd_import(args):
             "proyecto":  args.proyecto,
         }
         for k, v in rel_props.items():
-            if k == "proyecto":
-                continue
             set_clause_parts.append(f"r.{k} = ${k}")
             params[k] = v
 

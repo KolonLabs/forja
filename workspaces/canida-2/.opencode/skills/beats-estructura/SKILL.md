@@ -20,13 +20,13 @@ description: Use ONLY when the user is proponiendo, revisando o desarrollando be
 ## Formato de beat
 
 ```text
-⬜ stable_id [seq] — acción [Tono — EXTENSIÓN] [Personajes] [Zona: nombre] [Hilos: hilo-S]
+⬜ stable_id [seq] — acción [Tono — EXTENSIÓN] [Personajes] [Zona: nombre] [Hilos: hilo-<slug>]
 ```
 
 Ejemplo canónico:
 
 ```text
-⬜ a1b2c3d4 [34] — Laura se arrodilla ante Diego [Opresivo — BREVE] [Laura, Diego] [Zona: salón] [Hilos: hilo-S]
+⬜ a1b2c3d4 [34] — Laura se arrodilla ante Diego [Opresivo — BREVE] [Laura, Diego] [Zona: salón] [Hilos: hilo-<slug>]
 ```
 
 - `a1b2c3d4`: `stable_id` inmutable.
@@ -69,7 +69,7 @@ No renumeres beats de otra escena o bloque de hilo por compartir el mismo `seq`.
 
 ## Reglas de hilos
 
-- Todo beat anota al menos un hilo mediante `[Hilos: hilo-S]`.
+- Todo beat anota al menos un hilo mediante `[Hilos: hilo-<slug>]`.
 - Un beat puede pertenecer a varios hilos cuando estos interactúan.
 - Los beats de hilos distintos se trenzan en el guion del capítulo.
 - No se fuerza alternancia 1:1; manda la tensión narrativa.

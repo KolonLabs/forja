@@ -48,9 +48,11 @@ Un hecho que no se puede descomponer en al menos 3 beats narrativos distintos pr
 
 ## Distribución en capítulos
 
-Los hechos se agrupan en capítulos según la tabla de trenzado (novela multi-hilo) o la estructura de `guion-novela.md` (novela simple). Cada capítulo tiene:
+**Novela multi-hilo:** los hechos se agrupan primero en **capítulos-borrador**, dentro de cada hilo, por coherencia de contexto (mismo espacio/tiempo/cast) — no por cuota fija de hechos (FASE 0.3). Cada capítulo-borrador vive en `hilos/hilo-<slug>/cap-NN/` y ahí se generan sus beats y escenas. Las escenas resultantes —no los hechos— son la unidad que se trenza después en capítulos globales reales (FASE 0.4), vía la tabla de Trenzado de `guion-novela.md`.
 
-- Un bloque de hechos asignados desde el guion global
+**Novela simple:** los hechos se asignan directamente a capítulos según la estructura de `guion-novela.md`, sin capítulos-borrador intermedios.
+
+En ambos casos:
 - Los hechos se numeran globalmente (continuando desde `config.json.ultimo_hecho_seq`)
 - Los beats de cada hecho también son globales (`config.json.ultimo_beat_seq`)
 

@@ -8,9 +8,7 @@ Referencia para **director** y subagentes. Rutas en `MAPA.md`. Fases en `PIPELIN
 
 1. **Quién escribe qué:** solo el agente indicado en la columna «Escribe» modifica ese archivo.
 2. **Briefing de spawn:** el director pasa siempre rutas relativas al workspace, IDs (`H_`/`B_`), y `Modo`.
-3. **IDs:** asignar desde `config.json` → `ultimo_hecho_seq` / `ultimo_beat_seq`. Tras asignar, incrementar en el archivo que creó el ID.
-   - **Novela Simple:** IDs globales `H_NNNN`, `B_NNNN` (4 dígitos, nunca se reinician).
-   - **Relatos:** IDs locales `H_NN`, `B_NN` por relato.
+3. **IDs:** asignar desde `config.json` → `ultimo_hecho_seq` / `ultimo_beat_seq`. Tras asignar, incrementar en el archivo que creó el ID. IDs globales `H_NNNN`, `B_NNNN` (4 dígitos, nunca se reinician).
 4. **Estados en guion:** `⬜` → `🔄` (al empezar beat) → `✅` (validador aprueba). Lo marca el **director** tras cada beat.
 5. **Backup** antes de sobrescribir archivos con contenido existente.
 
@@ -20,28 +18,19 @@ Referencia para **director** y subagentes. Rutas en `MAPA.md`. Fases en `PIPELIN
 
 | Agente | Invocado por | Lee | Escribe | Invoca | Modelo |
 |--------|--------------|-----|---------|--------|--------|
-| **director** | usuario `/generar`, `/revisar`, `/expandir`, `/publicar`, `/refinar-hechos`, `/validar-hechos`, `/revisar-guion` | `PIPELINE.md`, `MAPA.md`, `config.json`, `BRIEF.md`, `AGENTS.md`, `contexto.md` o `contexto_narrativo.md`, guiones según fase | `config.json`, `contexto.md` o `contexto_narrativo.md`, estados en guiones, `fichas/` (relato) | guionista, escritor, validador, integrador, memoria, cronista, entidades, auditor-beats | `deepseek-v4-pro` |
-| **guionista** | director | Briefing + archivos del modo (ver tabla modos abajo) | Guiones según modo y escala | — | `opencode/claude-sonnet-5` |
+| **director** | usuario `/generar`, `/revisar`, `/expandir`, `/publicar`, `/refinar-hechos`, `/validar-hechos`, `/revisar-guion` | `PIPELINE.md`, `MAPA.md`, `config.json`, `BRIEF.md`, `AGENTS.md`, `contexto.md`, guiones según fase | `config.json`, `contexto.md`, estados en guiones | guionista, escritor, validador, integrador, memoria, cronista, entidades, auditor-beats | `deepseek-v4-pro` |
+| **guionista** | director | Briefing + archivos del modo (ver tabla modos abajo) | Guiones según modo | — | `opencode/claude-sonnet-5` |
 | **auditor-beats** | director | `guion.md` o `guion-novela.md`, `_actos.md`, `AGENTS.md` | — (read-only, diagnóstico al director) | — | `deepseek-v4-pro` |
 | **escritor** | director | Briefing + `guion.md` (beat), `contexto.md`, `fichas/` relevantes, `AGENTS.md`, estilo skill | `draft.md` (append sección `## B_NNNN`) | — | `deepseek-v4-pro` |
 | **validador** | director | Briefing + texto del beat, `guion.md`, `contexto.md`, `fichas/` | — (solo JSON) | — | `opencode/glm-5.2` |
 | **integrador** | director | Briefing + `draft.md` (beat), JSON validador | `draft.md` (reemplaza sección beat) | — | `deepseek-v4-pro` |
-| **memoria** | director (solo novelas) | `config.json`, especificación de entidades del cap | — (solo briefing de ~600 tokens) | — | `deepseek-v4-flash` |
-| **cronista** | director (solo novelas, cierre de cap) | `draft.md` completo, `config.json` | Qdrant (summaries L1-L4 + entidades `dinamico`), Neo4j (relaciones por escena), `config.json` (contadores) | — | `deepseek-v4-flash` |
-| **entidades** | director (ambas escalas) | Nombre, tipo, descripción de entidad + contexto narrativo | Qdrant (`upsert-entity`, novelas) + `fichas/<tipo>_<slug>.md` (ambas) | — | `deepseek-v4-pro` |
+| **memoria** | director | `config.json`, especificación de entidades del cap | — (solo briefing de ~600 tokens) | — | `deepseek-v4-flash` |
+| **cronista** | director (cierre de cap) | `draft.md` completo, `config.json` | Qdrant (summaries L1-L4 + entidades `dinamico`), Neo4j (relaciones por escena), `config.json` (contadores) | — | `deepseek-v4-flash` |
+| **entidades** | director | Nombre, tipo, descripción de entidad + contexto narrativo | Qdrant (`upsert-entity`) + `fichas/<tipo>_<slug>.md` | — | `deepseek-v4-pro` |
 
 ---
 
-## Guionista — modos y contrato por escala
-
-### Relato
-
-| Modo | Lee | Escribe | Actualiza config |
-|------|-----|---------|------------------|
-| `estructura` | `BRIEF.md, _actos.md`, `AGENTS.md` | `guion.md` (escenas, sin beats) | — (director pone `estado=fichas`) |
-| `escena` | `guion.md` (escena actual), `AGENTS.md` | `guion.md` (beats bajo hechos) | — |
-
-### Novela Simple
+## Guionista — modos y contrato
 
 | Modo | Lee | Escribe | Actualiza config |
 |------|-----|---------|------------------|
@@ -56,7 +45,6 @@ Referencia para **director** y subagentes. Rutas en `MAPA.md`. Fases en `PIPELIN
 
 | Modo | Lee | Escribe | Skills |
 |------|-----|---------|--------|
-| `atomizar` | `guion.md` o `capitulos/cap-NN-slug/guion.md`, `_actos.md`, `AGENTS.md` | — (diagnóstico al director) | `beats-estructura` |
 | `cobertura` | `guion.md` o `capitulos/cap-NN-slug/guion.md`, `_actos.md`, `AGENTS.md` [+ `memoria` si `estado==escritura`] | — (diagnóstico al director) | `beats-estructura`, `estructura-narrativa` |
 | `atomizar` | `guion.md` o `capitulos/cap-NN-slug/guion.md`, `_actos.md`, `AGENTS.md` | — (diagnóstico al director) | `beats-estructura` |
 | `transiciones` | `guion.md` o `capitulos/cap-NN-slug/guion.md`, `_actos.md`, `AGENTS.md` [+ `memoria` si `estado==escritura`] | — (diagnóstico al director) | `validacion-coherencia`, `beats-estructura` [+ `hechos-distribuidos` si hay `[D]`] |
@@ -80,11 +68,11 @@ No modificar archivos
 |-------|------------|-----------------|--------|
 | `mecanica-prosa` | automática | escritor, integrador | Formato de prosa: guiones de diálogo, párrafos, ⚡, cursiva |
 | `beats-estructura` | automática | guionista, escritor (lectura) | Formato `B_NNNN` — acción. `[Tono — EXTENSIÓN]` |
-| `hechos-estructura` | automática (solo novelas) | guionista | Formato `H_NNNN` — hecho narrativo |
+| `hechos-estructura` | automática | guionista | Formato `H_NNNN` — hecho narrativo |
 | `tonos-beat` | automática | guionista (asignar), escritor (ejecutar) | Catálogo de 15 tonos + reglas BREVE/MEDIA/EXTENSA |
 | `estructura-narrativa` | automática | guionista | Jerarquía: actos → capítulos → escenas → beats |
-| `plantilla-guion` | automática | guionista | Estructura de archivos de guion (simple) |
-| `plantilla-ficha` | automática | entidades, director (relato) | Estructura FIJO/DINÁMICO para 10 tipos de entidad |
+| `plantilla-guion` | automática | guionista | Estructura de archivos de guion |
+| `plantilla-ficha` | automática | entidades | Estructura FIJO/DINÁMICO para 10 tipos de entidad |
 | `plantilla-personaje` / `plantilla-lugar` / `plantilla-objeto` / `plantilla-animal` / `plantilla-arco` / `plantilla-evento` / `plantilla-organizacion` | automática | entidades | Campos obligatorios por tipo de entidad |
 | `estilo-explicito` / `estilo-contemporaneo` / `estilo-erotico` / `estilo-fantasia` / `estilo-noir` / `estilo-romantico` / `estilo-thriller` | automática | escritor, integrador, validador (tono) | Voz narrativa: vocabulario, ritmo, crudeza, foco sensorial |
 | `estilo-prosa` | automática | director (crear/validar estilos) | Meta-skill: estructura que debe tener un skill de estilo |
@@ -96,47 +84,16 @@ No modificar archivos
 | `consistencia-narrativa` | manual (`/revisar`) | director → validador | Auditoría de coherencia entre actos, capítulos, arcos |
 | `contexto-subagente` | automática | director (antes de spawn) | Define qué información pasar a cada subagente |
 | `desarrollo-narrativa` | manual (`/generar` en escritura) | director, escritor | Guía para desarrollar escenas y beats |
-| `fichas-personajes` | manual (crear/editar fichas) | director, entidades | Guía para crear perfiles NEXUS/HELIX/VELA/STRIX/AXIOM |
-| `qdrant` | automática (solo novelas) | memoria, cronista, entidades | Schema y guía operativa de Qdrant |
-| `neo4j` | automática (solo novelas) | memoria, cronista, entidades | Schema y guía operativa de Neo4j |
-| `auditoria-neo4j` | automática (solo novelas) | cronista | Protocolo de auditoría draft ↔ grafo |
+| `fichas-personajes` | manual (crear/editar fichas) | director, entidades | Guía para crear perfiles de personaje |
+| `qdrant` | automática | memoria, cronista, entidades | Schema y guía operativa de Qdrant |
+| `neo4j` | automática | memoria, cronista, entidades | Schema y guía operativa de Neo4j |
+| `auditoria-neo4j` | automática | cronista | Protocolo de auditoría draft ↔ grafo |
 
 ---
 
-## Caminos por fase — RELATO (4 fases)
+## Camino por fase — NOVELA SIMPLE (4 fases)
 
-```
-FASE 1 diseño
-  director → guionista(modo: estructura) → guionista(modo: escena × N)
-  IN:  BRIEF.md, _actos.md, AGENTS.md
-  OUT: guion.md (escenas + beats locales)
-  estado → "diseno" → "fichas"
-
-FASE 2 componentes
-  director: extrae entidades de guion.md
-  director → entidades (×N): crea fichas en fichas/<tipo>_<slug>.md
-  director: reconciliación (sin contradicciones entre fichas)
-  director: crea contexto_narrativo.md (vacío) + relato-draft.md (vacío)
-  OUT: fichas/ + contexto_narrativo.md + relato-draft.md
-  estado → "escritura"
-
-FASE 3 beat a beat
-  por cada beat ⬜ en guion.md:
-    director → escritor(beat, fichas, contexto_narrativo)
-    director → validador(read-only, scope completa)
-    si falla: director → integrador
-    director: ✅ en guion.md, append a relato-draft.md
-    si último beat de escena: director actualiza contexto_narrativo.md (2-3 frases)
-  estado → "publicacion"
-
-FASE 4 publicar
-  /publicar: procesa relato-draft.md → relato.md
-  (limpiar headings, convertir comentarios en ---)
-```
-
----
-
-## Caminos por fase — NOVELA SIMPLE (4 fases)
+Pasos, IN/OUT y gates completos: ver `PIPELINE.md`.
 
 ```
 FASE 0 diseño
@@ -148,7 +105,7 @@ FASE 0 diseño
 
 FASE 0.1 refinamiento de hechos
   director + usuario: revisan hechos de guion-novela.md a la luz de
-                      referencias/ leídas (paso 0.0)
+                      referencias/ leídas (paso 0.a)
                       el director propone, el usuario confirma/ajusta
                       director aplica cambios vía guionista si estructural
   director → entidades (×N): ingestar referencias/ como tipo=referencia
@@ -222,7 +179,7 @@ FASE 3 publicar
 ### → guionista
 
 ```
-Modo: [estructura | escena | estructura-novela | capitulo] [pasada: 1 | 1b]
+Modo: [estructura-novela | capitulo] [pasada: 1 | 2]
 Workspace: [cwd]
 Leer: [lista rutas relativas]
 Escribir: [ruta salida]
@@ -237,7 +194,7 @@ Estilo base: [nombre] — cargar skill estilo-<nombre>
 {{#if pasada 2}}Agrupa los beats ya generados en escenas (con independencia del hecho de origen). Genera stable_id para cada escena nueva. Inserta marcadores <!-- ESCENA <stable_id>: Nombre -->. No modifiques los beats.{{/if}}
 ```
 
-### → escritor (novela, con Qdrant)
+### → escritor
 
 ```
 Beat: B_NNNN | Hecho padre: H_NNNN
@@ -253,21 +210,6 @@ Premisa del capítulo: [extraída de guion-novela.md]
 No marcar ✅ en guion — solo prosa en draft
 ```
 
-### → escritor (relato, sin Qdrant)
-
-```
-Beat: B_NN | Escena: E_NN
-Leer: guion.md (escena actual), contexto_narrativo.md, fichas/[lista], AGENTS.md,
-      TODOS los beats ya escritos de la escena actual (desde el primero),
-      últimos 3 beats de la escena anterior (si aplica)
-Escribir: relato-draft.md — sección ## B_NN (append)
-Tono: [BREVE|MEDIA|EXTENSA] + [tono de tonos-beat]
-Estilo: [estilo_base] — cargar skill estilo-<nombre>
-Beat N de M en la escena
-⚠️ No repetir anclas sensoriales (mismo sonido, olor, textura) ya usadas en beats anteriores de la misma escena
-No marcar ✅ en guion — solo prosa en draft
-```
-
 ### → validador
 
 ```
@@ -277,7 +219,7 @@ Texto: [fragmento o ruta draft.md sección B_NNNN]
 Escena actual (modo beat): TODOS los beats ya escritos de la escena del beat en draft.md (desde el primero) + siguientes tres del guion
 Dimensiones: ["coherencia", "sensorial", ...] — lista concreta (preferido)
   o Scope: [completa|media|ligera] — formato heredado (se normaliza a dimensiones)
-Leer coherencia: contexto.md (o contexto_narrativo.md), fichas/[...], guion.md
+Leer coherencia: contexto.md, fichas/[...], guion.md
 Estilo activo: [nombre] — validar tono con skill validacion-tono + estilo-<nombre>
 Salida: solo JSON (sin editar archivos). Incluir dimensiones_evaluadas, umbral_aplicado, aprobado
 ```
@@ -348,19 +290,12 @@ Output: Qdrant (upsert-entity) + fichas/<tipo>_<slug>.md
 | `estado` | **director** | Al cerrar cada fase |
 | `ultimo_hecho_seq` | **guionista** o **director** | Al asignar nuevo H_NNNN (incrementar después de usarlo) |
 | `ultimo_beat_seq` | **guionista** o **director** | Al asignar nuevo B_NNNN |
-| `capitulos_completados` | **cronista** (novela) o **director** (relato) | Al cerrar capítulo/relato |
+| `capitulos_completados` | **cronista** | Al cerrar capítulo |
 | `ultima_modificacion` | quien escriba config | En cada actualización |
 | `version_qdrant` | **director** | Tras init Qdrant |
 | `version_neo4j` | **director** | Tras init Neo4j |
 
-**Valores posibles de `config.json.estado`:**
-
-| Estado | Relato | Novela Simple |
-|--------|:------:|:-------------:|
-| `diseno` | ✅ (FASE 1) | ✅ (FASE 0) |
-| `fichas` | ✅ (FASE 2) | ✅ (FASE 1) |
-| `escritura` | ✅ (FASE 3) | ✅ (FASE 2) |
-| `publicacion` | ✅ (FASE 4) | ✅ (FASE 3) |
+**Valores posibles de `config.json.estado`:** `diseno` (FASE 0) → `fichas` (FASE 1) → `escritura` (FASE 2) → `publicacion` (FASE 3).
 
 ---
 
@@ -374,12 +309,10 @@ Output: Qdrant (upsert-entity) + fichas/<tipo>_<slug>.md
 | Corregir prosa tras fallo | **integrador** |
 | Validar | **validador** (read-only, solo JSON) |
 | Publicar limpio | `/publicar` |
-| Crear entidades | **entidades** (novela: Qdrant + markdown; relato: solo markdown) |
+| Crear entidades | **entidades** (Qdrant + `fichas/<tipo>_<slug>.md`) |
 | Actualizar Qdrant post-escena | **cronista** |
 | Actualizar Neo4j post-escena (relaciones) | **cronista** |
 | Compilar briefing de memoria | **memoria** |
-| Escribir contexto_narrativo.md (relato) | **director** (al cerrar escena) |
-| Escribir contexto.md (novela) | **director** (al cerrar capítulo) |
-| Crear carpetas capitulos/cap-NN-slug/ | **guionista** (modo capitulo) |
-| Init Qdrant/Neo4j | **director** (scripts/qdrant.py, scripts/neo4j.py) |
-
+| Escribir `contexto.md` | **director** (al cerrar capítulo) |
+| Crear carpetas `capitulos/cap-NN-slug/` | **guionista** (modo capitulo) |
+| Init Qdrant/Neo4j | **director** (`scripts/qdrant.py`, `scripts/neo4j.py`) |

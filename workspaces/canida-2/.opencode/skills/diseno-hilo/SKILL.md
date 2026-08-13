@@ -12,10 +12,10 @@ description: Estructura y criterios para persistir las decisiones de diseño de 
 ## Ubicación
 
 ```
-workspaces/<slug>/hilos/<stable_id>/diseno-hilo.md
+workspaces/<slug>/hilos/hilo-<slug-del-hilo>/diseno-hilo.md
 ```
 
-`<stable_id>` es un UUID8 generado al crear el hilo como entidad. No usa el slug semántico `hilo-sumeria` — eso es solo el `nombre` del hilo en Qdrant.
+`hilo-<slug-del-hilo>` es el slug humano del hilo (p. ej. `hilo-aurelio`), el mismo que usa el resto del pipeline en `config.json.hilos[].slug` y en las rutas de `guion-hilo.md`, `cap-NN/` y `cola_d.md`. No es un UUID — la identidad opaca del hilo como entidad (`stable_id`, usado en Qdrant/Neo4j) es un campo aparte y nunca forma parte de la ruta del archivo.
 
 ## Cuándo escribir
 

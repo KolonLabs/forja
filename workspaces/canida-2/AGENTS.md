@@ -1,7 +1,7 @@
 # Canida 2
 
 **Workspace generado por Forja Hub.**
-**Escala:** novela-multi-hilo | **PIPELINE.md** (fases) | **MAPA.md** (rutas de datos) | **ORQUESTACION.md** (spawn agentes)
+**Escala:** novela-multi-hilo | **PIPELINE.md** (fases) | **ORQUESTACION.md** (spawn agentes)
 
 ## Reglas
 
@@ -22,7 +22,7 @@ auditoria-neo4j, beats-estructura, consistencia-narrativa, contexto-subagente, c
 
 ### Hilos
 Hilos en `config.json.hilos` y `hilos/hilo-*/`.
-`config.json.hilos[].estado` indica el progreso de cada hilo (pendiente | disenado | guion_listo).
+`config.json.hilos[].estado` indica el progreso de cada hilo (pendiente | disenado | guion_listo | beats_listos).
 
 ## Infraestructura
 Qdrant `:6333` y Neo4j `:7687` compartidos, aislados por el slug `canida-2` en los datos.

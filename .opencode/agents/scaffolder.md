@@ -330,20 +330,17 @@ Donde `$briefJson` es una variable PowerShell que contiene el string JSON comple
       "diseno_hilo_md": "# Diseno del hilo...",
       "guion_hilo_md": "# Guion del hilo..."
     }
-  ],
-  "partes": []
+  ]
 }
 ```
 
-- **Relato** y **novela-simple**: omite `hilos`, `puntos_conexion` y `partes`.
+- **Relato** y **novela-simple**: omite `hilos` y `puntos_conexion`.
 - **Novela-multi-hilo**: `hilos` obligatorio, con al menos dos hilos. Cada hilo debe tener conflicto propio y al menos un acto en `hechos`.
 - **Novela-simple**: `capitulos_estimados` obligatorio.
 - `hechos`: obligatorio para todas las escalas. Define qué debe ocurrir por acto. Las escenas y beats los genera el guionista en el workspace.
 - `_mapa`: obligatorio para todas las escalas; contiene el Markdown completo de `MAPA.md`.
 - `_hilos`: obligatorio solo en `novela-multi-hilo`; contiene exactamente una entrada por cada `hilos[].slug`, con `diseno_hilo_md` y `guion_hilo_md` no vacíos.
 - Los slugs de `hilos[]`, `_hilos[]` y los actos `hechos[].hilo` usan siempre `hilo-<kebab-case>`.
-
-Si el proyecto es **novela-multi-hilo** y no tiene partes definidas, deja `partes` como array vacío.
 
 #### 7.3 Mostrar resumen final
 

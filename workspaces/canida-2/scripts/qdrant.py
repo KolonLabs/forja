@@ -15,12 +15,16 @@ Usage:
   python3 scripts/qdrant.py upsert-beat  --proyecto SLUG --beat STABLE_ID --accion TEXT [options]
   python3 scripts/qdrant.py update-beat  --proyecto SLUG --beat STABLE_ID [--accion TEXT] [...]
   python3 scripts/qdrant.py enrich-beat  --proyecto SLUG --beat STABLE_ID --narrative TEXT
-  python3 scripts/qdrant.py upsert-summary --proyecto SLUG --nivel L1|L2|L3|L4 --id STABLE_ID --texto TEXT [options]
+  python3 scripts/qdrant.py upsert-summary --proyecto SLUG --nivel L1|L2|L3|L4 [--id STABLE_ID] --texto TEXT [options]
   python3 scripts/qdrant.py query        --proyecto SLUG --text TEXT [--limit N]
   python3 scripts/qdrant.py query-chapters-by-beat --proyecto SLUG --text TEXT [options]
   python3 scripts/qdrant.py query-l2-recent       --proyecto SLUG --current-id STABLE_ID [--last K]
   python3 scripts/qdrant.py query-l3              --proyecto SLUG [--arco arco-XX]
   python3 scripts/qdrant.py query-l4-current      --proyecto SLUG
+
+Notes:
+  - L4 is unique per proyecto and has an opaque UUID8 stable_id; --id is ignored for L4.
+  - Never locate L4 by a literal "global" id (legacy contract that collided across proyectos).
   python3 scripts/qdrant.py export   --proyecto SLUG --output FILE
   python3 scripts/qdrant.py import   --proyecto SLUG --input FILE
 
@@ -67,7 +71,7 @@ def make_point_id(stable_id: str) -> str:
 
 
 def cap_num(cap_id: str) -> int:
-    """'cap-03' → 3, 'cap-03-titulo' → 3, anything else → 0."""
+    """'cap-03' -> 3, 'cap-03-titulo' -> 3, anything else -> 0."""
     for part in cap_id.split("-")[1:]:
         try:
             return int(part)
@@ -140,12 +144,25 @@ def create_collection(name: str):
         })
 
 
-def get_existing_payload(point_id: str, collection: str = "beats") -> Optional[dict]:
+def get_existing_payload(point_id: str, collection: str = "beats",
+                         proyecto: Optional[str] = None) -> Optional[dict]:
+    """Fetch an existing payload by point ID, optionally verifying its proyecto.
+
+    When proyecto is given and the point belongs to another proyecto (possible
+    only via a stable_id collision), returns None as if the point did not exist.
+    """
     result = qdrant("POST", f"/collections/{collection}/points", {
         "ids": [point_id], "with_payload": True,
     })
     points = result.get("result", [])
-    return points[0].get("payload", {}) if points else None
+    if not points:
+        return None
+    payload = points[0].get("payload")
+    if not payload:
+        return None
+    if proyecto is not None and payload.get("proyecto") != proyecto:
+        return None
+    return payload
 
 
 # ── Text argument helpers ──────────────────────────────────────────────────────
@@ -250,7 +267,7 @@ def cmd_update_beat(args):
     # Decide re-embed strategy BEFORE touching Qdrant
     should_reembed = False
     if accion:
-        existing = get_existing_payload(point_id)
+        existing = get_existing_payload(point_id, proyecto=args.proyecto)
         if existing is not None and not existing.get("has_narrative", False):
             should_reembed = True
 
@@ -299,13 +316,23 @@ def cmd_enrich_beat(args):
 
 
 def cmd_upsert_summary(args):
+    """Create or replace a summary by stable ID.
+
+    L4 is special: it is unique per proyecto and has no meaningful stable ID,
+    so it delegates to the positional upsert. A literal shared ID like
+    "global" would collide across proyectos in the shared collection.
+    """
     summary_text = read_text(args.texto, args.texto_file)
     if not summary_text:
         print("Error: --texto or --texto-file is required", file=sys.stderr)
         sys.exit(1)
 
+    if args.nivel == "L4":
+        cmd_upsert_summary_by_position(args)
+        return
+
     if not args.id:
-        print("Error: --id is required (stable ID for the summary)", file=sys.stderr)
+        print("Error: --id is required (stable ID for the summary, except L4)", file=sys.stderr)
         sys.exit(1)
 
     fichas = resolve_fichas(read_fichas(args.fichas, args.fichas_file))
@@ -367,10 +394,10 @@ def cmd_query(args):
 
 
 def cmd_query_chapters_by_beat(args):
-    """Two-stage retrieval: beat semantic search → unique chapters → L2 summaries.
+    """Two-stage retrieval: beat semantic search -> unique chapters -> L2 summaries.
 
     Stage 1: search 'beats' collection semantically.
-    Stage 2: deduplicate by chapter (derived via beat.parent_id → scene → scene.parent_id),
+    Stage 2: deduplicate by chapter (derived via beat.parent_id -> scene -> scene.parent_id),
              fetch L2 from 'summaries' collection.
     Only chapters with beat score >= min_score are included.
     Chapters where no L2 is found are silently skipped.
@@ -557,8 +584,15 @@ def cmd_query_l3(args):
 
 
 def cmd_query_l4_current(args):
-    """Get the L4 global summary for a proyecto. Returns empty object if none."""
-    payloads = _query_summaries(args.proyecto, "L4", stable_id="global")
+    """Get the L4 summary for a proyecto. Returns empty object if none.
+
+    L4 is unique per proyecto and located by (proyecto, nivel L4); its stable_id
+    is an opaque UUID8. It must NOT be located by a literal "global" id, which
+    was the old contract and collided across proyectos in the shared collection.
+    Legacy points with stable_id="global" are still returned when they are the
+    only L4 of the proyecto.
+    """
+    payloads = _query_summaries(args.proyecto, "L4")
     if not payloads:
         print("{}")
         return
@@ -624,6 +658,9 @@ def cmd_upsert_summary_by_position(args):
     """Idempotent upsert: find by (nivel, parent_id, seq[, hilo]) and update, or create.
 
     If a summary exists at that position, update its texto. If not, create with new stable_id.
+    L4 is special: it is unique per proyecto, located by (proyecto, nivel L4) alone.
+    Its stable_id is an opaque UUID8, never a literal shared ID like "global",
+    so its point never collides across proyectos in the shared collection.
     """
     texto = read_text(args.texto, args.texto_file)
     if not texto:
@@ -633,14 +670,48 @@ def cmd_upsert_summary_by_position(args):
         print("Error: --parent-id is required (except for L4)", file=sys.stderr)
         sys.exit(1)
 
+    fichas = resolve_fichas(read_fichas(args.fichas, args.fichas_file))
+
+    if args.nivel == "L4":
+        existing = _query_summaries(args.proyecto, "L4")
+        if existing:
+            p = existing[0]
+            stable_id = p.get("stable_id", "")
+            point_id = make_point_id(stable_id)
+            payload = p.copy()
+            payload["texto"] = texto
+            payload["fichas"] = fichas
+            payload["seq"] = 0
+            payload["parent_id"] = ""
+            qdrant("POST", "/collections/summaries/points/payload?wait=true", {
+                "points": [point_id], "payload": payload,
+            })
+            print(f"updated  summaries  {args.proyecto}:L4:{stable_id}  [{point_id}]")
+        else:
+            stable_id = str(uuid.uuid4().hex[:8])
+            point_id = make_point_id(stable_id)
+            vector = embed(texto)
+            payload = {
+                "proyecto":   args.proyecto,
+                "stable_id":  stable_id,
+                "seq":        0,
+                "nivel":      "L4",
+                "parent_id":  "",
+                "texto":      texto,
+                "fichas":     fichas,
+            }
+            qdrant("PUT", "/collections/summaries/points?wait=true", {
+                "points": [{"id": point_id, "vector": vector, "payload": payload}],
+            })
+            print(f"created  summaries  {args.proyecto}:L4:{stable_id}  [{point_id}]")
+        return
+
     existing = _query_summaries_by_position(
         args.proyecto, args.nivel,
         parent_id=args.parent_id,
         hilo=args.hilo or "",
         seq=args.seq or 0,
     )
-
-    fichas = resolve_fichas(read_fichas(args.fichas, args.fichas_file))
 
     if existing:
         stable_id = existing[0].get("stable_id", "")
@@ -831,7 +902,12 @@ def cmd_update_entity(args):
 
 
 def cmd_query_entity(args):
-    """Fetch a single entity by its stable ID. Returns object or {} if not found."""
+    """Fetch a single entity by its stable ID. Returns object or {} if not found.
+
+    The point is fetched by its deterministic ID (uuid5 from stable_id), so it
+    may belong to another proyecto when stable IDs collide. The proyecto is
+    verified after fetching and a mismatched point is treated as not found.
+    """
     point_id = make_point_id(args.stable_id)
     result = qdrant("POST", "/collections/entidades/points", {
         "ids": [point_id], "with_payload": True, "with_vector": False,
@@ -841,6 +917,9 @@ def cmd_query_entity(args):
         print("{}")
         return
     p = points[0]["payload"]
+    if p.get("proyecto") != args.proyecto:
+        print("{}")
+        return
     p.pop("proyecto", None)
     print(json.dumps(p, ensure_ascii=False, indent=2))
 
@@ -937,7 +1016,7 @@ def cmd_export(args):
     else:
         with open(args.output, "w", encoding="utf-8") as f:
             json.dump(backup, f, ensure_ascii=False, indent=2)
-        print(f"exported  {args.proyecto}  →  {args.output}  "
+        print(f"exported  {args.proyecto}  ->  {args.output}  "
               f"({backup['beats_count']} beats, {backup['summaries_count']} summaries)")
 
 
@@ -1012,7 +1091,7 @@ def main():
     p = sub.add_parser("upsert-summary", help="Create or replace a summary entry (L1/L2/L3/L4)")
     p.add_argument("--proyecto",  required=True)
     p.add_argument("--nivel",     required=True, choices=["L1", "L2", "L3", "L4"])
-    p.add_argument("--id",        required=True, help="Summary stable ID: E_NNN (L1), C_NNN (L2), A_NNN (L3), global (L4)")
+    p.add_argument("--id",        help="Summary stable ID: E_NNN (L1), C_NNN (L2), A_NNN (L3). Ignored for L4 (unique per proyecto).")
     p.add_argument("--parent-id", help="Parent stable ID")
     p.add_argument("--seq",       type=int, help="Sequence number")
     p.add_argument("--hilo",      help="Hilo stable ID (multi-hilo only, for L1/L3)")
@@ -1029,7 +1108,7 @@ def main():
 
     p = sub.add_parser(
         "query-chapters-by-beat",
-        help="Two-stage: beat search → unique chapters → L2 summaries (recommended for memoria)",
+        help="Two-stage: beat search -> unique chapters -> L2 summaries (recommended for memoria)",
     )
     p.add_argument("--proyecto", required=True)
     p.add_argument("--text",      help="Query text (inline)")
@@ -1060,7 +1139,7 @@ def main():
 
     p = sub.add_parser(
         "query-l4-current",
-        help="Get the L4 global summary for a proyecto (stable_id=global)",
+        help="Get the L4 summary for a proyecto (unique per proyecto, opaque stable_id)",
     )
     p.add_argument("--proyecto", required=True)
 
@@ -1076,7 +1155,7 @@ def main():
         help="Idempotent: find by (nivel, parent_id, seq[, hilo]) and update, or create with new stable_id")
     p.add_argument("--proyecto",  required=True)
     p.add_argument("--nivel",     required=True, choices=["L1", "L2", "L3", "L4"])
-    p.add_argument("--parent-id", required=True, help="Parent stable ID")
+    p.add_argument("--parent-id", help="Parent stable ID (required except for L4)")
     p.add_argument("--seq",       type=int, help="Local sequence number under parent")
     p.add_argument("--texto",     help="Summary text (inline)")
     p.add_argument("--texto-file", help="File with summary text (- = stdin)")

@@ -744,7 +744,7 @@ function Write-AgentsMd {
 
 ### Hilos
 Hilos en ``config.json.hilos`` y ``hilos/hilo-*/``.
-``config.json.hilos[].estado`` indica el progreso de cada hilo (pendiente | disenado | guion_listo).
+``config.json.hilos[].estado`` indica el progreso de cada hilo (pendiente | disenado | guion_listo | beats_listos).
 "@
     }
 

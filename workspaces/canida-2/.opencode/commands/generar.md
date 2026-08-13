@@ -33,15 +33,19 @@ Si el estado es `correccion`, no reinicia ni reescribe el pipeline: ese workspac
 
 ### Novela simple (4 fases)
 - **FASE 0 — Diseño**: guionista genera `guion-novela.md`
+- **FASE 0.1 — Refinamiento de hechos**: revisión de hechos, ingesta de `referencias/`, fichas básicas
 - **FASE 1 — Componentes**: entidades en Qdrant + Neo4j
 - **FASE 2 — Escritura por capítulo**: memoria → guionista → beat a beat → validador global → cronista
 - **FASE 3 — Publicar**: `/publicar` genera `capitulo.md` por cap + `novela.md`
 
-### Novela multi-hilo (8 fases)
-- **FASE 0 — Diseño global**: hilos, puntos de conexión
-- **FASE 0.1-0.3 — Hilos + Trenzado**: guionista genera `guion-hilo.md` por hilo, luego tabla de trenzado
-- **FASE 1-2 — Componentes**: entidades + conexiones cross-hilo
-- **FASE 3 — Beat a beat cross-hilo**: por capítulo según trenzado
+### Novela multi-hilo (9 fases)
+- **FASE 0 — Diseño global**: hilos, puntos de conexión, entidades semilla
+- **FASE 0.1 — Refinamiento de hechos**: revisión de hechos con el usuario, ingesta de `referencias/`, fichas básicas
+- **FASE 0.2 — Hilos**: guionista (modo `hilo`) genera `guion-hilo.md` (solo hechos) por cada hilo, aislado
+- **FASE 0.3 — Beats y escenas por hilo**: guionista (modo `hilo-capitulo`) genera beats + escenas dentro de cada hilo, con checkpoints; `[D]` se resuelve aquí por completo, antes de que exista ningún capítulo global
+- **FASE 0.4 — Trenzado**: guionista (modo `trenzado`) mueve las escenas ya escritas a capítulos globales y genera la tabla de Trenzado
+- **FASE 1-2 — Componentes**: verificación del guion trenzado + entidades detalladas y conexiones cross-hilo
+- **FASE 3 — Beat a beat cross-hilo**: auditoría de costuras entre hilos, luego escritura por capítulo según la tabla de Trenzado
 - **FASE 4 — Publicar**: `/publicar` genera `capitulo.md` por cap + `novela.md`
 
 ## Output

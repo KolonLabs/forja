@@ -1,17 +1,19 @@
 ---
 name: trenzado-narrativo
-description: Define cómo entrelazar múltiples hilos narrativos independientes en capítulos. Criterios de alternancia, capítulos puente, puntos de conexión y reglas de ritmo cross-hilo. Úsalo al planificar el trenzado de una novela multi-hilo.
+description: Define cómo entrelazar múltiples hilos narrativos independientes en capítulos, a nivel de escena. Criterios de alternancia, capítulos puente/espejo, descubrimiento de puntos de conexión y reglas de ritmo cross-hilo. Úsalo en FASE 0.4 (guionista modo trenzado).
 ---
 
 # Skill: trenzado-narrativo
 
 ## Qué es el trenzado
 
-El trenzado es el proceso de decidir cómo se alternan los hilos narrativos en los capítulos de una novela. Los hilos se desarrollan primero de forma independiente y luego se entrelazan según un plan.
+El trenzado es el proceso de mover las **escenas** ya escritas de cada hilo —completas, con todos sus beats y con cualquier `[D]` ya resuelto— a los capítulos globales de la novela, decidiendo el orden y la alternancia entre hilos. Cada hilo se desarrolla primero de forma aislada (FASE 0.3, beats y escenas dentro del hilo) y solo entonces se entrelaza con los demás (FASE 0.4).
+
+La **escena** (`stable_id`, sin display numérico propio) es la unidad atómica que se mueve. El beat no se toca ni se renumera globalmente; solo cambia `parent_id`/`seq` vía `renumber-siblings` al mover el bloque de escena completo.
 
 ## Cuándo usar este skill
 
-Se carga durante la **FASE de trenzado** (nueva fase del director, después de tener todos los hilos desarrollados con sus escenas y beats). El guionista lo usa en **modo: trenzado** para generar la tabla de alternancia.
+Se carga en **FASE 0.4 — Trenzado** (`estado: trenzado`), después de que todos los hilos tengan `hilos[].estado = "beats_listos"`. El `guionista` lo usa en **modo: trenzado**; el `auditor-beats` lo usa en **modo: trenzado** para auditar la tabla ya generada (FASE 3.6).
 
 ---
 
@@ -20,7 +22,7 @@ Se carga durante la **FASE de trenzado** (nueva fase del director, después de t
 | Tipo | Descripción | Cuándo usarlo |
 |------|-------------|---------------|
 | **Exclusivo** | Un solo hilo ocupa todo el capítulo | Desarrollo profundo, clímax de hilo, presentación de personajes |
-| **Puente** | Dos hilos se alternan dentro del mismo capítulo (separados por `---`) | Acciones simultáneas en distintas épocas, revelaciones conectadas |
+| **Puente** | Dos hilos se alternan dentro del mismo capítulo (bloques separados por `---`) | Acciones simultáneas en distintas épocas, revelaciones conectadas |
 | **Espejo** | Dos hilos narran en paralelo mostrando el mismo objeto/acción en épocas distintas | Simbolismo, conexiones temáticas, foreshadowing |
 
 ---
@@ -30,53 +32,60 @@ Se carga durante la **FASE de trenzado** (nueva fase del director, después de t
 1. **Máximo 2 hilos por capítulo.** Alternar más fragmenta la lectura.
 2. **Rachas máximas.** Un hilo no debe desaparecer más de 3 capítulos seguidos. El lector olvida la tensión.
 3. **Clímax en exclusivo.** El clímax de cada hilo ocurre en un capítulo exclusivo. No se comparte el foco en el momento álgido.
-4. **Puentes con propósito.** Cada capítulo puente debe tener una razón narrativa clara (revelación compartida, contraste, conexión de objetos).
-5. **Ritmo de alternancia.** No usar el mismo patrón todo el tiempo (ej: ABABAB). Variar: A, A, B, AB, B, A, AB... La monotonía es peor que el desorden.
+4. **Puentes con propósito.** Cada capítulo puente debe tener una razón narrativa clara — una conexión real descubierta en el contenido, no forzada.
+5. **Ritmo de alternancia.** No usar el mismo patrón todo el tiempo (ej. ABABAB). Variar: A, A, B, AB, B, A, AB... La monotonía es peor que el desorden.
 
 ---
+
+## Los puntos de conexión son pista, no checklist
+
+`guion-novela.md` trae una sección `## Puntos de conexión` escrita en FASE 0, **antes de que existiera ninguna escena** — es prosa temática ("Sara contacta a Vega vía un paper académico"), no una lista mecánica a verificar una por una. En FASE 0.4 ya existe el contenido real de todas las escenas de todos los hilos, con más detalle concreto del que había en el diseño original.
+
+Tu trabajo no es solo confirmar lo ya anotado: es **leer el contenido real** y descubrir tú mismo dónde se materializa cada conexión —y cualquier eco orgánico que el diseño original no anticipó—. Al terminar, reescribes `## Puntos de conexión` sustituyendo la prosa temática por referencias concretas a `stable_id` de escena.
 
 ## Proceso de trenzado
 
-### Paso 1: Listar todos los beats de cada hilo
-Tener los beats completos de cada hilo con sus IDs, escenas y extensión.
+### Paso 1: Leer el contenido íntegro de cada hilo
 
-### Paso 2: Identificar puntos de conexión
-Para cada hilo, marcar los beats que contienen elementos que aparecen en otros hilos:
-- Objetos compartidos (la losa, el sigilo, el colgante)
-- Personajes que aparecen en varias épocas (Naamah)
-- Revelaciones que un hilo hace sobre otro (Daniel lee sobre Sumer)
+Lee `hilos/hilo-*/cap-NN/guion.md` completo — todas las escenas, con todos sus beats — de todos los hilos. No basta con metadatos o resúmenes: la conexión se descubre en el detalle concreto que solo existe ahora que hay beats escritos.
 
-### Paso 3: Agrupar beats en capítulos
-Para cada hilo, agrupar beats en capítulos coherentes (12-18 beats por capítulo).
+### Paso 2: Descubrir dónde se materializa cada conexión
 
-### Paso 4: Generar la tabla de trenzado
-Alternar capítulos de cada hilo según las reglas. Priorizar:
-1. Que los puntos de conexión de hilos distintos caigan en capítulos próximos (separados por 0-2 capítulos)
-2. Que los clímax de hilo tengan capítulos exclusivos
-3. Que ningún hilo desaparezca más de 3 capítulos
+Con `## Puntos de conexión` de `guion-novela.md` como pista temática, identifica en qué escena concreta (por `stable_id`) de cada hilo se materializa cada conexión anotada. Añade cualquier eco orgánico no previsto que detectes al leer el contenido real.
 
-### Paso 5: Validar la tabla
-Comprobar contra las reglas de alternancia. Ajustar si es necesario.
+### Paso 3: Asignar escenas a capítulos globales
+
+Agrupa escenas de uno o varios hilos en cada capítulo global, respetando las reglas de alternancia. Decide el tipo de cada capítulo (exclusivo, puente, espejo).
+
+### Paso 4: Mover los bloques de escena
+
+Para cada escena asignada: mueve el bloque completo (marcador `<!-- ESCENA <stable_id>: Nombre -->` + todos sus beats) a `capitulos/cap-NN-slug/guion.md`. Aplica `renumber-siblings` sobre `parent_id`/`seq`. El `stable_id` de la escena y de cada beat **no cambia**.
+
+### Paso 5: Generar la tabla y reescribir los puntos de conexión
+
+Genera la tabla `## Trenzado` en `guion-novela.md` y reescribe `## Puntos de conexión` con las referencias concretas descubiertas.
+
+### Paso 6: Validar la tabla
+
+Comprueba contra las reglas de alternancia (máx. 2 hilos/capítulo, racha máx. 3, clímax en exclusivo, puentes con propósito). Ajusta si hace falta.
 
 ---
 
-## Tabla de trenzado (formato de salida)
+## Tabla de trenzado (formato de salida, en guion-novela.md)
 
 ```markdown
 ## Trenzado
 
-| Capítulo | Hilo(s) | Tipo | Beats | Función |
-|----------|---------|------|-------|---------|
-| CAP_01 | hilo-sumer | Exclusivo | B_001–B_015 | Presentación de Naamah y el templo |
-| CAP_02 | hilo-sumer | Exclusivo | B_016–B_030 | El Sumo Sacerdote y el culto |
-| CAP_03 | hilo-sello | Exclusivo | B_101–B_115 | La abadesa y el convento |
-| CAP_04 | hilo-sello | Exclusivo | B_116–B_130 | La Inquisición se acerca |
-| CAP_05 | hilo-soma | Exclusivo | B_201–B_215 | Daniel en Apex, vida antes del sigilo |
-| CAP_06 | hilo-soma | Exclusivo | B_216–B_230 | Beatriz y Marcos, la oficina |
-| CAP_07 | hilo-soma + hilo-sello | Puente | B_231–B_240 | Daniel activa el sigilo / Beatriz descubre el archivo |
-| CAP_08 | hilo-sumer | Exclusivo | B_031–B_045 | Las sacerdotisas preparan el sellado |
-| ... | ... | ... | ... | ... |
+| Cap | Hilo(s) | Escenas | Hechos | Tipo | Conexiones |
+|-----|---------|---------|--------|------|------------|
+| cap-01 | hilo-a | a1b2c3d4, e5f6a7b8 | H_0001, H_0002 | exclusivo | — |
+| cap-02 | hilo-b | 11223344 | H_0031 | exclusivo | — |
+| cap-03 | hilo-a | b2c3d4e5, c3d4e5f6 | H_0003, H_0004 | exclusivo | — |
+| cap-04 | hilo-a, hilo-b | f6a7b8c9, d4e5f6a7 | H_0005, H_0032 | puente | escena f6a7b8c9 ↔ d4e5f6a7: el objeto compartido cambia de manos |
+| ... | ... | ... | ... | ... | ... |
 ```
+
+La columna **Escenas** es la unidad real que se movió al trenzar — siempre `stable_id`, nunca display. La columna **Hechos** es solo referencia de trazabilidad hacia `guion-hilo.md`; el trenzado no opera sobre ella.
 
 ---
 
@@ -84,17 +93,18 @@ Comprobar contra las reglas de alternancia. Ajustar si es necesario.
 
 - [ ] Ningún hilo ausente por >3 capítulos
 - [ ] Clímax de cada hilo en capítulo exclusivo
-- [ ] Puentes justificados (no hay puentes "porque sí")
+- [ ] Puentes justificados por una conexión real descubierta en el contenido (no hay puentes "porque sí")
 - [ ] Ritmo variado (no ABABAB monótono)
-- [ ] Puntos de conexión próximos (≤2 capítulos de distancia)
-- [ ] Total de capítulos dentro del objetivo (30-35)
-- [ ] Cada capítulo tiene 12-18 beats
+- [ ] Todas las escenas de todos los hilos asignadas a un capítulo global — sin escenas huérfanas
+- [ ] `## Puntos de conexión` referencia `stable_id` de escena, no prosa genérica
 
 ---
 
 ## Errores comunes
 
-- **Trenzar demasiado pronto.** No se trenza hasta que cada hilo está completamente desarrollado con beats.
+- **Trenzar demasiado pronto.** No se trenza hasta que cada hilo tiene `hilos[].estado = "beats_listos"` — todos sus capítulos-borrador completos, con beats y escenas.
+- **Verificar en vez de descubrir.** Tratar `## Puntos de conexión` como una lista cerrada a comprobar, en vez de leer el contenido real para encontrar dónde se materializa y qué ecos no previstos aparecieron.
 - **Puentes vacíos.** Un capítulo con dos hilos que no se relacionan es dos medios capítulos, no un puente.
-- **Hilo olvidado.** Si un hilo desaparece 5 capítulos, el lector ha perdido el hilo emocional.
+- **Hilo olvidado.** Si un hilo desaparece varios capítulos seguidos, el lector ha perdido el hilo emocional.
 - **Clímax compartido.** El momento cumbre de un hilo no debería competir con otro clímax en el mismo capítulo.
+- **Trenzar a nivel de hecho o de beat suelto.** La unidad que se mueve es la escena completa, con todos sus beats — nunca hechos ni beats individuales fuera de una escena.

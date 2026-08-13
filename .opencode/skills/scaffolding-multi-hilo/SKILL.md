@@ -87,8 +87,6 @@ Puntos de conexión que han emergido de la conversación.
 
 Capítulos totales estimados (basados en lo descrito).
 
-Partes (si la novela lo pide).
-
 ### Estructura del `_actos.md` (multi-hilo)
 
 El archivo `_actos.md` para multi-hilo debe usar la jerarquía `Hilo → Acto → Hechos`. Esto es diferente de novela-simple (que usa `Acto → Hechos` plano).

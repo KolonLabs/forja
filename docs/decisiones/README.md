@@ -30,3 +30,4 @@ Este directorio conserva decisiones arquitectonicas y operativas que deben sobre
 | [0015](0015-reconstruccion-editorial-en-importacion-de-proyectos.md) | La importación reconstruye un argumento confirmado desde evidencia, sin convertir hipótesis en hechos recuperados. | Aceptada |
 | [0016](0016-url-publicas-como-fuentes-de-importacion.md) | La importación admite rutas locales y URL HTTPS públicas trazables, con límites de red. | Aceptada |
 | [0017](0017-contrato-de-draft-y-estado-terminal-en-novelas.md) | Las novelas terminan en `finalizado`, el draft usa un único encabezado `stable_id [seq]` y cada escala recibe solo sus artefactos. | Aceptada |
+| [0018](0018-aislamiento-multi-tenant-qdrant-neo4j-y-contrato-l4.md) | El L4 es único por proyecto con identidad opaca; las lecturas por ID físico verifican proyecto; el import de Neo4j escribe `r.proyecto`. | Aceptada |

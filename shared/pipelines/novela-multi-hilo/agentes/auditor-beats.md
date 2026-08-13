@@ -27,7 +27,7 @@ Recibes briefing con: `Modo`, `Leer`.
 | Modo | Skills |
 |------|--------|
 | `atomizar` | `beats-estructura` |
-| `transiciones` | `validacion-coherencia`, `beats-estructura` [+ `hechos-distribuidos` si hay `[D]`] |
+| `transiciones` | `validacion-coherencia`, `beats-estructura` [+ `validacion-cross-hilo` si ≥2 hilos, en FASE 3.2] |
 | `limpieza` | `beats-estructura`, `mecanica-prosa` |
 | `cobertura` | `beats-estructura`, `estructura-narrativa` |
 | `trenzado` | `trenzado-narrativo`, `diseno-hilo` |
@@ -85,21 +85,15 @@ Para cada par de beats consecutivos (B_N → B_N+1):
 
 **Memoria (solo escalas con Qdrant):** si la escala es novela y `config.json.estado == "escritura"`, carga una consulta ligera a `memoria` (~300 tokens) con las entidades relevantes. Verifica que las transiciones entre beats no contradicen el estado acumulado de los personajes ni las relaciones registradas en Neo4j.
 
-### Beats `[D]` inyectados
+### Costuras cross-hilo (capítulo ya ensamblado)
 
-Los beats provenientes de hechos distribuidos `[D]` se inyectaron en escenas existentes. Para cada inyección, verifica:
+Cuando te invocan en FASE 3.2 (antes de la auditoría general), el foco es distinto: el capítulo llegó aquí con sus escenas **ya generadas dentro de cada hilo** (FASE 0.3) y **ya movidas** al capítulo global (FASE 0.4). Los `[D]` ya se resolvieron por completo en FASE 0.3 — ningún beat conserva marca `[D]`, son indistinguibles de los lineales, y no hay nada que verificar sobre ellos aquí.
 
-- **¿El beat inyectado fluye con el beat anterior y posterior?** Si no, sugiere ajuste de colocación o beat puente adicional.
-- **¿El beat inyectado duplica información o acción de un beat adyacente?** Si sí, sugiere fusión o eliminación del más débil.
+Lo que sí debes auditar es la **costura**: el punto exacto donde termina un bloque de escenas de un hilo y empieza el de otro (separador `---` en capítulos puente, o alternancia en espejo). Cada bloque se escribió en una llamada independiente al guionista, sin ver el contenido del otro hilo.
 
-Además, aplica estas **reglas estrictas** del skill `hechos-distribuidos`:
-
-- **Sin escenas propias:** ¿Existe alguna escena cuyo único contenido sean beats `[D]` sin ningún hecho lineal? → 🔴 Violación. Reporta la escena.
-- **No consecutivas:** ¿Dos instancias del mismo `[D]` son beats consecutivos sin un beat lineal entre ellas? → 🔴 Violación. Reporta.
-- **Misma escena justificada:** ¿Dos instancias del mismo `[D]` comparten escena pero están intercaladas con beats lineales? → ✅ Aceptable si el director lo ha justificado en sus anotaciones.
-- **Sin hechos inventados:** ¿Aparece algún H_NNNN que no existe en `_actos.md`? → 🔴 Violación. Reporta.
-- **Respetar el rango:** ¿Algún beat `[D]` está en una escena cuyo hecho lineal está fuera del rango H_XX–H_YY? → 🟡 Violación. Reporta.
-- **Reparto equilibrado:** ¿Todas las instancias de un `[D]` están concentradas en el mismo tramo del rango (ej. las 3 al final) sin cubrir el resto? → 🟡 Advertencia. Sugiere redistribuir.
+1. **¿El último beat de un bloque de hilo cierra con intención, o simplemente se corta?** Si no hay una nota de cierre (aunque sea mínima), sugiere un ajuste del último beat.
+2. **¿El primer beat del bloque siguiente reancla espacio, tiempo y cuerpo?** El lector viene de otra época/POV — si el beat asume continuidad que no existe, repórtalo.
+3. **¿El corte funciona como puente/espejo real, o es arbitrario?** Si es espejo, verifica que hay paralelismo temático reconocible entre lo que cierra un bloque y lo que abre el siguiente.
 
 ### Output
 
@@ -226,8 +220,8 @@ Detectas problemas en la tabla de Trenzado de `guion-novela.md`. **Solo aplica e
 1. **Hilos huérfanos**: ¿hay algún hilo en `config.json.hilos[]` que no aparece en la tabla de Trenzado? → 🔴 Violación. Reporta el hilo ausente.
 2. **Racha máxima**: ¿hay más de 3 capítulos consecutivos sin un hilo determinado? → 🟡 Advertencia. Reporta el hilo y el rango de capítulos.
 3. **Densidad por capítulo**: ¿hay capítulos con más de 2 hilos activos? → 🟡 Advertencia. Reporta.
-4. **Hechos sin hilo**: ¿hay hechos en la tabla que no están asignados a ningún hilo? → 🔴 Violación. Reporta las filas.
-5. **Conexiones declaradas vs reales**: ¿la columna «Conexiones» menciona entidades (`objeto_x`, `personaje_y`) que no existen en `fichas/`? → 🔴 Violación. Reporta.
+4. **Escenas sin capítulo**: ¿hay escenas en `hilos/*/cap-NN/guion.md` (por `stable_id`) que no aparecen en ningún `capitulos/cap-NN-slug/guion.md`? → 🔴 Violación. Reporta las escenas huérfanas.
+5. **Conexiones por stable_id**: ¿la columna «Conexiones» de la tabla referencia `stable_id` de escena real, o quedó como prosa genérica sin materializar? → 🔴 Violación si sigue en prosa temática tras el trenzado. Reporta.
 6. **Capítulo exclusivo para clímax**: ¿el clímax de cada hilo ocurre en un capítulo de tipo `exclusivo`? → 🟡 Advertencia si no.
 
 ### Output

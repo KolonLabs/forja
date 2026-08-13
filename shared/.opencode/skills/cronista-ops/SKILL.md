@@ -17,7 +17,7 @@ Este skill documenta cómo operar sobre Qdrant y Neo4j para gestionar la memoria
 | Escena/bloque (L1) | UUID8 | `E_{seq:03d}` → e1e2e3e4 |
 | Capítulo (L2) | UUID8 | `C_{seq:03d}` → c1c2c3c4 |
 | Acto (L3) | UUID8 | `A_{seq:03d}` → a0a1a2a3 |
-| Novela (L4) | UUID8 | `global` |
+| Novela (L4) | UUID8 | L4 (único) |
 | Entidad (personaje, lugar, etc.) | UUID8 | (por nombre) |
 
 - **`stable_id` (UUID8) es inmutable.** No cambia al renumerar.
@@ -27,7 +27,7 @@ Este skill documenta cómo operar sobre Qdrant y Neo4j para gestionar la memoria
 ### Colecciones Qdrant
 
 - **`beats`**: cada beat con su acción, tono, extensión, prosa y entidades referenciadas.
-- **`summaries`**: niveles L1-L4. El nivel L4 es único (stable_id="global").
+- **`summaries`**: niveles L1-L4. El nivel L4 es único por proyecto y su `stable_id` es un UUID8 opaco: nunca se usa el literal `"global"`, que colisionaba entre proyectos en la colección compartida.
 - **`entidades`**: personajes, lugares, objetos, hilos, etc. Con `tipo` y `tags`.
 
 ### Niveles en `summaries`
@@ -35,7 +35,7 @@ Este skill documenta cómo operar sobre Qdrant y Neo4j para gestionar la memoria
 - **L1**: escena o bloque de hilo dentro de un capítulo. Tiene `parent_id` apuntando al L2.
 - **L2**: capítulo. Tiene `parent_id` apuntando al L3 (acto).
 - **L3**: acto. Tiene `parent_id` apuntando al L4 (novela). Si es multi-hilo, tiene `hilo` apuntando al hilo.
-- **L4**: novela. `parent_id` vacío. `stable_id = "global"`.
+- **L4**: novela. `parent_id` vacío. `stable_id` UUID8 opaco. Se localiza por `(proyecto, nivel L4)`, nunca por un id literal.
 
 ### Regla fundamental de búsqueda
 
@@ -174,8 +174,8 @@ Esto permite al cronista y al director reintentar operaciones sin crear duplicad
 
 | Operación | Secuencia de comandos |
 |-----------|----------------------|
-| Seed de acto (L3) | `upsert-summary-by-position --nivel L3 --parent-id global --seq N --texto "..." [--hilo <uuid>]` |
-| Seed de novela (L4) | `upsert-summary-by-position --nivel L4 --parent-id "" --seq 0 --texto "..."` (crea con nuevo stable_id si no existe) |
+| Seed de acto (L3) | `upsert-summary-by-position --nivel L3 --parent-id <L4_stable_id> --seq N --texto "..." [--hilo <uuid>]` |
+| Seed de novela (L4) | `upsert-summary-by-position --nivel L4 --texto "..."` (idempotente: crea o actualiza el L4 único del proyecto) |
 | Seed de capítulo (L2) | `upsert-summary-by-position --nivel L2 --parent-id <L3_stable_id> --seq N --texto "..."` |
 | Seed de escena (L1) | `upsert-summary-by-position --nivel L1 --parent-id <L2_stable_id> --seq N --texto "..." [--hilo <uuid>]` |
 | Reordenar escenas dentro de un capítulo | `renumber-siblings --nivel L1 --parent-id <L2_stable_id> --from-seq 5 --direction up\|down` |

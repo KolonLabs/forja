@@ -67,8 +67,8 @@ Pasos:
    3. Actualizar `dinamico` de entidades con cambio inequívoco en la escena (`update-entity --dinamico ...`).
 3. **Actualizar summaries superiores** tras procesar todas las escenas:
    - L2 del capítulo: `upsert-summary-by-position --nivel L2 --parent-id <L3> --seq <N> --texto "..."`
-   - L3 si cierra arco: `upsert-summary-by-position --nivel L3 --parent-id <L4> --seq <N> --texto "..."`
-   - L4 si toca: `upsert-summary-by-position --nivel L4 --seq 0 --texto "..."` (L4 tiene stable_id="global")
+   - L3 si cierra arco: `upsert-summary-by-position --nivel L3 --parent-id <L4_stable_id> --seq <N> --texto "..."`
+   - L4 si toca: `upsert-summary-by-position --nivel L4 --texto "..."` (el L4 es único por proyecto; su stable_id es un UUID8 opaco, nunca "global")
 4. **Auditar Neo4j cross-hilo (solo lectura)**: consultar relaciones y detectar discrepancias con el draft (relaciones que el grafo tiene pero el draft contradice, o viceversa). Esto sigue siendo read-only; las correcciones materiales ya se aplicaron en el paso 2.
 5. **Actualizar config.json**: `ultimo_beat_seq`, `capitulos_completados`, `hilos[].estado`, `actos_completados`.
 6. **Devolver JSON** con resumen de cambios, relaciones Neo4j aplicadas y discrepancias residuales.
@@ -86,9 +86,16 @@ qdrant.py update-entity --proyecto X --stable-id 11111111 \
 
 El director pasa: `_actos.md` + nombre del acto.
 
+El L4 se crea primero (es el padre de los L3) y su `stable_id` se obtiene con `query-l4-current`:
+
 ```bash
+# 1. Crear u obtener el L4 único del proyecto
+qdrant.py upsert-summary-by-position --proyecto X --nivel L4 --texto "Resumen de la novela..."
+qdrant.py query-l4-current --proyecto X   # -> {"stable_id": "a1b2c3d4", ...}
+
+# 2. Seed del acto con el L4 como padre
 qdrant.py upsert-summary-by-position \
-  --proyecto X --nivel L3 --parent-id global --seq 1 \
+  --proyecto X --nivel L3 --parent-id a1b2c3d4 --seq 1 \
   --texto "Acto I — La grieta: Laura descubre su deseo..." \
   --fichas '["11111111","22222222"]'
 ```

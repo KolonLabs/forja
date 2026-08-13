@@ -59,31 +59,32 @@ ACTO V — DESENLACE
 
 ### Jerarquía narrativa
 
-Un capítulo tiene **dos vistas independientes** sobre los mismos beats, no una jerarquía mixta.
+Un capítulo global tiene una única jerarquía, ensamblada en dos momentos distintos:
 
-**En el GUION (planificación):**
+**Dentro del hilo, antes del trenzado (FASE 0.3 — `guion.md` del capítulo-borrador):**
 
 ```
-Capítulo
+Capítulo-borrador (dentro de un hilo)
+ ├── Escena (stable_id, nace aquí — sin display numérico propio)
+ │    └── Beat (stable_id [seq])
+ └── Escena (stable_id)
+      └── Beat (stable_id [seq])
+```
+
+**Capítulo global, tras el trenzado (FASE 0.4 — `guion.md`) y en prosa (FASE 3 — `draft.md`):**
+
+```
+Capítulo global
  ├── [Modo exclusivo/puente/espejo]
- ├── Hecho (H_NNNN)
- │    └── Beat (B_NNNN)
- └── Hecho (H_NNNN)
-      └── Beat (B_NNNN)
+ ├── Escena (misma stable_id que en el hilo de origen)
+ │    └── Beat (mismo stable_id que en el hilo de origen)
+ └── Escena
+      └── Beat
 ```
 
-**En el DRAFT (prosa):**
+La escena **no nace en el draft ni en FASE 3** — nace dentro del hilo, en FASE 0.3, agrupando los beats de ese capítulo-borrador por coherencia de contexto. El trenzado (FASE 0.4) mueve el bloque de escena completo, con su `stable_id` intacto, al capítulo global. El escritor (FASE 3) solo añade prosa dentro de esa misma estructura de escenas ya existente — no la crea ni la reagrupa.
 
-```
-Capítulo
- ├── [Modo exclusivo/puente/espejo]
- ├── Escena (L1 en Qdrant)
- │    └── Beat (B_NNNN)
- └── Escena (L1 en Qdrant)
-      └── Beat (B_NNNN)
-```
-
-Un beat pertenece a **UN** hecho (en el guion) y a **UNA** escena (en el draft). El hecho y la escena no tienen relación entre sí. La agrupación de beats en escenas se hace con independencia total del hecho de origen, en FASE 3.2.2.
+Un beat pertenece a **un** hecho (referencia de planificación en `guion-hilo.md`, para trazabilidad) y a **una** escena (unidad real de agrupación, desde que nace). El hecho de origen es irrelevante para la agrupación en escenas: una escena puede contener beats de varios hechos del mismo hilo.
 
 #### Capítulos
 
@@ -96,9 +97,9 @@ Un beat pertenece a **UN** hecho (en el guion) y a **UNA** escena (en el draft).
 #### Hechos narrativos (H_NNNN)
 
 - Identificador de 4 dígitos, global a toda la novela: `H_0001`
-- Unidad intermedia entre capítulo y beat
+- Unidad de **planificación** — vive en `guion-hilo.md`, agrupa hechos que luego se convierten en capítulos-borrador
 - Cada hecho pertenece a un hilo específico
-- En capítulos puente, los hechos se alternan entre hilos
+- No se persiste como nivel en Qdrant; es trazabilidad, no unidad de prosa
 
 #### Beats (B_NNNN)
 
@@ -172,8 +173,8 @@ Saltar tiempo entre capítulos o hechos sin narrar el intervalo. En multi-hilo, 
 #### Presagio cross-hilo
 Sembrar pistas en un hilo que cobrarán sentido en otro hilo distinto:
 ```
-[Hilo-sumer, H_0012]: Naamah entierra una losa con un sigilo.
-[Hilo-sello, H_0045]: La abadesa descubre la misma losa 4400 años después.
+[hilo-a, H_0012]: un personaje entierra/oculta un objeto con una marca concreta.
+[hilo-b, H_0045]: otro personaje, en otra época, descubre ese mismo objeto.
 ```
 
 ### Formato de párrafos — reglas obligatorias
@@ -220,12 +221,12 @@ Recordó la primera vez que alguien la había tocado así, sin preguntar.
 
 | Unidad | Agrupa | Dónde vive | Cuándo nace |
 |--------|--------|-----------|-------------|
-| Hecho | beats | `guion-hilo.md`, tabla de Trenzado en `guion-novela.md` | FASE 0.2 (guionista modo `hilo`) |
-| Escena | beats | `draft.md` (y L1 en Qdrant) | FASE 3.2.2 (guionista modo `capitulo`, pasada 2) |
+| Hecho | beats | `guion-hilo.md`, tabla de Trenzado en `guion-novela.md` (trazabilidad) | FASE 0.2 (guionista modo `hilo`) |
+| Escena | beats | `hilos/hilo-<slug>/cap-NN/guion.md` (nace aquí) → `capitulos/cap-NN-slug/guion.md` (tras trenzar) → L1 en Qdrant (solo cuando hay prosa real) | FASE 0.3 (guionista modo `hilo-capitulo`) |
 
 **Hecho = unidad de planificación.** Agrupa beats por intención dramática en el guion. No se persiste como nivel en Qdrant.
 
-**Escena = unidad de prosa.** Agrupa beats por coherencia de lectura en el draft. Se persiste como L1 en Qdrant al cerrar el capítulo (FASE 3.5).
+**Escena = unidad real de agrupación, desde el guion.** Nace dentro del hilo en FASE 0.3, agrupando beats por coherencia de contexto — antes de que exista prosa. Se persiste como L1 en Qdrant solo al cerrar el capítulo con prosa real (FASE 3.5); mientras es capítulo-borrador, sin prosa, no se persiste en Qdrant.
 
 **La procedencia del hecho es irrelevante al agrupar beats en escenas.** Una misma escena puede contener beats de varios hechos del mismo hilo porque el hecho ya cumplió su función (planificar) y no existe en el momento de la agrupación. En un **capítulo puente**, cada escena es un bloque de hilo delimitado por `---`. En un **capítulo espejo**, las escenas de los dos hilos se alternan.
 
@@ -251,12 +252,12 @@ Cada escena debe tener:
 - **Beats**: los beats agrupados en ella, con independencia del hecho de origen
 - **Coherencia de contexto**: mismo espacio, tiempo y cast; o corte explícito (cambio de hilo, elipsis temporal, cambio de POV)
 - **Tamaño razonable**: ni 1-2 beats ni >12 beats por escena
-- **En multi-hilo**: respeta el límite de hilo — una escena no mezcla hilios
+- **En multi-hilo**: respeta el límite de hilo — una escena no mezcla hilos
 
 ### Capítulos
 
 Cada capítulo debe tener:
-- **Beats**: todos los beats de sus hechos, agrupados en escenas tras FASE 3.2.2
+- **Escenas**: las que el trenzado (FASE 0.4) movió desde los hilos, ya con sus beats agrupados desde FASE 0.3 — no se reagrupan al llegar al capítulo global
 - **Función narrativa**: qué aporta al arco del acto y al trenzado global
 - **Hilos activos**: qué hilos aparecen y en qué modo (exclusivo, puente o espejo)
 

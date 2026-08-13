@@ -30,7 +30,7 @@ El director:
 - **Arcos de personaje**: ¿los beats asignados a cada personaje reflejan su arco declarado en BRIEF.md?
 - **Ritmo y pacing**: ¿hay actos con demasiadas o muy pocas escenas? ¿Las escenas de alta tensión están seguidas de respiros?
 - **Transiciones entre escenas**: ¿las escenas consecutivas fluyen o hay saltos bruscos de tono/ubicación/POV?
-- **Distribución de `[D]`**: ¿los beats de hechos distribuidos están correctamente inyectados? ¿Alguna inyección rompe el ritmo de la escena que la contiene?
+- **Distribución de `[D]`**: ¿los beats de hechos distribuidos están correctamente desplegados (inyectados en relato/novela simple; entretejidos en una sola pasada en novela multi-hilo)? ¿Alguna instancia rompe el ritmo de la escena que la contiene?
 - **Tono y estilo**: ¿el tono es consistente con el estilo declarado? ¿Hay escenas que se desvían del registro?
 - **Balance de POV**: si hay foco variable, ¿está equilibrado?
 - **Beats estimados**: ¿los beats estimados por escena/capítulo son realistas para la extensión declarada?
@@ -42,7 +42,7 @@ El director:
    - **Problemas de tono** (inconsistencias estilísticas)
    - **Propuestas de ajuste** (mejoras opcionales)
 
-5. Para cada problema, propón una solución. Si requiere reestructuración, sugiere invocar al guionista en modo estructura.
+5. Para cada problema, propón una solución. Si requiere reestructuración, sugiere invocar al guionista en el modo de estructura que corresponda a la escala (`estructura` en relato, `estructura-novela` en novela simple, `hilo`/`hilo-capitulo` en novela multi-hilo, según en qué punto del guion esté el problema).
 
 6. En relato con estado `diseno`, con aprobación del usuario aplica los ajustes al guion. En `fichas` o `escritura`, la orden es una auditoría de solo lectura: no cambies la estructura sin una corrección transaccional que actualice guion, draft y contexto. En `finalizado` o `publicado`, no modifica contenido; usa una edición derivada.
 
@@ -51,7 +51,7 @@ El director:
 - El guion refleja fielmente los hechos de `_actos.md`
 - Los arcos de personaje son coherentes con BRIEF.md
 - El ritmo es sostenible para la extensión estimada
-- Los beats `[D]` están correctamente inyectados
+- Los beats `[D]` están correctamente desplegados (inyectados o entretejidos, según la escala)
 - (Multi-hilo) La tabla de trenzado cumple las reglas
 
 ## Cuándo usarlo

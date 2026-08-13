@@ -24,7 +24,8 @@ _actos.md  (hilos → actos → hechos)
   ├─ /validar-hechos          (opcional, recomendado)
   └─ /generar
        ├─ diseño de cada hilo         (conversación contigo)
-       ├─ trenzado en capítulos       (conversación contigo)
+       ├─ beats y escenas por hilo    (checkpoints por capítulo-borrador)
+       ├─ trenzado de escenas         (conversación contigo)
        ├─ /revisar-guion              (audita trenzado, ritmo y cobertura)
        ├─ escritura capítulo a capítulo
        │    └─ /revisar o /expandir   (si un beat concreto necesita cambios)
@@ -36,13 +37,14 @@ No edites `novela.md` ni los `capitulo.md` directamente: son la salida limpia. L
 ## Cómo se construye la novela
 
 ```text
-hilos → hechos por hilo → tabla de Trenzado → capítulos → beats → prosa
+hilos → hechos por hilo → beats y escenas por hilo → trenzado de escenas → capítulos → prosa
 ```
 
-- **Hilo**: una línea narrativa con época, ubicación, elenco, conflicto y tono propios. Un hilo se diseña y se guioniza **aislado**, como si fuera una novela corta independiente.
+- **Hilo**: una línea narrativa con época, ubicación, elenco, conflicto y tono propios. Un hilo se diseña, se guioniza y se desarrolla en beats **aislado**, como si fuera una novela corta independiente — hasta que se trenza con los demás.
 - **Hecho**: un evento que debe ocurrir. Vive en `hilos/hilo-<slug>/guion-hilo.md`. Sin beats todavía.
-- **Trenzado**: la tabla de `guion-novela.md` que decide en qué capítulo global entra cada hecho y de qué hilo. Es donde la novela deja de ser varios relatos y pasa a ser una sola obra.
-- **Beat**: una acción concreta dentro de un capítulo. Se genera al preparar cada capítulo, no antes.
+- **Beat**: una acción concreta. Se genera **dentro de cada hilo**, antes de que exista ningún capítulo global — no al preparar el capítulo.
+- **Escena**: agrupación de beats por coherencia de contexto (mismo espacio/tiempo/cast). Nace dentro del hilo y es la unidad real que se trenza.
+- **Trenzado**: mueve las escenas ya escritas de cada hilo a los capítulos globales de `guion-novela.md`, decidiendo en qué capítulo entra cada una. Es donde la novela deja de ser varios relatos y pasa a ser una sola obra.
 
 ### Tipos de capítulo
 
@@ -61,14 +63,15 @@ Cada hecho y cada beat tiene un `stable_id` opaco que **nunca cambia** y un núm
 ## Estados
 
 ```text
-diseno → diseno_hilos → trenzado → fichas → escritura → publicacion → finalizado
+diseno → diseno_hilos → hilos_beats → trenzado → fichas → escritura → publicacion → finalizado
 ```
 
 | Estado | Qué ocurre | Qué puedes hacer |
 |---|---|---|
 | `diseno` | Se identifican hilos, conexiones y entidades semilla | Afinar hechos, definir hilos |
-| `diseno_hilos` | Se diseña y guioniza cada hilo por separado | Iterar el arco de cada hilo |
-| `trenzado` | Se entrelazan los hilos en capítulos globales | Revisar y ajustar la tabla |
+| `diseno_hilos` | Se diseña y guioniza cada hilo por separado (solo hechos) | Iterar el arco de cada hilo |
+| `hilos_beats` | Se generan beats y escenas dentro de cada hilo, aislado | Revisar checkpoints de escenas por hilo |
+| `trenzado` | Se entrelazan las escenas de los hilos en capítulos globales | Revisar y ajustar la tabla |
 | `fichas` | Se completan entidades y conexiones cross-hilo | `/revisar-guion` antes de escribir |
 | `escritura` | Se escribe capítulo a capítulo | `/revisar`, `/expandir` |
 | `publicacion` | Todos los capítulos cerrados | `/publicar` |
@@ -101,6 +104,5 @@ Vuelve a la raíz de Forja para estas operaciones:
 ## Antes de actuar
 
 1. Lee `config.json.estado` y `config.json.hilos[].estado`.
-2. Consulta `MAPA.md` para localizar el archivo correcto.
-3. Si dudas entre estructura y prosa, empieza por `/revisar-guion`; si el problema ya está en un beat, usa `/revisar`.
-4. Conserva los backups que crea el director y no modifiques archivos de salida limpia a mano.
+2. Si dudas entre estructura y prosa, empieza por `/revisar-guion`; si el problema ya está en un beat, usa `/revisar`.
+3. Conserva los backups que crea el director y no modifiques archivos de salida limpia a mano.

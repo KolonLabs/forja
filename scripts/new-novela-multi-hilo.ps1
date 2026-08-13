@@ -59,9 +59,6 @@ Write-NovelaGlobalScaffold -TargetDir $TargetDir -Brief $Brief -OperationalHilos
 # Registrar hilos en config
 $config = Get-Content (Join-Path $TargetDir "config.json") -Raw | ConvertFrom-Json
 $config | Add-Member -MemberType NoteProperty -Name "hilos" -Value $opsHilos -Force
-if ($Brief.PSObject.Properties.Name.Contains("partes") -and $Brief.partes) {
-    $config | Add-Member -MemberType NoteProperty -Name "partes" -Value $Brief.partes -Force
-}
 $config | ConvertTo-Json -Depth 12 | Set-Content -LiteralPath (Join-Path $TargetDir "config.json") -Encoding UTF8
 
 # Infraestructura

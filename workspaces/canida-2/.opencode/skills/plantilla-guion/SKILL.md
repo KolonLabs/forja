@@ -67,7 +67,7 @@ Ejemplo:
 
 ## Trenzado
 
-El trenzado define cómo se alternan los hilos en los capítulos. Las etiquetas `hilo-S` son ayudas humanas; la persistencia usa el `stable_id` de la entidad hilo.
+El trenzado define cómo se alternan los hilos en los capítulos. Las etiquetas `hilo-<slug>` son ayudas humanas; la persistencia usa el `stable_id` de la entidad hilo.
 
 | Capítulo | Hilo(s) activo(s) | Modo | Función |
 |----------|-------------------|------|---------|
@@ -151,13 +151,13 @@ Cada beat es una declaración factual de lo que ocurre físicamente más metadat
 Formato canónico:
 
 ```text
-⬜ stable_id [seq] — acción [Tono — EXTENSIÓN] [Personajes] [Zona: nombre] [Hilos: hilo-S]
+⬜ stable_id [seq] — acción [Tono — EXTENSIÓN] [Personajes] [Zona: nombre] [Hilos: hilo-<slug>]
 ```
 
 Ejemplo:
 
 ```text
-⬜ a1b2c3d4 [34] — Laura se arrodilla ante Diego [Opresivo — BREVE] [Laura, Diego] [Zona: salón] [Hilos: hilo-S]
+⬜ a1b2c3d4 [34] — Laura se arrodilla ante Diego [Opresivo — BREVE] [Laura, Diego] [Zona: salón] [Hilos: hilo-<slug>]
 ```
 
 - `stable_id` es opaco, inmutable y se genera al crear el beat.
@@ -175,7 +175,7 @@ ZONA: ubicación concreta.
 
 PROPS _(opcional)_: objetos introducidos o usados.
 
-HILOS: anotación humana `[Hilos: hilo-S]`; el briefing y la persistencia incluyen también el `stable_id` del hilo.
+HILOS: anotación humana `[Hilos: hilo-<slug>]`; el briefing y la persistencia incluyen también el `stable_id` del hilo.
 
 ```text
 ⬜ 91a2b3c4 [1] — Ana cierra la puerta antes de que Carlos entre [Tenso — BREVE] [Ana] [Zona: sala] [Hilos: hilo-soma]
@@ -203,7 +203,7 @@ Al insertar, eliminar o reordenar beats, usa `renumber-siblings` desde el primer
 ###### Beats
 
 ```text
-⬜ stable_id [1] — acción [Tono — EXTENSIÓN] [Personajes] [Zona: nombre] [Hilos: hilo-S]
+⬜ stable_id [1] — acción [Tono — EXTENSIÓN] [Personajes] [Zona: nombre] [Hilos: hilo-<slug>]
 ```
 
 La secuencia vuelve a empezar para cada padre.
@@ -260,7 +260,9 @@ Cada escena pertenece a un hilo. Las escenas del mismo hilo son secuenciales; la
 
 **Objetivo de la escena**: [Qué avanza en este hilo]
 
-**Puntos de conexión**: [Conexiones con otros hilos]
+**Puntos de conexión** _(opcional, informal)_: [Conexiones con otros hilos, si el guionista ya las reconoce al escribir la escena]
+
+> Nota: este campo es una anotación libre para quien escribe la escena — no es un dato que el trenzado consuma mecánicamente. En novela multi-hilo, el trenzado (FASE 0.4) descubre las conexiones leyendo el contenido real de las escenas de todos los hilos, guiado por el `## Puntos de conexión` temático de `guion-novela.md`. Rellenar este campo no es obligatorio ni sustituye ese descubrimiento; solo ayuda a quien redacta a no perder de vista una conexión que ya sabe que está sembrando.
 
 **Líneas críticas** _(marcadas con ⚡)_:
 - **[Personaje]**: *"[frase]"*
