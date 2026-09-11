@@ -90,10 +90,10 @@
 **Zona:** Salón → pasillo → dormitorio conyugal → puerta de la calle
 **Objetivo:** Los dos cargan el cuerpo de Elena como un mueble y lo llevan por el pasillo hasta dejarlo en la cama sin tapar; Víctor se va y la casa queda en silencio; Daniel se queda en el salón y se duerme en el sillón con la tele encendida (canon cap-02). Resuelve la continuidad de la alarma de las 6:30.
 
-⬜ a7f5b1e8 [1] — Entre los dos cargan el cuerpo de Elena como un mueble, entre risas, y lo llevan por el pasillo al dormitorio [Clínico / Opresivo — MEDIA] [Víctor, Daniel, Elena] [Zona: salón → pasillo → dormitorio conyugal]
-⬜ 2d9c4f7b [2] — La dejan en la cama, sin tapar, y Elena flota sin peso mirando el cuerpo tendido [Clínico — BREVE] [Víctor, Daniel, Elena] [Zona: dormitorio conyugal]
-⬜ e5a3d8c1 [3] — Víctor se va; la puerta de la calle se cierra y la casa queda en silencio [Clínico — BREVE] [Víctor, Daniel, Elena] [Zona: casa — puerta]
-⬜ 7b1f6e4a [4] — Daniel se queda en el salón y se duerme en el sillón con la tele encendida [Clínico — BREVE] [Daniel, Elena] [Zona: salón]
+✅ a7f5b1e8 [1] — Entre los dos cargan el cuerpo de Elena como un mueble, entre risas, y lo llevan por el pasillo al dormitorio [Clínico / Opresivo — MEDIA] [Víctor, Daniel, Elena] [Zona: salón → pasillo → dormitorio conyugal]
+✅ 2d9c4f7b [2] — La dejan en la cama, sin tapar, y Elena flota sin peso mirando el cuerpo tendido [Clínico — BREVE] [Víctor, Daniel, Elena] [Zona: dormitorio conyugal]
+✅ e5a3d8c1 [3] — Víctor se va; la puerta de la calle se cierra y la casa queda en silencio [Clínico — BREVE] [Víctor, Daniel, Elena] [Zona: casa — puerta]
+✅ 7b1f6e4a [4] — Daniel se queda en el salón y se duerme en el sillón con la tele encendida [Clínico — BREVE] [Daniel, Elena] [Zona: salón]
 
 <!-- ESCENA c6d9f1a3: El descenso -->
 
@@ -101,12 +101,12 @@
 **Zona:** Visión — infancia / jaula / cocina desconocida / habitación desconocida / agua
 **Objetivo:** Aún flotando sin peso por la casa, Elena desciende por visiones sensoriales del pasado: la voz de un padre que no se nombra y una niña pequeña que aprende a callar, la jaula con Daniel (los gestos de siempre, el deber), y recuerdos que no reconoce (una cocina parecida a la suya sin serla, una habitación cerrada que no es de esta casa), hasta hundirse en agua oscura y fría que no moja y la arrastra hacia abajo. Hipnótico y sensorial, sin narrar flashbacks completos.
 
-⬜ f9c2a8d5 [1] — Aún flotando sin peso por la casa, Elena ve intercalarse una visión del pasado: una mesa, una voz de padre que no se nombra y una niña pequeña [Hipnótico — MEDIA] [Elena] [Zona: visión — infancia]
-⬜ 4e6b9f3c [2] — La niña aprende a callar: a bajar la voz, a no mirar, a tragarse la respuesta antes de que la manden callar [Hipnótico — MEDIA] [Elena] [Zona: visión — infancia]
-⬜ b3d7e1a9 [3] — La visión salta a la jaula con Daniel: los mismos gestos de siempre, el deber, la boca cerrada y el cuerpo que aguanta [Hipnótico / Opresivo — MEDIA] [Elena, Daniel] [Zona: visión — jaula]
-⬜ 8a5c2f6d [4] — Aparece una cocina que se parece a la suya sin ser la suya, y no la reconoce [Hipnótico — BREVE] [Elena] [Zona: visión — cocina desconocida]
-⬜ 1f9e3b7c [5] — Aparece una habitación que no reconoce, cerrada, que no es de esta casa [Hipnótico — BREVE] [Elena] [Zona: visión — habitación desconocida]
-⬜ c6d2a4e8 [6] — Se hunde en agua oscura y fría que no moja, que no ahoga, y el agua la arrastra hacia abajo [Hipnótico — EXTENSA] [Elena] [Zona: visión — agua]
+✅ f9c2a8d5 [1] — Aún flotando sin peso por la casa, Elena ve intercalarse una visión del pasado: una mesa, una voz de padre que no se nombra y una niña pequeña [Hipnótico — MEDIA] [Elena] [Zona: visión — infancia]
+✅ 4e6b9f3c [2] — La niña aprende a callar: a bajar la voz, a no mirar, a tragarse la respuesta antes de que la manden callar [Hipnótico — MEDIA] [Elena] [Zona: visión — infancia]
+✅ b3d7e1a9 [3] — La visión salta a la jaula con Daniel: los mismos gestos de siempre, el deber, la boca cerrada y el cuerpo que aguanta [Hipnótico / Opresivo — MEDIA] [Elena, Daniel] [Zona: visión — jaula]
+✅ 8a5c2f6d [4] — Aparece una cocina que se parece a la suya sin ser la suya, y no la reconoce [Hipnótico — BREVE] [Elena] [Zona: visión — cocina desconocida]
+✅ 1f9e3b7c [5] — Aparece una habitación que no reconoce, cerrada, que no es de esta casa [Hipnótico — BREVE] [Elena] [Zona: visión — habitación desconocida]
+✅ c6d2a4e8 [6] — Se hunde en agua oscura y fría que no moja, que no ahoga, y el agua la arrastra hacia abajo [Hipnótico — EXTENSA] [Elena] [Zona: visión — agua]
 
 <!-- ESCENA b4e7c2f8: La entrada -->
 
@@ -114,13 +114,13 @@
 **Zona:** Dormitorio conyugal
 **Objetivo:** En el fondo ya no hay visiones: solo la habitación y un hueco que se abre donde antes no había nada. Llega el frío (una puerta de frío que no es la de la casa), el aire se espesa y se vuelve habitado, una respiración sin nadie hunde el colchón; una corriente de vitalidad — un pulso de vida sin figura ni voz — cruza hacia dentro y se asienta en la herida, y deja el hambre: un vacío que tira desde dentro y quiere tragar. Posesión inequívoca para el LECTOR: algo entró, nunca sabrá qué; sin figura, sin voz, sin nombre.
 
-⬜ 5b8f1c3d [1] — En el fondo ya no hay visiones: solo la habitación y un hueco que se abre donde antes no había nada [Hipnótico / Revelación — EXTENSA] [Elena] [Zona: dormitorio conyugal]
-⬜ d9a4e7b2 [2] — Llega un frío que no viene de la habitación, una puerta de frío que no es la puerta de la casa [Hipnótico / Opresivo — MEDIA] [Elena] [Zona: dormitorio conyugal]
-⬜ 2c6f8d1a [3] — El aire se espesa y se vuelve habitado: hay algo en el cuarto que no es nadie [Opresivo — MEDIA] [Elena] [Zona: dormitorio conyugal]
-⬜ a1e5c9f3 [4] — Una respiración que no es de nadie llena la habitación y el colchón se hunde a su lado sin que haya nadie [Opresivo / Hipnótico — MEDIA] [Elena] [Zona: dormitorio conyugal]
-⬜ 7d3b6a8e [5] — Algo cruza hacia dentro — una corriente de vitalidad, un pulso de vida sin figura ni voz — y se asienta en la herida que se ha abierto [Revelación — EXTENSA] [Elena] [Zona: dormitorio conyugal]
-⬜ f4c8e2d9 [6] — Al asentarse, la vitalidad deja el hambre: un hueco que tira desde dentro, un vacío que quiere tragar [Revelación / Hipnótico — EXTENSA] [Elena] [Zona: dormitorio conyugal]
-⬜ 9b1d5f7a [7] — Elena nota los bordes del vacío — unos bordes que podrían morder si algo se acercara — sin comprender qué es [Hipnótico — MEDIA] [Elena] [Zona: dormitorio conyugal]
+✅ 5b8f1c3d [1] — En el fondo ya no hay visiones: solo la habitación y un hueco que se abre donde antes no había nada [Hipnótico / Revelación — EXTENSA] [Elena] [Zona: dormitorio conyugal]
+✅ d9a4e7b2 [2] — Llega un frío que no viene de la habitación, una puerta de frío que no es la puerta de la casa [Hipnótico / Opresivo — MEDIA] [Elena] [Zona: dormitorio conyugal]
+✅ 2c6f8d1a [3] — El aire se espesa y se vuelve habitado: hay algo en el cuarto que no es nadie [Opresivo — MEDIA] [Elena] [Zona: dormitorio conyugal]
+✅ a1e5c9f3 [4] — Una respiración que no es de nadie llena la habitación y el colchón se hunde a su lado sin que haya nadie [Opresivo / Hipnótico — MEDIA] [Elena] [Zona: dormitorio conyugal]
+✅ 7d3b6a8e [5] — Algo cruza hacia dentro — una corriente de vitalidad, un pulso de vida sin figura ni voz — y se asienta en la herida que se ha abierto [Revelación — EXTENSA] [Elena] [Zona: dormitorio conyugal]
+✅ f4c8e2d9 [6] — Al asentarse, la vitalidad deja el hambre: un hueco que tira desde dentro, un vacío que quiere tragar [Revelación / Hipnótico — EXTENSA] [Elena] [Zona: dormitorio conyugal]
+✅ 9b1d5f7a [7] — Elena nota los bordes del vacío — unos bordes que podrían morder si algo se acercara — sin comprender qué es [Hipnótico — MEDIA] [Elena] [Zona: dormitorio conyugal]
 
 <!-- ESCENA d8a1f6c3: El retorno -->
 
@@ -143,7 +143,7 @@
 ⬜ 1c5e8f4a [1] — Elena recoge el salón en silencio: su ropa del suelo, las copas de whisky de ambos y la silla devuelta a la cocina [Clínico — MEDIA] [Elena] [Zona: salón]
 ⬜ d7a2b6c9 [2] — Al terminar de recoger, Elena comprende que ha recompuesto la jaula con sus propias manos, igual que cada mañana [Opresivo — BREVE] [Elena] [Zona: salón]
 ⬜ 5f3d9e1c [3] — Elena se ducha y el agua le toca distinta, caliente y viva, una sensación nueva que no sabe explicarse [Visceral / Hipnótico — MEDIA] [Elena] [Zona: baño en suite]
-⬜ a9c4f7b2 [4] — Elena se va a trabajar mientras Daniel sigue dormido en el sillón — la alarma no lo despertó, o no le importó — sin encuentro matinal: la rutina conjunta se rompió esa mañana [Clínico / Opresivo — BREVE] [Elena, Daniel] [Zona: casa]
+⬜ a9c4f7b2 [4] — Elena se va a trabajar mientras Daniel sigue dormido en el sillón — borracho, no se despertó — sin encuentro matinal: la rutina conjunta se rompió esa mañana [Clínico / Opresivo — BREVE] [Elena, Daniel] [Zona: casa]
 
 <!-- ESCENA 9c5e2a7f: El buen día -->
 
