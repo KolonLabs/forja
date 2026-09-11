@@ -58,9 +58,9 @@ El `draft.md` de cada capítulo usa **una sola forma de encabezado**:
 |----|--------|-------|
 | `H_NNNN` | Evento que debe ocurrir (planificación). Puede ser lineal o distribuido `[D]`. Un hecho pertenece a un único hilo — `[D]` es siempre intra-hilo. | `guion-hilo.md` |
 | Escena (`stable_id`, sin display numérico propio) | Unidad de agrupación de beats por coherencia de contexto (mismo espacio/tiempo/cast). Es la **unidad atómica del trenzado**. | `hilos/hilo-<slug>/cap-NN/guion.md` (nace aquí), `capitulos/cap-NN-slug/guion.md` (destino tras trenzar) |
-| `B_NNNN` | Frase muy corta para el escritor | `hilos/hilo-<slug>/cap-NN/guion.md` (bajo una escena, antes de trenzar), `capitulos/.../guion.md` (después) |
+| `B_NNNN` | Beat: unidad dramática con compromiso verificable (display derivado de `seq`) | `hilos/hilo-<slug>/cap-NN/guion.md` (bajo una escena, antes de trenzar), `capitulos/.../guion.md` (después) |
 
-- Los tres IDs son **globales** en toda la novela (no se reinician por hilo ni por capítulo-borrador).
+- Los `stable_id` son opacos, inmutables y globales a la novela. El `seq` de un beat es **local a su escena padre**; los hechos conservan su secuencia de planificación (`ultimo_hecho_seq`).
 - En `guion-hilo.md` solo hay **hechos**; los beats y escenas se generan en FASE 0.3, **dentro de cada hilo**, agrupando hechos en capítulos-borrador por coherencia de contexto (no por cuota fija de hechos).
 - Estados: ✅ completo · 🔄 en progreso · ⬜ pendiente.
 - Un hecho `[D · H_XX–H_YY]` describe un patrón recurrente dentro del propio hilo, no un momento único. En FASE 0.3, el `guionista` lo despliega como beats entretejidos con los lineales durante la generación del capítulo-borrador — una sola pasada creativa, sin inyección diferida. El número de instancias es juicio narrativo contextual, no una fórmula prefijada. Al terminar FASE 0.3, ningún beat conserva marca `[D]`: son indistinguibles de los lineales. `hilos/hilo-<slug>/cola_d.md` registra el contenido de cada instancia (stable_id + escena + resumen) para evitar repetición entre capítulos-borrador que comparten un mismo `[D]`, y se descarta al cerrar el hilo.
@@ -199,7 +199,7 @@ Por cada capítulo-borrador del hilo, en el orden en que aparecen:
 
 ---
 
-### FASE 3 — Beat a beat cross-hilo (`estado: escritura`)
+### FASE 3 — Escritura por escena cross-hilo (`estado: escritura`)
 
 Itera por cada capítulo en el orden de la tabla de Trenzado:
 
@@ -239,18 +239,20 @@ Cualquier corrección la aplica el `guionista` (modo `revision`) y usa `renumber
 | Paso | Agente | Acción |
 |------|--------|--------|
 | 3.2c.1 | director | `qdrant.py update-entity` para `dinamico` de entidades con cambio de estado inequívoco en los beats |
-| 3.2c.2 | director | `qdrant.py upsert-summary-by-position` L1 por `(nivel, parent_id, seq, hilo)` si hay estructura de escenas o bloques de hilo |
+| 3.2c.2 | director | L1 por escena con el `stable_id` canónico del guion: `qdrant.py upsert-summary --id <stable_id_escena> --nivel L1 --parent-id <capitulo> --seq <N> --hilo <stable_id_hilo>` (o `upsert-summary-by-position --id`). Nunca se genera un ID L1 nuevo |
 
-#### 3.3 Beat a beat
+#### 3.3 Escritura por escena con checkpoint
 
-Por cada beat `⬜`:
+Por cada escena `⬜` del capítulo, en el orden del trenzado:
 
 | Paso | Agente | Acción |
 |------|--------|--------|
-| 3.3.1 | `escritor` | Genera prosa → `draft.md` (append `## <stable_id> [<seq>]`) |
-| 3.3.2 | `validador` (read-only) | Scope `completa`. Si ≥2 hilos en cap: + `validacion-cross-hilo` |
-| 3.3.3 | `integrador` (condicional) | Si score < 7 o dimensión < 5 |
-| 3.3.4 | director | ✅ en `guion.md`. Actualiza `config.json.ultimo_beat_seq` |
+| 3.3.1 | director | Prepara el contexto inline (canon, memoria, voz/POV, fichas, hilo y costuras puente/espejo) e invoca al `escritor` UNA vez con la escena completa |
+| 3.3.2 | director | Comprueba terminación real (`stop`/`length`), guarda la salida y ejecuta `persistir-escena.py preparar --finish stop`; queda `escena-<SID>.pendiente.md` con SHA256 |
+| 3.3.3 | director + usuario | **Checkpoint obligatorio:** presenta la escena completa con hash/versión y se detiene; sin conformidad no hay revisión ni aceptación |
+| 3.3.4 | `validador` (read-only) | Revisión editorial de escena con el hash vigente. Si ≥2 hilos: + `validacion-cross-hilo` como incidencias |
+| 3.3.5 | `integrador` (condicional) | Solo fragmentos con incidencia `bloqueante`/`corregir`; devuelve secciones completas. Nuevo texto vuelve a `preparar`, se presenta y se espera de nuevo |
+| 3.3.6 | director | Con conformidad y review `aprobado` del mismo hash: `aceptar` → `sincronizar` → marca beats `✅` en lote. Autorización de avance a la siguiente escena por separado |
 
 #### 3.4 Revisión global
 
@@ -276,7 +278,7 @@ Por cada beat `⬜`:
 | 3.6.2 | `auditor-beats` modo `rachas` | Racha máx. 3 caps sin un hilo. Bloques `---` bien formados en puentes. Paralelismo real en espejos |
 | 3.6.3 | director | Desviación en capítulos futuros → `guionista` modo `trenzado`. Desviación en un tramo escrito → `guionista` modo `revision` |
 
-**Umbral validador:** `score_global ≥ 8` y todas dimensiones ≥ 7 para aprobación directa sin integrador.
+**Gate editorial:** sin incidencias `bloqueante` ni `corregir` y con conformidad del usuario ligada al mismo hash. Las observaciones `opcional` no bloquean.
 
 **Gate del capítulo:** Todos los beats ✅, Qdrant actualizado (L1+L2+entidades), Neo4j actualizado (relaciones por escena) y auditado cross-hilo.
 

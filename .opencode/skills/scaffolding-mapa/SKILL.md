@@ -69,9 +69,11 @@ Sin Qdrant. Sin Neo4j. Memoria en contexto_narrativo.md.
 
 Añadir respecto al relato:
 - `guion-novela.md` en jerarquía y archivos
-- `capitulos/cap-NN-slug/` (guion.md, draft.md, capitulo.md)
+- `capitulos/cap-NN-slug/` (guion.md, draft.md, capitulo.md, `escena-<SID>.pendiente.md`)
+- `scripts/persistir-escena.py` (preparar / aceptar / sincronizar; lo opera el director)
 - `novela.md` como salida publicable
-- `contexto.md` en vez de `contexto_narrativo.md`
+- `contexto.md` en vez de `contexto_narrativo.md` (incluye el registro de checkpoint de narrativa)
+- Checkpoint humano de narrativa por escena: el director presenta la candidata con hash y se detiene; escritor e integrador no escriben archivos
 - `referencias/` (material de referencia no-narrativo si el proyecto fue importado; vacío si no hay)
 - Agentes: añadir memoria, cronista
 - Skills extra: qdrant, neo4j, auditoria-neo4j, hechos-estructura, plantilla-arco
@@ -87,6 +89,8 @@ Añadir respecto a novela simple:
 - `fichas/conexion_<slug>.md`
 - `guion-novela.md` con tabla `## Trenzado`
 - `capitulos/cap-NN-slug/cola_d.md` (hechos `[D]` pendientes de posicionar; efímero por capítulo)
+- `scripts/persistir-escena.py` con soporte de `| hilo:` en el marcador de escena
+- Checkpoint de narrativa por escena **después del trenzado**, además de los checkpoints de estructura de FASE 0.3; cada escena pertenece a un solo hilo
 - `referencias/` (material de referencia no-narrativo si el proyecto fue importado; vacío si no hay)
 - Skills extra: diseno-hilo, plantilla-hilo, trenzado-narrativo, validacion-cross-hilo
 - Transiciones: diseno → diseno_hilos → trenzado → fichas → escritura → publicacion → finalizado

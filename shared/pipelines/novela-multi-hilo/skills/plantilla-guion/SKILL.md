@@ -132,13 +132,15 @@ El trenzado define cómo se alternan los hilos en los capítulos. Las etiquetas 
 
 **Propósito**: [Qué avanza en el hilo]
 
-###### Escena [seq]: [Nombre]
+###### Escena: [Nombre]
+
+<!-- ESCENA <stable_id>: [Nombre] | hilo: <stable_id_hilo> -->
 
 **stable_id**: [ID opaco e inmutable]
 
-**parent_id**: [stable_id del capítulo o hecho padre]
+**parent_id**: [stable_id del capítulo o bloque]
 
-**Hilo**: [stable_id del hilo]
+**Hilo**: [stable_id; slug humano opcional]
 
 **Personajes**: [Presentes]
 
@@ -146,7 +148,7 @@ El trenzado define cómo se alternan los hilos en los capítulos. Las etiquetas 
 
 ###### Beats
 
-Cada beat es una declaración factual de lo que ocurre físicamente más metadatos. Sin sensoriales, emociones ni adjetivos de experiencia: solo quién hace qué.
+Cada beat es una unidad dramática con compromiso verificable: acontecimiento, decisión, descubrimiento o inferencia atribuida y su consecuencia. Los gestos, posiciones, adverbios de modo y valoraciones son ejecución del escritor; el espacio, la utilería y el cast viven en la cabecera de escena y en las anotaciones. No dividas por puntuación, verbos, tono, hilos ni cuotas.
 
 Formato canónico:
 
@@ -165,7 +167,7 @@ Ejemplo:
 - `i9j0k1l2 [34]` se deriva de `seq: 34` al presentar y nunca se almacena.
 - Fichas, `cola_d.md` y demás referencias usan `stable_id`.
 
-EXTENSIÓN: `BREVE` (2-3 frases) | `MEDIA` (4-7 frases) | `EXTENSA` (8-15 frases)
+EXTENSIÓN: `BREVE` (concentrado) | `MEDIA` (desarrollo moderado) | `EXTENSA` (desarrollo amplio). Indica peso narrativo relativo; sin suelo ni techo numérico.
 
 TONO: uno o dos tonos del catálogo `tonos-beat`, separados por `/`.
 
@@ -241,6 +243,8 @@ Cada bloque de hilo declara su `parent_id` y su hilo. Los `seq` son locales al p
 Cada escena pertenece a un hilo. Las escenas del mismo hilo son secuenciales; las de hilos distintos siguen el trenzado.
 
 ### ESCENA 1: [ESPACIO] — [Nombre]
+
+<!-- ESCENA <stable_id>: [Nombre] | hilo: <stable_id_hilo> -->
 
 **stable_id**: [ID opaco]
 

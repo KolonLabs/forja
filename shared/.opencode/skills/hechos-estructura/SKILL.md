@@ -9,13 +9,14 @@ Los **hechos** (`H_NNNN`) son unidades narrativas intermedias que agrupan beats 
 
 ## Qué es un hecho
 
-Un hecho narrativo es el **evento concreto** que ocurre en un bloque narrativo. No es una descripción de escena ni un resumen de intenciones: es algo que pasa, tiene consecuencia y puede agrupar 3-8 beats.
+Un hecho narrativo es el **evento concreto con consecuencia** que ocurre en un bloque narrativo. No es una descripción de escena ni un resumen de intenciones: establece qué cambia y agrupa los compromisos dramáticos necesarios para desarrollarlo, sin cuota de beats.
+
+Ejemplo opcional de cobertura, no canon ni pauta de cantidad o ejecución:
 
 ```
-- ⬜ H_0001 — Elena recibe la carta de su hermano desaparecido
-  - ⬜ B_0001 — Lee el sobre con manos temblorosas `[Tenso — BREVE]`
-  - ⬜ B_0002 — Reconoce la letra pero no el remitente `[Clínico — MEDIA]`
-  - ⬜ B_0003 — Tira la carta al suelo. ⚡ "No puede ser él" `[Revelación — EXTENSA]`
+- ⬜ H_0001 — Ana recibe una carta que la lleva a reabrir la búsqueda de su hermano
+  - ⬜ B_0001 — Ana reconoce en la carta una referencia privada e infiere que su hermano podría seguir vivo, sin confirmarlo `[Revelación — MEDIA]`
+  - ⬜ B_0002 — Ana decide comprobar la dirección de envío antes de avisar a la familia `[Tenso — BREVE]`
 ```
 
 ## Reglas fundamentales
@@ -23,28 +24,32 @@ Un hecho narrativo es el **evento concreto** que ocurre en un bloque narrativo. 
 - **Un sujeto o grupo de sujetos que actúan o son afectados** en el hecho
 - **Un evento concreto con consecuencia narrativa**: algo cambia después del hecho
 - **IDs globales de 4 dígitos** (`H_0001`, `H_0002`...) — nunca se reinician entre capítulos
-- **3-8 beats por hecho** como referencia. Hechos con 1-2 beats son demasiado granulares; con más de 10, demasiado extensos
-- **12-20 hechos por capítulo** como referencia (junto con los 12-18 beats por hecho = 150-360 beats por capítulo)
+- **Cobertura, no conteo**: los beats deben realizar el detonante, la presión, el cambio y la consecuencia pertinentes, sin exigir un beat separado para cada componente
+- **Agrupación por desarrollo narrativo**: la cantidad de hechos por capítulo y de beats por hecho depende de sus cambios y relaciones causales, no de mínimos, máximos ni multiplicadores
 
 ## Qué debe tener un hecho
 
 - **Sujeto claro** (quién actúa o recibe la acción)
-- **Verbo de acción narrativa** en infinitivo o presente
-- **Especificidad**: no "hablan" sino "Elena confronta a Carlos por la deuda"
-- **Consecuencia implícita**: el lector debe poder intuir qué cambia
+- **Cambio narrativo concreto** en infinitivo o presente, incluida una decisión, un descubrimiento o una inferencia atribuida con consecuencias
+- **Especificidad**: no "hablan" sino "Ana confronta a Carlos por el contrato"
+- **Consecuencia identificable**: debe quedar claro qué cambia; el guion puede declarar el resultado necesario para planificar su desarrollo
 
 ## Qué NO debe tener un hecho
 
-- Estados de ánimo sin evento: no "Elena se siente culpable"
+- Estados de ánimo sin evento: no "Ana se siente culpable"
 - Resúmenes vacíos: no "El capítulo avanza"
-- Acciones triviales que no tienen peso narrativo (esas son beats directamente)
-- Spoilers del desarrollo (el hecho declara qué ocurre, no cómo termina)
+- Acciones triviales sin peso narrativo: tampoco justifican por sí solas beats; su ejecución ordinaria corresponde al escritor
+- Coreografía, diálogos redactados o pensamiento escrito como prosa en lugar de compromisos narrativos
 
 ## Relación con beats
 
-El hecho es el **qué**. Los beats bajo él son el **cómo**.
+El hecho declara un evento y su consecuencia. Los beats bajo él concretan **qué compromisos narrativos deben cumplirse** durante su desarrollo. El **cómo literario** corresponde al escritor: diálogo, pensamiento, cadencia, sensaciones y acciones de enlace compatibles con esos compromisos.
 
-Un hecho que no se puede descomponer en al menos 3 beats narrativos distintos probablemente es ya un beat, no un hecho. Un hecho que genera 15+ beats probablemente debe dividirse en dos hechos.
+Un beat es una unidad dramática, no una microacción. Puede reunir varias acciones o réplicas que realizan el mismo cambio, o consistir en una decisión, descubrimiento o inferencia atribuida que modifica opciones, objetivos o conocimiento. Distingue lo dicho, lo sabido, lo inferido y lo verdadero: recibir una afirmación no prueba su contenido y una sospecha no equivale a descubrir un hecho.
+
+Divide solo cuando haya compromisos dramáticos distintos que necesiten seguimiento separado. No dividas por puntuación, número de verbos, cambio de tono ni saludo, despedida o gesto ordinario. Revisa la granularidad por omisiones o redundancias concretas, no por cantidad. No impongas silencios, gestos o metáforas sin función narrativa.
+
+Un diálogo relevante se compromete por su contenido y efecto, no por palabras exactas. Reserva ⚡ para literalidad exigida expresamente por el usuario o aprobada con función causal documentada, según `mecanica-prosa`; nunca por importancia o efecto estilístico. Una frase ⚡ vigente no se degrada a ejemplo: si resulta incompatible con la revisión, pide resolución al director antes de generar.
 
 ## Distribución en capítulos
 
@@ -60,9 +65,9 @@ En ambos casos:
 
 Al revisar un hecho, verificar:
 
-1. ¿Tiene sujeto claro y acción concreta narrable?
+1. ¿Tiene sujeto claro y evento o cambio concreto narrable?
 2. ¿Tiene consecuencia en la trama (algo cambia)?
-3. ¿Admite al menos 3 beats distintos de desarrollo?
+3. ¿Los beats cubren los compromisos y consecuencias del hecho sin omisiones ni microacciones de relleno?
 4. ¿No repite lo que ya ocurrió en hechos anteriores?
 5. ¿Su ID sigue la numeración global sin saltos?
 
@@ -73,4 +78,3 @@ Al revisar un hecho, verificar:
 🔄 H_0001 — (en progreso)
 ✅ H_0001 — (completado)
 ```
-

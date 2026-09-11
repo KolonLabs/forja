@@ -82,7 +82,7 @@ Al terminar, `guion.md` contiene solo escenas de hechos lineales y `cola_d.md` c
 
 El director revisa las escenas reales y, para cada `[D]` pendiente:
 
-1. Decide cuántas instancias necesita: 2-3 por defecto; 3-4 si abarca más de cinco hechos lineales, salvo criterio editorial distinto.
+1. Decide cuantas instancias necesita por la evolucion y consecuencias del patron, sin cuota por longitud del rango. Cada instancia debe aportar algo distinto; su cantidad no prueba cobertura.
 2. Elige cada punto por `stable_id` de beat, no por display.
 3. Añade el display derivado entre paréntesis solo como ayuda visual.
 4. Declara escena y criterio narrativo.

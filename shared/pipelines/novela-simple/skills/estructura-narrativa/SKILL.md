@@ -85,7 +85,7 @@ Un beat pertenece a **UN** hecho (en el guion) y a **UNA** escena (en el draft).
 
 - Identificador: `cap-NN-slug` (ej: `cap-01-el-ascensor`)
 - Cada capítulo tiene una **función narrativa** clara: presentación, desarrollo, giro, clímax parcial, transición, etc.
-- Un capítulo contiene entre 3 y 10 hechos narrativos
+- Un capítulo contiene los hechos necesarios para cumplir su función, sin cuota; se delimita por desarrollo y cambio narrativo
 
 #### Hechos narrativos (H_NNNN)
 
@@ -105,10 +105,12 @@ El flujo es: hechos del capítulo → beats (FASE 2.2.1, guionista pasada 1) →
 #### Beats (B_NNNN)
 
 - Identificador de 4 dígitos, global a toda la novela: `B_0001`
-- Unidad mínima de narración — una acción concreta y narrable
+- Unidad dramática que compromete un cambio narrativo: acción, interacción, decisión, descubrimiento o inferencia atribuida con consecuencias; no una microacción
 - Siguen las reglas del skill `beats-estructura`
 
 ### Longitudes recomendadas
+
+Referencias de escala editorial, no cuotas para derivar hechos o beats. La cobertura y el desarrollo determinan la estructura real.
 
 | Tipo | Palabras | Capítulos | Hechos |
 |------|----------|-----------|--------|
@@ -118,6 +120,8 @@ El flujo es: hechos del capítulo → beats (FASE 2.2.1, guionista pasada 1) →
 
 ### Técnicas narrativas
 
+Recursos opcionales de ejecución, no canon ni obligaciones. Los ejemplos no fijan gestos, silencios, metáforas, conocimiento ni conductas; el escritor elige según función, contexto y POV.
+
 #### In medias res
 Empezar en medio de la acción, sin introducción:
 ```
@@ -126,14 +130,14 @@ BIEN: "El ascensor se detuvo. Elena apoyó la frente en el metal frío."
 ```
 
 #### Show don't tell
-Mostrar en vez de decir:
+Mostrar cuando aporta experiencia o evidencia; narrar directamente una decisión o percepción también puede ser pertinente. No sustituir toda interioridad por gestos:
 ```
-MAL: "Estaba nerviosa."
-BIEN: "Se mordía el labio. Los dedos le temblaban contra el bolso."
+Síntesis posible: "Estaba nerviosa."
+Manifestación posible: "Los dedos le temblaban contra el bolso."
 ```
 
 #### Diálogos con subtexto
-Lo que se dice no es lo que se quiere decir:
+Lo dicho puede diferir de la intención, cuando el contexto lo sostiene; no es obligatorio ocultar el sentido de cada réplica:
 ```
 "¿Vienes mucho por aquí?" → Quiero saber si eres de aquí
 "Depende del día" → No quiero darte información
@@ -185,43 +189,11 @@ ACTO V — NUEVO EQUILIBRIO
    - La intimidad como nuevo normal
 ```
 
-### Formato de párrafos — reglas obligatorias
+### Formato de prosa
 
-Estas reglas aplican a todo texto generado, independientemente del estilo o el tono del beat.
+Aplicar `mecanica-prosa` para diálogo, interioridad y párrafos. Separar intervenciones para identificar al hablante y cortar párrafos por claridad y cadencia, no por líneas, acciones o sensaciones contadas. Los cambios de foco no exigen corte automático.
 
-#### Diálogos en párrafos independientes
-
-Cada intervención de diálogo va en su propio párrafo, separado del texto narrativo por una línea en blanco. Nunca embebido en medio de un bloque narrativo.
-
-```
-MAL:
-Fernando se giró despacio. —Ya lo sé —dijo, con la voz plana. Lucía no respondió.
-
-BIEN:
-Fernando se giró despacio.
-
-—Ya lo sé —dijo, con la voz plana.
-
-Lucía no respondió.
-```
-
-Los diálogos ultracortos (`—Más.`, `—No pares.`, `—Quieto.`) van siempre solos en su párrafo, sin narración en la misma línea.
-
-#### División de bloques narrativos largos
-
-Cuando la narración cambia de foco (acción → sensación, sensación → reacción interna, un cuerpo → otro cuerpo, presente → recuerdo), parte en un nuevo párrafo. Un bloque de más de 6-7 líneas sin corte probablemente fusiona focos que deberían estar separados.
-
-```
-MAL (todo fundido):
-La empujó contra la pared y le metió la mano entre las piernas, y ella notó el calor antes del contacto y recordó la primera vez que alguien la había tocado así, sin preguntar, con esa certeza de quien sabe que la respuesta va a ser sí.
-
-BIEN (partido en cambios de foco):
-La empujó contra la pared y le metió la mano entre las piernas.
-
-Ella notó el calor antes del contacto, una fracción de segundo de anticipación que fue casi mejor que el tacto mismo.
-
-Recordó la primera vez que alguien la había tocado así, sin preguntar.
-```
+La conversación puede fluir con saludos, despedidas y transiciones ordinarias sin un beat por cada réplica o gesto. Mantener los encabezados Markdown, IDs y cuerpos por beat exigidos por el contrato técnico; esos límites no obligan a reiniciar la conversación ni a añadir pausas escénicas.
 
 ### Escenas, hechos y beats
 
@@ -239,15 +211,17 @@ Recordó la primera vez que alguien la había tocado así, sin preguntar.
 **La procedencia del hecho es irrelevante al agrupar beats en escenas.** Una misma escena puede contener beats de varios hechos porque el hecho ya cumplió su función (planificar) y no existe en el momento de la agrupación. No hay límite fijo de escenas por capítulo ni de beats por escena; la coherencia de contexto (mismo espacio, tiempo y cast, o corte explícito) es el único criterio.
 
 Cada beat debe ser:
-- **Factual**: declara QUÉ ocurre físicamente — quién hace qué a quién
+- **Compromiso narrativo**: declara qué ocurre o cambia y a quién afecta; admite decisiones, descubrimientos e inferencias atribuidas sin redactar el pensamiento como guion
 - **Ordenado**: sigue el orden cronológico del hecho
-- **Sin sensoriales**: temperatura, olfato, textura, emociones internas son del escritor
-- **Diálogo solo si es crítico de trama**: marcado con ⚡, máximo 1 por beat
+- **Preciso sobre conocimiento**: distingue lo dicho, sabido, inferido y verdadero; una afirmación o inferencia no confirma por sí sola el hecho referido
+- **Ejecución libre**: el escritor decide formulación, interioridad, sensoriales y enlaces; solo se compromete un detalle concreto si cumple una función narrativa, no por adornar el tono
+- **Diálogo por contenido y efecto**: no se redacta una réplica obligatoria por ser importante. ⚡ se reserva a palabras exactas exigidas por el usuario o aprobadas con función causal documentada, según `mecanica-prosa`. Si una frase ⚡ vigente es incompatible con la revisión, se pide resolución al director antes de generar, sin alterarla ni degradarla a sugerencia
+- **Unidad dramática**: no se divide por puntuación, verbos o mezcla tonal; las etiquetas no modifican hechos, conducta, conocimiento, consentimiento ni intensidad fijada
 
 Cada hecho debe tener:
 - **Propósito**: qué avanza en la trama o en el arco de personaje
-- **Beats**: mínimo 3-8 beats que formen una unidad dramática
-- **Transición** (en planificación): cómo enlaza con el siguiente hecho
+- **Beats**: cobertura suficiente de los compromisos y cambios del hecho, sin mínimo ni máximo numérico
+- **Transición** (en planificación): relación causal o temporal con el siguiente hecho; puede resolverse mediante elipsis, sin beat puente obligatorio
 
 Cada escena debe tener:
 - **Beats**: los beats agrupados en ella, con independencia del hecho de origen

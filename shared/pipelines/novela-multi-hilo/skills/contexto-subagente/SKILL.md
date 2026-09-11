@@ -21,6 +21,16 @@ stable_id, seq, parent_id, acción, tono, extensión, hilo
 - Renumerar cambia solo `seq`, filtrado por `parent_id` y `hilo` cuando aplique.
 - Summaries se buscan por `(nivel, parent_id, seq[, hilo])`; el UUID físico nunca es entrada.
 
+### Contrato editorial común
+
+Cada beat es una unidad dramática con compromiso verificable, no una microacción ni un párrafo. No dividir por puntuación, verbos, etiquetas tonales, hilos ni cuotas. El director pasa estas reglas inline a escritor e integrador, sin pedirles lecturas ni herramientas.
+
+Separa **Obligatorio** (hechos, decisiones, consecuencias, restricciones, POV y literalidad justificada), **Libre** (ejecución compatible: palabras, gestos, pausas y enlaces ordinarios) y **Ejemplos opcionales** (no canon ni lista a completar). No son campos nuevos del payload.
+
+Distingue lo dicho, sabido, inferido y confirmado, por quién y con qué certeza. Saber no obliga a preguntar; una inferencia del POV no exige confesión ajena. El tono no impone conducta: una conversación normal puede resultar opresiva por lo que comprende el personaje focal. La acción declara acontecimiento y consecuencia; el espacio, la utilería y el cast viven en la cabecera de escena y en las anotaciones; **la ejecución es del escritor**.
+
+La escena se lee continua: los encabezados son trazabilidad, se conservan IDs/seq y cuerpos no vacíos, pero no reinician el diálogo. Si un compromiso o literalidad vigente impide la revisión autorizada, escritor/integrador devuelven `BLOQUEO:` al director.
+
 ## Guionista
 
 Cuatro modos: `hilo`, `hilo-capitulo`, `trenzado`, `revision`. Cada uno recibe **solo** lo que necesita — nunca `diseno-hilo.md` ni `guion-hilo.md` íntegros salvo en modo `hilo`.
@@ -41,10 +51,10 @@ Salida: `hilos/hilo-<slug>/guion-hilo.md` — solo hechos `H_NNNN` agrupados por
 3. Últimos beats del capítulo-borrador anterior del mismo hilo (contrato de continuidad).
 4. Resumen compacto de entidades y relaciones relevantes (estilo `memoria`).
 5. Si el rango contiene `[D]`: `hilos/hilo-<slug>/cola_d.md` (instancias ya escritas en capítulos-borrador anteriores del mismo `[D]`, con `stable_id` + escena + resumen — no solo el conteo).
-6. IDs: asignar `seq` desde `ultimo_beat_seq`; generar `stable_id` opaco para cada beat y escena nuevos.
+6. IDs: asignar `seq` local a la escena; generar `stable_id` opaco para cada beat y escena nuevos.
 
 Flujo:
-- **Sin `[D]` en el rango**: una sola pasada — genera beats de todos los hechos del rango y agrúpalos en escenas por coherencia de contexto. Marcador `<!-- ESCENA <stable_id>: Nombre -->`. Sin renumeración (posiciones nuevas).
+- **Sin `[D]` en el rango**: una sola pasada — genera beats de todos los hechos del rango y agrúpalos en escenas por coherencia de contexto. Marcador `<!-- ESCENA <stable_id>: Nombre | hilo: <stable_id_hilo> -->`. Sin renumeración (posiciones nuevas).
 - **Con `[D]` en el rango**: primero **Checkpoint 1** — propone el plan de instancias (qué y cuántas, sin fórmula fija) sin escribir beats todavía. Tras validación del director + usuario: genera la secuencia completa (lineales + `[D]` entretejidos) en una sola pasada y agrupa en escenas — **Checkpoint 2** revisa el resultado contra `cola_d.md`.
 
 Salida: `hilos/hilo-<slug>/cap-NN/guion.md`. El director (no el guionista) actualiza `cola_d.md` tras el Checkpoint 2.
@@ -59,7 +69,7 @@ Salida: `hilos/hilo-<slug>/cap-NN/guion.md`. El director (no el guionista) actua
 
 Tarea: descubre en el contenido real dónde se materializa cada conexión —y cualquier eco orgánico no previsto—, no solo lo ya anotado.
 
-Salida: mueve cada bloque de escena completo a `capitulos/cap-NN-slug/guion.md` (`renumber-siblings` en `parent_id`/`seq`; `stable_id` no cambia), genera la tabla `## Trenzado`, reescribe `## Puntos de conexión` con `stable_id` de escena concretos.
+Salida: mueve cada bloque de escena completo a `capitulos/cap-NN-slug/guion.md` (`renumber-siblings` en `parent_id`/`seq`; `stable_id` y hilo no cambian), genera la tabla `## Trenzado`, reescribe `## Puntos de conexión` con `stable_id` de escena concretos.
 
 ### Modo `revision`
 
@@ -74,61 +84,56 @@ Salida: reemplaza solo el tramo indicado, en el mismo archivo leído (`capitulos
 
 ## Escritor
 
-### Modo normal
+### Modo escena (contexto preparado, ADR 0019)
 
 1. `proyecto`.
-2. Capítulo, escena y bloque de hilo actuales.
-3. `stable_id` del hilo activo y slugs solo como ayudas humanas.
-4. Fichas relevantes por `stable_id`.
-5. **TODOS los beats ya escritos de la escena actual** (prosa en `draft.md`, desde el primero de la escena) + siguientes tres del guion. Si es primer beat de escena: últimos 3 beats del bloque anterior.
-6. Beat actual: `stable_id`, `seq`, `parent_id`, acción, tono, extensión e hilo.
-7. Personajes, zona y props declarados.
-8. Display derivado opcional, nunca usado para lookup.
-9. Nombre de escena, `total_beats`, `beat_index` y estilo.
+2. Guion de la escena COMPLETA (objetivo + todos los beats con `stable_id`, `seq`, `parent_id`, acción, tono, extensión e hilo). La escena es un bloque de un solo hilo, con su marcador `<!-- ESCENA <stable_id>: Nombre | hilo: <stable_id_hilo> -->`.
+3. Contexto de hilo: época, ubicación y tono propio; si la escena abre bloque tras otra época/POV, se pide reanclaje. En capítulos puente o espejo, contexto mínimo del otro hilo y `fichas/conexion-*.md`.
+4. Prosa de transición y antecedentes necesarios (sin cuota fija de beats ni notas históricas irrelevantes). Paquete de capítulo preparado una vez: memoria de lo ocurrido, separada de planes futuros.
+5. Fichas relevantes inline por `stable_id`; personajes, zonas y props declarados de la escena.
+6. Reglas de voz, POV, mecánica de prosa y extensión orientativa ya resueltas por el director. Restricciones pertinentes del proyecto, inline. Contrato editorial común: Obligatorio, Libre y Ejemplos opcionales; escena continua; distinción de conocimiento; libertad de ejecución sin alterar canon.
+7. Escritor sin herramientas: no se le dan órdenes de leer archivos ni cargar skills.
 
-### Modo novela con memoria
+Output: solo prosa de TODOS los beats con marcador de escena e identidades, sin notas rutinarias. Contexto insuficiente o canon contradictorio -> `BLOQUEO`. El director prepara la candidata pendiente, presenta la escena completa con hash/versión y se detiene para validación explícita del usuario (checkpoint obligatorio de narrativa). Después obtiene revisión editorial por hash; ambas aprobaciones son necesarias antes de aceptar/sincronizar. Aprobar una escena no autoriza la siguiente; los beats no se marcan completos hasta sincronizar. No se indexa narrativa no aceptada.
 
-Añade:
+### Modo revisión o expansión puntual
 
-10. Briefing de memoria filtrado por los stable IDs de hilo.
-11. Premisa y posición del capítulo.
-12. En capítulos puente o espejo, contexto mínimo del otro hilo y fichas de conexión.
-
-### Modo expansión
-
-Añade el beat siguiente y su hilo. La expansión conserva `stable_id` y `seq` salvo reordenamiento explícito.
+Recibe el texto original, la instrucción concreta, el contrato y ambos extremos de la transición. Devuelve solo las secciones solicitadas con los mismos `stable_id` y `seq`, conservando lo que no deba cambiar. Una revisión no reasigna identidades ni cambia el hilo de la escena.
 
 ## Validador
 
-### Modo beat
+### Modo escena (revisión editorial, ADR 0019)
 
 1. `proyecto`.
-2. Texto del beat.
-3. Beat de guion: `stable_id`, `seq`, `parent_id`, acción, tono, extensión e hilo.
-4. Fichas relevantes.
-5. TODOS los beats ya escritos de la escena actual (prosa en `draft.md`, desde el primero) + el beat actual + siguientes tres del guion. Si el beat actual abre escena: últimos 3 beats del bloque anterior.
-6. Hilos activos por `stable_id`, personajes, zona, props, scores, scope y estilo.
-7. Contexto cross-hilo si el capítulo tiene más de un hilo.
+2. Escena candidata completa, SHA256 real de `preparar`, guion y contexto de transición pertinente. Briefing neutral: no anticipar el veredicto.
+3. Una revisión: cobertura, continuidad, personajes/POV, prosa y restricciones. Sin cuotas sensoriales ni cinco scores por beat.
+4. Cross-hilo: si el capítulo tiene ≥2 hilos, cargar `validacion-cross-hilo` y emitir sus hallazgos como incidencias con gravedad, no como bloque de scores.
+5. Fichas y reglas de voz pertinentes. Distinguir voz interna del personaje y resumen del narrador; naturalidad de la conversación completa, no checklist de gestos o ejemplos.
+6. Output JSON compacto: `escena_stable_id`, `candidato_sha256`, estado (`aprobado/corregir/bloqueado`), incidencias con gravedad (`opcional/corregir/bloqueante`), evidencia y corrección concreta.
+
+### Modo revisión focalizada
+
+1. `proyecto`.
+2. Candidato completo y hash actualizado tras correcciones; lista de cambios y las incidencias a comprobar.
+3. Contexto suficiente de las transiciones anterior y posterior; si hay impacto transversal, incluir los tramos implicados.
+4. El resto ya aprobado no se reevalúa por rutina; un error factual nuevo fuera del fragmento sí se reporta.
 
 ### Modo global
 
 1. `proyecto`.
-2. Draft completo.
-3. L4, L3 y L2 con sus resultados de `stable_id`, `seq`, `parent_id`, `nivel` e `hilo`.
-4. Tabla de trenzado.
-5. Entidades de hilos activos por `stable_id`.
-6. Fichas de conexión, estilo, scope y validación cross-hilo.
+2. Versión del capítulo y hash, escenas aceptadas, L4/L3, tabla de trenzado y entidades de hilos activos.
+3. Cronología, objetos, conocimientos, arco y costuras entre escenas; no repetir evaluación estilística por beat.
+4. Cross-hilo al cierre; devuelve solo incidencias, sin media que oculte errores factuales.
 
 ## Integrador
 
 1. `proyecto`.
-2. Beat localizado por `stable_id`.
-3. Feedback del validador.
-4. Beat de guion con contrato común, incluido hilo.
-5. Fichas, TODOS los beats ya escritos de la escena actual (prosa en `draft.md`) + el beat a reescribir + siguientes tres del guion, trenzado y estilo.
-6. `instruccion_usuario` si aplica.
+2. Fragmentos localizados por `stable_id` y texto actual inline; incidencias concretas, no tablas de scores.
+3. Hilo y contexto de ambos extremos del cambio; fichas, voz/POV, mecánica y restricciones ya preparadas.
+4. `instruccion_usuario` y alcance autorizado si aplica.
+5. Texto COMPLETO de las secciones solicitadas. Repara el mecanismo del defecto en el intercambio mínimo autorizado, no solo una palabra; si falta alcance o contexto, devuelve `BLOQUEO:` antes de reconstruirlo.
 
-No cambia `stable_id`. Si el cambio exige mover el beat a otro bloque, el director decide el nuevo `parent_id` e hilo y renumera `seq` de forma atómica.
+No cambia `stable_id` ni hilo; devuelve solo secciones corregidas, sin duplicar original ni notas. El director ensambla, prepara la escena completa, la presenta y se detiene para validación del usuario; obtiene revisión focalizada antes de aceptar/sincronizar. Cualquier cambio textual invalida la conformidad anterior.
 
 ## Memoria
 
@@ -149,7 +154,7 @@ Output: briefing L4 → L3 → L2 → entidades → relaciones → hilos → ref
 4. Capítulo, arco y escenas con `stable_id`, `seq`, `parent_id`, `nivel` e `hilo`.
 5. Entidades relevantes por `stable_id`.
 
-Carga `cronista-ops`, `qdrant` y `auditoria-neo4j`. Persiste summaries por `(nivel, parent_id, seq[, hilo])`, usando el `stable_id` del hilo.
+Carga `cronista-ops`, `qdrant` y `auditoria-neo4j`. Persiste summaries por `(nivel, parent_id, seq[, hilo])` y usa siempre el `stable_id` canónico de la escena del guion (`upsert-summary --id` o `upsert-summary-by-position --id`); nunca inventa un ID L1. Reporta `discrepancias_qdrant` separadas de `discrepancias_neo4j` y no cierra capítulo con discrepancias pendientes.
 
 ## Entidades
 

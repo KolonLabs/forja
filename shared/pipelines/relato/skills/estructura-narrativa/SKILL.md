@@ -30,7 +30,7 @@ No abras una escena solo por la cantidad de beats. Una situación continua puede
 
 La escena declara su trayectoria, por ejemplo `contenido → tenso → revelación`. Los beats heredan esa trayectoria. Usa `[registro: ...]` solo para marcar un momento que requiere un tratamiento distinto, especialmente en cambios hacia o desde contenido explícito.
 
-El registro orienta al escritor; no dicta frases, longitud, detalle sensorial ni diálogo.
+El registro orienta al escritor; no dicta frases, longitud, detalle sensorial ni diálogo. Excepción: una escena explícita activa el nivel de detalle de `estilo-explicito` (acto mostrado con progresión), que prevalece sobre la contención en ese tramo.
 
 ## Salida
 

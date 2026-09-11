@@ -5,7 +5,7 @@ agent: director
 
 # /revisar-guion
 
-Revisa la estructura generada en el guion (`guion.md` en relato, `guion-novela.md` en novela) con criterio editorial. El objetivo es detectar problemas de coherencia entre escenas, arcos de personaje inconsistentes, ritmo desequilibrado y transiciones forzadas, **antes** de empezar la escritura beat a beat.
+Revisa la estructura generada en el guion (`guion.md` en relato, `guion-novela.md` en novela) con criterio editorial. El objetivo es detectar problemas de coherencia entre escenas, arcos de personaje inconsistentes, ritmo desequilibrado y transiciones forzadas, **antes** de empezar la narrativa por escena.
 
 ## Sintaxis
 

@@ -9,7 +9,9 @@ description: Define cómo escribir cada beat según su tono específico. Úsalo 
 
 Este skill define las características de escritura para cada tono individual de beat. Los tonos son independientes entre sí: el guión los asigna en combinaciones (`Hipnótico / Erótico`, `Explícito / Dominante`) y el escritor combina las características de cada uno al desarrollar el beat.
 
-**Regla fundamental**: el tono de beat prevalece sobre el estilo global del relato en ese fragmento concreto. Si el estilo global es `erotico` pero el beat es `Clínico / Opresivo`, escribe clínico y opresivo.
+**Regla fundamental**: el tono orienta la expresión local dentro del estilo y las restricciones aprobadas. Puede modular ritmo, registro y foco, pero no altera hechos, conducta, conocimiento, consentimiento ni intensidad o explicitud fijados. No confirma sospechas, impone obediencia ni añade acciones para representar una etiqueta.
+
+El catálogo ofrece recursos de ejecución, no listas de elementos obligatorios. Sus focos sensoriales, gestos, silencios y metáforas son opciones con función, nunca cuotas. Los ejemplos son opcionales y ajenos al canon: no se trasladan sus personajes, frases ni acciones al guion. La literalidad ⚡ se rige por `mecanica-prosa`, no por el tono o la importancia de una réplica. Una frase ⚡ vigente incompatible se remite al director antes de generar; no se degrada a sugerencia.
 
 ---
 
@@ -21,18 +23,18 @@ Este skill define las características de escritura para cada tono individual de
 
 | Atributo | Valor |
 |----------|-------|
-| **Ritmo** | Frases cortas y secas. Sin adornos |
-| **Registro** | Técnico, distante, neutro. El narrador no juzga ni siente |
-| **Foco sensorial** | Vista (detalles del espacio, gestos precisos), oído (silencio, metrónomo) |
-| **Vocabulario** | Preciso, sin metáforas emocionales. Puede usar terminología terapéutica |
-| **Diálogos** | Mínimos, directos, con peso en cada palabra. Sin carga emocional visible |
-| **Atmósfera** | El peligro no se nombra. Se insinúa en la normalidad. Lo perturbador suena razonable |
+| **Ritmo** | Tendencia a frases cortas y secas, con la amplitud necesaria para expresar el compromiso |
+| **Registro** | Técnico, distante, neutro en la expresión; puede transmitir emociones o valoraciones atribuidas cuando el beat las requiere |
+| **Foco sensorial** | Detalles observables pertinentes a la precisión del pasaje, sin exigir gestos, sonidos o silencios concretos |
+| **Vocabulario** | Precisión y sobriedad; terminología técnica solo si corresponde al contexto y al conocimiento del POV |
+| **Diálogos** | Concisión y precisión; conservar el contenido y efecto del intercambio, incluida su carga emocional aprobada |
+| **Atmósfera** | Distancia y normalidad aparente; no ocultar información que el beat deba comunicar ni añadir peligro por la etiqueta |
 
 **Ejemplo:**
 ```
-Vázquez cerró el cuaderno. Lo dejó en el escritorio. Miró a David.
-—Siéntate —dijo.
-Lo dijo sin levantar los ojos.
+El recibo registraba una entrega a las nueve. La firma no era legible.
+
+—Necesito el original para comprobarla —dijo Ana.
 ```
 
 ---
@@ -41,19 +43,18 @@ Lo dijo sin levantar los ojos.
 
 | Atributo | Valor |
 |----------|-------|
-| **Ritmo** | Frases largas, cadenciosas, con repetición deliberada. El ritmo importa más que la variedad |
+| **Ritmo** | Cadencia envolvente, que puede apoyarse en frases largas y repetición deliberada con función |
 | **Registro** | Sugestivo, lento, casi monótono. Las palabras se colocan como pesos |
-| **Foco sensorial** | Oído (la voz, el metrónomo, la respiración), tacto (peso del cuerpo), olfato (sándalo) |
-| **Vocabulario** | Palabras sencillas repetidas. Instrucciones directas dentro de párrafos lentos |
-| **Diálogos** | Frases cortas de instrucción dentro de párrafos largos. La voz de Vázquez es el ancla |
-| **Atmósfera** | El lector debe sentir el trance. Las frases largas reproducen la cadencia hipnótica |
+| **Foco sensorial** | Recurrencias perceptivas pertinentes, como sonidos o movimiento; no exige una voz, objeto u olor específico |
+| **Vocabulario** | Palabras sencillas y recurrencias con función; las instrucciones solo aparecen si corresponden al intercambio aprobado |
+| **Diálogos** | Cadencia sostenida y repeticiones pertinentes, sin imponer un hablante, órdenes o respuestas |
+| **Atmósfera** | Efecto envolvente mediante cadencia; no establece que un personaje esté en trance ni que pierda agencia |
 
 **Ejemplo:**
 ```
-—Respira —dijo Vázquez. La voz baja, cada sílaba colocada con
-precisión—. El aire entra. Baja. Llega al vientre. Lo expandes.
-Sientes el peso del cuerpo contra el diván. Los hombros. La espalda.
-Las caderas. Las piernas.
+El tren seguía junto al río, junto a las mismas orillas que aparecían
+y se perdían en el cristal, y Ana repasaba la dirección, una vez más,
+la dirección que tendría que encontrar al llegar.
 ```
 
 ---
@@ -62,18 +63,20 @@ Las caderas. Las piernas.
 
 | Atributo | Valor |
 |----------|-------|
-| **Ritmo** | Constante, inevitable. Sin aceleraciones ni escapatorias |
-| **Registro** | Frío, controlado. El poder de quien domina es absoluto y no necesita justificarse |
-| **Foco sensorial** | Vista (posiciones de control), oído (órdenes, silencio obediente) |
-| **Vocabulario** | Directo pero sin estridencia. La opresión es silenciosa |
-| **Diálogos** | Órdenes breves. El que manda no explica. El que obedece no pregunta |
-| **Atmósfera** | No hay escapatoria. Los personajes lo saben aunque no lo digan |
+| **Ritmo** | Presión sostenida; aceleraciones y pausas al servicio del conflicto aprobado |
+| **Registro** | Frío, controlado en la expresión de la presión, sin convertir una pretensión de poder en dominio absoluto |
+| **Foco sensorial** | Posiciones, distancias y sonidos pertinentes a la presión; el silencio no implica obediencia |
+| **Vocabulario** | Directo, contenido; la presión puede expresarse también en un intercambio abierto |
+| **Diálogos** | Órdenes, preguntas, explicaciones o negativas según el beat; formular la presión sin predeterminar la respuesta |
+| **Atmósfera** | Sensación de opciones estrechas, no prueba de que no haya salida ni de que los personajes lo sepan |
 
 **Ejemplo:**
 ```
-Vázquez le señaló el centro del diván.
-—Recuéstate. Boca arriba. Cierra los ojos.
-David obedeció. Siempre obedecía.
+—Sin su firma, el expediente no sale de aquí.
+
+—¿Dónde consta ese requisito? —preguntó Ana.
+
+Faltaban diez minutos para el cierre del registro.
 ```
 
 ---
@@ -82,19 +85,20 @@ David obedeció. Siempre obedecía.
 
 | Atributo | Valor |
 |----------|-------|
-| **Ritmo** | Frases muy cortas. Golpe tras golpe. Sin amortiguación |
-| **Registro** | Impacto emocional y físico simultáneos. El mundo del personaje se rompe |
-| **Foco sensorial** | Todos los sentidos en colapso. El personaje procesa demasiado a la vez |
-| **Vocabulario** | Mezcla de vocabulario emocional (conciencia, realidad) y crudo (polla, culo, leche) |
-| **Diálogos** | La frase de revelación cae sola, sin amortiguación. Una línea. Sin contexto previo |
-| **Atmósfera** | El antes y el después son mundos distintos. El lector siente el corte |
+| **Ritmo** | Contraste y énfasis en el cambio de comprensión; admite preparación, desarrollo y reacción en un mismo movimiento |
+| **Registro** | Impacto de lo descubierto o inferido según el beat, sin imponer colapso emocional o físico |
+| **Foco sensorial** | Detalles que sostienen el hallazgo y su recepción, sin obligación de cubrir todos los sentidos |
+| **Vocabulario** | Precisión sobre qué cambia en la comprensión, con el registro y la crudeza aprobados |
+| **Diálogos** | El hallazgo puede emerger en conversación continua, con preguntas y contexto; no exige frase aislada ni literalidad automática |
+| **Atmósfera** | Contraste entre antes y después; distinguir revelación de un hecho, afirmación ajena e inferencia atribuida, sin convertirlas en certezas equivalentes |
 
 **Ejemplo:**
 ```
-No era silicona. Nunca había sido silicona.
-Era una polla real, caliente, pulsando dentro de su culo.
-—¡Es tu polla! —jadeó David—. ¡Tu puta polla real!
-No se apartó. Se empujó hacia atrás.
+—¿La copia se selló el lunes?
+
+—El martes —dijo Carlos—. El lunes estaba cerrado el registro.
+
+Ana sospechó que el recibo podía estar mal fechado. Tendría que ver el original.
 ```
 
 ---
@@ -103,18 +107,17 @@ No se apartó. Se empujó hacia atrás.
 
 | Atributo | Valor |
 |----------|-------|
-| **Ritmo** | Directo, sin pausas contemplativas ni introspección |
-| **Registro** | Sin mediación emocional. Los hechos se describen como hechos |
-| **Foco sensorial** | Tacto (presión, fuerza, peso), oído (sonidos físicos: plac, chapoteo, gemido) |
-| **Vocabulario** | Sonidos físicos explícitos. El cuerpo como objeto de fuerza |
-| **Diálogos** | Mínimos o inexistentes. El cuerpo habla más que las palabras |
-| **Atmósfera** | Sin romanticismo. Sin juicio. El acto ocurre y punto |
+| **Ritmo** | Directo y contundente; la introspección o las pausas caben cuando realizan el compromiso del beat |
+| **Registro** | Atención a hechos y consecuencias sin suavizarlos; no elimina la respuesta emocional o el juicio atribuible al POV |
+| **Foco sensorial** | Fuerza, peso o sonidos de la acción cuando contribuyen a expresar sus consecuencias |
+| **Vocabulario** | Directo y concreto sobre fuerza y consecuencias, sin onomatopeyas ni cosificación obligatorias |
+| **Diálogos** | Concisos y contundentes, con las réplicas necesarias para conservar el intercambio aprobado |
+| **Atmósfera** | Dureza de consecuencias; no borrar decisiones, resistencia o interpretación por favorecer la acción física |
 
 **Ejemplo:**
 ```
-Los huevos de Vázquez golpeaban el culo de David en cada embestida.
-Plac. Plac. Plac.
-El sonido húmedo llenaba el consultorio.
+La máquina trituró el original. Ana pulsó la parada, demasiado tarde.
+Había perdido la única prueba que no dependía de una copia.
 ```
 
 ---
@@ -124,18 +127,16 @@ El sonido húmedo llenaba el consultorio.
 | Atributo | Valor |
 |----------|-------|
 | **Ritmo** | Variable según la intensidad del acto. Se acelera con la acción |
-| **Registro** | La escena ES el acto sexual. Sin subtexto, sin rodeos, sin metáforas |
-| **Foco sensorial** | Todos los sentidos con igual peso y máximo detalle: anatomía, fluidos, sonidos, temperatura |
-| **Vocabulario** | Máximo nivel de crudeza. Consultar skill `validacion-crudeza`. Sin eufemismos bajo ninguna circunstancia |
-| **Diálogos** | Directos y crudos. Lo que se dice es exactamente lo que se quiere |
-| **Atmósfera** | El acto sexual en primer plano absoluto. Nada compite con él en el texto |
+| **Registro** | Descripción directa de lo que el beat establece; no añade actos sexuales ni excluye subtexto, interioridad o metáforas que no oculten lo ocurrido |
+| **Foco sensorial** | Máximo detalle pertinente a la explicitud fijada, sin igualdad obligatoria de sentidos ni elementos añadidos para completar una lista |
+| **Vocabulario** | Crudeza fijada por el proyecto, sin rebajar su máximo mediante eufemismos. Consultar `validacion-crudeza`; la etiqueta no cambia las restricciones |
+| **Diálogos** | Directos en formulación cuando corresponda, sin equiparar lo dicho con deseo, intención, verdad o consentimiento |
+| **Atmósfera** | Lo ocurrido queda inequívoco en el grado aprobado; conservar sus consecuencias, ambigüedades intencionales y función dramática |
 
 **Ejemplo:**
 ```
-La polla de Vázquez siguió entrando. Veintiún centímetros de carne
-real, caliente, venosa, hundiéndose en el culo de David. Los huevos
-grandes golpeando contra el culo en cada embestida. El semen salió
-a chorros espesos, empapando los muslos pálidos de David.
+El agua atravesó la tapa de cartón. La tinta azul se disolvió en
+manchas y el número de expediente dejó de ser legible.
 ```
 
 ---
@@ -145,17 +146,16 @@ a chorros espesos, empapando los muslos pálidos de David.
 | Atributo | Valor |
 |----------|-------|
 | **Ritmo** | Lento en los detalles físicos, se acelera en los picos de sensación |
-| **Registro** | El cuerpo como protagonista absoluto. Las sensaciones mandan sobre los pensamientos |
+| **Registro** | Experiencia corporal en primer plano, compatible con decisiones e interioridad sin reemplazarlas |
 | **Foco sensorial** | Tacto en primer plano: dolor, presión, temperatura, humedad, peso. Los otros sentidos apoyan |
-| **Vocabulario** | Sensaciones físicas concretas. No "sintió placer" sino "la cabeza de la polla le forzó el esfínter" |
-| **Diálogos** | Sonidos involuntarios (gemidos, jadeos, gruñidos) más que palabras |
-| **Atmósfera** | El cuerpo no miente. Lo que ocurre se siente desde dentro |
+| **Vocabulario** | Sensaciones físicas concretas y pertinentes, con el vocabulario e intensidad fijados por el proyecto |
+| **Diálogos** | La sensación puede afectar la voz; no sustituir réplicas comprometidas por sonidos ni añadir reacciones involuntarias obligatorias |
+| **Atmósfera** | Lo ocurrido se experimenta desde el cuerpo del POV; una reacción física no demuestra deseo, verdad ni consentimiento |
 
 **Ejemplo:**
 ```
-La diferencia entre la silicona y la carne era la temperatura.
-La silicona siempre estaba fría al principio. Esto estaba caliente.
-Pero David, en trance, interpretó el calor como excitación propia.
+El asa le cortaba los dedos. Ana cambió la caja de mano, pero el peso
+siguió tirándole del hombro durante el último tramo de escalera.
 ```
 
 ---
@@ -164,18 +164,18 @@ Pero David, en trance, interpretó el calor como excitación propia.
 
 | Atributo | Valor |
 |----------|-------|
-| **Ritmo** | El que domina marca el ritmo. El texto lo sigue |
-| **Registro** | Asimetría de poder clara y constante. Quien manda dicta, quien obedece recibe |
-| **Foco sensorial** | Vista (posiciones de poder), tacto (control físico: manos que sujetan, dirigen, posicionan) |
-| **Vocabulario** | Verbos de control y dirección: clavar, agarrar, guiar, posicionar, forzar |
-| **Diálogos** | El dominante habla poco pero cada frase es una instrucción cumplida |
-| **Atmósfera** | La resistencia no existe o ya fue vencida. El orden está establecido |
+| **Ritmo** | Énfasis en la iniciativa o el intento de control establecido por el beat; su resultado no lo decide el tono |
+| **Registro** | Asimetría de poder o pretensión de mando según el contexto, sin imponer sumisión |
+| **Foco sensorial** | Posiciones, distancias o contacto si están justificados por la acción; no añadir control físico para ilustrar la etiqueta |
+| **Vocabulario** | Control y dirección cuando describan la conducta aprobada, sin intensificarla ni rebajarla |
+| **Diálogos** | Autoridad en la formulación; una instrucción puede cumplirse, cuestionarse o rechazarse según el compromiso narrativo |
+| **Atmósfera** | Peso de la iniciativa y sus consecuencias; preservar resistencia, negociación y consentimiento tal como estén establecidos |
 
 **Ejemplo:**
 ```
-Vázquez le agarró las caderas con las dos manos.
-Le corrigió el ángulo.
-Empujó hasta el fondo.
+—Primero revisaremos el original —dijo Ana—. Después hablaremos de cerrarlo.
+
+—No sin la autorización —respondió Carlos.
 ```
 
 ---
@@ -184,18 +184,20 @@ Empujó hasta el fondo.
 
 | Atributo | Valor |
 |----------|-------|
-| **Ritmo** | Muy rápido. Frases cortas encadenadas sin pausas. La acción no da tregua |
-| **Registro** | Urgente, sin reflexión, sin descripción de ambiente. Solo acción |
+| **Ritmo** | Muy rápido; frases ágiles y encadenamiento que sostengan la urgencia, sin prohibir pausas necesarias |
+| **Registro** | Urgente; integrar reflexión y ambiente necesarios sin perder el impulso del pasaje |
 | **Foco sensorial** | Movimiento, sonido, impacto. Los detalles sensoriales son rápidos y concretos |
-| **Vocabulario** | Verbos de acción en cadena. Pocos adjetivos. Sin subordinadas largas |
-| **Diálogos** | Gritos, órdenes cortas, nombres. Nada que requiera pausar |
-| **Atmósfera** | El control se ha perdido. Los cuerpos mandan. La mente va detrás |
+| **Vocabulario** | Verbos precisos y economía descriptiva; la sintaxis sirve a la urgencia, no a una prohibición de subordinadas |
+| **Diálogos** | Réplicas ágiles, con contenido y efecto completos; no impone gritos ni elimina preguntas o decisiones |
+| **Atmósfera** | Sensación de urgencia; no implica pérdida de control o agencia salvo que el beat la establezca |
 
 **Ejemplo:**
 ```
-—¡Las dos juntas! —jadeó—. ¡No paréis!
-No pararon. Plac doble. Chapoteo doble.
-Laura se corrió. Gritó. Se volvió a correr.
+El agua llegaba a las cajas. Ana levantó la del original y buscó la salida.
+
+—¿Por la escalera?
+
+—Está libre. Vamos.
 ```
 
 ---
@@ -204,18 +206,18 @@ Laura se corrió. Gritó. Se volvió a correr.
 
 | Atributo | Valor |
 |----------|-------|
-| **Ritmo** | Pausado, con silencios cargados. Cada detalle cuenta |
-| **Registro** | La acción no ha ocurrido todavía pero está a punto. Carga sin descarga |
-| **Foco sensorial** | Vista (miradas, gestos mínimos), oído (silencio, respiración contenida), tacto (proximidad sin contacto) |
-| **Vocabulario** | Lo que no se dice pesa más que lo que se dice. Verbos de contención |
-| **Diálogos** | Subtexto. Lo que se dice no es lo que se quiere decir |
-| **Atmósfera** | El lector sabe lo que va a pasar. Los personajes también. Nadie lo dice |
+| **Ritmo** | Expectativa sostenida; silencios o pausas solo si tienen función, no entre cada réplica |
+| **Registro** | Incertidumbre o anticipación durante la acción o antes de ella, sin aplazar resultados comprometidos |
+| **Foco sensorial** | Señales perceptibles de riesgo o incertidumbre según el contexto, sin exigir miradas, silencios ni proximidad física |
+| **Vocabulario** | Precisión en riesgos y opciones percibidas; contención cuando corresponde al pasaje |
+| **Diálogos** | Subtexto cuando exista, compatible con preguntas y declaraciones directas; no exige ocultar intención en toda réplica |
+| **Atmósfera** | Expectativa ante un resultado incierto; no atribuir al lector o a los personajes conocimiento de lo que va a pasar |
 
 **Ejemplo:**
 ```
-El consultorio olía a sándalo. Siempre olía a sándalo.
-El metrónomo marcaba cincuenta y dos pulsaciones por minuto.
-David se mordió el labio inferior.
+—Si el original no aparece hoy, cerrarán el expediente.
+
+Ana miró la fecha del recibo. No sabía cuánto tardaría Carlos en volver.
 ```
 
 ---
@@ -224,13 +226,15 @@ David se mordió el labio inferior.
 
 ## Extensiones de beat
 
-Cada beat lleva una extensión que indica al escritor cuánta prosa debe generar. El guionista asigna la extensión; el escritor la ejecuta.
+Cada beat lleva una extension que indica su peso narrativo relativo. El guionista asigna la etiqueta; el escritor decide la longitud que necesita la unidad dramatica dentro de la escena, sea accion, interaccion, decision, descubrimiento o inferencia atribuida.
 
-| Extensión | Frases | Palabras (~) | Cuándo usarla |
-|-----------|:------:|:------------:|---------------|
-| `BREVE` | 2-3 | ~200 | Transiciones, acciones simples, un gesto, una frase |
-| `MEDIA` | 4-7 | ~500 | Escenas estándar, un evento con contexto sensorial |
-| `EXTENSA` | 8-15 | ~900 | Momentos de clímax, escenas de sexo, revelaciones, desarrollo emocional denso |
+| Extension | Aliento orientativo | Cuando usarla |
+|-----------|---------------------|---------------|
+| `BREVE` | Concentrado | Un cambio narrativo que admite tratamiento concentrado; no convierte cada gesto o replica en beat |
+| `MEDIA` | Desarrollo moderado | Un evento con contexto y reaccion |
+| `EXTENSA` | Desarrollo amplio | Puntos de giro y desarrollo emocional denso |
+
+**Regla de extension (ADR 0020):** no hay suelo ni techo literario numerico obligatorio. No recortes, fusiones frases ni anadas relleno para satisfacer conteos. Valora ritmo, cadencia, cobertura y proporcion dentro de la escena; senala dilucion narrativa con evidencia, no contra una cuota. No exige justificar cada desviacion. El presupuesto tecnico de completion del agente es independiente y comparte razonamiento y respuesta.
 
 La extensión es para el escritor. El guionista solo asigna la etiqueta. El beat en el guion siempre es una línea.
 
@@ -240,15 +244,15 @@ La extensión es para el escritor. El guionista solo asigna la etiqueta. El beat
 
 Cuando un beat tiene tono compuesto (`Hipnótico / Erótico`, `Explícito / Dominante`):
 
-1. **El primer tono es la emoción dominante**: marca el ritmo y la atmósfera general del beat
-2. **El segundo tono es el registro**: determina el vocabulario y el foco sensorial
-3. **No mezcles más de dos tonos en un beat**: si el beat necesita tres dimensiones, divídelo en dos beats
-4. **La extensión amplifica el tono**: un beat `EXTENSA` con tono `Hipnótico` debe sostener la cadencia durante más tiempo. Un beat `BREVE` con tono `Revelación` debe ser un golpe seco y terminar
+1. **El primer tono orienta ritmo y atmósfera**: no asigna una emoción o un estado mental al personaje por sí solo
+2. **El segundo tono matiza el registro**: orienta vocabulario y foco sin desplazar el compromiso narrativo ni las restricciones
+3. **Como máximo dos etiquetas por beat**: elegir las dominantes dentro del catálogo. Más matices en la ejecución no obligan a dividir; solo compromisos dramáticos distintos justifican beats separados, nunca la mezcla tonal, los verbos o la puntuación
+4. **La extensión indica peso, no una coreografía tonal**: desarrollar el cambio con la cadencia que necesita la escena. Una revelación BREVE puede integrarse en una conversación sin aislar una frase ni cortarla artificialmente
 
 ---
 
 ## Integración con agentes
 
-- El agente `escritor` carga este skill antes de desarrollar cada beat para saber cómo escribir el tono asignado
+- El director incorpora al contexto preparado las reglas pertinentes de este skill; escritor e integrador no lo cargan mediante herramientas
 - El agente `validador` puede usar este skill para verificar si el tono del texto desarrollado coincide con el tono asignado al beat
 - El agente `guionista` carga este skill para consultar el catálogo de tonos disponibles y asignar el correcto a cada beat — no necesita saber cómo ejecutarlos, solo elegirlos

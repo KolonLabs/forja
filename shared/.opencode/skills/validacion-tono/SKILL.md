@@ -7,7 +7,7 @@ description: Criterios de evaluación de tono narrativo por estilo. Úsalo cuand
 
 ## Estilos y tono esperado
 
-Consulta el skill `estilos-narrativos` para las características completas de cada estilo.
+Usa las reglas de estilo pertinentes preparadas por el director y `tonos-beat`. La tabla es orientativa: no cambia la explicitud, restricciones, conducta ni conocimiento fijados por el proyecto y el guion.
 
 | Estilo | Tono | Crudeza | Ritmo |
 |--------|------|---------|-------|
@@ -18,7 +18,7 @@ Consulta el skill `estilos-narrativos` para las características completas de ca
 | fantasia | Épico, inmersivo | Medio | Variado |
 | contemporaneo | Urbano, directo | Alto | Natural |
 
-## Criterios de evaluación (1-10)
+## Criterios editoriales
 
 ### 1. Coherencia tonal
 - ¿El tono se mantiene consistente con el estilo?
@@ -38,30 +38,15 @@ Consulta el skill `estilos-narrativos` para las características completas de ca
 ### 4. Tensión emocional
 - ¿El párrafo transmite la emoción adecuada?
 - ¿La intensidad emocional es correcta?
-- ¿Los personajes reaccionan acorde al tono?
+- ¿El efecto expresivo corresponde al pasaje sin imponer conducta por la etiqueta tonal? Una conversacion normal puede resultar opresiva por lo que comprende el POV; no exige nerviosismo, silencios, evasivas o confesiones.
 
-## Scoring
+## Decision editorial
 
-- **< 7**: Tono inconsistente con el estilo. Reescribir.
-- **7-8**: Tono adecuado. Mejoras menores posibles.
-- **9-10**: Excelente. El tono calza perfecto con el estilo.
+Reporta fricciones concretas de voz o efecto, no desviaciones de una coreografia de gestos. No hay gate por score ni obligacion de reescribir por una preferencia. En revision de prosa, el contrato de `validador` fija gravedad y aprobacion por hash; en revision de guion rige el diagnostico del invocante, sin candidato ni hash. La naturalidad se revisa con evidencia, no con una media.
 
 ## Formato de respuesta
 
-```json
-{
-  "dimension": "tono",
-  "score": 0,
-  "criterios": {
-    "coherencia_tonal": 0,
-    "atmosfera": 0,
-    "voz_narrador": 0,
-    "tension_emocional": 0
-  },
-  "problemas": [],
-  "sugerencias": []
-}
-```
+Respeta el contrato del consumidor: `validador` de prosa usa candidato/hash, estado e incidencias con fragmento, problema, gravedad y correccion. Para director o comandos de revision de guion, usa su diagnostico sin exigir un hash de candidata inexistente. Este skill no crea otro formato ni exige puntuaciones por dimension.
 
 ## Regla
 

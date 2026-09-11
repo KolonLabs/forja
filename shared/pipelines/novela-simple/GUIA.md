@@ -25,26 +25,31 @@ _actos.md  (actos → hechos)
   └─ /generar
        ├─ estructura en capítulos     (guion-novela.md)
        ├─ /revisar-guion              (audita arcos, ritmo y cobertura)
-       ├─ escritura capítulo a capítulo
-       │    └─ /revisar o /expandir   (si un beat concreto necesita cambios)
+       ├─ escritura por escena        (cada escena se presenta y espera tu aprobación)
+       │    └─ /revisar o /expandir   (si un fragmento concreto necesita cambios)
        └─ /publicar
 ```
 
 No edites `novela.md` ni los `capitulo.md` directamente: son la salida limpia. Las correcciones se hacen sobre el draft mediante los comandos anteriores.
 
+## Checkpoint de narrativa
+
+Tras generar o corregir una escena, el director te presenta la escena completa con su hash y **se detiene**. Solo tu conformidad y la revisión editorial del mismo hash permiten aceptar y sincronizar. Aprobar una escena no autoriza la siguiente: el avance se pide aparte. Cualquier cambio textual invalida la aprobación anterior. Un fallo de red no regenera prosa: se reintenta la sincronización. `/revisar` y `/expandir` también pasan por este checkpoint.
+
 ## Cómo se construye la novela
 
 ```text
-hechos → capítulos → beats → prosa
+hechos → capítulos → escenas y beats → prosa
 ```
 
 - **Hecho**: un evento que debe ocurrir. Vive en `guion-novela.md`, agrupado por actos y repartido en capítulos.
-- **Beat**: una acción concreta dentro de un capítulo. Se genera al preparar cada capítulo, no antes.
+- **Beat**: una unidad dramática dentro de una escena. Se genera al preparar cada capítulo, no antes.
+- **Escena**: agrupación de beats por coherencia de contexto; es la unidad de escritura, revisión y checkpoint.
 - Un hecho marcado `[D]` es un patrón distribuido: no genera capítulo propio, sus beats se inyectan dentro de otros hechos del rango.
 
 ### Identificadores
 
-Cada hecho y cada beat tiene un `stable_id` opaco que **nunca cambia** y un número de posición que sí puede cambiar al reordenar. Cuando uses `/revisar B_0034`, el sistema traduce ese número al `stable_id` real. Si insertas material y los números se desplazan, las referencias internas siguen funcionando.
+Cada hecho y cada beat tiene un `stable_id` opaco que **nunca cambia**. El número de posición de un beat es local a su escena y puede cambiar al reordenar; el de los hechos conserva la secuencia de planificación. Cuando uses `/revisar B_0034`, el sistema traduce ese número al `stable_id` real. Si insertas material y los números se desplazan, las referencias internas siguen funcionando.
 
 ## Estados
 

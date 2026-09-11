@@ -335,25 +335,67 @@ def cmd_upsert_summary(args):
         print("Error: --id is required (stable ID for the summary, except L4)", file=sys.stderr)
         sys.exit(1)
 
-    fichas = resolve_fichas(read_fichas(args.fichas, args.fichas_file))
-    point_id = make_point_id(args.id)
-    vector = embed(summary_text)
+    if not args.parent_id or type(args.seq) is not int or args.seq < 1:
+        raise SystemExit("Error: L1/L2/L3 require --parent-id and positive local --seq")
 
-    payload = {
-        "proyecto":   args.proyecto,
-        "stable_id":  args.id,
-        "seq":        args.seq or 0,
-        "nivel":      args.nivel,
-        "parent_id":  make_point_id(args.parent_id) if args.parent_id else "",
-        "texto":      summary_text,
-        "fichas":     fichas,
+    point_id = make_point_id(args.id)
+    parent_id = make_point_id(args.parent_id)
+    position = _query_summaries_by_position(
+        args.proyecto, args.nivel, parent_id=args.parent_id,
+        hilo=args.hilo or "", seq=args.seq,
+    )
+    if len(position) > 1:
+        raise SystemExit("Error: duplicate summaries at this position; reconcile before writing")
+    if position and position[0].get("stable_id") != args.id:
+        raise SystemExit("Error: position belongs to another stable_id; reconcile before writing")
+
+    # Fetch without a project filter: a colliding physical ID must never be overwritten.
+    lookup = qdrant("POST", "/collections/summaries/points", {
+        "ids": [point_id], "with_payload": True, "with_vector": False,
+    })
+    points = lookup.get("result")
+    if lookup.get("status") != "ok" or not isinstance(points, list) or len(points) > 1:
+        raise SystemExit("Error: identity lookup not confirmed; no write performed")
+    if points and (points[0].get("id") != point_id
+                   or not isinstance(points[0].get("payload"), dict) or not points[0]["payload"]):
+        raise SystemExit("Error: existing point has invalid identity metadata; no write performed")
+    existing = points[0]["payload"] if points else None
+    identity = {
+        "proyecto": args.proyecto, "stable_id": args.id, "nivel": args.nivel,
+        "parent_id": parent_id, "seq": args.seq,
     }
+    if existing is not None and (
+        any(existing.get(key) != value for key, value in identity.items())
+        or type(existing.get("seq")) is not int
+        or (existing.get("hilo") or "") != (args.hilo or "")
+    ):
+        raise SystemExit("Error: stable_id belongs to another project or position; no write performed")
+    if (position and existing != position[0]) or (existing is not None and not position):
+        raise SystemExit("Error: positional and identity lookups disagree; no write performed")
+
+    payload = existing.copy() if existing is not None else identity.copy()
+    payload["texto"] = summary_text
+    if args.fichas is not None or args.fichas_file:
+        payload["fichas"] = resolve_fichas(read_fichas(args.fichas, args.fichas_file))
+    else:
+        payload.setdefault("fichas", [])
     if args.hilo:
         payload["hilo"] = args.hilo
 
-    qdrant("PUT", "/collections/summaries/points?wait=true", {
-        "points": [{"id": point_id, "vector": vector, "payload": payload}],
-    })
+    if existing == payload:
+        print(f"unchanged  summaries  {args.proyecto}:{args.nivel}:{args.id}")
+        return
+    if existing is not None and existing.get("texto") == summary_text:
+        result = qdrant("POST", "/collections/summaries/points/payload?wait=true", {
+            "points": [point_id], "payload": payload,
+        })
+    else:
+        vector = embed(summary_text)
+        result = qdrant("PUT", "/collections/summaries/points?wait=true", {
+            "points": [{"id": point_id, "vector": vector, "payload": payload}],
+        })
+    if result.get("status") != "ok" or result.get("result", {}).get("status") != "completed":
+        raise SystemExit("Error: summary write not confirmed; inspect state before retrying")
     print(f"upserted  summaries  {args.proyecto}:{args.nivel}:{args.id} (parent={args.parent_id or '—'})  [{point_id}]")
 
 
@@ -657,11 +699,16 @@ def cmd_query_summary_by_position(args):
 def cmd_upsert_summary_by_position(args):
     """Idempotent upsert: find by (nivel, parent_id, seq[, hilo]) and update, or create.
 
-    If a summary exists at that position, update its texto. If not, create with new stable_id.
+    An explicit --id asserts the canonical identity and uses the guarded direct upsert.
+    Without --id, existing non-L4 positions retain their identity. New L1 scenes
+    require --id from the guion; only new L2/L3 without a known identity allocate one.
     L4 is special: it is unique per proyecto, located by (proyecto, nivel L4) alone.
     Its stable_id is an opaque UUID8, never a literal shared ID like "global",
     so its point never collides across proyectos in the shared collection.
     """
+    if args.nivel != "L4" and getattr(args, "id", None):
+        return cmd_upsert_summary(args)
+
     texto = read_text(args.texto, args.texto_file)
     if not texto:
         print("Error: --texto or --texto-file is required", file=sys.stderr)
@@ -670,9 +717,8 @@ def cmd_upsert_summary_by_position(args):
         print("Error: --parent-id is required (except for L4)", file=sys.stderr)
         sys.exit(1)
 
-    fichas = resolve_fichas(read_fichas(args.fichas, args.fichas_file))
-
     if args.nivel == "L4":
+        fichas = resolve_fichas(read_fichas(args.fichas, args.fichas_file))
         existing = _query_summaries(args.proyecto, "L4")
         if existing:
             p = existing[0]
@@ -706,6 +752,8 @@ def cmd_upsert_summary_by_position(args):
             print(f"created  summaries  {args.proyecto}:L4:{stable_id}  [{point_id}]")
         return
 
+    if type(args.seq) is not int or args.seq < 1:
+        raise SystemExit("Error: L1/L2/L3 require positive local --seq")
     existing = _query_summaries_by_position(
         args.proyecto, args.nivel,
         parent_id=args.parent_id,
@@ -713,35 +761,14 @@ def cmd_upsert_summary_by_position(args):
         seq=args.seq or 0,
     )
 
-    if existing:
-        stable_id = existing[0].get("stable_id", "")
-        point_id = make_point_id(stable_id)
-        payload = existing[0].copy()
-        payload["texto"] = texto
-        payload["fichas"] = fichas
-        qdrant("POST", "/collections/summaries/points/payload?wait=true", {
-            "points": [point_id], "payload": payload,
-        })
-        print(f"updated  summaries  {args.proyecto}:{args.nivel}:{stable_id}  [{point_id}]")
-    else:
-        stable_id = str(uuid.uuid4().hex[:8])
-        point_id = make_point_id(stable_id)
-        vector = embed(texto)
-        payload = {
-            "proyecto":   args.proyecto,
-            "stable_id":  stable_id,
-            "seq":        args.seq or 0,
-            "nivel":      args.nivel,
-            "parent_id":  make_point_id(args.parent_id),
-            "texto":      texto,
-            "fichas":     fichas,
-        }
-        if args.hilo:
-            payload["hilo"] = args.hilo
-        qdrant("PUT", "/collections/summaries/points?wait=true", {
-            "points": [{"id": point_id, "vector": vector, "payload": payload}],
-        })
-        print(f"created  summaries  {args.proyecto}:{args.nivel}:{stable_id}  [{point_id}]")
+    if len(existing) > 1:
+        raise SystemExit("Error: duplicate summaries at this position; reconcile before writing")
+    if not existing and args.nivel == "L1":
+        raise SystemExit("Error: new L1 requires --id with the scene stable_id from guion")
+    direct = argparse.Namespace(**vars(args))
+    direct.id = existing[0].get("stable_id") if existing else uuid.uuid4().hex[:8]
+    # Reuse the identity guard and re-embed when texto changes, not just the payload.
+    return cmd_upsert_summary(direct)
 
 
 def cmd_renumber_siblings(args):
@@ -1091,7 +1118,7 @@ def main():
     p = sub.add_parser("upsert-summary", help="Create or replace a summary entry (L1/L2/L3/L4)")
     p.add_argument("--proyecto",  required=True)
     p.add_argument("--nivel",     required=True, choices=["L1", "L2", "L3", "L4"])
-    p.add_argument("--id",        help="Summary stable ID: E_NNN (L1), C_NNN (L2), A_NNN (L3). Ignored for L4 (unique per proyecto).")
+    p.add_argument("--id",        help="Canonical opaque stable ID (scene ID for L1). Ignored for L4.")
     p.add_argument("--parent-id", help="Parent stable ID")
     p.add_argument("--seq",       type=int, help="Sequence number")
     p.add_argument("--hilo",      help="Hilo stable ID (multi-hilo only, for L1/L3)")
@@ -1152,10 +1179,11 @@ def main():
     p.add_argument("--hilo",      help="Hilo stable ID (multi-hilo only)")
 
     p = sub.add_parser("upsert-summary-by-position",
-        help="Idempotent: find by (nivel, parent_id, seq[, hilo]) and update, or create with new stable_id")
+        help="Guarded positional upsert; --id asserts identity and is required to create L1")
     p.add_argument("--proyecto",  required=True)
     p.add_argument("--nivel",     required=True, choices=["L1", "L2", "L3", "L4"])
     p.add_argument("--parent-id", help="Parent stable ID (required except for L4)")
+    p.add_argument("--id",        help="Expected canonical stable ID; required for new L1, ignored for L4")
     p.add_argument("--seq",       type=int, help="Local sequence number under parent")
     p.add_argument("--texto",     help="Summary text (inline)")
     p.add_argument("--texto-file", help="File with summary text (- = stdin)")

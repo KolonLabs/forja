@@ -38,6 +38,18 @@ La voz explícita no se anda con rodeos. Mira el cuerpo como es, nombra lo que v
 - **Tensión:** se construye con anticipación física. Una mirada que se detiene donde no debe. Un roce que dura medio segundo más de lo necesario. La temperatura del aire cambia antes que las palabras
 - **Geometría:** precisa pero no coreográfica. Se describe dónde está cada cuerpo y cómo se mueve, sin enumerar posiciones como un manual. La cámara sigue la acción sin saltos
 
+## Nivel de detalle en escenas explícitas
+
+El objetivo de una escena explícita es que el lector la viva desde dentro, intensamente, excitándose con el cuerpo y la progresión de lo que ocurre. No se narra para informar de que hubo sexo; se narra para que el lector lo experimente.
+
+- **Secuencia de actos:** la escena se desarrolla acto a acto (desnudarse → preliminares → penetración → clímax → después), cada acto con arranque, progresión y salida. El sexo se narra, no se resume
+- **Progresión interna:** cada acto evoluciona — la mamada va de lengua a succión a profundidad, con la polla creciendo; las embestidas van de ritmo marcado a círculos a más rápido e intenso. El placer se acumula paso a paso
+- **Transiciones entre actos:** puentes físicos concretos — cómo un cuerpo pasa de una posición a otra, qué hace cada uno al cambiar
+- **Reacción del POV en cada fase:** respiración, espasmos, manos, sonidos, tensión muscular, del personaje focal
+- **Sensación concreta, no juicio:** calor, humedad, textura, sabor, olor, sonido de los cuerpos. Prohibidas las frases que cuentan en lugar de mostrar («No era intimidad. Era descarga.», «Era un dato.»)
+- **Espacio real:** el sexo explícito se recrea, no se abrevia; la extensión sigue a la secuencia de actos, no a un recuento de palabras
+- **Creatividad y criterio por el momento de la escena:** estos criterios no son una plantilla. El escritor elige, con criterio propio, qué detalle, qué ritmo y qué foco convienen a cada fase — qué es lo más caliente de ese acto concreto, qué mira y qué siente el POV — para producir el efecto: excitación creciente en el lector. Dos escenas explícitas con la misma estructura se ejecutan distinto según el tono, la pareja y el momento narrativo (rutina fría, sexo cálido, violencia, hambre). La meta es que el lector lo viva, no que se marque una casilla por acto
+
 ## Ejemplos canónicos
 
 ### Diálogo + acción

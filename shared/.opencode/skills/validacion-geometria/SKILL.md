@@ -7,6 +7,8 @@ description: Criterios de evaluación de ritmo, fluidez y estructura de frases. 
 
 ## Ritmo por estilo
 
+Tendencias de expresión, no moldes obligatorios ni motivos para cambiar los compromisos del beat. Valorar el pasaje en su escena; una etiqueta no impone una longitud de frase, gesto, silencio o corte.
+
 | Estilo | Longitud de frases | Ritmo característico |
 |--------|-------------------|---------------------|
 | noir | Cortas, cortantes | Rápido, entrecortado |
@@ -44,22 +46,30 @@ description: Criterios de evaluación de ritmo, fluidez y estructura de frases. 
 
 ### 5. Diálogos
 - ¿Los diálogos suenan naturales?
-- ¿La distribución de diálogos y narración es equilibrada?
+- ¿La distribución de diálogos y narración sirve al pasaje, sin exigir una proporción ni gestos entre réplicas?
 - ¿Las acotaciones de diálogo son adecuadas?
 - ¿El ritmo de los diálogos es creíble?
 - **¿Cada intervención de diálogo está en su propio párrafo, separada de la narración?** — Un diálogo embebido dentro de un párrafo narrativo es un error de formato que penaliza este criterio.
-- **¿Los diálogos ultracortos (`—Más.`, `—Quieto.`, `—No pares.`) están solos en su propio párrafo?**
+- **¿Las réplicas breves (`—Sí.`, `—Espera.`) tienen párrafo propio y hablante identificable?** Admiten atribuciones o acotaciones pertinentes según `mecanica-prosa`, sin límite por longitud.
+- ¿La conversación mantiene continuidad sin reiniciarse por cada heading técnico? Saludos, despedidas y transiciones ordinarias no necesitan beats propios ni pausas o gestos añadidos.
 
 ### 6. Párrafos narrativos
-- ¿Los párrafos narrativos respetan los cambios de foco? — Cuando la narración pasa de acción a sensación, de sensación a reacción interna, o de un cuerpo a otro, debe partir en un nuevo párrafo.
-- ¿Hay párrafos que superan las 6-7 líneas sin cambiar de foco? — Si es así, es probable que estén fusionando fragmentos que deberían estar separados.
-- **Un bloque de más de 8 líneas continuas sin corte es un problema de geometría salvo que la cadencia acumulativa sea intencional y el tono del beat lo justifique.**
+- ¿Los párrafos organizan el foco con claridad y cadencia? Acción, sensación, reacción interna o cambio de sujeto pueden compartir párrafo si se siguen sin confusión; no exigir corte por cada cambio de foco.
+- ¿El parrafo dificulta seguir el foco o respirar la cadencia? Cita el tropiezo concreto, no un numero de lineas que depende del ancho de pantalla.
+- La longitud por si sola no es un defecto: respeta la cadencia acumulativa intencional y los cortes breves con funcion narrativa.
+- No deducir nuevos beats de puntos, verbos, párrafos o cambios de tono. Conservar encabezados Markdown, IDs y cuerpos por beat no obliga a fragmentar cada movimiento dramático.
 
 ## Scoring
 
-- **< 7**: Problemas de ritmo significativos. Reescribir.
+Solo si se solicita expresamente. En la revision por escena se devuelven incidencias concretas; no se reescribe automaticamente por una puntuacion.
+
+- **< 7**: Problemas de ritmo significativos; identificar el fragmento y la causa antes de proponer una correccion.
 - **7-8**: Ritmo adecuado. Ajustes menores.
 - **9-10**: Excelente fluidez y ritmo.
+
+## Nota de alcance (ADR 0020)
+
+La EXTENSIÓN TOTAL del beat (número de frases) NO es un criterio de geometría: las etiquetas de `tonos-beat` indican peso narrativo orientativo, no límites numéricos. Evalúa el ritmo INTERNO (variación, cadencia, cortes, párrafos), no conteos ni cuotas. Señala dilución o desproporción con evidencia del pasaje y su función en la escena, no porque una etiqueta BREVE se desarrolle más de lo esperado. No exigir justificaciones o notas del escritor por esas decisiones de ejecución.
 
 ## Formato de respuesta
 

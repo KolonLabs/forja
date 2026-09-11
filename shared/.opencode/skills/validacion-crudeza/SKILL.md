@@ -5,40 +5,23 @@ description: Criterios de evaluación de explicitud y checklist de eufemismos. �
 
 # Validación de Crudeza
 
-## Criterios de evaluación (1-10)
+## Criterios editoriales
 
 ### 1. Ausencia de eufemismos
-- ¿Hay términos como "miembro", "senos", "entrepierna"?
-- ¿Usa "hacer el amor" en vez de "follar"?
-- ¿Evita palabras crudas directamente?
-- ¿Usa metáforas donde debería ser directo?
+Sin "miembro", "senos", "entrepierna", "hacer el amor", "mantener relaciones", "clímax" donde corresponda el término directo. El nivel maximo del proyecto no se rebaja salvo excepcion aprobada (dialogo del personaje, contexto medico, ironia, estilo declarado menor).
 
 ### 2. Vocabulario explícito
-- ¿Usa el vocabulario correcto (polla, coño, tetas, follar, correrse)?
-- ¿Varía los términos (no repite el mismo más de 2 veces)?
-- ¿El vocabulario fluye natural en la narrativa?
+Polla, coño, tetas, follar, correrse, mamar, lamer, dedear — directos y sin variantes decorativas. La repeticion del termino correcto es valida; la variedad no se consigue a costa de eufemismos.
 
-### 3. Descripción gráfica
-- ¿Describe los actos sexuales con detalle?
-- ¿Incluye sensaciones físicas (tacto, temperatura, presión)?
-- ¿Describe fluidos y sonidos?
-- ¿Detalla la anatomía involucrada?
+### 3. Mostrar, no contar
+En escenas explicitas, el acto se muestra con precision fisica: quien, donde, como y con que resultado inmediato en el cuerpo. No se resume ni se sustituye el detalle por valoraciones ("la comió despacio, con pasion", "sin prisa") que dejan la accion fuera de camara. La lengua, los circulos sobre el clitoris, el dedo que entra, la humedad, la presion, los fluidos y los sonidos se describen cuando la escena los contiene; no como inventario mecanico, sino con sensacion y geometria coherente.
 
 ### 4. Sin rodeos
-- ¿Describe directamente lo que pasa?
-- ¿Insinúa en vez de describir?
-- ¿Hay partes que se saltan o resumen?
+Sin insinuar en lugar de describir ni saltarse partes: la camara sigue la accion sin cortes. El cierre del acto (orgasmos, donde cae el semen, el cuerpo despues) es tan explicito como el desarrollo.
 
-## Scoring
+## Checklist de eufemismos y resumenes
 
-- **1-3**: Texto demasiado eufemístico, reescribir con más crudeza
-- **4-6**: Aceptable pero mejorable, identificar puntos débiles
-- **7-8**: Buen nivel, pequeños ajustes
-- **9-10**: Excelente, máximo nivel de explicitud
-
-## Checklist de eufemismos
-
-Si CUALQUIERA es SÍ → score < 7 → reescribir:
+Reporta cada caso con incidencia concreta (fragmento, problema, correccion), sin gate por score:
 
 - ¿Usa "miembro" en vez de "polla"?
 - ¿Usa "senos" en vez de "tetas"?
@@ -53,23 +36,9 @@ Si CUALQUIERA es SÍ → score < 7 → reescribir:
 
 ## Formato de respuesta
 
-```json
-{
-  "dimension": "crudeza",
-  "score": 0,
-  "criterios": {
-    "ausencia_eufemismos": 0,
-    "vocabulario_explicito": 0,
-    "descripcion_grafica": 0,
-    "sin_rodeos": 0
-  },
-  "eufemismos_encontrados": [
-    {"termino": "", "linea": 0, "correccion": ""}
-  ],
-  "puntos_debiles": [],
-  "sugerencias": []
-}
-```
+Respeta el contrato del consumidor: el agente `validador` de prosa usa su informe vigente (candidato/hash, estado e incidencias con fragmento, problema, gravedad y correccion). Para director o comandos de revision de guion, diagnostico sin exigir hash de candidata inexistente. Este skill no crea otro formato ni exige puntuaciones por dimension.
+
+Una escena explicita con resumenes o acciones fuera de camara es `corregir` aunque el vocabulario sea crudo; un termino directo no compensa un acto no mostrado. Un error factual no se salva por media.
 
 ## Excepciones permitidas
 

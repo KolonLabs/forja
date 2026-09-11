@@ -226,7 +226,19 @@ python scripts/qdrant.py upsert-summary-by-position \
   --fichas '["9c7d6e5f","3a2b1c0d"]'
 ```
 
-Si la posición existe, conserva su `stable_id` y actualiza el payload. Si no existe, crea un `stable_id` nuevo. Repetir la misma operación no duplica puntos.
+Para L1 usa el `stable_id` de la escena del guion. Es obligatorio al crear y recomendado tambien al actualizar:
+
+```bash
+python scripts/qdrant.py upsert-summary-by-position \
+  --proyecto "$PROYECTO" --nivel L1 --id "$ESCENA_STABLE_ID" \
+  --parent-id "$CAPITULO_STABLE_ID" --seq 1 --texto-file resumen.txt
+```
+
+`--id` afirma la identidad esperada y delega en el mismo upsert protegido que `upsert-summary --id`. Antes de generar embeddings o escribir, el helper rechaza duplicados en posicion, otra identidad en ella y colisiones con otro proyecto o posicion. Padre obligatorio y seq local positivo para L1/L2/L3. No permite mover una identidad de forma implicita; reordenamientos/migraciones son operaciones explicitas.
+
+Sin `--id`, una posicion no-L4 existente conserva su identidad y pasa por las mismas comprobaciones. Una posicion L1 nueva se rechaza (no se inventa un ID de escena); solo L2/L3 sin identidad previa pueden generarla. Si el guion ya declara identidad de capitulo/arco, pasala con `--id` tambien. L4 conserva su tratamiento de raiz unica por proyecto.
+
+Una actualizacion conserva metadata adicional y fichas si no se proporcionan; si cambia el texto se actualiza tambien el vector, y si no cambia nada es no-op. Las comprobaciones son previas, no un constraint transaccional remoto: serializa las escrituras. Tras el upsert verifica la identidad posicional y el enlace de beats al L1 y al L2; que exista un resumen por posicion no demuestra por si solo la integridad del recorrido.
 
 ### `renumber-siblings`
 

@@ -1,56 +1,17 @@
 ---
-description: Revisa y mejora un beat específico de un relato o novela. Scope unificado (completa/media/ligera + alias de usuario).
+description: Revisa un fragmento de novela con corrección selectiva, candidato verificable y revisión focalizada.
 agent: director
 ---
 
 # /revisar
 
-Revisa un beat de un proyecto existente. El director localiza el beat, aplica correcciones, valida y guarda.
+`/revisar [B_NNN o stable_id o descripcion] [instrucciones opcionales]`
 
-## Sintaxis
+1. Resuelve el fragmento y su escena por `stable_id`; no uses el display como identidad persistente.
+2. Copia la escena aceptada a un candidato sin modificar el draft original. Prepara canon, instruccion y ambos extremos de la transicion.
+3. Cambio mecanico exacto: aplica y comprueba el cambio. Correccion de prosa: una llamada al integrador, contexto inline, sin herramientas, solo fragmentos afectados.
+4. Ensambla la candidata completa conservando secciones intactas. `persistir-escena.py preparar` comprueba estructura y devuelve hash nuevo.
+5. Presenta la escena completa con hash/version y detente en el checkpoint obligatorio de narrativa; espera conformidad explicita del usuario. Despues revision editorial focalizada sobre cambios y transiciones; canon contradictorio exige decision, no inventar una ficha para justificarlo.
+6. Solo con ambas aprobaciones para el mismo hash -> `aceptar` -> `sincronizar`; actualiza estados tras exito. Cualquier cambio textual invalida la conformidad anterior y vuelve al checkpoint. Revisar no autoriza generar otra escena o capitulo. Falla de red del mismo texto no exige regeneracion.
 
-```
-/revisar [B_NNN] [instrucciones opcionales]
-```
-
-## Ejemplos
-
-```
-/revisar B_07 la geometría no es clara
-/revisar B_14 falta más detalle sensorial, especialmente olfato
-/revisar B_29 el diálogo suena pasivo, dale más tensión
-/revisar cuando Elena se arrodilla la posición no queda clara
-```
-
-## Scope
-
-El director deduce el scope según las instrucciones del usuario:
-
-| Si el usuario habla de... | Scope aplicado |
-|--------------------------|----------------|
-| vocabulario, crudeza, eufemismos | `crudeza` sola |
-| fluidez, ritmo, frases, puntuación | `geometria` sola |
-| descripción, sentidos, sensorial | `sensorial` sola |
-| diálogo, voces, personajes hablando | `geometria + tono` |
-| varios temas o no especifica | `completa` (5 dimensiones) |
-
-**Scope canónico** (compatible con `/generar --revision`):
-- `completa` → crudeza, tono, geometria, coherencia, sensorial
-- `media` → crudeza, coherencia, sensorial
-- `ligera` → corrección directa sin validador
-
-## Flujo
-
-1. Identificar proyecto y beat
-2. Backup automático
-3. Corrección → validador → ±integrador
-4. Reemplazo quirúrgico del beat en el draft (solo ese bloque)
-
-## Ediciones derivadas de relato
-
-En un relato con `estado: correccion`, `/revisar` opera sobre la edición derivada. Debe preservar `relato-edicion-anterior.md`, mantener el estado `correccion`, actualizar `ultima_modificacion` y anotar el beat y el resultado en `correcciones.md`. Para un relato `finalizado` o `publicado`, no edites el texto: abre primero `/nueva-edicion` desde el hub. Las novelas mantienen su contrato actual hasta su migración específica.
-
-## Notas
-
-- El director mantiene coherencia: si el beat corregido afecta a fichas de entidades, propone actualizarlas
-- En novelas, las correcciones se reflejan en Qdrant en la siguiente ejecución del cronista
+Contrato y comandos en `PIPELINE.md` y `ORQUESTACION.md`. No se migran ni reescriben otros capitulos por defecto.

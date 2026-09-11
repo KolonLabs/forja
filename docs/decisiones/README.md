@@ -31,3 +31,6 @@ Este directorio conserva decisiones arquitectonicas y operativas que deben sobre
 | [0016](0016-url-publicas-como-fuentes-de-importacion.md) | La importación admite rutas locales y URL HTTPS públicas trazables, con límites de red. | Aceptada |
 | [0017](0017-contrato-de-draft-y-estado-terminal-en-novelas.md) | Las novelas terminan en `finalizado`, el draft usa un único encabezado `stable_id [seq]` y cada escala recibe solo sus artefactos. | Aceptada |
 | [0018](0018-aislamiento-multi-tenant-qdrant-neo4j-y-contrato-l4.md) | El L4 es único por proyecto con identidad opaca; las lecturas por ID físico verifican proyecto; el import de Neo4j escribe `r.proyecto`. | Aceptada |
+| [0019](0019-narrativa-por-escena-y-checkpoint-en-novelas.md) | Las novelas escriben por escena con contexto preparado sin herramientas, persistencia con hash y checkpoint humano obligatorio. | Aceptada |
+| [0020](0020-contrato-editorial-de-beats-y-detalle-explicito.md) | El beat es una unidad dramática; la ejecución es del escritor y las escenas explícitas se muestran con progresión. | Aceptada |
+| [0021](0021-alcance-de-relato-sin-checkpoint.md) | Relato conserva su autonomía y solo adopta el paquete de escena explícita. | Aceptada |

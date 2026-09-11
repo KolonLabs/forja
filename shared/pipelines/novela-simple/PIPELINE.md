@@ -11,10 +11,10 @@ _actos.md (estructura de actos)
   └── guion-novela.md (actos, capítulos, hechos H_NNNN estimados)
         └── capitulos/cap-NN-slug/
               ├── guion.md    (hechos H_NNNN + beats B_NNNN bajo cada hecho)
-              ├── draft.md    (prosa desarrollada desde beats, secciones ## B_NNNN)
+              ├── draft.md    (escenas aceptadas, secciones ## <stable_id> [<seq>])
               └── capitulo.md (publicable)
 
-contexto.md (resumen post-capítulo, mantenido por el director al cerrar cada capítulo. Complementa a Qdrant como respaldo legible)
+contexto.md (registro obligatorio de cada checkpoint/respuesta y resumen post-capitulo, mantenido por el director; complementa a Qdrant como respaldo legible)
 fichas/<tipo>_<slug>.md (entidades en markdown, primarias en Qdrant)
 ```
 
@@ -23,12 +23,14 @@ fichas/<tipo>_<slug>.md (entidades en markdown, primarias en Qdrant)
 | ID | Qué es | Dónde |
 |----|--------|-------|
 | `H_NNNN` | Evento que debe ocurrir (1-2 frases de guion). Puede ser lineal o distribuido `[D]`. | `guion-novela.md`, `capitulos/.../guion.md` |
-| `B_NNNN` | Frase muy corta que el escritor desarrolla en prosa | `capitulos/.../guion.md` (bajo un hecho) |
+| `B_NNNN` | Compromiso narrativo de una unidad dramatica, no microaccion ni prosa prefijada | `capitulos/.../guion.md` (bajo un hecho) |
 
 - IDs globales, 4 dígitos, nunca reutilizar.
 - Estados: ✅ completo · 🔄 en progreso · ⬜ pendiente.
 - Un hecho `[D · H_XX–H_YY]` no genera capítulos ni escenas propias — sus beats se inyectan en las escenas de los hechos lineales dentro del rango.
 - Skills: `beats-estructura`, `tonos-beat`, `plantilla-guion`, `hechos-distribuidos`.
+
+**Contrato editorial:** unidad dramatica y cobertura por acontecimientos/consecuencias, sin cuotas ni division por puntuacion. Director separa Obligatorio, Libre y Ejemplos opcionales; escritor e integrador reciben el contrato inline, conservan IDs/cuerpos y desarrollan una escena continua. No convierten lo sabido en preguntas, lo inferido en confesiones ni ejemplos en canon. Conflictos de guion/literalidad vuelven al director. El modo `atomizar` conserva nombre pero evalua unidad dramatica. Ver `beats-estructura` y `contexto-subagente`.
 
 ---
 
@@ -85,7 +87,7 @@ Objetivo: enriquecer entidades semilla con detalle completo y reconciliar. Las e
 
 ### FASE 2 — Escritura por capítulo (`estado: escritura`)
 
-Itera por cada capítulo en `guion-novela.md`, en orden secuencial:
+Recorre los capitulos de `guion-novela.md` en orden, con autorizacion de avance y checkpoint obligatorio tras la narrativa de cada escena. No es un bucle autonomo hasta terminar la novela.
 
 #### 2.1 Memoria
 
@@ -102,22 +104,27 @@ Itera por cada capítulo en `guion-novela.md`, en orden secuencial:
 | 2.2.3 | director + usuario | **Checkpoint obligatorio.** El director presenta la estructura de escenas propuesta al usuario (número de escenas, beats por escena, corte). El usuario valida o pide ajustes. **No se avanza a 2.2.4 sin confirmación.** |
 | 2.2.4 | `auditor-beats` (atomizar → transiciones → limpieza) | Valida `capitulos/cap-NN-slug/guion.md`. Diagnostica: beats inconclusos, huecos, prosa. Director → guionista corrige |
 
-#### 2.3 Beat a beat
+#### 2.3 Por escena
 
-Por cada beat `⬜`:
+Por cada escena del capítulo (todos sus beats a la vez):
 
 | Paso | Agente | Acción |
 |------|--------|--------|
-| 2.3.1 | `escritor` | Genera prosa → `draft.md` (append `## B_NNNN`) |
-| 2.3.2 | `validador` (read-only) | Scope `completa` por defecto. 5 dimensiones |
-| 2.3.3 | `integrador` (condicional) | Si score < 7 o dimensión < 5. Reescribe beat |
-| 2.3.4 | director | ✅ en `guion.md`. Actualiza `config.json.ultimo_beat_seq` |
+| 2.3.1 | director + `escritor` | Contexto de capitulo preparado una vez y tramo pertinente inline. Escritor genera una escena sin herramientas; completion maxima 64000 (razonamiento + salida). Sin notas rutinarias. |
+| 2.3.1b | director | `persistir-escena.py preparar`: comprobar finish, IDs, orden y cuerpos; guardar candidato pendiente y SHA256. No sobrescribir draft aprobado ni Qdrant. |
+| 2.3.1c | director + usuario | **Checkpoint obligatorio de narrativa.** Presentar la escena completa con stable_id y hash/version; detenerse y esperar respuesta explicita antes de revision editorial, aceptacion o avance. Ajustes solicitados autorizan corregir solo esta escena y volver a presentarla. |
+| 2.3.2 | `validador` (modo escena, read-only) | Una revision editorial independiente: cobertura, continuidad, personajes/POV, prosa y restricciones. Solo incidencias concretas; aprobacion ligada al hash. Sin scores por beat ni cuotas sensoriales. |
+| 2.3.3 | director + `integrador` (condicional) | Cambios mecanicos exactos o una llamada del integrador para fragmentos afectados. Nuevo candidato/hash: volver a 2.3.1c, esperar conformidad y obtener revision focalizada; canon incierto bloquea. |
+| 2.3.4 | director | Solo con conformidad explicita del usuario y revision editorial aprobada para el mismo hash: `aceptar` guarda con backup; `sincronizar` actualiza Qdrant en lote. Solo tras exito marca los beats ✅. Reintentos del mismo texto idempotentes sin regenerar. |
+| 2.3.5 | director + usuario | **Autorizacion de avance.** Aprobar una escena no autoriza la siguiente escena: preguntar cual se inicia y esperar confirmacion, salvo que el usuario haya aprobado expresamente texto y ese avance en la misma respuesta. Sin generacion ni preparacion especulativa. |
+
+> **Flujo vigente:** contexto preparado -> generacion -> candidato comprobado -> presentar al usuario y detenerse -> revision editorial -> correccion selectiva si procede (nuevo texto vuelve al checkpoint) -> aceptacion y sincronizacion con ambas aprobaciones -> avance solo autorizado. El checkpoint de guion se conserva; las restricciones, identidades y cobertura siguen siendo obligatorias.
 
 #### 2.4 Revisión global
 
 | Paso | Agente | Acción |
 |------|--------|--------|
-| 2.4.1 | `validador` modo `global` | Evalúa `draft.md` completo + L4 + arco + hilos activos |
+| 2.4.1 | `validador` modo `global` | Revisa cruces entre escenas: cronologia, objetos, conocimientos y arco. No repite toda la revision estilistica. Usa memoria de hechos ocurridos, no planes como hechos consumados. |
 | 2.4.2 | director | Actualiza `contexto.md` con resumen del capítulo (2-4 frases) |
 
 #### 2.5 Cronista
@@ -129,11 +136,13 @@ Por cada beat `⬜`:
 | 2.5.3 | `cronista` | Actualiza `config.json`: `capitulos_completados++`, `ultimo_beat_seq` |
 | 2.5.4 | director | Revisa discrepancias residuales; si son errores de lectura del cronista, las descarta; si son contradictorias, decide |
 
-**Umbral validador:** `score_global ≥ 8` y todas dimensiones ≥ 7 para aprobación directa sin integrador.
+**Gate editorial:** revision `aprobado` para el hash vigente, sin incidencias `bloqueante` ni `corregir`. Una preferencia opcional no obliga a reescribir; un error factual no se aprueba por una buena media. La revision final debe corresponder al texto aceptado.
+
+**Gate humano:** conformidad explicita con la misma version presentada. Cualquier cambio textual invalida la conformidad anterior y exige nueva presentacion/espera, incluso correcciones mecanicas o de revision global. Registrar escena, hash/version, decision y alcance de avance en `contexto.md`; al reanudar sin evidencia, preguntar sobre la candidata existente. El review del validador no prueba aprobacion humana.
 
 **Gate del capítulo:** Todos los beats ✅, Qdrant actualizado (L1+L2+entidades), Neo4j actualizado (relaciones por escena) y auditado.
 
-**Bucle:** Si quedan capítulos, vuelve a 2.1. Si es el último capítulo → `publicacion`.
+**Avance entre capitulos:** tras el cierre, informar y detenerse para pedir autorizacion explicita para iniciar el siguiente capitulo, antes de 2.1 (memoria/guion incluidos). Aprobar la ultima escena permite cerrar el capitulo actual, no arrancar otro. Si es el ultimo capitulo → `publicacion`.
 
 ---
 
@@ -160,7 +169,7 @@ diseno → fichas → escritura → publicacion → finalizado
 
 **Bucle en FASE 2:** itera capítulo por capítulo. `config.json.capitulos_completados` avanza.
 
-**Creación de directorios:** el `guionista` en modo `capitulo` crea el directorio `capitulos/cap-NN-slug/`. El `escritor` escribe `draft.md` dentro de ese directorio (append).
+**Creación de directorios:** el `guionista` crea `capitulos/cap-NN-slug/`. El director guarda candidatas pendientes y persiste texto aceptado con `scripts/persistir-escena.py`; escritor e integrador no escriben archivos ni vectores.
 
 **Relaciones Neo4j:** el `entidades` las crea inicialmente (FASE 0-1). Durante la escritura, el `cronista` **escribe** en Neo4j por escena (FASE 2.5.1): detecta relaciones materializadas en el draft y las aplica con `upsert-relationship`. Tras escribir, audita (solo lectura) y reporta discrepancias residuales al `director`. El director solo delega en `entidades` si una discrepancia requiere reestructurar el grafo.
 
@@ -201,8 +210,4 @@ Scripts: `scripts/qdrant.py` (init, check, query, upsert), `scripts/neo4j.py` (i
 
 ## Política de reintentos
 
-Máximo 3 reintentos por beat. Tipos: formato, contenido, timeout. Ver `ORQUESTACION.md` para detalle.
-
-
-
-
+No repetir a ciegas. `finish=length` requiere inspeccionar salida parcial y presupuesto; no es un fallo generico de formato. Maximo dos recuperaciones automaticas por escena; despues, pausa. Una caida de Qdrant se recupera con `sincronizar`, sin regenerar prosa. Ver `ORQUESTACION.md` y el agente director.

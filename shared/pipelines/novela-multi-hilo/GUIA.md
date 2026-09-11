@@ -27,12 +27,16 @@ _actos.md  (hilos → actos → hechos)
        ├─ beats y escenas por hilo    (checkpoints por capítulo-borrador)
        ├─ trenzado de escenas         (conversación contigo)
        ├─ /revisar-guion              (audita trenzado, ritmo y cobertura)
-       ├─ escritura capítulo a capítulo
-       │    └─ /revisar o /expandir   (si un beat concreto necesita cambios)
+       ├─ escritura por escena        (tras el trenzado; cada escena se presenta y espera tu aprobación)
+       │    └─ /revisar o /expandir   (si un fragmento concreto necesita cambios)
        └─ /publicar
 ```
 
 No edites `novela.md` ni los `capitulo.md` directamente: son la salida limpia. Las correcciones se hacen sobre el draft mediante los comandos anteriores.
+
+## Checkpoint de narrativa
+
+Tras el trenzado, la novela se escribe **escena a escena**. Tras generar o corregir una escena, el director te presenta la escena completa con su hash y **se detiene**. Solo tu conformidad y la revisión editorial del mismo hash permiten aceptar y sincronizar. Aprobar una escena no autoriza la siguiente: el avance se pide aparte. Cualquier cambio textual invalida la aprobación anterior. Los checkpoints de estructura de los hilos (capítulos-borrador) y de costuras del guion siguen existiendo y son otra capa, no sustitutos.
 
 ## Cómo se construye la novela
 
@@ -42,7 +46,7 @@ hilos → hechos por hilo → beats y escenas por hilo → trenzado de escenas �
 
 - **Hilo**: una línea narrativa con época, ubicación, elenco, conflicto y tono propios. Un hilo se diseña, se guioniza y se desarrolla en beats **aislado**, como si fuera una novela corta independiente — hasta que se trenza con los demás.
 - **Hecho**: un evento que debe ocurrir. Vive en `hilos/hilo-<slug>/guion-hilo.md`. Sin beats todavía.
-- **Beat**: una acción concreta. Se genera **dentro de cada hilo**, antes de que exista ningún capítulo global — no al preparar el capítulo.
+- **Beat**: una unidad dramática con compromiso verificable. Se genera **dentro de cada hilo**, antes de que exista ningún capítulo global — no al preparar el capítulo.
 - **Escena**: agrupación de beats por coherencia de contexto (mismo espacio/tiempo/cast). Nace dentro del hilo y es la unidad real que se trenza.
 - **Trenzado**: mueve las escenas ya escritas de cada hilo a los capítulos globales de `guion-novela.md`, decidiendo en qué capítulo entra cada una. Es donde la novela deja de ser varios relatos y pasa a ser una sola obra.
 
@@ -58,7 +62,7 @@ Reglas que el sistema respeta y audita solo: máximo 2 hilos por capítulo, ning
 
 ### Identificadores
 
-Cada hecho y cada beat tiene un `stable_id` opaco que **nunca cambia** y un número de posición que sí puede cambiar al reordenar. Cuando uses `/revisar B_0034`, el sistema traduce ese número al `stable_id` real. Si insertas material y los números se desplazan, las referencias internas siguen funcionando.
+Cada hecho y cada beat tiene un `stable_id` opaco que **nunca cambia**. El número de posición de un beat es local a su escena; el de los hechos conserva la secuencia de planificación. Cuando uses `/revisar B_0034`, el sistema traduce ese número al `stable_id` real. Si insertas material y los números se desplazan, las referencias internas siguen funcionando.
 
 ## Estados
 
@@ -73,7 +77,7 @@ diseno → diseno_hilos → hilos_beats → trenzado → fichas → escritura �
 | `hilos_beats` | Se generan beats y escenas dentro de cada hilo, aislado | Revisar checkpoints de escenas por hilo |
 | `trenzado` | Se entrelazan las escenas de los hilos en capítulos globales | Revisar y ajustar la tabla |
 | `fichas` | Se completan entidades y conexiones cross-hilo | `/revisar-guion` antes de escribir |
-| `escritura` | Se escribe capítulo a capítulo | `/revisar`, `/expandir` |
+| `escritura` | Se escribe por escena, con checkpoint humano; costuras cross-hilo auditadas | `/revisar`, `/expandir` |
 | `publicacion` | Todos los capítulos cerrados | `/publicar` |
 | `finalizado` | Manuscrito listo | Compilar desde el hub |
 

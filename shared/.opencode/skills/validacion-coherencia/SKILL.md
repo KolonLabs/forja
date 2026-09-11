@@ -5,12 +5,12 @@ description: Criterios de evaluación de consistencia narrativa y lógica intern
 
 # Validación de Coherencia
 
-## Criterios de evaluación (1-10)
+## Criterios editoriales
 
-### 1. Acción completa del beat
-- ¿La acción definida en el beat del guión está completamente desarrollada en el texto?
-- ¿Se omitió o alteró algún elemento de la acción definida por el guionista?
-- ¿El texto desarrolla el beat sin sustituirlo por algo diferente?
+### 1. Compromiso narrativo del beat
+- ¿Se realiza el acontecimiento, decision, descubrimiento o inferencia atribuida y su consecuencia? Una unidad dramatica no equivale a una microaccion.
+- ¿Se omitio o altero un compromiso obligatorio, distinguiendolo de ejecucion libre y ejemplos opcionales?
+- ¿El texto distingue lo dicho, sabido, inferido y confirmado? Una afirmacion o sospecha no se convierte en certeza ni exige confesion para probar cobertura.
 
 ### 2. Consistencia de personajes
 - ¿El personaje actúa según su personalidad?
@@ -42,53 +42,26 @@ description: Criterios de evaluación de consistencia narrativa y lógica intern
 - ¿Las acciones tienen consecuencias lógicas?
 - ¿Los diálogos son coherentes con la situación?
 
-### 6. Coherencia de entidades mencionadas vs declaradas (GAP-34 / GAP-36)
-- **¿Aparecen en el texto personajes no declarados en el beat?** Compara los nombres propios y pronombres del texto contra `[Personajes: ...]`. Si el texto menciona un personaje, objeto, lugar o hilo NO declarado en las anotaciones del beat, es una **incoherencia de entidad**:
-  - **Personaje no declarado en `[Personajes:]`**: el texto lo nombra o actúa, pero no está en el cast del beat
-  - **Objeto no declarado en `[Props:]`**: el texto lo usa o menciona, pero no está anotado
-  - **Lugar no declarado en `[Zona:]`**: el texto describe otro escenario, o un cambio de ubicación no marcado
-  - **Hilo no declarado en `[Hilos:]`**: el texto activa/desarrolla un hilo no anotado en este beat
-- **Severidad**:
-  - Mención incidental (un personaje que solo pasa por el fondo) → ⚠️ advertencia
-  - Participación activa (un personaje que actúa, habla, decide) → ❌ incoherencia seria
-  - Activación de hilo no declarado → ❌ incoherencia seria (rompe trazabilidad)
-- **Acción si falla**: el validador reporta el hallazgo en la dimensión `coherencia` con score reducido. El director o el usuario decide si (a) actualizar las anotaciones del beat, (b) reescribir el texto para que coincida, o (c) si es error del escritor, descartar la mención
-- **Excepción legítima**: las menciones incidentales (un personaje de fondo que pasa) no requieren aparecer en `[Personajes:]` — solo flaggear si tienen participación real
+### 6. Coherencia de entidades y ejecucion libre (GAP-34 / GAP-36)
 
-## Scoring
+Compara cast activo, zonas y objetos causales con el guion y canon. La ausencia de una anotacion no demuestra una contradiccion. `Props` es opcional: no se exige inventariar cada objeto ambiental, mencion incidental o enlace ordinario compatible.
 
-- **< 7**: Incoherencias significativas. Reescribir.
-- **7-8**: Coherencia aceptable. Pequeños ajustes.
-- **9-10**: Excelente coherencia narrativa.
+- Una participacion activa no prevista que altera el acontecimiento, un nuevo objeto causal que resuelve el conflicto o un cambio de lugar que contradice el canon requieren decision del director.
+- Los detalles ordinarios compatibles son ejecucion libre. No conviertas cada taza, saludo o movimiento en una obligacion de anotacion ni los elimines por no estar enumerados.
+- Una contradiccion material si se reporta: un objeto usado de forma imposible, una posesion o conocimiento no adquirido, o un personaje situado en lugares incompatibles. Cita el conflicto, no solo la ausencia en el inventario.
+- Distingue una omision de anotaciones del guion de una invencion en prosa. El director resuelve el alcance; no se actualizan fichas o guion para justificar cualquier invencion. Las anotaciones de hilos dependen de la escala: no se exige inventariarlas cuando el guion de la escala no las declara.
+
+## Decision editorial
+
+Usa incidencias concretas (`bloqueante`, `corregir`, `opcional`), no un gate por score. En revision de prosa por `validador`, su contrato fija estado y aprobacion ligados al hash. En auditoria de guion, usa el diagnostico del agente o comando invocante: no requiere candidato ni hash. Un texto con IDs correctos puede fallar por causalidad o dialogo inconexo; no se aprueba por cobertura mecanica.
 
 ## Regla especial
 
-Si hay una **contradicción grave** (ej: personaje aparece en dos sitios a la vez, ropa que desaparece), el score máximo es 5.
+Una contradiccion grave exige resolucion antes de aceptar. No se compensa con aciertos en otras dimensiones ni con una media alta.
 
 ## Formato de respuesta
 
-```json
-{
-  "dimension": "coherencia",
-  "score": 0,
-  "criterios": {
-    "accion_completa": 0,
-    "consistencia_personajes": 0,
-    "continuidad_fisica": 0,
-    "temporalidad": 0,
-    "espacialidad": 0,
-    "logica_narrativa": 0,
-    "coherencia_entidades": 0
-  },
-  "contradicciones": [
-    {"tipo": "", "problema": "", "linea": 0, "correccion": ""}
-  ],
-  "entidades_no_declaradas": [
-    {"tipo": "personaje|objeto|lugar|hilo", "mencion": "texto exacto", "severidad": "incidental|activa"}
-  ],
-  "sugerencias": []
-}
-```
+Respeta el contrato del consumidor. Para `validador` de prosa: candidato/hash, estado e incidencias con stable_id, fragmento, problema, gravedad y correccion. Para `auditor-beats`, director o comandos de revision de guion: diagnostico con referencias y evidencia, sin exigir un hash de candidata inexistente. Este skill no crea otro formato ni exige puntuaciones por dimension.
 
 ## Regla
 

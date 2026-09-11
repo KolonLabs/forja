@@ -70,8 +70,8 @@ qdrant.py enrich-beat --proyecto X --beat a1b2c3d4 --narrative "Laura cayó de r
 # Buscar un summary por su posición
 qdrant.py query-summary-by-position --proyecto X --nivel L1 --parent-id c5c6c7c8 --seq 3
 
-# Crear o reemplazar idempotente
-qdrant.py upsert-summary-by-position --proyecto X --nivel L1 --parent-id c5c6c7c8 --seq 3 \
+# Crear o actualizar conservando el ID de escena del guion
+qdrant.py upsert-summary-by-position --proyecto X --nivel L1 --id e1e2e3e4 --parent-id c5c6c7c8 --seq 3 \
   --texto "Resumen de la escena..." [--hilo <uuid>]
 
 # Renumerar hermanos (tras insertar o eliminar)
@@ -87,7 +87,7 @@ qdrant.py query-l3 --proyecto X [--arco a0a1a2a3]
 # Obtener L4 (novela)
 qdrant.py query-l4-current --proyecto X
 
-# Crear o reemplazar un summary por stable_id directo (uso raro)
+# Alternativa equivalente: upsert protegido con stable_id canonico
 qdrant.py upsert-summary --proyecto X --nivel L1 --id e1e2e3e4 --seq 3 \
   --parent-id c5c6c7c8 --texto "..." [--hilo <uuid>]
 ```
@@ -153,7 +153,7 @@ neo4j.py query-relationships --proyecto X --stable-id 11111111
 
 Todas las operaciones de escritura son idempotentes:
 - `upsert-beat` con mismo `--beat` y `--proyecto` sobreescribe.
-- `upsert-summary-by-position` busca por `(nivel, parent_id, seq)`; si existe, actualiza; si no, crea.
+- `upsert-summary-by-position` busca por `(nivel, parent_id, seq)` y comprueba `--id` si se proporciona. Crear L1 exige el ID de escena canonico; sin el, bloquea. Una posicion ocupada por otro ID, duplicados o una colision con otro proyecto bloquean antes de escribir. No usa el primer resultado de una posicion duplicada.
 - `upsert-entity` con mismo `--stable-id` sobreescribe.
 
 Esto permite al cronista y al director reintentar operaciones sin crear duplicados.
@@ -169,6 +169,7 @@ Esto permite al cronista y al director reintentar operaciones sin crear duplicad
 - **Procesa capítulo completo solo cuando se le pide.** Un solo modo. Invocado con instrucción concreta: "procesa el capítulo completo desde draft.md" o "actualiza Laura: estado → sin_agencia".
 - **Carga este skill (cronista-ops) para conocer los comandos.**
 - **Usa búsqueda por posición, nunca por UUID.** El UUID se obtiene como resultado, no como entrada.
+- **Identidad conocida:** L1 usa siempre el stable_id de escena del guion con `--id`; L2/L3 tambien si ya tienen identidad declarada. Si falta ID L1, pide al director resolverlo, no generes otro. Verifica despues el recorrido beat -> L1 -> L2 y reporta incidencias de Qdrant separadas de Neo4j.
 
 ## Operaciones compuestas habituales
 
@@ -177,9 +178,9 @@ Esto permite al cronista y al director reintentar operaciones sin crear duplicad
 | Seed de acto (L3) | `upsert-summary-by-position --nivel L3 --parent-id <L4_stable_id> --seq N --texto "..." [--hilo <uuid>]` |
 | Seed de novela (L4) | `upsert-summary-by-position --nivel L4 --texto "..."` (idempotente: crea o actualiza el L4 único del proyecto) |
 | Seed de capítulo (L2) | `upsert-summary-by-position --nivel L2 --parent-id <L3_stable_id> --seq N --texto "..."` |
-| Seed de escena (L1) | `upsert-summary-by-position --nivel L1 --parent-id <L2_stable_id> --seq N --texto "..." [--hilo <uuid>]` |
+| Seed de escena (L1) | `upsert-summary-by-position --proyecto <slug> --nivel L1 --id <escena_stable_id_del_guion> --parent-id <L2_stable_id> --seq N --texto "..." [--hilo <uuid>]` |
 | Reordenar escenas dentro de un capítulo | `renumber-siblings --nivel L1 --parent-id <L2_stable_id> --from-seq 5 --direction up\|down` |
-| Insertar escena en medio | Crear L1 con `seq=5` → `renumber-siblings --from-seq 5 --direction up --step 1` |
+| Insertar escena en medio | Abrir hueco con `renumber-siblings --from-seq 5 --direction up --step 1`, despues crear L1 con su ID canonico y `seq=5`. No repetir la renumeracion a ciegas |
 | Eliminar escena | `query-summary-by-position` para obtener UUID → eliminar (no hay comando directo, usar `delete-point` o eliminar desde L0 primero) |
 | Actualizar `dinamico` de entidad | `update-entity --stable-id <id> --dinamico '{"...": "..."}'` |
 

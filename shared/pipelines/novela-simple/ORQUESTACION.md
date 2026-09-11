@@ -7,23 +7,33 @@ Referencia para **director** y subagentes. Rutas en `MAPA.md`. Fases en `PIPELIN
 ## Reglas globales
 
 1. **Quién escribe qué:** solo el agente indicado en la columna «Escribe» modifica ese archivo.
-2. **Briefing de spawn:** el director pasa siempre rutas relativas al workspace, IDs (`H_`/`B_`), y `Modo`.
+2. **Briefing de spawn:** `proyecto`, identidades opacas, seq local y modo. Para escritor/integrador, contexto inline ya preparado (sin ordenes de leer archivos o cargar skills). Los demas agentes reciben solo rutas pertinentes.
 3. **IDs:** asignar desde `config.json` → `ultimo_hecho_seq` / `ultimo_beat_seq`. Tras asignar, incrementar en el archivo que creó el ID. IDs globales `H_NNNN`, `B_NNNN` (4 dígitos, nunca se reinician).
-4. **Estados en guion:** `⬜` → `🔄` (al empezar beat) → `✅` (validador aprueba). Lo marca el **director** tras cada beat.
+4. **Estados en guion:** `⬜` → `🔄` (al iniciar la narrativa) → `✅` solo tras conformidad del usuario, revision editorial del mismo hash y sincronizacion exitosa. El **director** actualiza los beats de la escena en lote; aprobar el validador por si solo no los completa.
 5. **Backup** antes de sobrescribir archivos con contenido existente.
+6. **Contrato editorial comun:** `beats-estructura` y `contexto-subagente` rigen la formulacion e interpretacion: unidad dramatica, no microaccion; separar Obligatorio, Libre y Ejemplos opcionales en el contexto existente. Sin cuotas de beats ni division por puntuacion. Lo dicho, sabido, inferido y confirmado no se intercambia.
+7. **Escritura continua:** encabezados y cuerpos por beat se conservan para trazabilidad, no para reiniciar conversaciones. El director pasa inline la libertad de ejecucion y sus limites a escritor/integrador, sin herramientas. Una literalidad o guion incompatible vuelve al director antes de generar; no se fuerza la prosa. Ver `beats-estructura` y `mecanica-prosa`.
 
 ---
 
 ## Matriz de agentes (9 agentes)
 
+### Checkpoint obligatorio de narrativa
+
+En este workspace, cada generacion o correccion de prosa termina en `preparar` -> presentar la escena completa al usuario con su hash/version -> detenerse y esperar respuesta explicita. Se aplica siempre, no solo cuando el usuario lo pida. El checkpoint de guion no aprueba la narrativa posterior.
+
+Conformidad humana, revision editorial por hash y permiso de avance son decisiones distintas. Aprobar el texto no autoriza la siguiente escena. Se puede preguntar conjuntamente por esa version y el avance a una escena concreta; si no se autorizo expresamente, preguntar y esperar. No generar ni preparar otras escenas o capitulos especulativamente. Cualquier cambio textual invalida la conformidad anterior y el avance asociado; se presenta de nuevo y se reconfirma antes de aceptar/sincronizar.
+
+Registrar escena, hash/version, decision del usuario y alcance de avance en `contexto.md`; reanudar sin ese dato requiere preguntar, no deducir aprobacion de un review o archivo pendiente. Tras el cierre del capitulo, pedir autorizacion explicita para iniciar el siguiente capitulo antes de memoria/guion. Contrato completo: `PIPELINE.md`, gate de narrativa.
+
 | Agente | Invocado por | Lee | Escribe | Invoca | Modelo |
 |--------|--------------|-----|---------|--------|--------|
-| **director** | usuario `/generar`, `/revisar`, `/expandir`, `/publicar`, `/refinar-hechos`, `/validar-hechos`, `/revisar-guion` | `PIPELINE.md`, `MAPA.md`, `config.json`, `BRIEF.md`, `AGENTS.md`, `contexto.md`, guiones según fase | `config.json`, `contexto.md`, estados en guiones | guionista, escritor, validador, integrador, memoria, cronista, entidades, auditor-beats | `deepseek-v4-pro` |
-| **guionista** | director | Briefing + archivos del modo (ver tabla modos abajo) | Guiones según modo | — | `opencode/claude-sonnet-5` |
+| **director** | usuario `/generar`, `/revisar`, `/expandir`, `/publicar`, `/refinar-hechos`, `/validar-hechos`, `/revisar-guion` | `PIPELINE.md`, `MAPA.md`, `config.json`, `BRIEF.md`, `AGENTS.md`, `contexto.md`, guiones según fase | `config.json`, `contexto.md`, estados en guiones | guionista, escritor, validador, integrador, memoria, cronista, entidades, auditor-beats | `deepseek/deepseek-v4-pro` |
+| **guionista** | director | Briefing + archivos del modo (ver tabla modos abajo) | Guiones según modo | — | `deepseek/deepseek-v4-pro` |
 | **auditor-beats** | director | `guion.md` o `guion-novela.md`, `_actos.md`, `AGENTS.md` | — (read-only, diagnóstico al director) | — | `deepseek-v4-pro` |
-| **escritor** | director | Briefing + `guion.md` (beat), `contexto.md`, `fichas/` relevantes, `AGENTS.md`, estilo skill | `draft.md` (append sección `## B_NNNN`) | — | `deepseek-v4-pro` |
-| **validador** | director | Briefing + texto del beat, `guion.md`, `contexto.md`, `fichas/` | — (solo JSON) | — | `opencode/glm-5.2` |
-| **integrador** | director | Briefing + `draft.md` (beat), JSON validador | `draft.md` (reemplaza sección beat) | — | `deepseek-v4-pro` |
+| **escritor** | director | Contexto preparado inline, guion de escena, transicion, fichas y voz pertinentes | Nada; devuelve prosa con IDs, sin herramientas, completion maxima 64000 | — | `venice/qwen-3-8-max` |
+| **validador** | director | Candidato/hash, guion, canon y contexto pertinente; briefing neutral | Nada; JSON de incidencias editoriales, sin scores por beat | — | `deepseek/deepseek-v4-pro` |
+| **integrador** | director | Fragmentos afectados y ambos extremos de transicion inline; incidencias concretas | Nada; devuelve secciones corregidas, sin herramientas, completion maxima 64000 | — | `venice/qwen-3-8-max` |
 | **memoria** | director | `config.json`, especificación de entidades del cap | — (solo briefing de ~600 tokens) | — | `deepseek-v4-flash` |
 | **cronista** | director (cierre de cap) | `draft.md` completo, `config.json` | Qdrant (summaries L1-L4 + entidades `dinamico`), Neo4j (relaciones por escena), `config.json` (contadores) | — | `deepseek-v4-flash` |
 | **entidades** | director | Nombre, tipo, descripción de entidad + contexto narrativo | Qdrant (`upsert-entity`) + `fichas/<tipo>_<slug>.md` | — | `deepseek-v4-pro` |
@@ -66,7 +76,7 @@ No modificar archivos
 
 | Skill | Invocación | Quién lo aplica | Efecto |
 |-------|------------|-----------------|--------|
-| `mecanica-prosa` | automática | escritor, integrador | Formato de prosa: guiones de diálogo, párrafos, ⚡, cursiva |
+| `mecanica-prosa` | al preparar contexto | director; reglas inline para escritor e integrador | Formato de prosa: dialogos, parrafos, lineas obligatorias y cursiva |
 | `beats-estructura` | automática | guionista, escritor (lectura) | Formato `B_NNNN` — acción. `[Tono — EXTENSIÓN]` |
 | `hechos-estructura` | automática | guionista | Formato `H_NNNN` — hecho narrativo |
 | `tonos-beat` | automática | guionista (asignar), escritor (ejecutar) | Catálogo de 15 tonos + reglas BREVE/MEDIA/EXTENSA |
@@ -74,13 +84,13 @@ No modificar archivos
 | `plantilla-guion` | automática | guionista | Estructura de archivos de guion |
 | `plantilla-ficha` | automática | entidades | Estructura FIJO/DINÁMICO para 10 tipos de entidad |
 | `plantilla-personaje` / `plantilla-lugar` / `plantilla-objeto` / `plantilla-animal` / `plantilla-arco` / `plantilla-evento` / `plantilla-organizacion` | automática | entidades | Campos obligatorios por tipo de entidad |
-| `estilo-explicito` / `estilo-contemporaneo` / `estilo-erotico` / `estilo-fantasia` / `estilo-noir` / `estilo-romantico` / `estilo-thriller` | automática | escritor, integrador, validador (tono) | Voz narrativa: vocabulario, ritmo, crudeza, foco sensorial |
+| `estilo-explicito` / `estilo-contemporaneo` / `estilo-erotico` / `estilo-fantasia` / `estilo-noir` / `estilo-romantico` / `estilo-thriller` | al preparar contexto | director; extracto vigente inline a agentes narrativos | Voz, ritmo y registro; sin recargar skills por beat |
 | `estilo-prosa` | automática | director (crear/validar estilos) | Meta-skill: estructura que debe tener un skill de estilo |
 | `validacion-crudeza` | automática | validador | Evalúa vocabulario explícito, ausencia de eufemismos |
 | `validacion-tono` | automática | validador | Evalúa coherencia tonal contra el estilo activo |
 | `validacion-geometria` | automática | validador | Evalúa ritmo, cadencia, fluidez de frases |
 | `validacion-coherencia` | automática | validador | Evalúa continuidad física, consistencia de personajes, lógica |
-| `validacion-sensorial` | automática | validador | Evalúa presencia de los 5 sentidos |
+| `validacion-sensorial` | si aporta al diagnostico | validador | Valora detalle pertinente, sin cuotas de sentidos por beat/parrafo |
 | `consistencia-narrativa` | manual (`/revisar`) | director → validador | Auditoría de coherencia entre actos, capítulos, arcos |
 | `contexto-subagente` | automática | director (antes de spawn) | Define qué información pasar a cada subagente |
 | `desarrollo-narrativa` | manual (`/generar` en escritura) | director, escritor | Guía para desarrollar escenas y beats |
@@ -144,18 +154,27 @@ FASE 2 escritura (por capítulo)
       IN:  capitulos/cap-NN-slug/guion.md, _actos.md, AGENTS.md
       OUT: diagnóstico de beats (inconclusos, huecos, prosa). Director → guionista corrige
 
-  2.3 por cada beat B_NNNN ⬜:
-      director → escritor (con briefing memoria, fichas inline, estilo)
-        OUT: draft.md (append ## B_NNNN)
-      director → validador (scope completa, read-only)
-        OUT: JSON con scores
-      si score_global < 7: director → integrador
-        OUT: draft.md corregido
-      director: ✅ en guion.md, config.json.ultimo_beat_seq
+  2.3 por cada escena (todos sus beats):
+       2.3.1 contexto pertinente inline -> escritor sin herramientas
+             OUT: solo prosa con identidades; completion maxima 64000
+       2.3.1b director: persistir-escena.py preparar (finish stop)
+             OUT: candidata pendiente + SHA256; sin draft ni Qdrant
+       2.3.1c director + usuario: presentar escena completa y DETENERSE
+             OUT: conformidad explicita de esa version o ajustes; esperar respuesta
+       2.3.2 validador: una revision editorial independiente por escena
+             OUT: estado + incidencias concretas + hash revisado
+       2.3.3 si hay incidencias: correccion selectiva (mecanica o integrador)
+             OUT: candidata nueva, nuevo hash -> volver al checkpoint 2.3.1c
+             Tras conformidad: revision focalizada para ese hash
+       2.3.4 director: ambas aprobaciones -> aceptar -> sincronizar -> completos
+             Reintento identico no duplica; falla red -> reintenta sync,
+              no regenera. No hay transaccion conjunta disco + Qdrant.
+       2.3.5 director + usuario: avance solo con autorizacion explicita
+             Sin permiso para la escena siguiente, detenerse y preguntar
 
-  2.4 director → validador(modo: global) sobre draft completo del cap
-      OUT: JSON con problemas_globales
-      si falla: iterar beats problemáticos
+  2.4 director → validador(modo: global) sobre cruces entre escenas
+       OUT: incidencias transversales (cronologia, objetos, arco)
+       si falla: corregir alcance afectado; no repuntuar todo el estilo
 
 2.5 director → cronista
        IN:  draft.md, config.json
@@ -163,7 +182,8 @@ FASE 2 escritura (por capítulo)
             tras escena: L2 (capítulo), L3 (si cierre arco), L4 (cada 10 caps)
             + auditoría Neo4j read-only (discrepancias residuales)
             + config.json: capitulos_completados++
-       si quedan capítulos → volver a 2.1
+       si quedan capitulos -> informar cierre, preguntar y esperar autorizacion
+       Solo entonces 2.1 del siguiente capitulo; no iniciar memoria/guion antes
 
   estado → "publicacion"
 
@@ -188,6 +208,9 @@ Capítulo: cap-NN-slug (si aplica)
 Contexto previo: [últimos 5-8 beats del capítulo/acto anterior, si aplica]
 Contexto posterior: [beat siguiente al punto de inserción, solo pasada 2]
 Criterio: [función narrativa del cap]
+Obligatorio: [compromisos, consecuencias, restricciones; literalidad solo si exigida o causalmente justificada]
+Libre: [ejecucion compatible, sin microcoreografia]
+Ejemplos opcionales: [posibilidades, no canon ni lista a cumplir]
 Estilo base: [nombre] — cargar skill estilo-<nombre>
 {{#if estilo_secundario}}Estilo secundario: [nombre] — fusionar con estilo-<nombre>{{/if}}
 {{#if pasada 1}}Sin marcadores <!-- ESCENA ... -->. Salida: beats en bruto.{{/if}}
@@ -197,43 +220,51 @@ Estilo base: [nombre] — cargar skill estilo-<nombre>
 ### → escritor
 
 ```
-Beat: B_NNNN | Hecho padre: H_NNNN
-Leer: capitulos/.../guion.md (línea beat), contexto.md, fichas/[lista]
-Briefing memoria: [~600 tokens desde agente memoria]
-Prosa ya escrita de la escena actual: [TODOS los beats de esta escena en draft.md, desde el primero] | Si primer beat de escena: últimos 3 beats de la escena anterior
-Escribir: capitulos/.../draft.md — sección ## B_NNNN (append; crear archivo si no existe)
-Tono: [BREVE|MEDIA|EXTENSA] + [tono de tonos-beat] + [⚡ línea crítica si hay]
-Estilo: [estilo_base] — cargar skill estilo-<nombre>
-{{#if estilo_secundario}}+ fusionar con estilo-<nombre>{{/if}}
-Beat N de M en el capítulo
-Premisa del capítulo: [extraída de guion-novela.md]
-No marcar ✅ en guion — solo prosa en draft
+Proyecto: [slug]
+Modo: escena | expansion puntual
+Capitulo/escena: stable_id, seq local, parent_id
+Contexto inline: canon y memoria ya resueltos; voz/POV/mecanica/restricciones;
+guion de la escena; fichas pertinentes; transicion previa y compromisos posteriores.
+Obligatorio / Libre / Ejemplos opcionales: separar compromisos de ejecucion.
+Interpretacion inline: escena continua, dicho/sabido/inferido/confirmado distintos;
+no convertir ejemplos en canon ni deducciones en listas o confesiones.
+No duplicar contexto en rutas ni pedir cargar skills. No hay herramientas.
+Salida: marcador ESCENA y secciones ## <stable_id> [<seq>] — accion breve,
+solo prosa, sin notas rutinarias, JSON ni fences. Ante canon incierto: BLOQUEO.
+Director conserva terminacion real, prepara y presenta la candidata al usuario;
+se detiene. Revision editorial y conformidad humana por version antes de persistir.
 ```
 
 ### → validador
 
 ```
-Modo: read-only
-Beat: B_NNNN (o modo global)
-Texto: [fragmento o ruta draft.md sección B_NNNN]
-Escena actual (modo beat): TODOS los beats ya escritos de la escena del beat en draft.md (desde el primero) + siguientes tres del guion
-Dimensiones: ["coherencia", "sensorial", ...] — lista concreta (preferido)
-  o Scope: [completa|media|ligera] — formato heredado (se normaliza a dimensiones)
-Leer coherencia: contexto.md, fichas/[...], guion.md
-Estilo activo: [nombre] — validar tono con skill validacion-tono + estilo-<nombre>
-Salida: solo JSON (sin editar archivos). Incluir dimensiones_evaluadas, umbral_aplicado, aprobado
+Proyecto: [slug]
+Modo: escena | revision focalizada | global transversal
+Escena/capitulo: [stable_id]; candidato_sha256: [hash real]
+Entrada: candidato exacto, guion, canon y contexto de transicion necesarios.
+Obligatorio / Libre / Ejemplos opcionales: comprobar compromisos y naturalidad,
+no reproducir cada gesto ilustrativo ni aprobar solo por cobertura de IDs.
+Briefing neutral: sin elogios ni defensas previas de la solucion.
+Salida: JSON con estado (aprobado/corregir/bloqueado), hash e incidencias.
+Cada incidencia: beat_stable_id, area, gravedad, fragmento, problema, correccion.
+Gravedades: bloqueante / corregir / opcional. Sin scores por beat.
+No aprobar errores factuales por promedio ni completar cuotas sensoriales.
 ```
 
 ### → integrador
 
 ```
-Beat: B_NNNN
-Leer: draft.md sección B_NNNN, JSON validador adjunto
-Escribir: reemplazar seccción ## B_NNNN en draft.md
-Mantener acción nuclear del beat; aplicar mecanica-prosa + estilo
-Estilo: [estilo_base] - cargar skill estilo-<nombre>
-{{#if estilo_secundario}}+ fusionar con estilo-<nombre>{{/if}}
-TODOS los beats ya escritos de la escena actual (prosa en draft.md, desde el primero) + siguientes tres del guion
+Proyecto: [slug]
+Modo: correccion selectiva
+Inline: contratos y texto de fragmentos afectados + incidencias concretas,
+ambos extremos de transicion, fichas/voz/POV/restricciones pertinentes.
+Obligatorio / Libre / Ejemplos opcionales: mismo contrato de interpretacion.
+Texto completo de secciones solicitadas: reparar el mecanismo en el intercambio
+minimo autorizado; conflicto de guion o alcance insuficiente -> BLOQUEO al director.
+Salida: solo secciones corregidas ## <stable_id> [<seq>] — accion breve.
+Sin original duplicado, JSON, notas ni herramientas. Canon incierto -> BLOQUEO.
+Director ensambla y prepara el candidato, presenta la escena completa y se detiene
+para conformidad humana; revision focalizada por hash antes de aceptar/sincronizar.
 ```
 
 ### → memoria
@@ -255,21 +286,27 @@ Briefing esperado: ~600 tokens. Estructura:
 
 ```
 Capítulo completado: cap-NN-slug
-Leer: capitulos/cap-NN/draft.md (completo), config.json
+Leer: capitulos/cap-NN/draft.md (completo), guion.md (marcadores de escena), config.json
 Tareas:
   1. Por cada escena en el draft (en orden):
-     a. upsert-summary L1 en Qdrant
+      a. upsert-summary --id <stable_id_escena> --nivel L1 --parent-id <capitulo>
+         --seq <N> --proyecto <slug> — CONSERVAR la identidad del guion/draft.
+         Si falta ID canonico, bloquear: no crear L1 con identidad aleatoria.
+         Preflight del helper ANTES de escribir: posicion unica, identidad
+         esperada y punto fisico del mismo proyecto/nivel/padre/seq/hilo.
+         Conflicto -> detener y reconciliar, no crear segundo L1.
+         Verificar despues posicion e integridad beat -> L1 -> L2.
      b. Actualizar dinámico de entidades con cambio inequívoco en la escena
      c. Detectar relaciones materializadas (nuevas, rotas, cambio de rol) y
         aplicarlas con neo4j.py upsert-relationship
-  2. upsert-summary L2 del capítulo completo
-  3. Si cierre de arco → upsert-summary L3
+  2. upsert-summary --id <capitulo> L2 del capitulo completo
+  3. Si cierre de arco -> upsert-summary --id <arco> L3
   4. Si cap % 10 == 0 → upsert-summary L4
   5. Auditoría Neo4j (skill auditoria-neo4j): detectar discrepancias
      residuales no corregibles desde el draft. Esto es read-only.
-  6. Actualizar config.json: capitulos_completados++
+  6. Solo si pasa el gate: actualizar config.json (capitulos_completados)
   7. Devolver JSON con summaries, entidades, relaciones aplicadas,
-     discrepancias residuales.
+      discrepancias_qdrant y discrepancias_neo4j por separado.
 ```
 
 ### → entidades
@@ -310,9 +347,10 @@ Output: Qdrant (upsert-entity) + fichas/<tipo>_<slug>.md
 | Validar | **validador** (read-only, solo JSON) |
 | Publicar limpio | `/publicar` |
 | Crear entidades | **entidades** (Qdrant + `fichas/<tipo>_<slug>.md`) |
-| Actualizar Qdrant post-escena | **cronista** |
+| Persistir narrativa aceptada / vectores de beats | **director**, via `scripts/persistir-escena.py` |
+| Actualizar summaries y dinamico al cierre | **cronista** |
 | Actualizar Neo4j post-escena (relaciones) | **cronista** |
 | Compilar briefing de memoria | **memoria** |
-| Escribir `contexto.md` | **director** (al cerrar capítulo) |
+| Escribir `contexto.md` | **director** (registro obligatorio en cada checkpoint y respuesta; tambien resumen al cerrar capitulo) |
 | Crear carpetas `capitulos/cap-NN-slug/` | **guionista** (modo capitulo) |
 | Init Qdrant/Neo4j | **director** (`scripts/qdrant.py`, `scripts/neo4j.py`) |

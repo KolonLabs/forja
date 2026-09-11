@@ -1,6 +1,6 @@
 ---
 name: validacion-sensorial
-description: Criterios de evaluación de riqueza sensorial y detalle gráfico. Úsalo cuando necesites validar la presencia y calidad de los 5 sentidos en el texto.
+description: Evalúa detalle sensorial pertinente y repetición accidental, sin cuotas de sentidos por beat o párrafo.
 ---
 
 # Validación Sensorial
@@ -16,7 +16,9 @@ description: Criterios de evaluación de riqueza sensorial y detalle gráfico. �
 | Correrse | tacto (espasmos), oído (gritos), vista (expresión) |
 | Ambiental | vista (escenario), oído (ambiente), olfato (lugar) |
 
-## Criterios de evaluación (1-10)
+## Criterios editoriales
+
+Estas preguntas orientan una lectura contextual, no un checklist obligatorio. En el flujo por escena el validador informa incidencias concretas; no calcula cinco puntuaciones por cada gesto. Un sentido no pertinente queda fuera de la evaluacion, no recibe un cero.
 
 ### 1. Vista (visual)
 - ¿Describe colores, luces, sombras?
@@ -52,55 +54,29 @@ description: Criterios de evaluación de riqueza sensorial y detalle gráfico. �
 - ¿Hay equilibrio entre los sentidos?
 - ¿Depende solo de la vista?
 - ¿Los sentidos se mezclan bien?
-- ¿Cada escena tiene al menos 3 sentidos?
+- ¿Falta algun detalle necesario para comprender o experimentar la escena, considerando el foco y el POV?
 
-## Scoring
+## Decision de revision
 
-- **< 7**: Pobreza sensorial. Falta detalle. Reescribir.
-- **7-8**: Detalle sensorial adecuado. Mejoras menores.
-- **9-10**: Inmersión sensorial excelente.
-
-## Regla especial
-
-Si un párrafo solo tiene **1 sentido**, el score máximo es 4.
+No hay minimo de sentidos por escena, beat o parrafo ni techo de puntuacion por usar solo uno. No anadas olor, gusto o tacto para aprobar una cuota. Una ausencia solo justifica correccion cuando produce una carencia narrativa concreta; el silencio y el minimalismo pueden ser deliberados.
 
 ## Variedad léxica entre beats de la escena
 
 Cuando el director te pase **todos los beats de la escena actual** como contexto (no solo los últimos N), aplica esta regla ampliada:
 
-1. **Repetición en misma escena:** si una misma ancla sensorial (misma palabra o frase descriptiva de un sentido: «zumbido del fluorescente», «olor a café», «susurro del nailon») aparece en **2 o más beats** de la misma escena, márcalo como `repeticion_escena` y baja el score de `variedad_lexica`. Una repetición → aviso. Dos o más → penalización.
+1. **Repeticion en misma escena:** distingue motivo deliberado, continuidad de un objeto y reiteracion accidental. Senala solo la repeticion que empobrece la lectura, con evidencia; no penalices por contar ocurrencias.
 
-2. **Repetición entre escenas consecutivas:** si el beat actual repite una palabra sensorial que ya apareció en los últimos 3 beats (cruza escenas), aplica la misma penalización.
+2. **Entre escenas:** evalua si la reiteracion sirve de enlace o resulta mecanica; no hay ventana fija ni prohibicion automatica de repetir palabras.
 
-3. **Anclas de escenario:** cada escenario tiene anclas naturales (cocina → nevera, grifo, café; dormitorio → mesilla, sábanas, despertador). El escritor debe variarlas. Si en 4 beats de una cocina aparece 4 veces «el zumbido», hay un problema aunque cada beat sea correcto individualmente.
-
-## Scoring actualizado
-
-| Criterio | Peso |
-|----------|------|
-| `vista`, `oido`, `tacto`, `olfato`, `gusto` | individuales (0-10) |
-| `proporcion` | equilibrio entre los 5 |
-| `variedad_lexica` | **penaliza repetición de palabras sensoriales** dentro de la misma escena y entre escenas consecutivas |
+3. **Anclas de escenario:** no fuerces sinonimos ni nuevos olores solo para variar una palabra. Conserva el detalle que sostiene el espacio y senala la redundancia cuando diluye la accion.
 
 ## Formato de respuesta
 
 ```json
 {
-  "dimension": "sensorial",
-  "score": 0,
-  "criterios": {
-    "vista": 0,
-    "oido": 0,
-    "tacto": 0,
-    "olfato": 0,
-    "gusto": 0,
-    "proporcion": 0,
-    "variedad_lexica": 0
-  },
-  "sentidos_presentes": [],
-  "sentidos_faltantes": [],
-  "palabras_repetidas": [],
-  "repeticion_escena": [],
-  "sugerencias": []
+  "area": "sensorial",
+  "incidencias": []
 }
 ```
+
+Si hay incidencias, utiliza gravedad, fragmento, problema y correccion del contrato del validador. No listes sistematicamente todos los sentidos ausentes. Una valoracion numerica solo se devuelve si se solicita expresamente y no sustituye el gate editorial.

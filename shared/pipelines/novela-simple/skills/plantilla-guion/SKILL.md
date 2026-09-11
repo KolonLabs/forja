@@ -72,7 +72,11 @@ El display humano del hecho, si se necesita, se deriva de `seq` al presentar y n
 
 ###### Beats
 
-Cada beat es una declaración factual de lo que ocurre físicamente más metadatos. Sin sensoriales, emociones ni adjetivos de experiencia: solo quién hace qué.
+Cada beat declara un compromiso narrativo más metadatos: qué ocurre o cambia, a quién afecta y qué consecuencia debe conservarse. Es una unidad dramática, no una microacción; puede incluir una interacción, decisión, descubrimiento o inferencia atribuida. No redacta el pensamiento ni coreografía la prosa. Distingue lo dicho, lo sabido, lo inferido y lo verdadero: que un personaje afirme o sospeche algo no lo convierte en verdad del mundo.
+
+Es obligatorio realizar el compromiso aprobado, sus participantes y condiciones causales, respetando conocimiento, conducta, consentimiento e intensidad fijados. Son libres la formulación del diálogo y la interioridad, la cadencia y los enlaces ordinarios compatibles. Un gesto, silencio o detalle sensorial solo se fija si tiene función narrativa; no para imponer la ejecución. Las etiquetas tonales no cambian esos compromisos.
+
+Estas distinciones se expresan en el texto y las notas ya existentes: no añaden campos al formato ni al payload. El beat del guion ocupa una línea técnica, pero su unidad no depende de una sola oración o un solo verbo. Saludos, despedidas y transiciones ordinarias pueden desarrollarse en diálogo continuo sin beats propios. La prosa conserva los encabezados Markdown, IDs y cuerpo de cada beat según el contrato de salida.
 
 Formato canónico:
 
@@ -80,10 +84,10 @@ Formato canónico:
 ⬜ stable_id [seq] — acción [Tono — EXTENSIÓN] [Personajes] [Zona: nombre]
 ```
 
-Ejemplo:
+Ejemplo opcional de formato, no canon ni conducta obligatoria:
 
 ```text
-⬜ a1b2c3d4 [34] — Laura se arrodilla ante Diego [Opresivo — BREVE] [Laura, Diego] [Zona: salón]
+⬜ a1b2c3d4 [34] — Laura rechaza el cierre del archivo hasta que Diego justifique la falta de documentos [Tenso — MEDIA] [Laura, Diego] [Zona: archivo]
 ```
 
 - `stable_id` es opaco, inmutable y se genera al crear el beat.
@@ -91,7 +95,7 @@ Ejemplo:
 - `i9j0k1l2 [34]` se deriva de `seq: 34` al presentar y nunca se almacena.
 - Fichas, `cola_d.md` y demás referencias usan `stable_id`.
 
-EXTENSIÓN: `BREVE` (2-3 frases) | `MEDIA` (4-7 frases) | `EXTENSA` (8-15 frases)
+EXTENSION: `BREVE` (concentrado) | `MEDIA` (moderado) | `EXTENSA` (amplio). Peso narrativo orientativo, sin cuota de frases ni palabras; ver `tonos-beat`.
 
 TONO: uno o dos tonos del catálogo `tonos-beat`, separados por `/`.
 
@@ -101,16 +105,18 @@ ZONA: nombre de la zona donde ocurre el beat.
 
 PROPS _(opcional)_: solo si el beat introduce o usa un objeto específico.
 
+Ejemplos opcionales independientes. En el último se supone aprobada y documentada una función causal: el código debe repetirse exactamente para abrir la consigna; no se usa ⚡ solo por ser diálogo importante.
+
 ```text
-⬜ a1b2c3d4 [1] — Ana cierra la puerta antes de que Carlos entre [Tenso — BREVE] [Ana] [Zona: sala]
-⬜ e5f6a7b8 [2] — Carlos bloquea la salida [Opresivo — MEDIA] [Ana, Carlos] [Zona: sala]
-⬜ 11223344 [3] — Ana exige que se aparte ⚡ "Déjame salir" [Clínico — BREVE] [Ana, Carlos] [Zona: sala]
-⬜ 55667788 [4] — Carlos deja el anillo sobre la cama [Visceral — EXTENSA] [Ana, Carlos] [Zona: dormitorio] [Props: anillo-promesa]
+⬜ a1b2c3d4 [1] — Ana rechaza entregar el expediente sin un recibo y Carlos acepta dejar constancia [Tenso — MEDIA] [Ana, Carlos] [Zona: sala]
+⬜ e5f6a7b8 [2] — Carlos afirma haber devuelto la llave, sin que Ana pueda comprobarlo [Clínico — BREVE] [Ana, Carlos] [Zona: sala]
+⬜ 11223344 [3] — Ana infiere por la fecha del recibo que la entrega pudo retrasarse, sin confirmarlo [Revelación — MEDIA] [Ana] [Zona: archivo]
+⬜ 55667788 [4] — Carlos comunica a Ana el código que deberá repetir para abrir la consigna ⚡ "Faro siete" [Clínico — BREVE] [Ana, Carlos] [Zona: vestíbulo] [Props: consigna]
 ```
 
 Al insertar, eliminar o reordenar beats, usa `renumber-siblings` desde el primer `seq` afectado. Solo cambia `seq`; `stable_id`, `parent_id` y las referencias externas permanecen intactos.
 
-**Transición**: [Cómo enlaza con el siguiente hecho o escena]
+**Transición**: [Relación con el siguiente hecho o escena; puede ser elipsis, no exige acciones de enlace ni beat puente]
 
 ##### Hecho [stable_id] [seq]: [Nombre del hecho]
 
@@ -193,9 +199,10 @@ Cada capítulo contiene escenas desarrolladas mediante hechos. Las escenas son s
 **Líneas críticas** _(marcadas con ⚡ en el beat)_:
 - **[Personaje]**: *"[frase]"*
 
+Solo se completan cuando el usuario exige palabras exactas o la literalidad tiene una función causal documentada y aprobada. La importancia de una revelación o decisión no basta. ⚡ significa literalidad REAL obligatoria, no ejemplo; se aplica `mecanica-prosa`. Una frase vigente incompatible con la revisión se remite al director para resolver antes de generar: no se parafrasea, omite ni reclasifica por iniciativa del escritor. Si no hay literalidad aprobada, esta sección no impone ninguna frase.
+
 **Tensión sexual**:
-- [Elemento 1]
-- [Elemento 2]
+- [Solo elementos aprobados pertinentes; sin obligación de completar una lista ni añadir tensión a una escena que no la contiene]
 
 ## Conflicto central
 
@@ -216,11 +223,10 @@ Cada capítulo contiene escenas desarrolladas mediante hechos. Las escenas son s
 
 ## Detalles obligatorios
 
-[Elementos que deben aparecer]
+[Compromisos aprobados que deben realizarse y, para detalles o gestos concretos, su función narrativa. No convertir ejemplos de ejecución en obligaciones. No exige palabras exactas salvo literalidad aprobada según ⚡.]
 -
 -
 
 ## Notas adicionales
 
-[Información para el escritor: ritmo, enfoque sensorial y elementos a evitar]
-
+[Restricciones aprobadas y orientaciones de ritmo o enfoque. Identificar como opcionales los ejemplos de ejecución: no son canon ni obligaciones. Estas notas pertenecen al guion, no se reproducen como metatexto en la prosa.]

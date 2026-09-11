@@ -8,10 +8,10 @@ Referencia para **director** y subagentes. Fases en `PIPELINE.md`.
 
 1. **Quién escribe qué:** solo el agente indicado en la columna «Escribe» modifica ese archivo.
 2. **Briefing de spawn:** el director pasa siempre rutas relativas al workspace, IDs (`H_`/`B_`), y `Modo`.
-3. **IDs:** cada elemento tiene un `stable_id` opaco e inmutable y un `seq` posicional. `seq` se asigna desde `config.json` → `ultimo_hecho_seq` / `ultimo_beat_seq` y es global en toda la novela (4 dígitos, nunca se reinicia por hilo ni capítulo). Tras asignar, incrementar en el archivo que creó el ID.
+3. **IDs:** cada elemento tiene un `stable_id` opaco e inmutable y un `seq` posicional. Los hechos usan la secuencia global de planificación (`config.json` → `ultimo_hecho_seq`); el `seq` de los beats es **local a su escena padre** y se renumera con `renumber-siblings` filtrado por `parent_id` y `hilo`.
    - `H_NNNN` y `B_NNNN` son **displays derivados de `seq`**, nunca identidad persistida.
    - Toda referencia interna (`parent_id`, conexiones cross-hilo, fichas, `cola_d.md`) usa `stable_id`.
-4. **Estados en guion:** `⬜` → `🔄` (al empezar beat) → `✅` (validador aprueba). Lo marca el **director** tras cada beat.
+4. **Estados en guion:** `⬜` → `🔄` (al empezar la escena) → `✅` (tras `aceptar`+`sincronizar` con conformidad humana y revisión editorial del mismo hash). Lo marca el **director**.
 5. **Backup** antes de sobrescribir archivos con contenido existente.
 6. **Hilos:** el campo `hilo` es siempre el `stable_id` de una entidad `tipo=hilo`. `hilo-sumeria` es slug humano de navegación, nunca identidad.
 
@@ -21,12 +21,12 @@ Referencia para **director** y subagentes. Fases en `PIPELINE.md`.
 
 | Agente | Invocado por | Lee | Escribe | Invoca | Modelo |
 |--------|--------------|-----|---------|--------|--------|
-| **director** | usuario `/generar`, `/revisar`, `/expandir`, `/publicar`, `/refinar-hechos`, `/validar-hechos`, `/revisar-guion` | `PIPELINE.md`, `config.json`, `BRIEF.md`, `AGENTS.md`, `contexto.md`, guiones según fase | `config.json`, `contexto.md`, `diseno-hilo.md`, `cola_d.md`, estados en guiones, `draft.md` (ensamblado y separadores `---`), `capitulo.md`, `novela.md` | guionista, escritor, validador, integrador, memoria, cronista, entidades, auditor-beats | `deepseek-v4-pro` |
-| **guionista** | director | Briefing + archivos del modo (ver tabla modos abajo) | Guiones según modo y escala | — | `opencode/claude-sonnet-5` |
+| **director** | usuario `/generar`, `/revisar`, `/expandir`, `/publicar`, `/refinar-hechos`, `/validar-hechos`, `/revisar-guion` | `PIPELINE.md`, `config.json`, `BRIEF.md`, `AGENTS.md`, `contexto.md`, guiones según fase | `config.json`, `contexto.md`, `diseno-hilo.md`, `cola_d.md`, estados en guiones, `draft.md` y candidatas vía `scripts/persistir-escena.py`, `capitulo.md`, `novela.md` | guionista, escritor, validador, integrador, memoria, cronista, entidades, auditor-beats | `deepseek-v4-pro` |
+| **guionista** | director | Briefing + archivos del modo (ver tabla modos abajo) | Guiones según modo y escala | — | `deepseek-v4-pro` |
 | **auditor-beats** | director | `guion.md` o `guion-novela.md`, `_actos.md`, `AGENTS.md` | — (read-only, diagnóstico al director) | — | `deepseek-v4-pro` |
-| **escritor** | director | Briefing + `guion.md` (beat), `contexto.md`, `fichas/` relevantes, `AGENTS.md`, estilo skill | `draft.md` (append sección `## <stable_id> [<seq>]`) | — | `deepseek-v4-pro` |
-| **validador** | director | Briefing + texto del beat, `guion.md`, `contexto.md`, `fichas/` | — (solo JSON) | — | `opencode/glm-5.2` |
-| **integrador** | director | Briefing + `draft.md` (beat), JSON validador | `draft.md` (reemplaza sección beat) | — | `deepseek-v4-pro` |
+| **escritor** | director | Contexto preparado inline: guion de la escena completa, fichas, voz/POV, hilo y costuras | Nada; devuelve prosa completa de la escena, sin herramientas | — | `venice/qwen-3-8-max` (completion máx. 64000) |
+| **validador** | director | Candidato y SHA256, guion, canon, contexto de hilo y costuras; briefing neutral | Nada; JSON de incidencias (`bloqueante/corregir/opcional`), sin scores | — | `deepseek-v4-pro` |
+| **integrador** | director | Fragmentos afectados y ambos extremos inline; incidencias concretas | Nada; devuelve secciones corregidas completas, sin herramientas | — | `venice/qwen-3-8-max` (completion máx. 64000) |
 | **memoria** | director | `config.json`, especificación de entidades del cap, hilo(s) activo(s) | — (solo briefing de ~600 tokens) | — | `deepseek-v4-flash` |
 | **cronista** | director (cierre de cap) | `draft.md` completo, `config.json`, hilo(s) activo(s) | Qdrant (summaries L1-L4 + entidades `dinamico`), Neo4j (relaciones por escena), `config.json` (contadores) | — | `deepseek-v4-flash` |
 | **entidades** | director | Nombre, tipo, descripción de entidad + contexto narrativo | Qdrant (`upsert-entity`) + `fichas/<tipo>_<slug>.md` | — | `deepseek-v4-pro` |
@@ -227,59 +227,45 @@ prosa temática por lo que descubriste, referenciado por stable_id de escena.
 ### → escritor
 
 ```
-Beat: stable_id=[8hex] seq=[NNNN] parent_id=[8hex del hecho]
-Acción: [texto del beat]
-Hilo: [nombre] (stable_id: [8hex]) — época: [...] | ubicación: [...] | tono propio: [...]
+Escena: stable_id=[8hex] nombre=[...] hilo=[nombre] (stable_id: [8hex]) — época: [...] | ubicación: [...] | tono propio: [...]
 Tipo de capítulo: [exclusivo | puente | espejo]
-{{#if primer beat de bloque}}⚠️ Abres bloque de hilo: el lector viene de otra época/POV. Reancla espacio, tiempo y cuerpo.{{/if}}
-Leer: capitulos/.../guion.md (línea beat), contexto.md, fichas/[lista por stable_id]
+{{#if abre bloque}}⚠️ Abres bloque de hilo: el lector viene de otra época/POV. Reancla espacio, tiempo y cuerpo desde la prosa de la escena.{{/if}}
+Contrato editorial: Obligatorio = acontecimientos/decisiones/consecuencias/restricciones y quién sabe o infiere; Libre = palabras, gestos, pausas y enlaces; Ejemplos = opciones, no canon.
+Guion de la escena COMPLETA: todos los beats con stable_id [seq] parent_id — acción — tono/extensión — hilo
+Fichas: [lista por stable_id], inline
+Voz/POV, mecánica de prosa y extensión orientativa: [reglas ya resueltas por el director, inline]
 Briefing memoria: [~600 tokens, filtrado por los stable_id de hilo activos]
-Escribir: capitulos/.../draft.md — sección "## <stable_id> [<seq>] — acción" (append; crear archivo si no existe)
-Tono: [BREVE|MEDIA|EXTENSA] + [tono de tonos-beat] + [⚡ línea crítica si hay]
-Estilo: [estilo_base] — cargar skill estilo-<nombre>
-{{#if estilo_secundario}}+ fusionar con estilo-<nombre>{{/if}}
-Beat N de M en el capítulo (total_beats, beat_index)
-Premisa del capítulo: [extraída de guion-novela.md]
-Prosa ya escrita de la escena actual: [TODOS los beats de esta escena en draft.md, desde el primero] | Si primer beat de escena: últimos 3 beats del bloque anterior
-{{#if puente o espejo}}Otro hilo: [qué acaba de ocurrir allí] + fichas/conexion-*.md{{/if}}
-{{#if espejo}}Beat contrario: [texto del beat del otro hilo con el que hace paralelismo]{{/if}}
-No marcar ✅ en guion — solo prosa en draft
-No escribir el separador --- entre bloques (lo pone el director)
+Prosa de transición: [escena anterior de la misma lectura si existe]
+{{#if puente o espejo}}Otro hilo: [qué acaba de ocurrir allí] + fichas/conexion-*.md; {{#if espejo}}beat espejo: [texto]{{/if}}{{/if}}
+Salida: SOLO prosa de TODOS los beats con marcador <!-- ESCENA stable_id: Nombre | hilo: stable_id --> y heading ## <stable_id> [<seq>] — acción breve
+Sin herramientas, sin notas del escritor, sin autocritica. Contexto insuficiente o canon contradictorio → BLOQUEO.
 ```
 ### → validador
 
 ```
-Modo: read-only [beat | global]
-Beat: stable_id=[8hex] seq=[NNNN] (o modo global)
-Texto: [fragmento o ruta draft.md, sección localizada por stable_id]
-Escena actual (modo beat): TODOS los beats ya escritos de la escena del beat en draft.md (desde el primero) + siguientes tres del guion
-Dimensiones: ["coherencia", "sensorial", ...] — lista concreta (preferido)
-  o Scope: [completa|media|ligera] — formato heredado (se normaliza a dimensiones)
-Leer coherencia: contexto.md, fichas/[... por stable_id], guion.md
-Hilo del beat: [nombre] (stable_id: [8hex]) — época y ubicación, para detectar anacronismos
+Modo: read-only [escena | revision | global]
+Candidato: [ruta escena-<SID>.pendiente.md o draft.md] + candidato_sha256=[64hex real de preparar]
+Guion: guion.md de la escena, con hilo y tipo de capítulo
+Contexto: canon, fichas/[... por stable_id], contexto.md, prosa de las transiciones
+Criterios: cobertura de compromisos, continuidad, personajes/POV, prosa, restricciones, conocimiento (dicho/sabido/inferido/confirmado)
 Cross-hilo: [sí/no] — sí SOLO si el capítulo tiene ≥2 hilos.
-  si sí: cargar validacion-cross-hilo + fichas/conexion-* + tabla de trenzado
-  si no: NO cargar el skill ni emitir el bloque cross_hilo en el JSON
-IDs declarados en el beat: [Personajes], [Zona], [Props], [Hilos]
-Estilo activo: [nombre] — validar tono con skill validacion-tono + estilo-<nombre>
-Salida: solo JSON (sin editar archivos). Incluir dimensiones_evaluadas, umbral_aplicado, aprobado
+  si sí: cargar validacion-cross-hilo + fichas/conexion-* + tabla de trenzado; emitir sus hallazgos como incidencias, no como scores
+Briefing neutral: no anticipes veredicto ni defiendas el texto.
+Salida: solo JSON con escena_stable_id, candidato_sha256 copiado, estado (aprobado/corregir/bloqueado) e incidencias con gravedad, fragmento, problema y corrección. Sin puntuaciones.
 ```
 
 ### → integrador
 
 ```
-Beat: stable_id=[8hex] seq=[NNNN] parent_id=[8hex]
-Leer: draft.md sección localizada por stable_id, JSON validador adjunto
-Escribir: reemplazar la sección "## <stable_id> [<seq>]" en draft.md
-Hilo: [nombre] (stable_id: [8hex]) - época, ubicación, tono propio
+Escena: stable_id=[8hex] hilo=[stable_id: 8hex] — época, ubicación, tono propio
 Tipo de capítulo: [exclusivo | puente | espejo]
-Mantener acción nuclear del beat; aplicar mecanica-prosa + estilo
-Conservar stable_id y seq sin cambios en el heading devuelto
-Estilo: [estilo_base] - cargar skill estilo-<nombre>
-{{#if estilo_secundario}}+ fusionar con estilo-<nombre>{{/if}}
-TODOS los beats ya escritos de la escena actual (prosa en draft.md, desde el primero) + siguientes tres del guion (siempre)
-{{#if espejo}}Beat contrario del otro hilo: [texto] — conservar el eco{{/if}}
-{{#if instruccion_usuario}}instruccion_usuario: [texto] — prioridad absoluta{{/if}}
+Incidencias concretas: [gravedad, fragmento, problema, corrección]
+Texto COMPLETO de las secciones solicitadas + ambos extremos de la transición (inline)
+Hilo y costuras: [contexto del bloque vecino si aplica]
+Contrato editorial inline (Obligatorio/Libre/Ejemplos); conservar stable_id, seq e hilo
+Sin herramientas ni cargas de skills; reparar el mecanismo en el tramo mínimo autorizado
+Salida: SOLO las secciones corregidas completas con ## <stable_id> [<seq>] — acción breve. Si falta alcance/contexto o el guion impide el arreglo → BLOQUEO: <decisión necesaria>
+{{#if instruccion_usuario}}instruccion_usuario: [texto] — alcance autorizado{{/if}}
 ```
 ### → memoria
 
@@ -306,7 +292,7 @@ Capítulo completado: cap-NN-slug
 Leer: capitulos/cap-NN/draft.md (completo), config.json, hilo(s) activo(s)
 Tareas:
   1. Por cada escena en el draft (en orden):
-     a. upsert-summary L1 en Qdrant (etiquetado por hilo)
+     a. upsert-summary L1 en Qdrant (etiquetado por hilo) con el stable_id canónico del guion: `upsert-summary --id <stable_id_escena> --nivel L1 --parent-id <capitulo> --seq <N> --hilo <stable_id_hilo>`. Nunca generes un ID L1.
      b. Actualizar dinámico de entidades con cambio inequívoco en la escena
      c. Detectar relaciones materializadas (nuevas, rotas, cambio de rol) y
         aplicarlas con neo4j.py upsert-relationship
@@ -316,9 +302,11 @@ Tareas:
   5. Auditoría Neo4j cross-hilo (skill auditoria-neo4j): detectar discrepancias
      residuales no corregibles desde el draft (relaciones que el grafo tiene
      pero el draft contradice). Esto es read-only.
-  6. Actualizar config.json: capitulos_completados++, hilos[].ultimo_capitulo
-  7. Devolver JSON con summaries, entidades, relaciones aplicadas,
-     discrepancias residuales.
+  6. Verificar el recorrido beat → L1 → L2 y la identidad posicional; reportar
+     discrepancias_qdrant separadas de discrepancias_neo4j.
+  7. Actualizar config.json: capitulos_completados++, hilos[].ultimo_capitulo
+  8. Devolver JSON con summaries, entidades, relaciones aplicadas,
+     discrepancias_qdrant y discrepancias_neo4j.
 ```
 
 ### → entidades
@@ -377,10 +365,12 @@ Output: Qdrant (upsert-entity) + fichas/<tipo>_<slug>.md
 | Acción | Dueño (quién TIENE que hacerlo) |
 |--------|--------------------------------|
 | Generar `stable_id` y asignar `seq` | **guionista** (director verifica en config) |
+| Preparar candidata, aceptar y sincronizar una escena | **director** vía `scripts/persistir-escena.py` |
 | Marcar ⬜🔄✅ en guion | **director** |
-| Escribir prosa | **escritor** |
-| Corregir prosa tras fallo | **integrador** |
-| Validar | **validador** (read-only, solo JSON) |
+| Escribir prosa | **escritor** (la devuelve; el director la persiste) |
+| Corregir prosa tras incidencia | **integrador** (devuelve secciones; el director ensambla y persiste) |
+| Validar | **validador** (read-only, solo JSON con hash) |
+| Conformidad humana y autorización de avance | **usuario**, recabada por el **director** |
 | Proponer plan de instancias `[D]` por capítulo-borrador | **guionista** modo `hilo-capitulo` (FASE 0.3, Checkpoint 1) |
 | Validar plan de instancias `[D]` y resultado | **director** + usuario (Checkpoints 1 y 2, FASE 0.3) |
 | Generar beats (lineales + `[D]` entretejidos) y agrupar en escenas | **guionista** modo `hilo-capitulo` (una sola pasada, FASE 0.3) |
@@ -391,7 +381,8 @@ Output: Qdrant (upsert-entity) + fichas/<tipo>_<slug>.md
 | Auditar beats, trenzado y rachas | **auditor-beats** (read-only) |
 | Publicar limpio | **director** en FASE 4 (vía `/publicar`) |
 | Crear entidades | **entidades** (Qdrant + `fichas/<tipo>_<slug>.md`) |
-| Actualizar Qdrant post-escena | **cronista** |
+| Actualizar Qdrant post-escena (summaries y entidades) | **cronista** |
+| Fijar `narrative_text` de beats aceptados | **director** vía `persistir-escena.py sincronizar` |
 | Actualizar Neo4j post-escena (relaciones) | **cronista** |
 | Compilar briefing de memoria | **memoria** |
 | Escribir `diseno-hilo.md` | **director** + skill `diseno-hilo` |

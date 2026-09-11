@@ -1,125 +1,107 @@
 ---
 name: validacion-cross-hilo
-description: Criterios de validación de coherencia entre hilos narrativos. Detecta contradicciones entre líneas temporales, duplicación de revelaciones y rupturas de continuidad cross-hilo. Úsalo en modo global de novelas multi-hilo.
+description: Criterios de validación de coherencia entre hilos narrativos. Detecta contradicciones entre líneas temporales, duplicación de revelaciones y rupturas de continuidad cross-hilo, con incidencias y gravedad. Úsalo en revisión editorial por escena o en modo global de novelas multi-hilo.
 ---
 
 # Skill: validacion-cross-hilo
 
 ## Cuándo usar
 
-El validador carga este skill en **modo global** cuando el proyecto es una novela multi-hilo. Se evalúa como un criterio adicional (criterio 7) en la dimensión `coherencia`.
+El validador carga este skill cuando el capítulo revisado tiene **dos o más hilos** (revisión por escena) o en **modo global** al cierre. También puede invocarse como auditoría de guion sobre las costuras ya ensambladas. No sustituye la revisión de la escena: añade los hallazgos de coherencia entre bloques de hilo como incidencias.
+
+Respeta el contrato del consumidor: en prosa se informa sobre el candidato y su hash; en auditoría de guion se devuelve diagnóstico sin exigir hash de candidata inexistente.
 
 ---
 
 ## Criterios de validación cross-hilo
 
 ### Criterio 1: Consistencia temporal
+
 **¿Los eventos de un hilo respetan lo establecido en otro hilo sobre la misma época/objeto?**
 
 Verificar:
-- Fechas: si el hilo-sumer establece que el sello se hizo en 2800 a.C., el hilo-sello no puede decir "hace 2000 años" (serían ~4400, no 2800)
-- Duraciones: si el hilo-sello dice que el ritual debía repetirse cada 414 años, el hilo-soma no puede decir 400
-- Edad de objetos: si la losa tiene 4800 años en 2026, en 1612 tenía ~4400, no "milenaria"
+- Fechas: si un hilo establece que el sello se hizo en 2800 a.C., otro hilo no puede decir "hace 2000 años" (serían ~4400).
+- Duraciones: si un hilo fija que el ritual debía repetirse cada 414 años, otro no puede decir 400.
+- Edad de objetos: si la losa tiene 4800 años en 2026, en 1612 tenía ~4400, no "milenaria".
 
-Score 1-10. Penaliza cada inconsistencia numérica en -2.
-
----
+Reportar cada inconsistencia con la cifra exacta y la fuente. Una contradicción factual es `corregir`; si exige reescribir canon ya aceptado, `bloqueante`.
 
 ### Criterio 2: Consistencia de objetos compartidos
+
 **¿Los objetos que aparecen en varios hilos mantienen propiedades y descripciones coherentes?**
 
 Verificar:
-- Descripción física: la losa es de basalto negro en Sumer, debe serlo también en 1612 y 2026
-- Propiedades: si en Sumer la losa emite frío, en 2026 también debe emitirlo
-- Estado: si en 1612 la losa está intacta, en 2026 no puede aparecer agrietada sin explicación
+- Descripción física: la losa es de basalto negro en un hilo; debe serlo también en los demás.
+- Propiedades: si en un hilo emite frío, en el otro también debe emitirlo.
+- Estado: si está intacta en un hilo, no puede aparecer agrietada en otro sin explicación.
 
-Score 1-10. -2 por cada contradicción en propiedades de objeto compartido.
-
----
+Cada contradicción en propiedades es `corregir`; cita el fragmento y la corrección.
 
 ### Criterio 3: Consistencia de personajes cross-hilo
-**¿Los personajes que aparecen en varios hilos mantienen coherencia?**
 
-Solo aplica a personajes que trascienden épocas (Naamah, la abadesa como retrato/ancestro).
+**¿Los personajes que aparecen en varios hilos mantienen coherencia de presencia y estado?**
+
+Solo aplica a personajes que trascienden épocas.
 
 Verificar:
-- Naamah sellada en Sumer → no puede aparecer libre en 1612 o antes de 2026
-- La abadesa muere en 1612 (o poco después) → no puede aparecer viva en 2026 salvo como fantasma/sombra
-- Si un personaje cambia (Naamah se fortalece, se debilita), el cambio debe ser coherente con los eventos de su hilo
+- Presencia: quien está sellado o muerto en un hilo no puede aparecer libre y vivo en otro sin mediación establecida.
+- Estado: si un personaje se fortalece o debilita, el cambio debe ser coherente con los eventos de su hilo.
+- La misma persona no puede estar en dos lugares incompatibles a la vez sin explicación.
 
-Score 1-10. -3 por cada contradicción de presencia/estado de personaje cross-hilo.
-
----
+Contradicción de presencia o estado: `corregir`; si rompe el canon estructural, `bloqueante`.
 
 ### Criterio 4: No duplicación de revelaciones
+
 **¿Una misma información se revela en dos hilos distintos como si fuera nueva?**
 
-Si el lector ya sabe X por el hilo-sumer, y en el hilo-soma Daniel "descubre" X, la narración debe reconocer que es información conocida. El personaje puede descubrirla (él no ha leído el hilo-sumer), pero el narrador no puede actuar sorprendido.
+Si el lector ya sabe X por un hilo y en otro el narrador presenta X como descubrimiento inédito, hay duplicación. El personaje puede descubrirla (no leyó el otro hilo); el narrador no puede actuar sorprendido.
 
 Verificar:
-- "Daniel nunca había oído ese nombre" → OK (él no lo sabe)
-- "Nadie en el mundo sabía que Naamah..." → FALSO (el lector ya lo sabe por Sumer)
-- "Era un secreto que había permanecido oculto durante milenios" → OK si es el personaje quien lo piensa, no el narrador omnisciente
+- "Daniel nunca había oído ese nombre" → correcto (él no lo sabe).
+- "Nadie en el mundo sabía que..." → incorrecto (el lector ya lo sabe).
+- "Era un secreto que había permanecido oculto durante milenios" → correcto si lo piensa el personaje, incorrecto como voz del narrador omnisciente.
 
-Score 1-10. -1 por cada duplicación no intencionada de revelación.
-
----
+Reportar la duplicación como `corregir` cuando la narración la presente como nueva; `opcional` cuando sea un eco deliberado mal calibrado.
 
 ### Criterio 5: Trazabilidad de conexiones
-**¿Las conexiones entre hilos son trazables y están documentadas?**
 
-Cada punto de conexión declarado en el guion (`**Puntos de conexión**`) debe ser verificable en el texto:
-- Si el guion dice "la losa viaja de Sumer a Hispania", debe haber un beat o capítulo que muestre o mencione ese viaje
-- Si dice "Daniel lee sobre el ritual", el texto de la tesis debe reflejar lo que el lector ya vio en Sumer
+**¿Las conexiones entre hilos son trazables y están soportadas por el texto?**
 
-Score 1-10. -2 por cada punto de conexión declarado pero no verificado en el texto.
+Cada punto de conexión declarado en el guion debe ser verificable en el texto o estar diferido con plazo:
+- Si el guion dice "la losa viaja de un lugar a otro", debe existir un beat o capítulo que lo muestre, mencione o difiera explícitamente.
+- Si un personaje lee sobre un ritual, el texto debe reflejar lo que el lector ya vio.
+
+Un punto de conexión declarado e incumplido sin plan: `corregir`; si es una elipsis deliberada y comprensible, `opcional` o ninguna incidencia.
 
 ---
 
-## Formato de evaluación
+## Formato de salida
 
-En el JSON de salida del validador, añadir un bloque `cross_hilo` dentro de `coherencia`:
+Devuelve incidencias con el contrato del validador, marcando el área cross-hilo:
 
 ```json
 {
-  "coherencia": {
-    "score": 7.2,
-    "criterios": {
-      "accion_completa": 8,
-      "continuidad_fisica": 7,
-      "consistencia_personajes": 8,
-      "logica_narrativa": 7,
-      "coherencia_entidades": 7,
-      "cross_hilo": {
-        "score": 6.5,
-        "criterios": {
-          "consistencia_temporal": 7,
-          "consistencia_objetos": 8,
-          "consistencia_personajes_cross": 6,
-          "no_duplicacion_revelaciones": 5,
-          "trazabilidad_conexiones": 7
-        },
-        "problemas": [
-          "La losa se describe como 'basalto' en Sumer pero como 'piedra caliza' en B_089",
-          "Revelación del origen de Naamah duplicada: B_045 (Sumer) y B_117 (Soma) la presentan como nueva"
-        ],
-        "sugerencias": [
-          "Unificar descripción de la losa: usar siempre 'basalto negro'",
-          "En B_117, cambiar el tono de 'descubrimiento' a 'confirmación' — Daniel confirma lo que el lector ya sabe"
-        ]
-      }
-    },
-    "contradicciones": [...],
-    "entidades_no_declaradas": [...],
-    "sugerencias": [...]
-  }
+  "incidencias": [
+    {
+      "beat_stable_id": "b117",
+      "area": "cross-hilo",
+      "gravedad": "corregir",
+      "fragmento": "La losa de piedra caliza...",
+      "problema": "El objeto se describe como basalto en el hilo A y caliza aquí.",
+      "correccion": "Unificar a «basalto negro» según el hilo A."
+    }
+  ]
 }
 ```
+
+- En prosa: el JSON acompaña al candidato y su `candidato_sha256`.
+- En auditoría de guion: diagnóstico sin candidato ni hash, con `stable_id` y evidencia.
 
 ---
 
 ## Reglas de prioridad
 
-1. **Contradicción factual** (fechas, propiedades) → bloquear el beat, requiere reescritura
-2. **Duplicación de revelación** → sugerencia fuerte, no bloquea el beat pero degrada la experiencia
-3. **Punto de conexión no trazable** → advertir, el director decide si añadir escena de transición o aceptar elipsis
+1. **Contradicción factual o de canon** (fechas, propiedades, presencia) → `corregir`; `bloqueante` si exige cambiar canon aprobado.
+2. **Duplicación de revelación** → `corregir` si la narración la presenta como nueva; nunca se compensa con una media.
+3. **Punto de conexión no trazable** → `corregir` si estaba fijado en el guion; `opcional` si el director puede decidir diferirlo.
+4. **Sin incidencias**: no emitir bloques de puntuación ni "todo correcto" extensos.

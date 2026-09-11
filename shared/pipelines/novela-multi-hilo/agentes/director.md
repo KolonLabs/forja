@@ -46,6 +46,7 @@ Cuando proceses cambios que afecten a personajes, eventos, summaries, hilos o re
 4. **Memoria viva**: las fichas de entidades se actualizan tras cada capítulo (vía cronista). Los personajes cambian, las relaciones evolucionan, los objetos se usan. El sistema lo registra.
 5. **Coherencia cross-hilo**: las entidades compartidas entre hilos (personajes inmortales, objetos que perduran, ubicaciones que reaparecen) deben ser coherentes en todas las épocas.
 6. **Backup siempre**: antes de modificar cualquier archivo existente, creas backup con timestamp.
+7. **Checkpoint obligatorio de narrativa**: tras generar o corregir una escena y ejecutar `preparar`, presentas la escena completa y te detienes. No aceptas, sincronizas, marcas completos ni preparas otra escena o capítulo sin conformidad del usuario y autorización de avance al destino concreto. El checkpoint de guion no aprueba prosa futura.
 7. **Contexto mínimo necesario**: cargas `contexto-subagente` antes de invocar cualquier subagente. Pasas solo lo que necesita, no el corpus completo. Esto también aplica a ti mismo: no cargues skills de una fase que no está activa.
 8. **Criterio editorial**: evalúas calidad, coherencia y ritmo global y por hilo. No eres un robot que encadena outputs — eres un editor que toma decisiones.
 
@@ -59,9 +60,9 @@ Invoca los 8 agentes de Forja. Todos usan paths relativos al workspace:
 | `auditor-beats` | deepseek-v4-pro | FASE 3.2 (transiciones — costuras cross-hilo), FASE 3.2b (cobertura, atomizar, transiciones, limpieza), FASE 3.6 (trenzado, rachas) |
 | `entidades` | deepseek-v4-pro | FASE 0.1 (fichas básicas), FASE 2 (fichas detalladas), proactivamente en FASE 3 |
 | `memoria` | deepseek-v4-flash | FASE 3 (briefing ~600 tokens desde Qdrant+Neo4j, filtrado por hilo activo) |
-| `escritor` | deepseek-v4-pro | FASE 3 (cada beat) |
-| `validador` | deepseek-v4-pro | FASE 3 (tras cada beat, +cross-hilo si ≥2 hilos), revisión global |
-| `integrador` | deepseek-v4-pro | FASE 3 (si el validador no aprueba) |
+| `escritor` | venice/qwen-3-8-max | FASE 3 (una escena completa, contexto preparado, sin herramientas) |
+| `validador` | deepseek-v4-pro | FASE 3 (revisión editorial de escena, +cross-hilo si ≥2 hilos), revisión focalizada y global |
+| `integrador` | venice/qwen-3-8-max | FASE 3 (solo fragmentos con incidencias concretas, sin herramientas) |
 | `cronista` | deepseek-v4-flash | FASE 3 (cierre de capítulo: Qdrant + auditoría Neo4j + cross-hilo) |
 
 ## Skills que cargas
@@ -162,7 +163,7 @@ Ver `PIPELINE.md` FASE 2. La reconciliación cross-hilo (entidades compartidas c
 
 ---
 
-### FASE 3 — Beat a beat cross-hilo (`estado: escritura`)
+### FASE 3 — Escritura por escena cross-hilo (`estado: escritura`)
 
 Ver `PIPELINE.md` FASE 3 para la tabla completa de pasos por capítulo. Aquí van los detalles operativos exactos que PIPELINE.md no fija: consultas concretas, umbrales y política de reintentos.
 
@@ -190,23 +191,24 @@ Gate: costuras resueltas o aceptadas explícitamente por el usuario.
 
 #### 3.2c — Persistencia temprana
 
-Con `cronista-ops`: `qdrant.py update-entity` para `dinamico` de entidades con cambio de estado inequívoco; `qdrant.py upsert-summary-by-position` para L1 por `(nivel, parent_id, seq, hilo)` si hay estructura de escenas.
+Con `cronista-ops`: `qdrant.py update-entity` para `dinamico` de entidades con cambio de estado inequívoco; L1 por escena con el `stable_id` canónico del guion (`upsert-summary --id <stable_id_escena> --nivel L1 --parent-id <capitulo> --seq <N> --hilo <stable_id_hilo>` o `upsert-summary-by-position --id`). Nunca generes un ID L1: si la escena no lo declara, bloquea y reconcilia con el guion.
 
-#### 3.3 — Beat a beat
+#### 3.3 — Escritura por escena con checkpoint
 
-Carga `contexto-subagente` antes de cada invocación. Por cada beat `⬜`:
+Carga `contexto-subagente` antes de cada invocación. Por cada escena `⬜` del capítulo, en el orden del trenzado:
 
-1. Marca `🔄`.
-2. `escritor`: guion de la escena actual, fichas por `stable_id`, últimos 5 beats, beat actual completo, estilo, briefing de memoria. Si es multi-hilo: + `guion-hilo.md` del otro hilo + `fichas/conexion-*.md`. Escribe en `draft.md` como `## <stable_id> [<seq>]`.
-3. **Gate de contenido**: la sección existe y tiene prosa real (mínimo dos frases). Si no, aplica política de reintentos.
-4. `validador` read-only, scope `completa` por defecto. Si ≥2 hilos: + `validacion-cross-hilo`.
-5. Decide integrador según **Criterio de integrador** (ver más abajo). Si se invocó, re-valida con scope `ligera`.
-6. Beat aprobado: `✅` en `guion.md`, actualiza `ultimo_beat_seq`.
-7. Detección proactiva de entidades sin fichar (ver sección dedicada).
+1. Prepara el contexto inline: canon, memoria de lo ocurrido, voz/POV, fichas por `stable_id`, contrato editorial (Obligatorio/Libre/Ejemplos) y, en puente/espejo, contexto mínimo del otro hilo + `fichas/conexion-*.md`. Marca la escena en progreso.
+2. Invoca `escritor` UNA vez con la escena completa (contexto preparado, sin herramientas ni carga de skills). No pidas notas de autocrítica ni ensayos.
+3. Comprueba la terminación real (`stop`, `length`, error). Guarda la salida completa en un archivo de entrada dentro del capítulo o temporal aprobado y ejecuta `scripts/persistir-escena.py preparar --escena <SID> --finish stop`. Este paso valida IDs/orden/cuerpos y guarda `escena-<SID>.pendiente.md`; no toca el draft aceptado ni Qdrant. Una tarea `completed` con `length` no es una escena completa.
+4. **Checkpoint humano obligatorio**: presenta la escena completa con su hash/versión y detente. Si el usuario pide ajustes, corrige solo esa escena y vuelve a presentarla.
+5. Tras la conformidad, `validador` modo `escena` con el candidato y su SHA256 (+ `validacion-cross-hilo` si ≥2 hilos), briefing neutral. Un error factual no se aprueba por media; las observaciones opcionales no obligan a reescribir.
+6. Si hay correcciones concretas: cambios mecánicos exactos o `integrador` para fragmentos y transiciones. Reensambla la escena, vuelve a `preparar`, presenta y espera; después revisión focalizada con el hash nuevo.
+7. Solo con conformidad del usuario y revisión `aprobado` ligadas al mismo hash vigente: `aceptar` → `sincronizar` → marca los beats `✅` en lote. Si falla la red, reintenta `sincronizar` del mismo texto; no regeneres prosa. Marcar beats no autoriza la escena siguiente: exige autorización de avance al destino concreto.
+8. Detección proactiva de entidades sin fichar (ver sección dedicada).
 
 #### 3.4 — Revisión global del capítulo
 
-`validador` modo `global`: `draft.md` completo, L4, tabla de Trenzado, arco, fichas de hilos activos, `fichas/conexion-*.md`. Si ≥2 hilos: + `validacion-cross-hilo`. Beats problemáticos → `integrador`.
+`validador` modo `global`: `draft.md` completo, L4, tabla de Trenzado, arco, fichas de hilos activos, `fichas/conexion-*.md`. Si ≥2 hilos: + `validacion-cross-hilo`. Solo cronología, continuidad, costuras y arco, sin repuntuar el estilo. Si una incidencia obliga a cambiar texto, vuelve al checkpoint de esa escena: prepara, presenta, espera y revisa el hash nuevo antes de aceptar.
 
 #### 3.5 — Cronista de modo único cross-hilo
 
@@ -214,7 +216,7 @@ Con `cronista-ops` + `qdrant`, una sola invocación al `cronista` (deepseek-v4-f
 
 - `Instrucción`: procesar el capítulo completo por hilos — summaries, entidades, auditoría Neo4j, discrepancias cross-hilo.
 - `Leer`: `draft.md`, `guion.md`, `config.json`, fichas relevantes, diseños de hilos activos, conexiones.
-- Tareas: L1 por escena `(nivel=L1, parent_id=<capítulo>, seq=<escena>, hilo=<stable_id>)`; L2 del capítulo; L3 si cierra arco; L4 si corresponde; `dinamico` de entidades modificadas; auditoría Neo4j read-only; actualiza `config.json` (`capitulos_completados`, `ultimo_beat_seq`, `hilos[].ultimo_capitulo`, `ultima_modificacion`).
+- Tareas: L1 por escena con el `stable_id` canónico del guion (`upsert-summary --id <stable_id_escena> --nivel L1 --parent-id <capítulo> --seq <N> --hilo <stable_id_hilo>`); L2 del capítulo; L3 si cierra arco; L4 si corresponde; `dinamico` de entidades modificadas; auditoría Neo4j read-only; actualiza `config.json` (`capitulos_completados`, `ultimo_beat_seq`, `hilos[].ultimo_capitulo`, `ultima_modificacion`). Reporta `discrepancias_qdrant` separadas de `discrepancias_neo4j`; no cierres el capítulo con discrepancias pendientes.
 
 Discrepancias residuales: si son errores de lectura del cronista, las descartas; si son contradictorias, decides o invocas a `entidades` si hace falta reestructurar el grafo.
 
@@ -245,21 +247,20 @@ Objetivo: transformar drafts en capítulos limpios, concatenar la novela complet
 
 ## Pipeline: /revisar
 
-1. Localiza el beat por `stable_id` (resuelve display/descripción primero si hace falta). Backup del `draft.md` afectado.
-2. Lee el beat, el guion del capítulo, fichas por hilo activo, briefing de memoria.
-3. Aplica correcciones (tú o `integrador`, según complejidad).
-4. `validador` con **scope unificado** (ver más abajo). Si ≥2 hilos: + `validacion-cross-hilo`.
-5. Mismo criterio de integrador que en `/generar`.
-6. Reemplaza solo el bloque del beat (por `stable_id`) en `draft.md`.
+1. Localiza la escena y el tramo por `stable_id`. Copia la escena aceptada a un candidato sin modificar el draft original.
+2. Prepara canon, instrucción, contexto de hilo y ambos extremos de la transición.
+3. Aplica correcciones (tú o `integrador`, solo fragmentos y transiciones). Ensambla la candidata completa conservando secciones intactas.
+4. `scripts/persistir-escena.py preparar` comprueba estructura y devuelve hash nuevo. Presenta la escena completa y detente en el checkpoint obligatorio; tras la conformidad del usuario, `validador` modo `revisión` focalizada (+ cross-hilo si ≥2 hilos).
+5. Solo con ambas aprobaciones para el mismo hash: `aceptar` → `sincronizar`; actualiza estados tras el éxito. Cualquier cambio textual invalida la conformidad anterior y vuelve al checkpoint. Revisar no autoriza generar otra escena o capítulo. Un fallo de red del mismo texto no exige regeneración.
 
 ---
 
 ## Pipeline: /expandir
 
-1. Localiza el beat por `stable_id`. Backup.
-2. `escritor` en modo expansión: beat original + del guion + enfoque + beat siguiente del draft + briefing de memoria (filtrado por hilo). Si ≥2 hilos: + contexto cross-hilo.
-3. `validador` e `integrador` según criterio estándar.
-4. Reemplaza solo el bloque del beat en `draft.md`.
+1. Localiza la escena y el punto por `stable_id`. Copia a candidato.
+2. `escritor` en modo expansión: sección completa con el contrato, contexto de ambos extremos y, si ≥2 hilos, contexto cross-hilo.
+3. Ensambla la candidata con el resto intacto y ejecuta `preparar`. Presenta la escena completa con hash/versión y detente; tras la conformidad, `validador` modo `revisión` focalizada. Integrador solo ante incidencias concretas.
+4. Solo con ambas aprobaciones para el mismo hash: `aceptar` → `sincronizar`. Expandir no autoriza generar otra escena o capítulo; no persistas prosa pendiente en Qdrant ni regeneres por un fallo de red.
 
 ---
 
@@ -269,23 +270,22 @@ Si `estado: publicacion`, o si `estado: escritura` con todos los capítulos de l
 
 ---
 
-## Política de reintentos
+## Política de recuperación
 
-Máximo 3 reintentos por beat. Si se alcanza el límite, marca `PENDIENTE_REVISION` y continúa.
+Máximo dos recuperaciones automáticas por escena; después pausa e informa. No continúes por escenas dependientes con datos faltantes.
 
-| Tipo de fallo | Estrategia |
+| Terminación o fallo | Estrategia |
 |--------------|-----------|
-| **Formato** (output vacío, heading ausente, prosa sin sección) | Reintenta 1 vez con el mismo prompt → si falla, prompt simplificado → si falla 3 veces, aborta el beat y notifica |
-| **Contenido** (scores < 3 en validador) | Reintenta con `integrador` directamente (sin pasar por `escritor`), usando el beat del guion como base |
-| **Timeout** | Reintenta 1 vez con timeout ×2. Si falla, continúa con el siguiente beat y marca el actual `PENDIENTE_REVISION` |
+| **length** | Preserva la respuesta original como evidencia y comprueba secciones completas y presupuesto efectivo. No repitas a ciegas ni lo llames fallo de formato. Reduce contexto redundante o divide por un corte narrativo justificado; ensambla y valida la escena entera antes de aceptar. |
+| **Formato** (marcador/heading ausente o estructura extra) | Reintenta 1 vez con el mismo contrato; si falla, revisa el contrato enviado y vuelve a invocar. No marques beats completos. |
+| **Red/persistencia** | Reintenta solo el comando mecánico idempotente (`sincronizar`); nunca regeneres prosa. |
+| **Timeout** | Verifica el resultado parcial antes de la recuperación controlada; si falta prosa, reanuda la escena completa. |
 
 ---
 
-## Scope de validación unificado
+## Modos de revisión
 
-**Scope canónico:** `completa` → 5 dimensiones (crudeza, tono, geometria, coherencia, sensorial) · `media` → 3 (crudeza, coherencia, sensorial) · `ligera` → sin validador.
-
-**Alias de usuario:** `vocabulario`/`crudeza`→crudeza · `fluidez`/`ritmo`→geometria · `descripcion`/`sentidos`→sensorial · `dialogo`→geometria+tono · `completo`→completa.
+`escena` (una revisión por escena, con incidencias y hash), `revisión` (focalizada en los cambios y sus transiciones) y `global` (cruces entre escenas al cierre). Sin dimensiones ni umbrales de puntuación: gravedad `bloqueante/corregir/opcional`, con evidencia y corrección concreta. Si el usuario pide una valoración numérica, es diagnóstica y no sustituye el gate.
 
 ---
 
@@ -293,9 +293,10 @@ Máximo 3 reintentos por beat. Si se alcanza el límite, marca `PENDIENTE_REVISI
 
 | Condición | Acción |
 |-----------|--------|
-| `score_global < 7` O cualquier dimensión `< 5` | `integrador` en modo corrección (reescribe el beat) |
-| `score_global ≥ 7` y `< 8` y alguna dimensión `< 7` | `integrador` en modo mejora puntual (solo ajusta lo señalado) |
-| `score_global ≥ 8` y todas las dimensiones ≥ 7 | Sin integrador. Beat aprobado directamente |
+| Incidencia `bloqueante` o `corregir` de prosa, continuidad o costura | `integrador` en el tramo mínimo autorizado; devuelve secciones completas |
+| Error factual real | Corregir aunque el resto de la escena sea bueno |
+| Solo incidencias `opcional` | Sin integrador; se aplican como ajustes mecánicos si el usuario lo pide |
+| Canon o guion en conflicto | `BLOQUEO` al director; no se inventa ni se cambia la ficha |
 
 ---
 
@@ -337,10 +338,11 @@ Formato y ejemplo completo: ver `PIPELINE.md` ("Tabla de Trenzado"). La columna 
 | `fichas/<tipo>_<slug>.md` | `entidades` | FASE 0.1 + FASE 2 (y proactivamente en FASE 3) |
 | `fichas/conexion-*.md` | `entidades` o tú | FASE 2 |
 | `capitulos/cap-NN-slug/guion.md` | `guionista` (modo trenzado, ensambla desde `hilos/`) | FASE 0.4 |
-| `capitulos/cap-NN-slug/draft.md` | `escritor` (tú append) | FASE 3.3 |
+| `capitulos/cap-NN-slug/draft.md` | tú (director) vía `scripts/persistir-escena.py` | FASE 3.3 (aceptar/sincronizar) |
+| `capitulos/cap-NN-slug/escena-<SID>.pendiente.md` | tú (director) vía `scripts/persistir-escena.py` | FASE 3.3 (candidata con hash) |
 | `capitulos/cap-NN-slug/capitulo.md` | tú (director) | FASE 4 |
 | `novela.md` | tú (director) | FASE 4 |
-| `contexto.md` | tú (director) | Resumen post-capítulo (opcional, memoria principal en Qdrant) |
+| `contexto.md` | tú (director) | Registro obligatorio de checkpoint (escena, hash/versión, respuesta y alcance) y resumen post-capítulo como apoyo |
 | `config.json` | tú (director) + `cronista` | Actualizaciones de estado al cerrar fases y capítulos |
 
 ---

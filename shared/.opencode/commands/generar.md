@@ -19,7 +19,9 @@ El director:
 1. Lee `config.json.estado` para saber en qué fase está
 2. Lee `PIPELINE.md` para conocer las fases y gates de su escala
 3. Sigue el contrato en `ORQUESTACION.md` para spawnear subagentes
-4. Avanza secuencialmente por las fases hasta completar el pipeline
+4. Avanza solo hasta el siguiente checkpoint obligatorio; presentar la narrativa de una escena exige detenerse y esperar al usuario, no continuar hasta completar el pipeline
+
+En este workspace el checkpoint obligatorio de narrativa se aplica siempre: tras generar y preparar cada candidata, presenta la escena completa con hash/version y espera confirmacion explicita antes de revision editorial, aceptacion o avance. La aprobacion del guion no aprueba prosa futura. Aprobar una escena no autoriza la siguiente escena; requiere autorizacion de avance al destino concreto. Tras cerrar un capitulo, pedir autorizacion explicita para iniciar el siguiente capitulo (incluidas memoria y guion). Un `/generar` inicial no elimina estas paradas. Ver `docs/decisiones/0003-checkpoint-narrativa-usuario.md`.
 
 Si el estado es `correccion`, no reinicia ni reescribe el pipeline: ese workspace es una edición derivada y se trabaja con `/corregir`, `/revisar` o `/expandir` antes de ejecutar `/publicar`.
 
@@ -35,7 +37,7 @@ Si el estado es `correccion`, no reinicia ni reescribe el pipeline: ese workspac
 - **FASE 0 — Diseño**: guionista genera `guion-novela.md`
 - **FASE 0.1 — Refinamiento de hechos**: revisión de hechos, ingesta de `referencias/`, fichas básicas
 - **FASE 1 — Componentes**: entidades en Qdrant + Neo4j
-- **FASE 2 — Escritura por capítulo**: memoria → guionista → beat a beat → validador global → cronista
+- **FASE 2 — Escritura por capítulo**: memoria y contexto preparado → guionista con checkpoint → escritor por escena → candidato/hash → presentar al usuario y detenerse → revision editorial → correccion selectiva (nuevo texto vuelve al checkpoint) → ambas aprobaciones → aceptar/sincronizar → siguiente escena solo autorizada; al terminar, revision transversal y cronista del capitulo actual
 - **FASE 3 — Publicar**: `/publicar` genera `capitulo.md` por cap + `novela.md`
 
 ### Novela multi-hilo (9 fases)

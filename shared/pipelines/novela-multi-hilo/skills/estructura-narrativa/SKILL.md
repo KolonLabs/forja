@@ -101,12 +101,12 @@ Un beat pertenece a **un** hecho (referencia de planificación en `guion-hilo.md
 - Cada hecho pertenece a un hilo específico
 - No se persiste como nivel en Qdrant; es trazabilidad, no unidad de prosa
 
-#### Beats (B_NNNN)
+#### Beats
 
-- Identificador de 4 dígitos, global a toda la novela: `B_0001`
-- Unidad mínima de narración — una acción concreta y narrable
-- Siguen las reglas del skill `beats-estructura`
-- Cada beat declara su hilo con `[Hilos: hilo-<slug>]`
+- Identidad: `stable_id` opaco, inmutable, global a la novela; el display `B_NNNN` se deriva de `seq` y nunca encabeza una sección (ADR 0017).
+- Unidad dramática con compromiso verificable — no una microacción ni un párrafo.
+- Siguen las reglas del skill `beats-estructura`.
+- Cada beat declara su hilo con `[Hilos: hilo-<slug>]`.
 
 ### Longitudes recomendadas
 
@@ -177,13 +177,13 @@ Sembrar pistas en un hilo que cobrarán sentido en otro hilo distinto:
 [hilo-b, H_0045]: otro personaje, en otra época, descubre ese mismo objeto.
 ```
 
-### Formato de párrafos — reglas obligatorias
+### Formato de párrafos — criterios de ejecución
 
-Estas reglas aplican a todo texto generado, independientemente del estilo, el tono del beat o el hilo.
+Estos criterios orientan la ejecución y la revisión; no son cuotas ni umbrales numéricos. El ancho de pantalla y el conteo de líneas no determinan la estructura.
 
 #### Diálogos en párrafos independientes
 
-Cada intervención de diálogo va en su propio párrafo, separado del texto narrativo por una línea en blanco. Nunca embebido en medio de un bloque narrativo.
+Cada intervención de diálogo va en su propio párrafo, separado del texto narrativo por una línea en blanco. No se embebe en medio de un bloque narrativo.
 
 ```
 MAL:
@@ -197,11 +197,11 @@ Fernando se giró despacio.
 Lucía no respondió.
 ```
 
-Los diálogos ultracortos (`—Más.`, `—No pares.`, `—Quieto.`) van siempre solos en su párrafo, sin narración en la misma línea.
+Los diálogos ultracortos (`—Más.`, `—No pares.`, `—Quieto.`) van en su propio párrafo; admiten atribuciones o acotaciones pertinentes sin límite por longitud, y no se les añaden gestos o silencios solo para separarlos.
 
-#### División de bloques narrativos largos
+#### División de bloques narrativos
 
-Cuando la narración cambia de foco (acción → sensación, sensación → reacción interna, un cuerpo → otro cuerpo, presente → recuerdo, **un hilo → otro hilo**), parte en un nuevo párrafo. Un bloque de más de 6-7 líneas sin corte probablemente fusiona focos que deberían estar separados.
+Cuando la narración cambia de foco (acción → sensación, sensación → reacción interna, un cuerpo → otro cuerpo, presente → recuerdo, **un hilo → otro hilo**), valora partir en un nuevo párrafo. Un bloque que dificulte seguir el foco o respirar la cadencia probablemente fusiona focos que conviene separar; no se decide por número de líneas.
 
 ```
 MAL (todo fundido):
@@ -226,24 +226,27 @@ Recordó la primera vez que alguien la había tocado así, sin preguntar.
 
 **Hecho = unidad de planificación.** Agrupa beats por intención dramática en el guion. No se persiste como nivel en Qdrant.
 
-**Escena = unidad real de agrupación, desde el guion.** Nace dentro del hilo en FASE 0.3, agrupando beats por coherencia de contexto — antes de que exista prosa. Se persiste como L1 en Qdrant solo al cerrar el capítulo con prosa real (FASE 3.5); mientras es capítulo-borrador, sin prosa, no se persiste en Qdrant.
+**Escena = unidad real de agrupación, desde el guion.** Nace dentro del hilo en FASE 0.3, agrupando beats por coherencia de contexto — antes de que exista prosa. Su resumen L1 se crea con el `stable_id` canónico de la escena del guion: la persistencia temprana (FASE 3.2c) puede adelantarlo y el cronista lo consolida al cerrar (FASE 3.5), pero nunca se inventa un ID. Mientras es capítulo-borrador, sin prosa, no se persiste narrativa en Qdrant.
+
+La prosa se escribe y se valida **por escena completa después del trenzado** (FASE 3, ADR 0019), con checkpoint humano por escena antes de aceptar y sincronizar.
 
 **La procedencia del hecho es irrelevante al agrupar beats en escenas.** Una misma escena puede contener beats de varios hechos del mismo hilo porque el hecho ya cumplió su función (planificar) y no existe en el momento de la agrupación. En un **capítulo puente**, cada escena es un bloque de hilo delimitado por `---`. En un **capítulo espejo**, las escenas de los dos hilos se alternan.
 
-### Beats (B_NNNN)
+### Beats
 
 Cada beat debe ser:
-- **Factual**: declara QUÉ ocurre físicamente — quién hace qué a quién
+- **Unidad dramática**: declara el acontecimiento, la decisión, el descubrimiento o la inferencia atribuida y su consecuencia; no una microacción
 - **Ordenado**: sigue el orden cronológico del hecho y del hilo
 - **Sin sensoriales**: temperatura, olfato, textura, emociones internas son del escritor
-- **Diálogo solo si es crítico de trama**: marcado con ⚡, máximo 1 por beat
+- **Sin microcoreografía**: gestos, posiciones, adverbios de modo y valoraciones son ejecución del escritor; el espacio y la utilería viven en la anotación y la cabecera de escena
+- **Literalidad justificada**: ⚡ solo para palabras exactas exigidas por el usuario o con función causal documentada; no es una cuota por beat
 
 ### Hechos (H_NNNN)
 
 Cada hecho debe tener:
 - **Propósito**: qué avanza en la trama o en el arco del hilo
 - **Hilo**: a qué hilo pertenece este hecho
-- **Beats**: mínimo 3-8 beats que formen una unidad dramática
+- **Beats**: los que la unidad dramática necesite para cubrir detonante, presión, cambio y consecuencia; sin mínimo ni máximo numérico
 - **Transición** (en planificación): cómo enlaza con el siguiente hecho (mismo hilo u otro hilo si es capítulo puente)
 
 ### Escenas
@@ -251,7 +254,7 @@ Cada hecho debe tener:
 Cada escena debe tener:
 - **Beats**: los beats agrupados en ella, con independencia del hecho de origen
 - **Coherencia de contexto**: mismo espacio, tiempo y cast; o corte explícito (cambio de hilo, elipsis temporal, cambio de POV)
-- **Tamaño razonable**: ni 1-2 beats ni >12 beats por escena
+- **Extensión**: la que pida la coherencia de contexto y la unidad dramática; sin mínimo ni máximo numérico de beats
 - **En multi-hilo**: respeta el límite de hilo — una escena no mezcla hilos
 
 ### Capítulos
