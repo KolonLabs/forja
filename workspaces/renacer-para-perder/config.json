@@ -1,0 +1,98 @@
+{
+  "titulo": "Renacer para perder",
+  "slug": "renacer-para-perder",
+  "tipo": "novela",
+  "escala": "novela-simple",
+  "estado": "escritura",
+  "estilo_base": "explicito",
+  "creado": "2026-09-07T13:31:20",
+  "ultima_modificacion": "2026-09-11T11:41:22",
+  "capitulos_completados": 4,
+  "ultimo_hecho_seq": 70,
+  "ultimo_beat_seq": 100,
+  "ultimo_escena_seq": 0,
+  "version_qdrant": "activo",
+  "version_neo4j": "activo",
+  "estilo_secundario": "thriller",
+  "logline": "Una mujer maltratada se rompe cuando su marido la prostituye para pagar una apuesta, y algo entra a través de la herida — renace como depredadora, pero el renacimiento es camino a la pérdida, y la semilla se transmite a su hija.",
+  "genero": "Thriller psicológico",
+  "subgenero": "Terror doméstico",
+  "tono": "Sombrío, opresivo, deniable",
+  "atmosfera": "Sofocante, inquietante, moderna",
+  "explicitud": "maximo",
+  "pov": "3ª limitada",
+  "extension_estimada": "80-100K palabras",
+  "capitulos_estimados": 66,
+  "antagonista_o_conflicto": "Daniel (marido, concejal de obra pública, corrupto, controlador, abusador) es el antagonista inicial — pero el conflicto central es el hambre (la herida que muerde, la entidad que entra a través de la ruptura). Elena lucha contra Daniel (inversión: de víctima a controladora), pero el conflicto real es contra el hambre (que escala, que no se satisface, que la consume). El ciclo es el antagonista final — nadie escapa, la semilla se transmite.",
+  "temas": [
+    "El hambre como herida — no puedes llenar un agujero hecho por ser devorada, devorando el mundo",
+    "El ciclo del abuso — se reproduce, nadie escapa, la familia reescena el matrimonio con roles invertidos",
+    "Inversión — de objeto a sujeto, de devorada a devoradora, de víctima a depredadora",
+    "Denegabilidad — todo es deniable, nunca nombrado, el lector decide qué creer",
+    "Renacimiento forzado — el renacimiento no es por elección, es impuesto, y es camino a la pérdida",
+    "Transmisión — la semilla se transmite, el ciclo continúa, la hija hereda"
+  ],
+  "referencias": [
+    "Otra vuelta de tuerca (Henry James) — denegabilidad, el lector decide",
+    "Hereditary (film) — el ciclo se reproduce, transmisión, horror familiar",
+    "Carrie (Stephen King) — la mujer maltratada se vuelve depredadora, descenso",
+    "Gone Girl (Gillian Flynn) — el lector es cómplice, la protagonista desciende"
+  ],
+  "restricciones": [
+    "Menores: absoluto — no contenido sexual con menores bajo ninguna circunstancia",
+    "Incesto: madre-hijos no físico durante la novela (influencia/mirada/reflejo, actos maternales de doble interpretación sensual/fraternal, sin acto sexual); contacto físico permitido más adelante como situación puntual justificada — poco antes de su muerte, cuando Elena pierde el control y usa a todos incluso a su familia (alcance: qué familiares, a decidir con el desarrollo); todos adultos, nunca menores. Sibling (Rodrigo-Pilar, epílogo): nunca físico — deniable, el lector puede imaginárselo por los precedentes con Elena pero queda en posibilidad que el lector decide. Fijación de Rodrigo: hacia su madre durante la novela (escarceos/provocaciones de tensión, sin contacto), hacia Pilar en el epílogo (sin relación sexual continua ni contacto)",
+    "Profanación (cuerpo usado después de muerte): dentro como horror interior (su conciencia moribunda sintiéndolo, sin poder actuar), no espectáculo externo",
+    "Entidad: nunca aparece, nunca nombrada, solo efectos (deniable)",
+    "Red: sin sectas ni aspectos esotéricos, normalizada desde el punto de vista de los personajes, solo el lector se percata de que no es normal"
+  ],
+  "protagonistas": [
+    {
+      "nombre": "Elena",
+      "deseo": "Sobrevivir en la jaula (inicialmente), luego: ascender, controlar, devorar (el hambre la empuja)",
+      "obstaculo": "Daniel (abuso, control), el hambre (escala, no se satisface, la consume)",
+      "arco": "De objeto (usada, ignorada) a sujeto que objetifica (depredadora, red) a objeto otra vez (usada, ignorada, en muerte) — el círculo ontológico. Renace (forzada, no por elección), asciende, controla, devora, muere sola en una multitud, transmite la semilla a Pilar."
+    }
+  ],
+  "personajes_clave": [
+    "Daniel (53, concejal de obra pública, corrupto, controlador, abusador) — el antagonista inicial, luego controlado por Elena (a través de su corrupción), no entiende, piensa que todavía está en control. En el epílogo, su adoración se transfiere a Pilar.",
+    "Pilar (31, auxiliar de enfermería, casada con Antonio, habla con su madre casi todos los días, sabe lo frágil que es) — la hija que hereda la semilla. En el epílogo, la adoración se transfiere a ella (Daniel, Rodrigo, Antonio), siente energía/hambre (no entiende), deriva comenzando (misma trayectoria que su madre, diferente inicio — no es maltratada).",
+    "Rodrigo (28, programador, relación estable con Raquel, desconectado del mundo de Daniel) — el hijo influenciado por Elena (promiscuidad observada por ella, desplazamiento hacia Raquel). En el epílogo, su fijación se reorienta hacia Pilar (escarceos/provocaciones de tensión pero sin relación sexual continua ni contacto).",
+    "Antonio (taxi propio, conoce el maltrato de Daniel a Elena desde la infancia — mismo barrio, nunca presenció episodios; sabe cómo la menosprecia, y de mayor ha visto a Daniel con otras mujeres fuera de casa, le importa poco; casado con Pilar, se conocen desde niños) — comienza como apoyo, luego cede a sugerencias de Elena (primeros signos de acólito). En el epílogo, su adoración se transfiere a Pilar (primer acólito de su red).",
+    "Raquel (26, estudiante de MBA, pareja de Rodrigo, hija del dueño de la empresa de logística) — personaje con personalidad e historia, la mujer hacia la que Rodrigo desplaza su deseo."
+  ],
+  "setting": "Época actual, localidad española (ayuntamiento, casa de Elena y Daniel, casas de Pilar y Rodrigo, empresa de logística del padre de Raquel). Moderno, sin aspectos esotéricos, el horror viste de diseñador.",
+  "reflexion_agente": {
+    "fortalezas": [
+      "Denegabilidad total — la entidad nunca aparece, el incesto es no físico/deniable durante la novela (el contacto madre-hijos, si ocurre, es puntual y al final, cuando la denegabilidad colapsa deliberadamente), la posesión nunca se confirma, la transmisión nunca se enuncia. El libro soporta lectura sobrenatural, psicológica, y social simultáneamente.",
+      "Círculo ontológico — Elena empieza como objeto (usada, ignorada), se convierte en sujeto que objetifica (depredadora, red), termina como objeto otra vez (usada, ignorada, en muerte). La misma imagen en ambos extremos.",
+      "Hambre como herida — el hambre no es de la entidad, es la herida. Treinta años siendo consumida hicieron un agujero; la entidad solo enseñó al agujero a morder. Justifica la insaciabilidad psicológicamente.",
+      "Ciclo de adicción — acto → duda → subidón → necesita más. La psicología correcta. El dispositivo de elipsis que se acortan encarna el descenso en la forma narrativa.",
+      "Familia reproduce matrimonio con roles invertidos — los hijos se convierten en lo que Elena fue (adoradores, explotables), Elena se convierte en lo que Daniel fue (el que toma). El ciclo no es solo temático, es estructural.",
+      "Detonante devastador — prostituida al amigo para pagar una apuesta (Daniel participa), degradación máxima, Elena se rompe, puerta se abre. La herida máxima es la objetificación máxima.",
+      "Muerte épica en sentido literario — muere sola en una multitud, usada después de la muerte sin que los presentes se den cuenta, últimos minutos lúcidos (horror, último pensamiento hacia Pilar). Escala + ironía + soledad.",
+      "Epílogo deniable y abierto — Pilar siente energía/hambre (no entiende), adoración se transfiere, escena explícita mostrando deriva, final abierto. El lector sabe, Pilar no."
+    ],
+    "riesgos": [
+      "Profanación (cuerpo usado después de muerte) es el último acantilado — si se muestra externamente como espectáculo, la imagen se come el tema. Mitigación: interioridad (su conciencia moribunda), no espectáculo.",
+      "Dimensión incestuosa (madre-hijos y sibling) es extrema — una de las pocas líneas casi universales. Mitigación: durante la novela, no física (influencia/mirada/reflejo, actos maternales deniables, sin acto sexual); el contacto madre-hijos, si ocurre, es puntual y al final (poco antes de la muerte, pérdida de control), como colapso deliberado de la denegabilidad (el horror se vuelve innegable), no habitual. Sibling (Rodrigo-Pilar): permanece no física (nunca contacto), deniable — el lector puede imaginárselo pero queda en posibilidad que decide. Rodrigo resiste su atracción hacia su madre.",
+      "Descenso de Elena puede perder simpatía del lector — mitigación: dispositivo de elipsis que se acortan, descenso gradual, complicidad del lector construida en el ascenso y luego hecha pagar.",
+      "Red puede volverse cartoon — mitigación: sin sectas ni aspectos esotéricos, normalizada desde personajes, solo lector ve que no es normal, devoción como amor enfermizo (personaje) pero manipulación (lector).",
+      "Arcos de los hijos pueden volverse props — mitigación: personajes con arcos propios, atracción sin entender, vidas normales afectadas, se sinceran con Elena, ella sugiere prácticas y la verbalización genera excitación.",
+      "Transmisión puede ser demasiado explícita — mitigación: no se anuncia, último pensamiento implícito, Pilar siente situación extraña, lector conecta, nunca se enuncia."
+    ],
+    "decisiones_usuario": [
+      "Título: 'Renacer para perder' — captura renacimiento (inversión, empoderamiento, similitud con fénix implícita) + pérdida (arco, ambigüedad, tragedia) + matiz 'no por elección' (implícito — el propósito del renacimiento es pérdida).",
+      "Entidad nunca aparece, nunca nombrada, solo efectos (deniable).",
+      "Incesto: madre-hijos no físico durante la novela (influencia/mirada/reflejo, actos maternales de doble interpretación, sin acto sexual); contacto físico permitido más adelante como situación puntual justificada (poco antes de su muerte, cuando Elena pierde el control y usa a todos incluso a su familia; alcance a decidir con el desarrollo); todos adultos. Sibling (Rodrigo-Pilar, epílogo): nunca físico, deniable (el lector puede imaginárselo por los precedentes con Elena, pero queda en posibilidad que el lector decide). Fijación de Rodrigo: hacia su madre (escarceos/provocaciones de tensión, sin contacto), hacia Pilar en el epílogo (sin relación sexual continua ni contacto).",
+      "Profanación: interioridad (su conciencia moribunda), no espectáculo externo.",
+      "Red: sin sectas ni aspectos esotéricos, normalizada desde personajes, solo lector ve que no es normal.",
+      "Hijos: personajes con arcos propios, atracción sin entender, vidas normales afectadas, se sinceran con Elena, ella sugiere prácticas y la verbalización genera excitación.",
+      "Transmisión: no se anuncia, último pensamiento implícito, Pilar siente situación extraña, lector conecta, nunca se enuncia.",
+      "Escala: novela-simple, una línea temporal, ~80-100K palabras, ~66 capítulos.",
+      "POV: 3ª limitada mayormente de Elena, con cambios estratégicos a otros personajes; epílogo con narrador acceso a emociones/pensamientos.",
+      "Estilo: explicito + thriller.",
+      "Explicitud: maximo (decidida en cada situación — explícita cuando sirve, sugerida cuando más importante).",
+      "Acto III (punto de inflexión, Bloque 3): Elena manipula conscientemente con objetivos pero NO atribuye su cambio a nada sobrenatural (racionaliza su capacidad como propia, '¿por qué no me di cuenta antes?'); el lector recibe anclas (ecos de H_0006: H_0019/H_0022/H_0028/H_0029) para asociarlo a lo sobrenatural nunca nombrado. Objetivo consciente de Elena (Bloque 3b): ya salió de la jaula — ahora es capricho, no supervivencia. Premio gordo (mundano): 'tener más' (dinero, cosas, estatus) + poder real desde la sombra (ella decide; Daniel es el cargo público, la cara; nadie lo sabe salvo Daniel, que cede, no entiende y jamás lo admitiría). Guinda (extra, no necesario): humillar a Daniel / verlo ceder. Debajo (deniable): el hambre — nada llena. En Acto III el poder es semilla (decide en lo suyo); 'decidir sobre la vida de otros' se materializa al consolidar (V+: red corrupta, miedo de Daniel; VI+: actos oscuros). Acceso en Acto III = información, no influencia sobre contactos (la desinhibición post-sexo — efecto del carisma — hace hablar a Daniel tras sesiones espectaculares y a contactos/devotos que se abren; la influencia directa sobre contactos es IV+). Hechos estratégicos (premio gordo/guinda): H_0019/H_0020/H_0021/H_0022/H_0028; puro hambre: H_0023/H_0024/H_0025/H_0026/H_0027. Para Actos IV+: consolidar poder/humillación de Daniel + elevar a los hijos (deniable, marco maternal: Rodrigo vía empresa de logística, Pilar vía hospital; más elevación = más dependencia = ciclo/transmisión). Estructura (Bloque 3c): hechos densos divididos (62→70) y trenzados en el día a día (no enumeración); comida familiar de los 6 (fin de semana, restaurante) como escenario recurrente del hilo familiar — Acto II aparecen las fricciones, Acto III se corrigen (Antonio y Raquel en la misma comida), Acto IV+ se comparten abiertamente. Corrección de fricción: Elena intuye la atracción de sus hijos (que no confiesan) y hace comentarios de 'suegra liberal' a Antonio/Raquel, reconfigurando deniablemente la sexualidad de las parejas (en Acto IV+ comparten abiertamente la excitación hacia Elena). Diferido: conexión de suegros de Rodrigo con red corrupta (decidir en desarrollo si aporta); suegros de Pilar = progenitor viudo único + cuñado opcional/implícito (fichas FASE 1); elementos del descenso Acto VI-VIII a definir ('hacer participar a su hijo' Rodrigo con suegros orquestado por Elena sin contacto madre-hijos, contacto madre-hijos puntual Track A, Elena pervierte consuegros)."
+    ]
+  }
+}
