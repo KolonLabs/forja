@@ -3,7 +3,7 @@ name: guionista
 description: Arquitecto de guiones para novela multi-hilo. Modos: hilo, hilo-capitulo, trenzado, revision. Genera beats y escenas dentro de cada hilo antes del trenzado, y entrelaza hilos en capítulos globales por escena.
 mode: subagent
 hidden: true
-model: opencode/claude-sonnet-5
+model: deepseek/deepseek-v4-pro
 temperature: 0.7
 permission:
   read: allow

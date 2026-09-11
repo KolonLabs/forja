@@ -1,84 +1,84 @@
 <!-- stable_id: 875d5366-4748-4425-8aa5-24f7f678becc -->
 
-# Helix Biopartners — Sede 22@
+# Helix — Nave del 22@
 
 **Tipo:** lugar
 **Proyecto:** canida-2
 **Slug:** helix-sede-22
-**Tags:** hilo-vidal, hilo-vega, barcelona, 22@, sede-corporativa, cross-hilo
+**Tags:** hilo-vidal, hilo-vega, barcelona, 22@, nave, cross-hilo
 
 ---
 
 ## FIJO
 
 ### Descripción general
-Sede de Helix Biopartners en el distrito 22@ de Barcelona. Dos áreas físicamente diferenciadas: el ala de I+D donde opera Marcos Soria con su equipo (acceso restringido, protocolos no compartidos con el exterior), y el ala donde trabaja el cuerpo de etólogos adiestradores con el programa terapéutico (condiciones óptimas, comunicación interna curada). La separación es deliberada: los etólogos nunca entran en contacto con el programa de modificación. Bajo Irene, el laboratorio de Soria es desmantelado y la sede se reorganiza en torno al modelo sin modificación genética. También acoge la auditoría de Vega.
+Nave industrial del distrito 22@ de Barcelona donde Tomás Vidal funda Helix y donde transcurre la era fundacional y la era Soria (cap-01, cap-02). Un único espacio de techo alto que aloja el área clínica —el corazón del proyecto: evaluación, curas y entrenamiento de los perros rescatados—, el pequeño laboratorio de analíticas (sangre, orina, heces) para el control rutinario de los animales, el despacho de Vidal y la mesa corrida del mediodía. No es un área veterinaria propia: Helix no tiene veterinarios en plantilla más allá de Irene y mantiene un acuerdo con dos veterinarios del barrio que aplican precio de protectora — el laboratorio resuelve lo leve y deriva lo que exige tratamiento. Con la llegada de Marcos Soria, el laboratorio se amplía para absorber las tareas de la CRO y se instala un lector de tarjetas que separa, dentro del mismo espacio ampliado, la zona de analíticas rutinarias (accesible a todos, por donde siguen pasando los perros de terapia) de la nueva zona de investigación (solo el equipo de Soria). De esa bifurcación interna salen los animales que entran en «evaluación adicional» y no vuelven al circuito clínico. En el futuro del hilo, bajo Irene, el laboratorio de Soria es desmantelado y el modelo se reorganiza sin modificación genética; la auditoría de Vega entra por aquí.
 
 ### Físico
-- **Dimensiones:** Dos plantas completas (5ª y 6ª) de un edificio de oficinas moderno en el 22@. Planta 5: administración, salas de reuniones, despachos directivos, área de etólogos adiestradores. Planta 6: I+D de Soria (acceso restringido), laboratorios, sala de servidores.
-- **Materiales predominantes:** Vidrio, acero, hormigón pulido, moqueta gris en oficinas, suelo vinílico en laboratorios. Mamparas de cristal que permiten ver sin oír.
-- **Iluminación:** Luz natural abundante — paredes cortina de vidrio en todo el perímetro. Iluminación LED regulable en oficinas. Luz blanca de laboratorio en el ala de I+D.
-- **Puertas:** Acceso principal con torno de tarjeta y recepción. Planta 6 (I+D): doble puerta con lector biométrico — solo Soria y su equipo tienen acceso. Puertas interiores de cristal con cerradura magnética.
-- **Ventanas:** Fachadas acristaladas norte y sur — vistas al skyline del 22@ y al mar en días claros.
+- **Dimensiones:** Nave industrial de una sola planta con techo alto en el 22@. Un espacio diáfano compartimentado con mamparas ligeras: área clínica (zona de perros, curas y evaluación), laboratorio (inicialmente un cuarto pequeño de analíticas, ampliado en la era Soria), despacho de Vidal y cocina-office con la mesa corrida.
+- **Materiales predominantes:** Hormigón visto, suelo pulido de nave industrial, mamparas de pladur y cristal en las zonas de trabajo, puertas metálicas. En el despacho, muebles funcionales de oficina barata.
+- **Iluminación:** Lucernarios y ventanales altos de nave — luz natural filtrada. Fluorescentes en el laboratorio. Luz blanca y plana en la zona de investigación de Soria.
+- **Puertas:** Acceso principal por portón de nave. En la era Soria, un lector de tarjetas en la puerta interior que separa la zona de investigación del resto del laboratorio ampliado — solo el equipo de Soria tiene acceso.
+- **Ventanas:** Ventanales altos orientados al este. Desde el despacho, la calle del 22@.
 
 ### Zonas
 
-#### Zona: Planta 5 — Recepción y administración
-- **Mobiliario específico:** Mostrador de recepción de Corian blanco, sofás de diseño en zona de espera, café de cortesía (cápsulas Nespresso), pantalla corporativa con el logo de Helix.
-- **Iluminación:** Luz natural diurna, LED cálido regulable.
-- **Sensorial dominante:** Olor a café, papel de oficina, moqueta nueva. Silencio corporativo roto por el tecleo del recepcionista.
-- **Posibilidades narrativas:** Primera impresión de visitantes e inversores. Aquí llega Vega para la auditoría. Aquí Irene recibe a los visitantes con una sonrisa calibrada.
+#### Zona: Área clínica
+- **Mobiliario específico:** Jaulones y camas de perro, mesa de curas, botiquín, material de adiestramiento, el microscopio de Irene.
+- **Iluminación:** Luz natural alta de nave; fluorescentes para las curas.
+- **Sensorial dominante:** Olor a perro, pienso, desinfectante suave. Uñas sobre el suelo pulido, ladridos lejanos.
+- **Posibilidades narrativas:** Evaluación conductual, curas, entrenamiento genérico de los perros. Aquí Irene diagnostica la sarna con un raspado y aplica los baños de sulfuro de cal; aquí los etólogos trabajan con Duna hasta que se deja tocar por más de una persona. Aquí revisa Irene el papeleo del circuito clínico y encuentra los animales que no volvieron.
 
-#### Zona: Planta 5 — Ala de etólogos adiestradores
-- **Mobiliario específico:** Espacio abierto con estaciones de trabajo, pizarra digital con el planning de perros y suscriptores, sala de reuniones acristalada para sesiones de seguimiento, pequeño almacén con material de adiestramiento.
-- **Iluminación:** Luz natural, ambiente relajado.
-- **Sensorial dominante:** Olor limpio, sin rastro de perro. Solo se trabaja con documentación y coordinación — los perros están en las casas de los suscriptores.
-- **Posibilidades narrativas:** Aquí es donde Vidal (retrospectivo) diseñaba el programa terapéutico original. Aquí Irene reorganiza el modelo. Los etólogos debaten casos, ignorantes del programa de modificación que opera en la planta de arriba.
+#### Zona: Laboratorio (analíticas + zona de investigación)
+- **Mobiliario específico:** Las máquinas de analíticas de siempre (sangre, orina, heces). Tras la ampliación de Soria: neveras de cultivos, campanas, equipos que nadie del área clínica sabría nombrar, junto a las máquinas de siempre.
+- **Iluminación:** Fluorescente. En la zona de investigación, luz blanca y plana, sin ventanas.
+- **Sensorial dominante:** Olor a etanol y reactivos; zumbido de neveras. El clic del lector de tarjetas.
+- **Posibilidades narrativas:** La bifurcación interna — los perros bajan a sus analíticas de siempre y algunos se derivan a la zona restringida con horarios, rutas y personas distintos, y no vuelven a subir. La noche en que Vidal cruza el laboratorio y sorprende a Soria cerrando papeles. La exclusión educada — «no hace falta que bajes, te lo subimos».
 
-#### Zona: Planta 6 — I+D (ala de Soria)
-- **Mobiliario específico:** Laboratorio de biología molecular completo — campanas de flujo, incubadoras, ultracongelador, equipos de electroforesis, secuenciador, sala de cultivos celulares. Despacho de Soria con cristalera tintada. Sala de reuniones blindada (sin ventanas al exterior ni al pasillo).
-- **Iluminación:** Luz blanca de laboratorio, intensidad regulable por zonas. Luz natural solo en el pasillo perimetral.
-- **Sensorial dominante:** Olor a etanol, medio de cultivo, ozono de los equipos electrónicos. Silencio de trabajo concentrado, roto por el pitido de los temporizadores.
-- **Posibilidades narrativas:** Aquí Soria desarrolla el vector AAV de segunda generación y los péptidos de vinculación modificados. Aquí se mantienen los protocolos que los etólogos nunca ven. Bajo Irene, esta ala entera es desmantelada y desinfectada antes de la auditoría de Vega. La sala blindada de reuniones es donde se tomaron las decisiones sin testigos.
+#### Zona: Despacho de Vidal
+- **Mobiliario específico:** Mesa funcional, papeles, el cuaderno de los casos.
+- **Iluminación:** Luz natural del ventanal; lámpara de sobremesa.
+- **Sensorial dominante:** Papel, café, silencio. Las cuentas encima de la mesa.
+- **Posibilidades narrativas:** Los números en rojo con Irene y la propuesta de la CRO. La entrevista a Soria. La defensa de Soria ante Irene («con esto llegamos a diez veces más clientes»). Los protocolos parciales que Vidal firma sin leer del todo y archiva sin decírselo a Irene.
 
-#### Zona: Planta 5 — Despacho de la dirección
-- **Mobiliario específico:** Mesa de despacho de madera clara, sillas de diseño, estantería con libros de biotecnología y fotos personales (Vidal con Duna; Irene con sus hijos, sin perros). Ventana de suelo a techo.
-- **Iluminación:** Luz natural con cortinas motorizadas. Lámpara de sobremesa de diseño.
-- **Sensorial dominante:** Cuero de la silla, café recién hecho, el perfume de Irene.
-- **Posibilidades narrativas:** Despacho de Vidal durante la fundación y crecimiento. Heredado por Irene tras su muerte. Aquí Irene negocia la auditoría de Vega. Aquí se decide el futuro de Helix.
+#### Zona: Mesa corrida / nave central
+- **Mobiliario específico:** La mesa larga del mediodía — pan, fiambre, café de puchero.
+- **Iluminación:** Luz natural alta de nave.
+- **Sensorial dominante:** Café, pan, conversaciones que se alargan.
+- **Posibilidades narrativas:** La noticia de Teo corre de boca en boca. La presentación de Soria al equipo — Irene escucha en silencio. El comentario sobre el técnico reubicado («le han subido el sueldo, está en otra cosa») — y nadie conecta nada. Los sábados de voluntarios cuando la nave se llena.
 
 ### Sensorial
-- **Olor principal:** Oficina nueva — moqueta, papel, café, productos de limpieza neutros. Sin olor a perro, sin olor a laboratorio.
-- **Olor secundario (planta 6):** Reactivos, medio de cultivo, ozono, el olor metálico del ultracongelador.
-- **Sonido ambiente:** Climatización silenciosa, tecleo, pasos amortiguados en moqueta, zumbido de neveras de laboratorio (planta 6).
-- **Sonidos puntuales:** El pitido del torno de acceso. El clic de la puerta biométrica de la planta 6. El tintineo de las tazas de café. La impresora del pasillo.
-- **Texturas al tacto:** Moqueta gruesa bajo los zapatos. Cristal frío de las mamparas. Superficie lisa de las encimeras del laboratorio. Frío del acero de los pasamanos.
-- **Temperatura del aire:** Climatización constante, 22-23°C. Planta 6 ligeramente más fría por los equipos de laboratorio.
-- **Luz y color:** Dominan los tonos claros — blanco, gris, beige, madera clara. Cristal transparente. En el ala de I+D, más blanco y acero. El logo de Helix en azul corporativo está en todas partes.
+- **Olor principal:** Perro, pienso, desinfectante suave, café de la mesa corrida.
+- **Olor secundario:** Etanol y reactivos cerca del laboratorio; en la zona de investigación, el olor frío de los cultivos.
+- **Sonido ambiente:** Uñas sobre el suelo, ladridos lejanos, murmullo de la mesa corrida, zumbido de neveras del laboratorio.
+- **Sonidos puntuales:** El clic del lector de tarjetas. El portón al abrirse. El teléfono cuando llega una derivación.
+- **Texturas al tacto:** Suelo pulido frío, pelo de perro en las manos, encimeras de formica, el metal de los jaulones.
+- **Temperatura del aire:** Cálida en el área clínica por los animales; fresca en el laboratorio.
+- **Luz y color:** Luz natural alta de nave, gris del hormigón, los colores vivos del material de adiestramiento; blanco fluorescente en el laboratorio.
 
 ### Ambiente
-- **Clima emocional:** Corporativo, pulcro, eficiente. En el ala de I+D, una capa de secreto bajo la eficiencia. Nadie alza la voz. Todo está diseñado para transmitir control.
-- **Sensación de espacio:** Amplio, luminoso, deliberadamente acogedor. Demasiado — el confort es una herramienta de relaciones públicas. La planta 6 es distinta: claustrofóbica a pesar de la luz, con el peso del secreto en cada puerta cerrada.
-- **Elementos simbólicos:** La puerta biométrica de la planta 6 — lo que separa el Helix público del Helix real. Las mamparas de cristal — transparencia aparente, aislamiento acústico real. El logo azul en cada esquina.
+- **Clima emocional:** Vocacional, desordenado, vivo — el olor a perro lo invade todo y el trabajo se siente en las manos. En la zona de investigación de Soria, una capa de secreto bajo la eficiencia: nadie alza la voz, todo suena a gestión razonable.
+- **Sensación de espacio:** Grande y abierto. El laboratorio ampliado es el único lugar donde el espacio se estrecha.
+- **Elementos simbólicos:** El lector de tarjetas — lo que separa el Helix de Vidal del Helix de Soria. La mesa corrida — la confianza de los primeros días. El cuaderno de Vidal — los casos que llegan a tiempo y los que no.
 
 ### Posibilidades narrativas
-- **Acciones que facilita:** Fundación y crecimiento de Helix (retrospectivo, hilo Vidal). Desarrollo del vector de Soria (retrospectivo). Separación deliberada entre etólogos e I+D. Desmantelamiento del ala de Soria bajo Irene. Auditoría de Vega (hilo Vega). Negociaciones y decisiones editoriales de Irene.
-- **Posibilidades sexuales:** Ninguna relevante en este espacio.
-- **Riesgos y amenazas:** Que la auditoría de Vega descubra lo que el desmantelamiento pretendía borrar. Que la separación entre plantas no sea tan estanca como parece. Que los registros de acceso revelen patrones.
-- **Tránsito:** Entrada por recepción (torno con tarjeta). Planta 5: acceso general para empleados. Planta 6: acceso restringido con biométrico — solo Soria y su equipo (bajo Vidal), luego nadie (tras desmantelamiento), luego Vega con permiso temporal (auditoría).
+- **Acciones que facilita:** Fundación y primer año (cap-01): la reunión fundacional, la sarna, Duna, Julián y Teo, Mateo y Nube, Reyes, los primeros contratos. La era Soria (cap-02): la CRO, la contratación, la ampliación del laboratorio, el lector de tarjetas, la bifurcación interna, la noche en el laboratorio, la grieta de Irene. Futuro del hilo: desmantelamiento del laboratorio bajo Irene y entrada de la auditoría de Vega (hilo-vega).
+- **Posibilidades sexuales:** Ninguna relevante.
+- **Riesgos y amenazas:** Que la bifurcación interna absorba a más perros sin dejar rastro. Que la confianza de la mesa corrida sea la coartada de Soria. Que el lector de tarjetas borre el rastro de los descartes.
+- **Tránsito:** El área clínica, la nave central y el despacho son de acceso libre para el equipo. La zona de investigación, solo con tarjeta — el equipo de Soria. Los perros de terapia entran y salen del laboratorio por la zona de analíticas rutinarias.
 
 ### Reglas del lugar
-- Acceso con tarjeta para todos los empleados. Planta 6 requiere biométrico adicional.
-- Prohibido fotografiar o grabar en la planta 6.
-- Los etólogos no acceden a la planta 6. Es una norma no escrita que todos conocen y nadie cuestiona.
-- La sala de reuniones blindada no existe en el plano oficial de la planta.
+- Los perros de terapia pasan por la zona de analíticas rutinarias; la zona de investigación es solo del equipo de Soria (lector de tarjetas).
+- El laboratorio resuelve lo leve y deriva lo que exige tratamiento a los veterinarios del acuerdo (precio de protectora).
+- La mesa corrida es sagrada: a mediodía, pan y fiambre, y las noticias corren de boca en boca.
+- En la era Soria, lo que ocurre en la zona de investigación no se comenta en la mesa corrida — norma no escrita que todos conocen y nadie cuestiona.
 
 ---
 
 ## DINÁMICO
 
 ### Historial de eventos
-*(Sin entradas todavía)*
+- **2026-08-18 (corrección del director):** ficha adaptada a lo definido en los capítulos del hilo de Vidal (cap-01, cap-02). Modelo nave-era: la sede es la nave del 22@ y el laboratorio de Soria es la expansión del laboratorio de analíticas con lector de tarjetas, no un ala corporativa separada. La descripción anterior (edificio de oficinas de dos plantas con I+D en planta 6) queda descartada — los capítulos tienen preferencia. Si capítulos futuros definen una sede distinta (era Meridian/post-Meridian), esta ficha se actualizará en consecuencia.
 
 ### Hilos
 - hilo-vidal

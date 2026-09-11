@@ -12,7 +12,7 @@
 
 ## Descripción general
 
-Galga rescatada en el primer año de Helix. Emparejada con un paciente mayor en fase temprana de deterioro cognitivo. Su caso fue tan excepcional que se convirtió en la referencia que Vidal usó durante años para explicar lo que Helix podía hacer — y el caso al que volvía mentalmente cuando algo le inquietaba. Años después, Vidal descubre que Duna fue incorporada al programa de modificación de Soria, rotada y descartada cuando empezó a deteriorarse. Es el golpe concreto que convierte la sospecha difusa de Vidal en pregunta real.
+Galga rescatada en el primer año de Helix. Emparejada con un cliente mayor en fase temprana de deterioro cognitivo. Su caso fue tan excepcional que se convirtió en la referencia que Vidal usó durante años para explicar lo que Helix podía hacer — y el caso al que volvía mentalmente cuando algo le inquietaba. Años después, Vidal descubre que Duna fue incorporada al programa de modificación de Soria, rotada y descartada cuando empezó a deteriorarse. Es el golpe concreto que convierte la sospecha difusa de Vidal en pregunta real.
 
 ---
 
@@ -42,7 +42,7 @@ Galga rescatada en el primer año de Helix. Emparejada con un paciente mayor en 
 - **Olfato**: bueno, aunque menos desarrollado que su vista
 
 ## Dueño / Relación principal
-- **Vive con**: Vidal (originalmente emparejada con un paciente mayor en fase temprana de deterioro cognitivo; tras el fallecimiento del paciente, Vidal la adoptó)
+- **Vive con**: Vidal (originalmente emparejada con un cliente mayor en fase temprana de deterioro cognitivo; tras el fallecimiento del cliente, Vidal la adoptó)
 - **Tipo de vínculo**: compañera, caso fundacional, prueba viviente de lo que Helix podía hacer
 - **Personaje que la introdujo en la trama**: Rescatada en el primer año de Helix
 
