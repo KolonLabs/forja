@@ -3,7 +3,7 @@ name: validador
 description: Evalúa una escena completa de relato y señala correcciones concretas.
 mode: subagent
 hidden: true
-model: opencode/glm-5.2
+model: deepseek/deepseek-v4-pro
 temperature: 0.2
 permission:
   read: allow

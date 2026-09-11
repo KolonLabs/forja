@@ -3,8 +3,10 @@ name: escritor
 description: Escribe una escena operativa completa de relato a partir de sus beats.
 mode: subagent
 hidden: true
-model: deepseek/deepseek-v4-pro
+model: venice/qwen-3-8-max
 temperature: 0.75
+options:
+  maxCompletionTokens: 64000
 permission:
   read: allow
   glob: allow
