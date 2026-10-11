@@ -28,4 +28,4 @@ Corrige una edición derivada de un relato sin alterar el workspace publicado de
 4. Corrige la prosa beat a beat con el integrador y revalida cada cambio.
 5. Verifica que cada beat del guion aparezca una vez en el draft, registra alcance, beats/escenas y resultado en `correcciones.md`; mantiene el estado `correccion`.
 
-Cuando el usuario considere cerrada la edición, ejecuta `/publicar`. El director generará un nuevo `relato.md` y dejará el workspace en `finalizado` para que el hub pueda compilarlo como una edición nueva.
+Cuando el usuario considere cerrada la edición, ejecuta `/publicar`. El director generará un nuevo `relato.md` y dejará el workspace en `finalizado`; la edición se compila después con `/compilar`.

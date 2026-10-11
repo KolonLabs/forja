@@ -28,7 +28,7 @@ Registrar escena, hash/version, decision del usuario y alcance de avance en `con
 
 | Agente | Invocado por | Lee | Escribe | Invoca | Modelo (opencode · Claude Code) |
 |--------|--------------|-----|---------|--------|--------|
-| **director** | usuario `/generar`, `/revisar`, `/expandir`, `/publicar`, `/refinar-hechos`, `/validar-hechos`, `/revisar-guion` | `PIPELINE.md`, `MAPA.md`, `config.json`, `BRIEF.md`, `AGENTS.md`, `contexto.md`, guiones según fase | `config.json`, `contexto.md`, estados en guiones | guionista, escritor, validador, integrador, memoria, cronista, entidades, auditor-beats | `deepseek/deepseek-flash` · `claude-sonnet-5-5` |
+| **director** | usuario `/generar`, `/revisar`, `/expandir`, `/publicar`, `/compilar`, `/refinar-hechos`, `/validar-hechos`, `/revisar-guion` | `PIPELINE.md`, `MAPA.md`, `config.json`, `BRIEF.md`, `AGENTS.md`, `contexto.md`, guiones según fase | `config.json`, `contexto.md`, estados en guiones | guionista, escritor, validador, integrador, memoria, cronista, entidades, auditor-beats | `deepseek/deepseek-flash` · `claude-sonnet-5-5` |
 | **guionista** | director | Briefing + archivos del modo (ver tabla modos abajo) | Guiones según modo | — | `deepseek/deepseek-flash` · `claude-sonnet-5-5` |
 | **auditor-beats** | director | `guion.md` o `guion-novela.md`, `_actos.md`, `AGENTS.md` | — (read-only, diagnóstico al director) | — | `deepseek-flash` · `claude-sonnet-5-5` |
 | **escritor** | director | Contexto preparado inline, guion de escena, transicion, fichas y voz pertinentes | Nada; devuelve prosa con IDs, sin herramientas, completion maxima 64000 en opencode | — | `venice/qwen-3-8-flash` · `claude-opus-5-5` |
@@ -190,6 +190,7 @@ FASE 2 escritura (por capítulo)
 FASE 3 publicar
   por cada cap: /publicar → capitulos/cap-NN-slug/capitulo.md
   concatenar → novela.md
+  /compilar → publicacion/ (estado publicado)
 ```
 
 ---
@@ -347,6 +348,7 @@ Output: Qdrant (upsert-entity) + fichas/<tipo>_<slug>.md
 | Corregir prosa tras fallo | **integrador** |
 | Validar | **validador** (read-only, solo JSON) |
 | Publicar limpio | `/publicar` |
+| Compilar el libro y asignar `publicado` | `/compilar` (`scripts/compilar.ps1`) — nunca el director a mano |
 | Crear entidades | **entidades** (Qdrant + `fichas/<tipo>_<slug>.md`) |
 | Persistir narrativa aceptada / vectores de beats | **director**, via `scripts/persistir-escena.py` |
 | Actualizar summaries y dinamico al cierre | **cronista** |

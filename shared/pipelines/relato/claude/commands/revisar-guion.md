@@ -17,4 +17,4 @@ Trabaja solo en `.forja-transaccion/siguiente/`, conserva `config.json.estado = 
 
 Si `config.json.hechos_revision_pendiente` contiene hechos, la revisión de sus beats es prioritaria: repara solo los tramos que los realizan, pide el diagnóstico de `auditor-beats` sobre ese tramo y, en la misma transacción `guion`, retira de la lista los hechos ya cubiertos.
 
-En `escritura` o `correccion`, es auditoría: una corrección estructural se realiza con `/corregir estructura <instrucción>`. En `finalizado` o `publicado`, indica volver al hub y usar `/nueva-edicion <origen> <slug-edicion>`.
+En `escritura` o `correccion`, es auditoría: una corrección estructural se realiza con `/corregir estructura <instrucción>`. En `finalizado`, el manuscrito está cerrado: compílalo con `/compilar`; para cambiar el texto después, vuelve al hub y ejecuta `/nueva-edicion <origen> <slug-edicion>`, que exige la obra ya `publicado`. En `publicado`, indica volver al hub y ejecutar `/nueva-edicion <origen> <slug-edicion>`.

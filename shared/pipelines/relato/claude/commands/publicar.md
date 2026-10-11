@@ -5,7 +5,7 @@ disable-model-invocation: true
 
 # /publicar — Relato
 
-Disponible solo en `escritura` o `correccion`. En `diseno` o `fichas`, detente: todavía no existe un draft completo. En `finalizado`, informa que el manuscrito ya está cerrado. En `publicado`, no modifiques el original: indica que debe volver al hub y usar `/nueva-edicion <origen> <slug-edicion>`.
+Disponible solo en `escritura` o `correccion`. En `diseno` o `fichas`, detente: todavía no existe un draft completo. En `finalizado`, informa que el manuscrito ya está cerrado y se compila con `/compilar`. En `publicado`, no modifiques el original: indica que debe volver al hub y usar `/nueva-edicion <origen> <slug-edicion>`.
 
 1. Ejecuta `pwsh -NoProfile -File scripts/relato-transaccion.ps1 -Accion Preparar -Operacion publicar` y trabaja solo en `.forja-transaccion/siguiente/`.
 2. Lee allí la secuencia completa de `E_XXXX`, sus beats y su `Salida` en `guion.md`. Exige que todos los beats estén `✅` y que `relato-draft.md` contenga un único marcador `<!-- ESCENA E_XXXX: ... | salida: ... -->` por escena, en el mismo orden y con la misma salida.

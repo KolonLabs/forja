@@ -165,7 +165,7 @@ Por cada escena del capítulo (todos sus beats a la vez):
 diseno → fichas → escritura → publicacion → finalizado
 ```
 
-`finalizado` es el estado terminal del workspace. `publicado` lo asigna solo `/compilar` (`scripts/compilar.ps1`), que exige `finalizado` o `publicado` como estado de entrada. El director nunca escribe `publicado`.
+`finalizado` es el último estado que escribe el director. `publicado` lo asigna solo `/compilar` (`scripts/compilar.ps1`), que exige `finalizado` o `publicado` como estado de entrada. El director nunca escribe `publicado`.
 
 **Bucle en FASE 2:** itera capítulo por capítulo. `config.json.capitulos_completados` avanza.
 
@@ -200,6 +200,7 @@ diseno → fichas → escritura → publicacion → finalizado
 - `/revisar B_NNNN [instrucciones]` — revisión puntual de un beat
 - `/expandir B_NNNN [instrucciones]` — expansión de un beat
 - `/publicar` — salida limpia (`capitulo.md` por capítulo + `novela.md`)
+- `/compilar [--epub] [--pdf]` — compila el libro en `publicacion/` y asigna `publicado` (`scripts/compilar.ps1`)
 
 ## Infraestructura
 

@@ -7,7 +7,7 @@ agent: director
 
 Solicitud recibida: $ARGUMENTS
 
-Disponible solo en `escritura` o `correccion`. En `diseno` o `fichas`, dirige a `/revisar-guion` o `/generar`. En `finalizado` o `publicado`, indica volver al hub y ejecutar `/nueva-edicion <origen> <slug-edicion>`.
+Disponible solo en `escritura` o `correccion`. En `diseno` o `fichas`, dirige a `/revisar-guion` o `/generar`. En `finalizado`, el manuscrito está cerrado: compílalo con `/compilar`; para cambiar el texto después, vuelve al hub y ejecuta `/nueva-edicion <origen> <slug-edicion>`, que exige la obra ya `publicado`. En `publicado`, indica volver al hub y ejecutar `/nueva-edicion <origen> <slug-edicion>`.
 
 Extrae un `B_XXXX`; si falta, pide esa referencia antes de modificar. Solo actúa si la `E_XXXX` correspondiente ya existe en el prefijo de `relato-draft.md`; una escena pendiente se genera antes con `/generar`.
 

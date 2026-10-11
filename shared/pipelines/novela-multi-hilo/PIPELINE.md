@@ -305,7 +305,7 @@ Por cada escena `⬜` del capítulo, en el orden del trenzado:
 diseno → diseno_hilos → hilos_beats → trenzado → fichas → escritura → publicacion → finalizado
 ```
 
-`finalizado` es el estado terminal del workspace. `publicado` lo asigna solo `/compilar` (`scripts/compilar.ps1`), que exige `finalizado` o `publicado` como estado de entrada. El director nunca escribe `publicado`.
+`finalizado` es el último estado que escribe el director. `publicado` lo asigna solo `/compilar` (`scripts/compilar.ps1`), que exige `finalizado` o `publicado` como estado de entrada. El director nunca escribe `publicado`.
 
 **Sub-estados y detección:** `config.json.estado` refleja el estado principal. Los sub-estados de diseño (`diseno`, `diseno_hilos`) comparten el valor `"diseno"` en el arranque inicial. El director detecta el progreso por:
 - `config.json.hilos[].estado` → `"pendiente"`: falta FASE 0.2
@@ -348,6 +348,7 @@ Los cuatro últimos son los que hacen a esta escala consciente de los hilos: def
 - `/revisar B_NNNN [instrucciones]` — revisión puntual de un beat (incluye cross-hilo si el capítulo tiene ≥2 hilos)
 - `/expandir B_NNNN [instrucciones]` — expansión de un beat
 - `/publicar` — salida limpia (`capitulo.md` por capítulo + `novela.md`), deja el workspace en `finalizado`
+- `/compilar [--epub] [--pdf]` — compila el libro en `publicacion/` y asigna `publicado` (`scripts/compilar.ps1`)
 
 `/corregir` no se inyecta en esta escala: contempla solo ediciones derivadas de relato.
 
