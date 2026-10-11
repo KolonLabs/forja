@@ -1,4 +1,7 @@
 node_modules/
+__pycache__/
+*.pyc
+tmp/
 
 # Las obras y los libros viven fuera del hub, cada obra con su propio git (ADR 0026).
 # Guarda por si una ruta antigua los recrea dentro.
