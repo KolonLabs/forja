@@ -3,6 +3,11 @@ __pycache__/
 *.pyc
 tmp/
 
+# Los secretos viven en ~/.forja/secretos.env (ADR 0029); nunca en un repositorio.
+.env
+*.env
+secretos.env
+
 # Las obras y los libros viven fuera del hub, cada obra con su propio git (ADR 0026).
 # Guarda por si una ruta antigua los recrea dentro.
 workspaces/

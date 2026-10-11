@@ -41,3 +41,4 @@ Este directorio conserva decisiones arquitectonicas y operativas que deben sobre
 | [0026](0026-obras-como-repositorios-independientes-fuera-del-hub.md) | Cada obra es un repositorio git propio fuera del hub, sin copias de seguridad automáticas, y se compila a sí misma con `/compilar`; el hub solo ensambla antologías. | Aceptada; rutas por defecto sustituidas por ADR 0027 |
 | [0027](0027-raiz-comun-forja-resultados.md) | Obras y publicados viven juntos en `Forja-resultados/`, hermana del hub (`FORJA_RESULTADOS`). | Aceptada |
 | [0028](0028-borradores-de-revision.md) | `/borrador` genera versiones limpias de revisión sin cambiar el estado: todo el relato confirmado, o un único capítulo de novela con sus escenas completas. | Aceptada |
+| [0029](0029-secretos-del-usuario.md) | Los secretos del usuario viven en `~/.forja/secretos.env`, fuera de los repositorios, y se leen solo con los helpers de `shared/scripts`. | Aceptada |

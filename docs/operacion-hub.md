@@ -143,6 +143,18 @@ Admite archivos Markdown y texto plano, incluidos de forma recursiva dentro de l
 
 Si hay varias historias o versiones incompatibles, el scaffolder pide elegir antes de generar un brief. Con una candidata clara, usa la fuente como evidencia, no como escaleta final: propone un argumento más sólido, que puede reorganizar, ampliar o simplificar los elementos heredados. Lo que no esté respaldado se declara como propuesta razonada y se confirma antes de persistir. Tras confirmar la escala, los hechos finales deben aportar detonante, presión, cambio y consecuencia; así el guionista podrá derivar beats sin inventar el núcleo de la historia. Después solicita la reflexión editorial y confirmación habituales. Tras crear el workspace, elimina el paquete temporal salvo que se pida conservar el informe.
 
+## Secretos
+
+Las claves de servicios externos (por ejemplo, `ELEVENLABS_API_KEY`) viven en `~/.forja/secretos.env`, con una entrada `NOMBRE=valor` por linea y acceso solo para tu usuario. Nunca van en el hub ni en una obra: `.env` y `secretos.env` estan en todos los `.gitignore`.
+
+Los scripts las leen con `Get-ForjaSecreto <NOMBRE>` (PowerShell, `shared/scripts/secretos.ps1`) u `obtener_secreto("<NOMBRE>")` (Python, `secretos.py`). Una variable de entorno con el mismo nombre tiene prioridad. Para comprobar una clave sin ver su valor:
+
+```powershell
+python shared/scripts/secretos.py --comprobar ELEVENLABS_API_KEY
+```
+
+En Cowork u otro entorno sin acceso a tu perfil, comparte la carpeta con el archivo y define `FORJA_SECRETOS` con su ruta; usa alli una clave distinta, limitada y revocable. Las claves de los proveedores de opencode se gestionan con `opencode auth login` (ADR 0029).
+
 ## Formatos y requisitos de salida
 
 | Salida | Opcion | Requisitos |

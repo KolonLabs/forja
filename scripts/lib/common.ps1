@@ -54,6 +54,10 @@ function Initialize-ObraGit {
         "escena-*.pendiente.md"
         "publicacion/"
         ".publicacion-*/"
+        # Secretos: viven en ~/.forja/secretos.env (ADR 0029), nunca en la obra.
+        ".env"
+        "*.env"
+        "secretos.env"
     ) -join "`n"
     [System.IO.File]::WriteAllText((Join-Path $TargetDir ".gitignore"), $gitignore + "`n", [System.Text.UTF8Encoding]::new($false))
 

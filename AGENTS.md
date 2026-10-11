@@ -129,6 +129,7 @@ Para recuperar ideas desde notas, escaletas o guiones libres se usa `/importar-p
 - **Cada obra es un repositorio git propio** fuera del hub (ADR 0026). Los commits los decide la persona usuaria: ni scripts ni agentes hacen commits ni crean copias de seguridad.
 - **Cada workspace es autónomo**: tiene su propio `.opencode/` con agentes y comandos y su propio `.claude/skills/` con las skills (las leen opencode y Claude Code), inyectados según su escala. No conoce directorios superiores; su `opencode.json` desactiva los agentes del hub (ADR 0023).
 - **shared/ es inmutable** para workspaces creados. Las mejoras al pipeline se aplican manualmente desde el hub.
+- **Secretos**: nunca en un repositorio. Viven en `~/.forja/secretos.env` (o `FORJA_SECRETOS`) y se leen solo con `Get-ForjaSecreto` / `obtener_secreto` de `shared/scripts`, que no muestran valores (ADR 0029).
 - **Revisión previa a commit**: antes de `git commit` y `git push`, presentar el `git diff --stat` y un resumen breve de los cambios al usuario para su validación. No commitear si el usuario pide ajustes o marca un problema.
 
 ## Registros persistentes
@@ -143,7 +144,7 @@ Para recuperar ideas desde notas, escaletas o guiones libres se usa `/importar-p
 |-----------|-----------|
 | `shared/skills/` | 41 skills: invariantes + exclusivos por escala. Neutras: se inyectan en `.claude/skills/`, que leen opencode y Claude Code |
 | `shared/.opencode/agents/`, `shared/.claude/agents/` | 2 agentes fijos (memoria, cronista), uno por entorno; solo se inyectan en novelas |
-| `shared/scripts/` | Utilidades que se copian a `scripts/` en todas las escalas: `renumerar.ps1` (renumera definiciones `H_`/`E_`/`B_` y devuelve la tabla viejo → nuevo; la skill `renumeracion-ids` guía al LLM en la revisión de referencias) y la compilación de la obra (`compilar.ps1`, `borrador.ps1`, `publicacion-comun.ps1`, `build-epub.ps1`, `build-pdf.ps1`, `build.css`, `templates/forja-kdp.typ`), que el hub también usa para las antologías |
+| `shared/scripts/` | Utilidades que se copian a `scripts/` en todas las escalas: `renumerar.ps1` (renumera definiciones `H_`/`E_`/`B_` y devuelve la tabla viejo → nuevo; la skill `renumeracion-ids` guía al LLM en la revisión de referencias) y la compilación de la obra (`compilar.ps1`, `borrador.ps1`, `publicacion-comun.ps1`, `build-epub.ps1`, `build-pdf.ps1`, `build.css`, `templates/forja-kdp.typ`), que el hub también usa para las antologías, y la lectura de secretos (`secretos.ps1`, `secretos.py`; ADR 0029) |
 | `shared/GUIA.md` | Guía de decisión por defecto (relato). Si la escala define `shared/pipelines/<escala>/GUIA.md`, prevalece esa |
 | `shared/.opencode/commands/`, `shared/.claude/commands/` | 10 comandos por entorno: generar, revisar, expandir, corregir, publicar, compilar, borrador, refinar-hechos, revisar-guion, validar-hechos. `corregir` solo se inyecta en relato |
 | `shared/pipelines/<escala>/` | Agentes (`agentes/`), skills, scripts y overrides de comandos propios de escala + `PIPELINE.md` + `ORQUESTACION.md` |
