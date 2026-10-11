@@ -100,6 +100,17 @@ try {
 
     # Extremo a extremo en una copia del hub: dispatcher + creador de relato.
     $hubCopia = Join-Path $RunRoot "hub"
+    # Raíces por defecto (ADR 0027): Forja-resultados junto al hub; FORJA_RESULTADOS
+    # mueve ambas y FORJA_OBRAS/FORJA_PUBLICADOS prevalecen sobre ella.
+    $previas = @{ R = $env:FORJA_RESULTADOS; O = $env:FORJA_OBRAS; P = $env:FORJA_PUBLICADOS }
+    Remove-Item Env:FORJA_RESULTADOS, Env:FORJA_OBRAS, Env:FORJA_PUBLICADOS -ErrorAction SilentlyContinue
+    Assert-True ((Get-ObrasRoot -Hub $hubCopia) -eq [System.IO.Path]::GetFullPath((Join-Path $RunRoot "Forja-resultados\Obras"))) "obras por defecto en Forja-resultados\Obras"
+    Assert-True ((Get-PublicadosRoot -Hub $hubCopia) -eq [System.IO.Path]::GetFullPath((Join-Path $RunRoot "Forja-resultados\Publicados"))) "publicados por defecto en Forja-resultados\Publicados"
+    $env:FORJA_RESULTADOS = Join-Path $RunRoot "otra"
+    Assert-True ((Get-ObrasRoot -Hub $hubCopia) -eq [System.IO.Path]::GetFullPath((Join-Path $RunRoot "otra\Obras"))) "FORJA_RESULTADOS mueve la raíz común"
+    $env:FORJA_OBRAS = Join-Path $RunRoot "solo-obras"
+    Assert-True ((Get-ObrasRoot -Hub $hubCopia) -eq [System.IO.Path]::GetFullPath((Join-Path $RunRoot "solo-obras"))) "FORJA_OBRAS prevalece sobre la raíz común"
+    $env:FORJA_RESULTADOS = $previas.R; $env:FORJA_PUBLICADOS = $previas.P
     $obras = Join-Path $RunRoot "Obras"
     $env:FORJA_OBRAS = $obras
     New-Item -ItemType Directory -Force -Path $hubCopia | Out-Null

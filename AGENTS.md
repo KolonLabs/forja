@@ -1,6 +1,6 @@
 # Forja Hub — Sistema multi-agente de generación de ficción con workspaces aislados
 
-Forja Hub es un **contenedor de proyectos** de generación de ficción. No escribe ficción directamente: cada proyecto vive en su propio workspace fuera del hub (`FORJA_OBRAS`, por defecto `../Obras/<slug>`), con pipeline, agentes, skills, datos y repositorio git aislados (ADR 0026). El hub proporciona las herramientas para crear workspaces y compilar libros desde ellos.
+Forja Hub es un **contenedor de proyectos** de generación de ficción. No escribe ficción directamente: cada proyecto vive en su propio workspace fuera del hub (`FORJA_OBRAS`, por defecto `../Forja-resultados/Obras/<slug>`), con pipeline, agentes, skills, datos y repositorio git aislados (ADR 0026). El hub proporciona las herramientas para crear workspaces y compilar libros desde ellos.
 
 ## Arquitectura
 
@@ -55,11 +55,12 @@ Forja/
 │   ├── ruta-obra.ps1                  # Imprime la raíz de obras, la de una obra o la de publicados
 │   ├── qdrant.py                      # Multi-tenant (colecciones compartidas por proyecto)
 │   └── neo4j.py                       # Multi-tenant (grafo compartido por proyecto)
-└── (fuera del hub, ADR 0026)
-    ../Obras/                          # FORJA_OBRAS: un workspace y un repositorio git por obra
+└── (fuera del hub, ADR 0026 y 0027)
+    ../Forja-resultados/               # FORJA_RESULTADOS: todo lo que produce Forja
+    ├── Obras/                         # FORJA_OBRAS: un workspace y un repositorio git por obra
     │   ├── legacy/                    # Workspaces legacy (referencia)
     │   └── <slug>/                    # Cada obra compila su libro en publicacion/ con /compilar
-    ../Publicados/                     # FORJA_PUBLICADOS: antologías compiladas en el hub
+    └── Publicados/                    # FORJA_PUBLICADOS: antologías compiladas en el hub
 ```
 
 ## Agentes del hub
@@ -90,7 +91,7 @@ Los comandos de escritura (`/generar`, `/corregir`, `/revisar`, `/expandir`, `/p
 /nuevo-proyecto
 ```
 
-El scaffolder conduce un briefing editorial en 7 fases (gancho → personajes → mundo → voz → estructura → reflexión → persistir), con un pre-flight editorial obligatorio de hechos y brief (Fase 7.1) antes de crear el workspace. En Fase 5 determina la escala y construye los hechos narrativos. Al finalizar, construye un JSON con el brief y lo pipea a `scripts/new-project.ps1` por stdin. El script crea la obra en la raíz de obras (`FORJA_OBRAS`, por defecto `../Obras/<slug>`; `scripts/ruta-obra.ps1` la imprime) con los agentes, skills, scripts y archivos de su escala, su `.gitignore` y `git init` sin commits (ADR 0026).
+El scaffolder conduce un briefing editorial en 7 fases (gancho → personajes → mundo → voz → estructura → reflexión → persistir), con un pre-flight editorial obligatorio de hechos y brief (Fase 7.1) antes de crear el workspace. En Fase 5 determina la escala y construye los hechos narrativos. Al finalizar, construye un JSON con el brief y lo pipea a `scripts/new-project.ps1` por stdin. El script crea la obra en la raíz de obras (`FORJA_OBRAS`, por defecto `../Forja-resultados/Obras/<slug>`; `scripts/ruta-obra.ps1` la imprime) con los agentes, skills, scripts y archivos de su escala, su `.gitignore` y `git init` sin commits (ADR 0026).
 
 ## Cómo publicar y compilar
 

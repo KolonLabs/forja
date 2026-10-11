@@ -272,7 +272,7 @@ Presenta las conclusiones en el resumen final y aplica las precisiones de redacc
 
 #### 7.2 Validar slug
 
-Las obras viven fuera del hub, en la raíz de obras (`FORJA_OBRAS` o, por defecto, la carpeta `Obras` hermana del hub; ADR 0026). Comprueba que no exista la ruta que devuelve `.\scripts\ruta-obra.ps1 -Slug <slug>`. El slug `legacy` está reservado. Si ya existe, pide un slug alternativo.
+Las obras viven fuera del hub, en la raíz de obras (`FORJA_OBRAS` o, por defecto, `../Forja-resultados/Obras`; ADR 0026). Comprueba que no exista la ruta que devuelve `.\scripts\ruta-obra.ps1 -Slug <slug>`. El slug `legacy` está reservado. Si ya existe, pide un slug alternativo.
 
 #### 7.3 Construir brief JSON
 

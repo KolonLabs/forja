@@ -1,6 +1,6 @@
 # Forja - Sistema multi-agente de generacion de ficcion
 
-Forja es el hub que crea y compila proyectos de ficcion. No escribe manuscritos directamente: cada obra vive en un workspace aislado fuera del hub (por defecto en `../Obras/<slug>`), con su propio pipeline, agentes, skills y repositorio git.
+Forja es el hub que crea y compila proyectos de ficcion. No escribe manuscritos directamente: cada obra vive en un workspace aislado fuera del hub (por defecto en `../Forja-resultados/Obras/<slug>`), con su propio pipeline, agentes, skills y repositorio git.
 
 ## Flujo rapido
 
@@ -14,7 +14,7 @@ Si un relato publicado requiere cambios de contenido, crea primero una edición 
 
 ```text
 /nuevo-proyecto
-opencode --cwd "../Obras/<slug>"
+opencode --cwd "../Forja-resultados/Obras/<slug>"
 /publicar
 /compilar --epub
 /crear-libro <slug-antologia> <relato1> <relato2> [...] [--epub] [--pdf]
@@ -40,8 +40,8 @@ Los comandos de escritura (`/generar`, `/corregir`, `/revisar`, `/expandir`, `/p
 | `.opencode/` | Hub: agentes, skills de scaffolding y comandos. |
 | `shared/` | Fuente de verdad del pipeline de ficcion. |
 | `scripts/` | Infraestructura para crear workspaces y compilar libros. |
-| `../Obras/` (`FORJA_OBRAS`) | Fuera del hub: una carpeta y un repositorio git por obra. Los commits los decide la persona usuaria. |
-| `../Publicados/` (`FORJA_PUBLICADOS`) | Fuera del hub: antologías compiladas en Markdown y, si se solicitan, EPUB y PDF. |
+| `../Forja-resultados/Obras/` (`FORJA_OBRAS`) | Fuera del hub: una carpeta y un repositorio git por obra. Los commits los decide la persona usuaria. |
+| `../Forja-resultados/Publicados/` (`FORJA_PUBLICADOS`) | Fuera del hub: antologías compiladas en Markdown y, si se solicitan, EPUB y PDF. |
 
 Cada workspace nuevo recibe `GUIA.md`, una ayuda rápida para elegir el comando adecuado según el estado de la obra y el objetivo editorial.
 

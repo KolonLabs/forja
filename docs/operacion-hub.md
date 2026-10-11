@@ -4,7 +4,7 @@ Esta guia describe como operar el hub. Los workspaces son autonomos: este docume
 
 ## Antes de empezar
 
-Ejecuta `/nuevo-proyecto`, `/rehidratar-relato`, `/importar-proyecto`, `/nueva-edicion` y `/crear-libro` desde la raiz del hub. Las obras viven fuera del hub (ADR 0026): en `FORJA_OBRAS` o, si no esta definida, en la carpeta `Obras` hermana del hub; las antologias, en `FORJA_PUBLICADOS` o `Publicados`. `.\scripts\ruta-obra.ps1 [-Slug <slug>] [-Publicados]` imprime esas rutas. Abre un workspace existente con:
+Ejecuta `/nuevo-proyecto`, `/rehidratar-relato`, `/importar-proyecto`, `/nueva-edicion` y `/crear-libro` desde la raiz del hub. Todo lo que produce Forja vive fuera del hub, en `Forja-resultados/` junto al hub (`FORJA_RESULTADOS`; ADR 0026 y 0027): las obras en `Obras/` (`FORJA_OBRAS`) y las antologias en `Publicados/` (`FORJA_PUBLICADOS`). `.\scripts\ruta-obra.ps1 [-Slug <slug>] [-Publicados]` imprime esas rutas. Abre un workspace existente con:
 
 ```powershell
 opencode --cwd "$(.\scripts\ruta-obra.ps1 -Slug <slug>)"

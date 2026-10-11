@@ -4,17 +4,29 @@
 $ErrorActionPreference = "Stop"
 
 # ------------------------------------------------------------
-# Raíces de obras y publicados (ADR 0026)
+# Raíces de obras y publicados (ADR 0026, ADR 0027)
 # ------------------------------------------------------------
 
+function Get-ResultadosRoot {
+    # Todo lo que produce Forja vive fuera del hub, en una carpeta común:
+    # FORJA_RESULTADOS o, si no está definida, Forja-resultados junto al hub.
+    param([string]$Hub = $HubRoot)
+
+    $value = $env:FORJA_RESULTADOS
+    if ([string]::IsNullOrWhiteSpace($value)) {
+        $value = Join-Path (Split-Path -Parent $Hub) "Forja-resultados"
+    }
+    return [System.IO.Path]::GetFullPath($value)
+}
+
 function Resolve-ForjaRoot {
-    # Una raíz de contenido vive fuera del hub: la variable de entorno manda y,
-    # si no está definida, se usa la carpeta hermana del hub.
+    # Cada raíz admite su propia variable; si no está definida, cuelga de la
+    # carpeta de resultados.
     param([string]$Hub, [string]$Variable, [string]$Default)
 
     $value = [Environment]::GetEnvironmentVariable($Variable)
     if ([string]::IsNullOrWhiteSpace($value)) {
-        $value = Join-Path (Split-Path -Parent $Hub) $Default
+        $value = Join-Path (Get-ResultadosRoot -Hub $Hub) $Default
     }
     return [System.IO.Path]::GetFullPath($value)
 }

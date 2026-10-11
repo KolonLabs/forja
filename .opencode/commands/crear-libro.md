@@ -5,7 +5,7 @@ agent: bibliotecario
 
 # /crear-libro
 
-Ensambla una antología desde los manuscritos limpios (`relato.md`) de los relatos indicados. Las obras viven en la raíz de obras (`FORJA_OBRAS`; por defecto, la carpeta `Obras` hermana del hub) y el libro se escribe en la raíz de publicados (`FORJA_PUBLICADOS`; por defecto, `Publicados`). Ver ADR 0026.
+Ensambla una antología desde los manuscritos limpios (`relato.md`) de los relatos indicados. Las obras viven en la raíz de obras (`FORJA_OBRAS`; por defecto, `../Forja-resultados/Obras`) y el libro se escribe en la raíz de publicados (`FORJA_PUBLICADOS`; por defecto, `../Forja-resultados/Publicados`). Ver ADR 0026.
 
 Una novela o un relato suelto no pasan por aquí: se compilan dentro de su propia obra con `/compilar`.
 

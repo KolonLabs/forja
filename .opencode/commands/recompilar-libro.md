@@ -5,7 +5,7 @@ agent: bibliotecario
 
 # /recompilar-libro
 
-Regenera uno o varios formatos de una antología existente en la raíz de publicados (`FORJA_PUBLICADOS`; por defecto, la carpeta `Publicados` hermana del hub). No vuelve a ensamblar manuscritos ni cambia el estado de ninguna obra. El libro de una obra única se regenera dentro de la obra con `/compilar`.
+Regenera uno o varios formatos de una antología existente en la raíz de publicados (`FORJA_PUBLICADOS`; por defecto, `../Forja-resultados/Publicados`). No vuelve a ensamblar manuscritos ni cambia el estado de ninguna obra. El libro de una obra única se regenera dentro de la obra con `/compilar`.
 
 ## Sintaxis
 
