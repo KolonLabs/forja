@@ -1,4 +1,5 @@
-# crear-libro.ps1 -- Ensambla libros desde workspaces finalizados de Forja.
+# crear-libro.ps1 -- Ensambla antologias de relatos finalizados (ADR 0026).
+# Una obra unica se compila dentro de la obra con /compilar.
 
 param(
     [Parameter(Mandatory = $true)]
@@ -16,9 +17,11 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
-$ForjaRoot = Split-Path -Parent $PSScriptRoot
-$WorkspacesRoot = Join-Path $ForjaRoot "workspaces"
-$PublicadosRoot = Join-Path $ForjaRoot "publicados"
+$HubRoot = Split-Path -Parent $PSScriptRoot
+. (Join-Path $PSScriptRoot "lib\common.ps1")
+$WorkspacesRoot = Get-ObrasRoot
+$PublicadosRoot = Get-PublicadosRoot
+$BuildScripts = Join-Path $HubRoot "shared\scripts"
 $utf8NoBom = [System.Text.UTF8Encoding]::new($false)
 
 function Assert-KebabSlug {
@@ -29,59 +32,6 @@ function Assert-KebabSlug {
     }
 }
 
-function Find-Pandoc {
-    $command = Get-Command pandoc -ErrorAction SilentlyContinue | Select-Object -First 1
-    if ($command) {
-        if ($command.Path) { return $command.Path }
-        if ($command.Source) { return $command.Source }
-    }
-
-    foreach ($candidate in @(
-        $env:PANDOC_PATH,
-        $env:PANDOC,
-        "C:\Program Files\Pandoc\pandoc.exe",
-        "C:\Program Files (x86)\Pandoc\pandoc.exe",
-        "$env:LOCALAPPDATA\Programs\Pandoc\pandoc.exe",
-        "$env:LOCALAPPDATA\Pandoc\pandoc.exe",
-        "C:\ProgramData\chocolatey\bin\pandoc.exe",
-        "$env:USERPROFILE\scoop\shims\pandoc.exe"
-    )) {
-        if (-not $candidate) { continue }
-        $resolved = Resolve-Path -LiteralPath $candidate -ErrorAction SilentlyContinue
-        if ($resolved) { return $resolved.Path }
-    }
-
-    throw "No se encontro Pandoc. Instala Pandoc o define PANDOC_PATH."
-}
-
-function Invoke-EpubBuild {
-    param([string]$InputPath, [string]$OutputPath)
-
-    $pandoc = Find-Pandoc
-    $arguments = @(
-        $InputPath,
-        "--from", "markdown",
-        "--to", "epub",
-        "--metadata", "title=$Titulo",
-        "--metadata", "author=$Autor",
-        "--metadata", "lang=es",
-        "--toc", "--toc-depth=1",
-        "-o", $OutputPath
-    )
-    $cssPath = Join-Path $PSScriptRoot "build.css"
-    if (Test-Path -LiteralPath $cssPath -PathType Leaf) {
-        $arguments += "--css", $cssPath
-    }
-
-    Write-Host "Generando EPUB..."
-    $output = & $pandoc @arguments 2>&1 | Out-String
-    if ($LASTEXITCODE -ne 0 -or -not (Test-Path -LiteralPath $OutputPath -PathType Leaf)) {
-        $logPath = Join-Path (Split-Path -Parent $OutputPath) ("{0}.epub-build-error.log" -f [System.IO.Path]::GetFileNameWithoutExtension($OutputPath))
-        [System.IO.File]::WriteAllText($logPath, $output, $utf8NoBom)
-        throw "Pandoc no pudo generar el EPUB. Revisa $logPath"
-    }
-}
-
 function Get-FileSha256 {
     param([string]$Path)
 
@@ -89,8 +39,10 @@ function Get-FileSha256 {
 }
 
 Assert-KebabSlug $Libro "Libro"
-if (-not $Fuentes -or $Fuentes.Count -eq 0) {
-    throw "Debes indicar al menos un workspace fuente."
+# Una obra unica se compila dentro de la obra con /compilar (ADR 0026). El hub
+# solo ensambla antologias de varios relatos.
+if (-not $Fuentes -or $Fuentes.Count -lt 2) {
+    throw "Una antologia requiere al menos dos relatos. Para compilar una sola obra usa /compilar dentro de ella."
 }
 foreach ($source in $Fuentes) {
     Assert-KebabSlug $source "Workspace"
@@ -103,7 +55,7 @@ $sources = @()
 foreach ($source in $Fuentes) {
     $workspacePath = Join-Path $WorkspacesRoot $source
     if (-not (Test-Path -LiteralPath $workspacePath -PathType Container)) {
-        throw "Workspace '$source' no encontrado."
+        throw "Workspace '$source' no encontrado en $WorkspacesRoot."
     }
 
     $configPath = Join-Path $workspacePath "config.json"
@@ -121,11 +73,11 @@ foreach ($source in $Fuentes) {
     if ($config.estado -ne "finalizado") {
         throw "Workspace '$source' esta en estado '$($config.estado)'. /crear-libro solo admite fuentes finalizadas."
     }
-    if ($config.tipo -notin @("relato", "novela")) {
-        throw "Workspace '$source' tiene tipo '$($config.tipo)' no soportado. Debe ser relato o novela."
+    if ($config.tipo -ne "relato") {
+        throw "Workspace '$source' tiene tipo '$($config.tipo)'. Una antologia solo admite relatos; una novela se compila con /compilar dentro de la obra."
     }
 
-    $manuscriptName = if ($config.tipo -eq "novela") { "novela.md" } else { "relato.md" }
+    $manuscriptName = "relato.md"
     $manuscriptPath = Join-Path $workspacePath $manuscriptName
     if (-not (Test-Path -LiteralPath $manuscriptPath -PathType Leaf)) {
         throw "Workspace '$source' no contiene $manuscriptName. Ejecuta /publicar antes de compilar."
@@ -140,14 +92,6 @@ foreach ($source in $Fuentes) {
         ManuscriptSha256 = Get-FileSha256 $manuscriptPath
         Title = if ($config.titulo) { $config.titulo } else { $source }
     }
-}
-
-$sourceTypes = @($sources | ForEach-Object { $_.Config.tipo } | Sort-Object -Unique)
-if ($sourceTypes.Count -ne 1) {
-    throw "No puedes mezclar relatos y novelas en el mismo libro."
-}
-if ($sourceTypes[0] -eq "novela" -and $sources.Count -ne 1) {
-    throw "Un libro de novela requiere exactamente un workspace fuente. Para una antologia usa solo relatos."
 }
 
 New-Item -ItemType Directory -Force -Path $PublicadosRoot | Out-Null
@@ -176,10 +120,10 @@ try {
     [System.IO.File]::WriteAllText($bookMarkdown, $content.ToString(), $utf8NoBom)
 
     if ($Epub) {
-        Invoke-EpubBuild -InputPath $bookMarkdown -OutputPath (Join-Path $stageDir "$Libro.epub")
+        & (Join-Path $BuildScripts "build-epub.ps1") -InputMarkdown $bookMarkdown -OutputEpub (Join-Path $stageDir "$Libro.epub") -Titulo $Titulo -Autor $Autor
     }
     if ($Pdf) {
-        & (Join-Path $PSScriptRoot "build-pdf.ps1") -InputMarkdown $bookMarkdown -OutputPdf (Join-Path $stageDir "$Libro.pdf") -Titulo $Titulo -Autor $Autor -PdfFormat $PdfFormat -PdfEngine $PdfEngine
+        & (Join-Path $BuildScripts "build-pdf.ps1") -InputMarkdown $bookMarkdown -OutputPdf (Join-Path $stageDir "$Libro.pdf") -Titulo $Titulo -Autor $Autor -PdfFormat $PdfFormat -PdfEngine $PdfEngine
     }
 
     $artifacts = [ordered]@{
@@ -211,7 +155,7 @@ try {
         libro = $Libro
         titulo = $Titulo
         autor = $Autor
-        tipo = $sourceTypes[0]
+        tipo = "relato"
         creado = $timestamp
         actualizado = $timestamp
         fuentes = @(
@@ -241,7 +185,7 @@ try {
     # Update source states only after all requested artifacts have built successfully.
     foreach ($source in $sources) {
         $source.Config.estado = "publicado"
-        $source.Config.ultima_modificacion = $timestamp
+        $source.Config | Add-Member -NotePropertyName "ultima_modificacion" -NotePropertyValue $timestamp -Force
         Set-Content -LiteralPath $source.ConfigPath -Value ($source.Config | ConvertTo-Json -Depth 12) -Encoding UTF8
         $updatedSources += $source
     }

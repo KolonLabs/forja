@@ -110,13 +110,13 @@ const mockFetch = async (url, init) => {
   }
   // JSON neutral creado en memoria; ninguna delegacion a fetch ni a un servidor.
   return new Response(JSON.stringify({
-    id: 'mock-neutral', object: 'chat.completion', created: 0, model: 'qwen-3-8-max',
+    id: 'mock-neutral', object: 'chat.completion', created: 0, model: 'qwen-3-8-flash',
     choices: [{ index: 0, message: { role: 'assistant', content: 'OK' }, finish_reason: 'stop' }],
     usage: { prompt_tokens: 3, completion_tokens: 1, total_tokens: 4 },
   }), { status: 200, headers: { 'content-type': 'application/json' } });
 };
 const venice = createVenice({ apiKey: 'test-not-a-secret', fetch: mockFetch });
-const model = venice.languageModel('qwen-3-8-max');
+const model = venice.languageModel('qwen-3-8-flash');
 assert.equal(venice.specificationVersion, 'v3');
 assert.equal(model.specificationVersion, 'v3');
 const messages = [{ role: 'user', content: [{ type: 'text', text: 'Responde OK.' }] }];
@@ -124,7 +124,7 @@ const messages = [{ role: 'user', content: [{ type: 'text', text: 'Responde OK.'
 function assertPayload(capture, expectedLimit) {
   assert.equal(capture.body.max_completion_tokens, expectedLimit);
   assert.equal(typeof capture.body.max_completion_tokens, 'number');
-  assert.equal(capture.body.model, 'qwen-3-8-max');
+  assert.equal(capture.body.model, 'qwen-3-8-flash');
   assert.deepEqual(capture.body.messages, [{ role: 'user', content: 'Responde OK.' }]);
   const forbidden = new Set(['tools', 'toolchoice', 'paralleltoolcalls', 'functions',
     'functioncall', 'reasoningeffort', 'reasoning', 'disablethinking', 'enablethinking',

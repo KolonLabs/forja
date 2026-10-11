@@ -16,4 +16,4 @@ Disponible solo en `escritura` o `correccion`. En `diseno` o `fichas`, detente: 
 7. En ese manuscrito, sustituye cada marcador con `salida: separador` por `---` una única vez.
 8. Verifica que no quedan IDs de control, separadores duplicados ni contenido vacío. El helper exige además título y prosa real, no solo una cabecera, antes de ejecutar `pwsh -NoProfile -File scripts/relato-transaccion.ps1 -Accion Confirmar`. No escribas `relato.md` ni `config.json` vivos directamente.
 
-El hub asigna `publicado` al compilar.
+`publicado` lo asigna `/compilar` al compilar la obra.

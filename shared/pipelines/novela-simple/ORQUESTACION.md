@@ -10,7 +10,7 @@ Referencia para **director** y subagentes. Rutas en `MAPA.md`. Fases en `PIPELIN
 2. **Briefing de spawn:** `proyecto`, identidades opacas, seq local y modo. Para escritor/integrador, contexto inline ya preparado (sin ordenes de leer archivos o cargar skills). Los demas agentes reciben solo rutas pertinentes.
 3. **IDs:** asignar desde `config.json` → `ultimo_hecho_seq` / `ultimo_beat_seq`. Tras asignar, incrementar en el archivo que creó el ID. IDs globales `H_NNNN`, `B_NNNN` (4 dígitos, nunca se reinician).
 4. **Estados en guion:** `⬜` → `🔄` (al iniciar la narrativa) → `✅` solo tras conformidad del usuario, revision editorial del mismo hash y sincronizacion exitosa. El **director** actualiza los beats de la escena en lote; aprobar el validador por si solo no los completa.
-5. **Backup** antes de sobrescribir archivos con contenido existente.
+5. **Sin copias de seguridad:** no se crean copias con fecha; el historial es el git de la obra.
 6. **Contrato editorial comun:** `beats-estructura` y `contexto-subagente` rigen la formulacion e interpretacion: unidad dramatica, no microaccion; separar Obligatorio, Libre y Ejemplos opcionales en el contexto existente. Sin cuotas de beats ni division por puntuacion. Lo dicho, sabido, inferido y confirmado no se intercambia.
 7. **Escritura continua:** encabezados y cuerpos por beat se conservan para trazabilidad, no para reiniciar conversaciones. El director pasa inline la libertad de ejecucion y sus limites a escritor/integrador, sin herramientas. Una literalidad o guion incompatible vuelve al director antes de generar; no se fuerza la prosa. Ver `beats-estructura` y `mecanica-prosa`.
 
@@ -26,17 +26,17 @@ Conformidad humana, revision editorial por hash y permiso de avance son decision
 
 Registrar escena, hash/version, decision del usuario y alcance de avance en `contexto.md`; reanudar sin ese dato requiere preguntar, no deducir aprobacion de un review o archivo pendiente. Tras el cierre del capitulo, pedir autorizacion explicita para iniciar el siguiente capitulo antes de memoria/guion. Contrato completo: `PIPELINE.md`, gate de narrativa.
 
-| Agente | Invocado por | Lee | Escribe | Invoca | Modelo |
+| Agente | Invocado por | Lee | Escribe | Invoca | Modelo (opencode · Claude Code) |
 |--------|--------------|-----|---------|--------|--------|
-| **director** | usuario `/generar`, `/revisar`, `/expandir`, `/publicar`, `/refinar-hechos`, `/validar-hechos`, `/revisar-guion` | `PIPELINE.md`, `MAPA.md`, `config.json`, `BRIEF.md`, `AGENTS.md`, `contexto.md`, guiones según fase | `config.json`, `contexto.md`, estados en guiones | guionista, escritor, validador, integrador, memoria, cronista, entidades, auditor-beats | `deepseek/deepseek-v4-pro` |
-| **guionista** | director | Briefing + archivos del modo (ver tabla modos abajo) | Guiones según modo | — | `deepseek/deepseek-v4-pro` |
-| **auditor-beats** | director | `guion.md` o `guion-novela.md`, `_actos.md`, `AGENTS.md` | — (read-only, diagnóstico al director) | — | `deepseek-v4-pro` |
-| **escritor** | director | Contexto preparado inline, guion de escena, transicion, fichas y voz pertinentes | Nada; devuelve prosa con IDs, sin herramientas, completion maxima 64000 | — | `venice/qwen-3-8-max` |
-| **validador** | director | Candidato/hash, guion, canon y contexto pertinente; briefing neutral | Nada; JSON de incidencias editoriales, sin scores por beat | — | `deepseek/deepseek-v4-pro` |
-| **integrador** | director | Fragmentos afectados y ambos extremos de transicion inline; incidencias concretas | Nada; devuelve secciones corregidas, sin herramientas, completion maxima 64000 | — | `venice/qwen-3-8-max` |
-| **memoria** | director | `config.json`, especificación de entidades del cap | — (solo briefing de ~600 tokens) | — | `deepseek-v4-flash` |
-| **cronista** | director (cierre de cap) | `draft.md` completo, `config.json` | Qdrant (summaries L1-L4 + entidades `dinamico`), Neo4j (relaciones por escena), `config.json` (contadores) | — | `deepseek-v4-flash` |
-| **entidades** | director | Nombre, tipo, descripción de entidad + contexto narrativo | Qdrant (`upsert-entity`) + `fichas/<tipo>_<slug>.md` | — | `deepseek-v4-pro` |
+| **director** | usuario `/generar`, `/revisar`, `/expandir`, `/publicar`, `/refinar-hechos`, `/validar-hechos`, `/revisar-guion` | `PIPELINE.md`, `MAPA.md`, `config.json`, `BRIEF.md`, `AGENTS.md`, `contexto.md`, guiones según fase | `config.json`, `contexto.md`, estados en guiones | guionista, escritor, validador, integrador, memoria, cronista, entidades, auditor-beats | `deepseek/deepseek-flash` · `claude-sonnet-5-5` |
+| **guionista** | director | Briefing + archivos del modo (ver tabla modos abajo) | Guiones según modo | — | `deepseek/deepseek-flash` · `claude-sonnet-5-5` |
+| **auditor-beats** | director | `guion.md` o `guion-novela.md`, `_actos.md`, `AGENTS.md` | — (read-only, diagnóstico al director) | — | `deepseek-flash` · `claude-sonnet-5-5` |
+| **escritor** | director | Contexto preparado inline, guion de escena, transicion, fichas y voz pertinentes | Nada; devuelve prosa con IDs, sin herramientas, completion maxima 64000 en opencode | — | `venice/qwen-3-8-flash` · `claude-opus-5-5` |
+| **validador** | director | Candidato/hash, guion, canon y contexto pertinente; briefing neutral | Nada; JSON de incidencias editoriales, sin scores por beat | — | `deepseek/deepseek-flash` · `claude-sonnet-5-5` |
+| **integrador** | director | Fragmentos afectados y ambos extremos de transicion inline; incidencias concretas | Nada; devuelve secciones corregidas, sin herramientas, completion maxima 64000 en opencode | — | `venice/qwen-3-8-flash` · `claude-opus-5-5` |
+| **memoria** | director | `config.json`, especificación de entidades del cap | — (solo briefing de ~600 tokens) | — | `deepseek-v4-flash` · `claude-haiku-5-5` |
+| **cronista** | director (cierre de cap) | `draft.md` completo, `config.json` | Qdrant (summaries L1-L4 + entidades `dinamico`), Neo4j (relaciones por escena), `config.json` (contadores) | — | `deepseek-v4-flash` · `claude-sonnet-5-5` |
+| **entidades** | director | Nombre, tipo, descripción de entidad + contexto narrativo | Qdrant (`upsert-entity`) + `fichas/<tipo>_<slug>.md` | — | `deepseek-flash` · `claude-haiku-5-5` |
 
 ---
 
@@ -86,7 +86,7 @@ No modificar archivos
 | `plantilla-personaje` / `plantilla-lugar` / `plantilla-objeto` / `plantilla-animal` / `plantilla-arco` / `plantilla-evento` / `plantilla-organizacion` | automática | entidades | Campos obligatorios por tipo de entidad |
 | `estilo-explicito` / `estilo-contemporaneo` / `estilo-erotico` / `estilo-fantasia` / `estilo-noir` / `estilo-romantico` / `estilo-thriller` | al preparar contexto | director; extracto vigente inline a agentes narrativos | Voz, ritmo y registro; sin recargar skills por beat |
 | `estilo-prosa` | automática | director (crear/validar estilos) | Meta-skill: estructura que debe tener un skill de estilo |
-| `validacion-crudeza` | automática | validador | Evalúa vocabulario explícito, ausencia de eufemismos |
+| `validacion-crudeza` | automática | validador | Vocabulario explícito, eufemismos y mostrar-no-contar; en escena explícita, resúmenes o veredictos que sustituyan al acto son `corregir` |
 | `validacion-tono` | automática | validador | Evalúa coherencia tonal contra el estilo activo |
 | `validacion-geometria` | automática | validador | Evalúa ritmo, cadencia, fluidez de frases |
 | `validacion-coherencia` | automática | validador | Evalúa continuidad física, consistencia de personajes, lógica |
@@ -156,7 +156,7 @@ FASE 2 escritura (por capítulo)
 
   2.3 por cada escena (todos sus beats):
        2.3.1 contexto pertinente inline -> escritor sin herramientas
-             OUT: solo prosa con identidades; completion maxima 64000
+             OUT: solo prosa con identidades; completion maxima 64000 en opencode
        2.3.1b director: persistir-escena.py preparar (finish stop)
              OUT: candidata pendiente + SHA256; sin draft ni Qdrant
        2.3.1c director + usuario: presentar escena completa y DETENERSE
@@ -228,6 +228,7 @@ guion de la escena; fichas pertinentes; transicion previa y compromisos posterio
 Obligatorio / Libre / Ejemplos opcionales: separar compromisos de ejecucion.
 Interpretacion inline: escena continua, dicho/sabido/inferido/confirmado distintos;
 no convertir ejemplos en canon ni deducciones en listas o confesiones.
+Escena explícita: acto a acto con progresión y transiciones; reacción del POV; sensación concreta; prohibidas las sentencias que cuentan en lugar de mostrar.
 No duplicar contexto en rutas ni pedir cargar skills. No hay herramientas.
 Salida: marcador ESCENA y secciones ## <stable_id> [<seq>] — accion breve,
 solo prosa, sin notas rutinarias, JSON ni fences. Ante canon incierto: BLOQUEO.

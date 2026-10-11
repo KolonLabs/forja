@@ -246,6 +246,71 @@ function Assert-HechoContract {
     }
 }
 
+function Get-HechoMap {
+    param([string]$ActosPath)
+
+    $map = [ordered]@{}
+    if (-not (Test-Path -LiteralPath $ActosPath -PathType Leaf)) { return $map }
+    $actos = Get-Content -LiteralPath $ActosPath -Raw -Encoding UTF8
+    foreach ($match in [regex]::Matches($actos, '(?m)^-\s+(H_\d{4})\b[^\r\n]*?—[^\r\n]*$')) {
+        $map[$match.Groups[1].Value] = $match.Value.TrimEnd()
+    }
+    return $map
+}
+
+function Get-PendingHechos {
+    param($Config)
+
+    if ($Config.PSObject.Properties.Name -notcontains "hechos_revision_pendiente" -or $null -eq $Config.hechos_revision_pendiente) {
+        return @()
+    }
+    return @($Config.hechos_revision_pendiente | ForEach-Object { [string]$_ })
+}
+
+function Assert-HechoRevisionEnFichas {
+    # En fichas, un hecho modificado o añadido obliga a revisar sus beats antes de escribir:
+    # queda registrado en config.json.hechos_revision_pendiente hasta que una transacción `guion` lo cierre.
+    param([string]$CurrentActosPath, [string]$NextActosPath, $NextConfig, $CurrentConfig)
+
+    $current = Get-HechoMap -ActosPath $CurrentActosPath
+    $next = Get-HechoMap -ActosPath $NextActosPath
+    foreach ($id in $current.Keys) {
+        if (-not $next.Contains($id)) {
+            throw "En fichas no se puede retirar $($id): el guion depende de él."
+        }
+    }
+    $changed = @($next.Keys | Where-Object { -not $current.Contains($_) -or $current[$_] -ne $next[$_] })
+    $pendingNext = @(Get-PendingHechos -Config $NextConfig)
+    $pendingCurrent = @(Get-PendingHechos -Config $CurrentConfig)
+    foreach ($id in $pendingCurrent) {
+        if ($id -notin $pendingNext) {
+            throw "hechos no puede cerrar la revisión pendiente de $($id); ciérrala con una transacción guion."
+        }
+    }
+    $missing = @($changed | Where-Object { $_ -notin $pendingNext })
+    if ($missing.Count -gt 0) {
+        throw "Hechos modificados en fichas sin revisión registrada en config.json.hechos_revision_pendiente: $($missing -join ', ')."
+    }
+}
+
+function Assert-GuionCierraRevision {
+    param($NextConfig, $CurrentConfig)
+
+    $pendingNext = @(Get-PendingHechos -Config $NextConfig)
+    $pendingCurrent = @(Get-PendingHechos -Config $CurrentConfig)
+    $added = @($pendingNext | Where-Object { $_ -notin $pendingCurrent })
+    if ($added.Count -gt 0) {
+        throw "guion no puede añadir revisiones pendientes ($($added -join ', ')); solo las registra hechos."
+    }
+    if ($pendingNext.Count -lt $pendingCurrent.Count) {
+        $guionActual = Get-Content -LiteralPath (Join-Path $WorkspaceRoot "guion.md") -Raw -Encoding UTF8
+        $guionSiguiente = Get-Content -LiteralPath (Join-Path $NextRoot "guion.md") -Raw -Encoding UTF8
+        if ($guionActual -eq $guionSiguiente) {
+            throw "Cerrar una revisión de hechos exige revisar los beats afectados: guion.md no ha cambiado."
+        }
+    }
+}
+
 function Assert-StateTransition {
     param([string]$Operation, $NextConfig, $CurrentConfig)
 
@@ -256,8 +321,9 @@ function Assert-StateTransition {
     $nextState = [string]$NextConfig.estado
     switch ($Operation) {
         "hechos" {
-            if ($currentState -ne "diseno" -or $nextState -ne "diseno") {
-                throw "hechos solo puede confirmar ajustes diseno → diseno."
+            $permitido = ($currentState -eq "diseno" -and $nextState -eq "diseno") -or ($currentState -eq "fichas" -and $nextState -eq "fichas")
+            if (-not $permitido) {
+                throw "hechos solo puede confirmar ajustes diseno → diseno o fichas → fichas."
             }
         }
         "diseno" {
@@ -351,6 +417,9 @@ function Assert-Stage {
         Assert-ConfigCounters -NextConfig $nextConfig -CurrentConfig $currentConfig -Escenas @() -Operation $Operation
         Assert-StateTransition -Operation $Operation -NextConfig $nextConfig -CurrentConfig $currentConfig
         Assert-HechoContract -ActosPath (Join-Path $NextRoot "_actos.md") -NextConfig $nextConfig
+        if ([string]$currentConfig.estado -eq "fichas") {
+            Assert-HechoRevisionEnFichas -CurrentActosPath (Join-Path $WorkspaceRoot "_actos.md") -NextActosPath (Join-Path $NextRoot "_actos.md") -NextConfig $nextConfig -CurrentConfig $currentConfig
+        }
         return
     }
     $escenas = @(Get-RelatoGuionEscenas -GuionPath (Join-Path $NextRoot "guion.md"))
@@ -358,7 +427,14 @@ function Assert-Stage {
     Assert-StateTransition -Operation $Operation -NextConfig $nextConfig -CurrentConfig $currentConfig
 
     switch ($Operation) {
+        "guion" {
+            Assert-GuionCierraRevision -NextConfig $nextConfig -CurrentConfig $currentConfig
+        }
         "componentes" {
+            $pendientes = @(Get-PendingHechos -Config $nextConfig)
+            if ($pendientes.Count -gt 0) {
+                throw "No se puede pasar a escritura con hechos pendientes de revisión de beats: $($pendientes -join ', '). Revisa el guion con una transacción guion."
+            }
             Assert-DraftContract -Escenas $escenas -DraftPath (Join-Path $NextRoot "relato-draft.md")
             Assert-NonEmptyFile -Path (Join-Path $NextRoot "contexto_narrativo.md") -Name "contexto_narrativo.md"
         }

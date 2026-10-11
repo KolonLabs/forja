@@ -1,6 +1,7 @@
 ---
 name: estructura-narrativa
 description: Estructura narrativa y técnicas de escritura para novelas de una sola línea temporal. Úsalo cuando necesites generar, revisar o analizar la estructura de una novela simple.
+user-invocable: false
 ---
 
 # Estructura de Novela Simple

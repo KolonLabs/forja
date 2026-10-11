@@ -1,6 +1,6 @@
 # Guía de uso del workspace — Novela multi-hilo
 
-Esta guía responde **qué comando usar según tu objetivo**. Para el contrato detallado, consulta el archivo del comando en `.opencode/commands/`; para saber el punto exacto del proceso, consulta `config.json.estado` y `PIPELINE.md`.
+Esta guía responde **qué comando usar según tu objetivo**. Para el contrato detallado, consulta el archivo del comando en `.opencode/commands/` (opencode) o `.claude/commands/` (Claude Code); para saber el punto exacto del proceso, consulta `config.json.estado` y `PIPELINE.md`.
 
 ## Decisión rápida
 
@@ -13,6 +13,7 @@ Esta guía responde **qué comando usar según tu objetivo**. Para el contrato d
 | Corregir un fragmento concreto | `/revisar B_XXXX <instrucción>` | Conoces el beat que contiene el problema. | Para una pasada integral de toda la novela. |
 | Añadir desarrollo sin cambiar la acción | `/expandir B_XXXX <enfoque>` | Falta detalle sensorial, emocional o físico en un beat. | Para alterar la estructura o el resultado del beat. |
 | Generar el manuscrito limpio | `/publicar` | Todos los capítulos de la tabla de Trenzado están cerrados. | Para corregir prosa: primero usa `/revisar` o `/expandir`. |
+| Compilar el libro (EPUB/PDF) | `/compilar [--epub] [--pdf]` | El manuscrito está `finalizado`, o ya `publicado` y quieres regenerar formatos. | Para cambiar el texto: el manuscrito no se toca al compilar. |
 
 `/corregir` no está disponible en novela: es un comando de ediciones derivadas de relato.
 
@@ -30,6 +31,7 @@ _actos.md  (hilos → actos → hechos)
        ├─ escritura por escena        (tras el trenzado; cada escena se presenta y espera tu aprobación)
        │    └─ /revisar o /expandir   (si un fragmento concreto necesita cambios)
        └─ /publicar
+            └─ /compilar --epub   (libro en publicacion/)
 ```
 
 No edites `novela.md` ni los `capitulo.md` directamente: son la salida limpia. Las correcciones se hacen sobre el draft mediante los comandos anteriores.
@@ -64,6 +66,17 @@ Reglas que el sistema respeta y audita solo: máximo 2 hilos por capítulo, ning
 
 Cada hecho y cada beat tiene un `stable_id` opaco que **nunca cambia**. El número de posición de un beat es local a su escena; el de los hechos conserva la secuencia de planificación. Cuando uses `/revisar B_0034`, el sistema traduce ese número al `stable_id` real. Si insertas material y los números se desplazan, las referencias internas siguen funcionando.
 
+Para dejar consecutivos los `H_XXXX` visibles de un Markdown (`_actos.md`, `guion-hilo.md`), `scripts/renumerar.ps1` hace la parte mecánica:
+
+```text
+pwsh -File scripts/renumerar.ps1 _actos.md -LineStart "- H_"            # simula y muestra la tabla viejo -> nuevo
+pwsh -File scripts/renumerar.ps1 _actos.md -LineStart "- H_" -InPlace   # aplica
+```
+
+Solo cambia las líneas que **definen** un identificador (prefijo al inicio de línea, número y separador: ` —`, `:`, ` [` o ` |`; primer número con `-Start`). No toca `stable_id`, Qdrant ni las menciones en mitad de línea, notas u otros ficheros (rangos `[D · H_0091–H_0096]`, `guion-hilo.md`, `cola_d.md`). Los beats de los guiones de capítulo (`stable_id [seq]`) no usan este formato.
+
+Lo más cómodo es pedírselo al director: sigue la skill `renumeracion-ids`, que te enseña la simulación y revisa después las referencias con la tabla de cambios.
+
 ## Estados
 
 ```text
@@ -79,9 +92,10 @@ diseno → diseno_hilos → hilos_beats → trenzado → fichas → escritura �
 | `fichas` | Se completan entidades y conexiones cross-hilo | `/revisar-guion` antes de escribir |
 | `escritura` | Se escribe por escena, con checkpoint humano; costuras cross-hilo auditadas | `/revisar`, `/expandir` |
 | `publicacion` | Todos los capítulos cerrados | `/publicar` |
-| `finalizado` | Manuscrito listo | Compilar desde el hub |
+| `finalizado` | Manuscrito listo | `/compilar` |
+| `publicado` | Libro compilado en `publicacion/` | `/compilar` para regenerar formatos |
 
-`finalizado` es el estado terminal de este workspace. `publicado` lo asigna el hub al compilar el libro; no lo escribas a mano.
+`finalizado` es el último estado que escribe el director. `publicado` lo asigna `/compilar` al generar el libro; no lo escribas a mano.
 
 ## Infraestructura
 
@@ -94,20 +108,13 @@ python scripts/qdrant.py check
 python scripts/neo4j.py check
 ```
 
-## Comandos del hub: fuera de este workspace
+## Compilar el libro
 
-Vuelve a la raíz de Forja para estas operaciones:
-
-| Objetivo | Comando del hub |
-|---|---|
-| Crear un libro desde la novela terminada | `/crear-libro <slug-libro> <workspace>` |
-| Añadir o regenerar EPUB/PDF sin cambiar el texto | `/recompilar-libro <slug-libro> --epub/--pdf` |
-
-`/recompilar-libro` no cambia contenido. Las ediciones derivadas (`/nueva-edicion`) todavía no están disponibles para novelas.
+El libro se compila dentro de este workspace con `/compilar [--epub] [--pdf]`: deja el resultado en `publicacion/` y no modifica el manuscrito. El hub solo ensambla antologías de relatos. Las ediciones derivadas (`/nueva-edicion`) todavía no están disponibles para novelas.
 
 ## Antes de actuar
 
 1. Lee `config.json.estado` y `config.json.hilos[].estado`.
 2. Consulta `MAPA.md` para localizar el archivo correcto.
 3. Si dudas entre estructura y prosa, empieza por `/revisar-guion`; si el problema ya está en un beat, usa `/revisar`.
-4. Conserva los backups que crea el director y no modifiques archivos de salida limpia a mano.
+4. No modifiques archivos de salida limpia a mano. El pipeline no crea copias de seguridad: el historial es el git de la obra; haz commit cuando quieras un punto de restauración.

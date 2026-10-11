@@ -21,7 +21,7 @@ Corrige una edición derivada de un relato sin alterar el workspace publicado de
 
 ## Flujo
 
-1. Crea backup del draft y de los archivos que vaya a modificar.
+1. No crees copias de los archivos: el historial es el git de la obra.
 2. Ejecuta una validación global del draft contra `guion.md`, fichas y el manuscrito de referencia.
 3. Si detecta problemas estructurales, identifica `B_XXXX` y `E_XXXX` afectados, revisa el tramo de guion con el guionista y actualiza como una transacción el guion, los bloques de draft afectados y `contexto_narrativo.md` desde la primera escena afectada.
 4. Corrige la prosa beat a beat con el integrador y revalida cada cambio.

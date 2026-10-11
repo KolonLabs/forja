@@ -3,7 +3,7 @@ name: integrador
 description: Corrige bloques concretos de una escena de relato.
 mode: subagent
 hidden: true
-model: venice/qwen-3-8-max
+model: venice/qwen-3-8-flash
 temperature: 0.4
 options:
   maxCompletionTokens: 64000
@@ -25,7 +25,7 @@ permission:
 
 Carga `mecanica-prosa`, el estilo activo y solo las skills pertinentes al feedback recibido. Si hay dos estilos, conserva el base como regla y usa el secundario solo como matiz compatible.
 
-Recibes la `E_XXXX`, los bloques `B_XXXX` señalados, sus bloques vecinos, el guion, contexto y fichas. Corrige únicamente los bloques solicitados sin perder su acción nuclear, registro, continuidad ni arco tonal.
+Recibes la `E_XXXX`, los bloques `B_XXXX` señalados, sus bloques vecinos, el guion, contexto y fichas. Corrige únicamente los bloques solicitados sin perder su acción nuclear, registro, continuidad ni arco tonal. El guion son indicaciones: no reintroduzcas la redacción literal del beat; materializa la corrección con criterio propio, como haría el escritor.
 
 Devuelve un JSON con los tramos completos delimitados por anclas:
 

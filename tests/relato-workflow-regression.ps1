@@ -37,7 +37,7 @@ function Assert-Throws {
 }
 
 function Write-Config {
-    param([string]$Workspace, [string]$Estado, [int]$UltimoHecho = 2)
+    param([string]$Workspace, [string]$Estado, [int]$UltimoHecho = 2, [string[]]$Pendientes)
 
     $config = [ordered]@{
         slug = "fixture-relato"
@@ -49,6 +49,7 @@ function Write-Config {
         ultimo_beat_seq = 3
         ultimo_escena_seq = 2
     }
+    if ($null -ne $Pendientes) { $config.hechos_revision_pendiente = @($Pendientes) }
     Write-Utf8 -Path (Join-Path $Workspace "config.json") -Content ($config | ConvertTo-Json -Depth 8)
 }
 
@@ -107,6 +108,7 @@ $actosDos = @'
 '@
 $actosConMarcaD = $actosDos.Replace("H_0002 —", "H_0002 [D · H_0001–H_0002] —")
 
+$previousObras = $env:FORJA_OBRAS
 try {
     $workspace = Join-Path $RunRoot "workspace"
     $scripts = Join-Path $workspace "scripts"
@@ -133,6 +135,47 @@ try {
     & $helper -Accion Confirmar | Out-Null
     Assert-Equal "fichas" ((Get-Content -Raw -LiteralPath (Join-Path $workspace "config.json") | ConvertFrom-Json).estado) "diseño deja fichas"
     Assert-True (-not (Test-Path -LiteralPath (Join-Path $workspace "cola_d.md"))) "diseño no persiste una cola de recurrencias"
+
+    # Hechos en fichas: en una copia aislada, un hecho cambiado queda pendiente hasta que guion revise sus beats.
+    $revision = Join-Path $RunRoot "revision"
+    Copy-Item -LiteralPath $workspace -Destination $revision -Recurse
+    $helperRevision = Join-Path $revision "scripts\relato-transaccion.ps1"
+    $siguienteRevision = Join-Path $revision ".forja-transaccion\siguiente"
+    $actosDosCambiado = $actosDos.Replace("vuelve imposible ignorar la cita", "le obliga a acudir a la cita")
+
+    & $helperRevision -Accion Preparar -Operacion hechos | Out-Null
+    Write-Utf8 -Path (Join-Path $siguienteRevision "_actos.md") -Content $actosDosCambiado
+    Assert-Throws { & $helperRevision -Accion Confirmar } "un hecho cambiado en fichas exige registrar su revisión"
+    Write-Utf8 -Path (Join-Path $siguienteRevision "_actos.md") -Content $actosUno
+    Write-Config -Workspace $siguienteRevision -Estado "fichas" -Pendientes @("H_0002")
+    Assert-Throws { & $helperRevision -Accion Confirmar } "en fichas no se puede retirar un hecho"
+    Write-Utf8 -Path (Join-Path $siguienteRevision "_actos.md") -Content $actosDosCambiado
+    & $helperRevision -Accion Confirmar | Out-Null
+    $pendientes = @((Get-Content -Raw -LiteralPath (Join-Path $revision "config.json") | ConvertFrom-Json).hechos_revision_pendiente)
+    Assert-Equal "H_0002" ($pendientes -join ",") "hechos registra el hecho pendiente de revisión"
+
+    & $helperRevision -Accion Preparar -Operacion hechos | Out-Null
+    Write-Config -Workspace $siguienteRevision -Estado "fichas" -Pendientes @()
+    Assert-Throws { & $helperRevision -Accion Confirmar } "hechos no puede cerrar una revisión pendiente"
+    & $helperRevision -Accion Descartar | Out-Null
+
+    & $helperRevision -Accion Preparar -Operacion componentes | Out-Null
+    Write-Utf8 -Path (Join-Path $siguienteRevision "relato-draft.md") "# Draft — Fixture de relato`n"
+    Write-Utf8 -Path (Join-Path $siguienteRevision "contexto_narrativo.md") "# Contexto narrativo`n`n- Inicio."
+    Write-Config -Workspace $siguienteRevision -Estado "escritura" -Pendientes @("H_0002")
+    Assert-Throws { & $helperRevision -Accion Confirmar } "componentes no avanza con hechos pendientes de revisión"
+    & $helperRevision -Accion Descartar | Out-Null
+
+    & $helperRevision -Accion Preparar -Operacion guion | Out-Null
+    Write-Config -Workspace $siguienteRevision -Estado "fichas" -Pendientes @()
+    Assert-Throws { & $helperRevision -Accion Confirmar } "cerrar una revisión exige cambiar guion.md"
+    Write-Config -Workspace $siguienteRevision -Estado "fichas" -Pendientes @("H_0002", "H_0001")
+    Write-Utf8 -Path (Join-Path $siguienteRevision "guion.md") -Content $guionAbierto.Replace("decide salir pese al riesgo", "sale obligada por la cita")
+    Assert-Throws { & $helperRevision -Accion Confirmar } "guion no puede añadir revisiones pendientes"
+    Write-Config -Workspace $siguienteRevision -Estado "fichas" -Pendientes @()
+    & $helperRevision -Accion Confirmar | Out-Null
+    $pendientes = @((Get-Content -Raw -LiteralPath (Join-Path $revision "config.json") | ConvertFrom-Json).hechos_revision_pendiente)
+    Assert-Equal 0 $pendientes.Count "guion cierra la revisión pendiente"
 
     # Componentes: crea el prefijo vacío y cambia de estado junto con contexto.
     & $helper -Accion Preparar -Operacion componentes | Out-Null
@@ -202,25 +245,57 @@ Ana recibe una llamada y decide salir. En la calle descubre la trampa y cambia d
     & $helper -Accion Confirmar | Out-Null
     Assert-Equal "finalizado" ((Get-Content -Raw -LiteralPath (Join-Path $workspace "config.json") | ConvertFrom-Json).estado) "publicación finaliza el relato"
 
+    # Compilación en la obra (ADR 0026): solo Markdown, sin depender de Pandoc.
+    $compilar = Join-Path $scripts "compilar.ps1"
+    Copy-Item -LiteralPath (Join-Path $RepoRoot "shared\scripts\compilar.ps1") -Destination $compilar -Force
+    & $compilar | Out-Null
+    $publicacion = Join-Path $workspace "publicacion"
+    $libroMd = Get-Content -Raw -LiteralPath (Join-Path $publicacion "fixture-relato.md")
+    Assert-True ($libroMd -match "^# Fixture de relato\r?\n\r?\n## Amaro Alba\r?\n\r?\nAna recibe") "compilar antepone título y autor sin duplicar el título del manuscrito"
+    $manifiestoObra = Get-Content -Raw -LiteralPath (Join-Path $publicacion "manifest.json") | ConvertFrom-Json
+    Assert-Equal "relato.md" $manifiestoObra.manuscrito.archivo "el manifiesto apunta al manuscrito"
+    Assert-Equal (Get-FileHash -LiteralPath (Join-Path $workspace "relato.md") -Algorithm SHA256).Hash.ToLowerInvariant() $manifiestoObra.manuscrito.sha256 "el manifiesto congela el hash del manuscrito"
+    Assert-Equal "publicado" ((Get-Content -Raw -LiteralPath (Join-Path $workspace "config.json") | ConvertFrom-Json).estado) "compilar asigna publicado"
+    & $compilar -Titulo "Otro título" | Out-Null
+    Assert-True ((Get-Content -Raw -LiteralPath (Join-Path $publicacion "fixture-relato.md")) -match "^# Otro título") "compilar regenera una obra ya publicada"
+    Assert-True (@(Get-ChildItem -LiteralPath $workspace -Directory -Force -Filter ".publicacion-*").Count -eq 0) "compilar no deja carpetas temporales"
+    Write-Config -Workspace $workspace -Estado "escritura"
+    Assert-Throws { & $compilar | Out-Null } "compilar rechaza una obra sin terminar"
+    Assert-Equal "escritura" ((Get-Content -Raw -LiteralPath (Join-Path $workspace "config.json") | ConvertFrom-Json).estado) "un rechazo no cambia el estado"
+
     # Inyección: el relato recibe el override local y no infraestructura de novela.
     $HubRoot = $RepoRoot
     . (Join-Path $RepoRoot "scripts\lib\common.ps1")
     Assert-Throws { ConvertTo-RelatoHechoTexto -Texto "H_0002 [D · H_0001–H_0002]: pauta heredada" } "el creador de relato rechaza [D] en el brief"
     $injected = Join-Path $RunRoot "injected"
-    foreach ($directory in @(".opencode\agents", ".opencode\skills", ".opencode\commands")) {
+    foreach ($directory in @(".opencode\agents", ".claude\skills", ".opencode\commands")) {
         New-Item -ItemType Directory -Force -Path (Join-Path $injected $directory) | Out-Null
     }
     Inject-Pipeline -TargetDir $injected -Escala "relato" -EstiloBase "contemporaneo"
     Assert-True (Test-Path -LiteralPath (Join-Path $injected "scripts\relato-transaccion.ps1")) "inyección incluye helper local"
-    Assert-True (-not (Test-Path -LiteralPath (Join-Path $injected ".opencode\skills\qdrant"))) "relato no recibe qdrant"
-    Assert-True (-not (Test-Path -LiteralPath (Join-Path $injected ".opencode\skills\hechos-distribuidos"))) "relato no recibe el contrato [D] de novela"
-    Assert-True ((Get-Content -Raw -LiteralPath (Join-Path $injected ".opencode\skills\mecanica-prosa\SKILL.md")) -match "única prosa cohesionada") "inyección aplica override de mecánica"
+    Assert-True (-not (Test-Path -LiteralPath (Join-Path $injected ".claude\skills\qdrant"))) "relato no recibe qdrant"
+    Assert-True (-not (Test-Path -LiteralPath (Join-Path $injected ".claude\skills\hechos-distribuidos"))) "relato no recibe el contrato [D] de novela"
+    Assert-True ((Get-Content -Raw -LiteralPath (Join-Path $injected ".claude\skills\mecanica-prosa\SKILL.md")) -match "única prosa cohesionada") "inyección aplica override de mecánica"
+    Assert-True (-not (Test-Path -LiteralPath (Join-Path $injected ".opencode\skills"))) "las skills no se duplican en .opencode"
+    Assert-True ((Get-Content -Raw -LiteralPath (Join-Path $injected ".claude\skills\mecanica-prosa\SKILL.md")) -match "user-invocable: false") "las skills no se ofrecen como comandos en Claude Code"
+    Write-OpencodeConfig -TargetDir $injected
+    $ocConfig = Get-Content -Raw -LiteralPath (Join-Path $injected "opencode.json") | ConvertFrom-Json
+    Assert-Equal "director" $ocConfig.default_agent "opencode arranca en el director"
+    Assert-True ($ocConfig.agent.scaffolder.disable -eq $true -and $ocConfig.agent.bibliotecario.disable -eq $true) "opencode desactiva los agentes del hub"
     Assert-True ((Get-Content -Raw -LiteralPath (Join-Path $injected ".opencode\commands\revisar.md")) -match "aún no fue escrita") "inyección aplica override de comandos de relato"
     Assert-True ((Get-Content -Raw -LiteralPath (Join-Path $injected ".opencode\agents\director.md")) -match 'Prepara `escritura`') "inyección aplica director transaccional"
+    foreach ($tool in @("compilar.ps1", "build-epub.ps1", "build-pdf.ps1", "build.css", "templates\forja-kdp.typ")) {
+        Assert-True (Test-Path -LiteralPath (Join-Path $injected "scripts\$tool")) "inyección incluye scripts\$tool"
+    }
+    Assert-True (Test-Path -LiteralPath (Join-Path $injected ".opencode\commands\compilar.md")) "inyección incluye /compilar en opencode"
+    Assert-True (Test-Path -LiteralPath (Join-Path $injected ".claude\commands\compilar.md")) "inyección incluye /compilar en Claude Code"
+    Inject-Pipeline -TargetDir $injected -Escala "relato" -EstiloBase "contemporaneo"
+    Assert-True (-not (Test-Path -LiteralPath (Join-Path $injected "scripts\templates\templates"))) "reinyectar no anida templates"
 
     # Edición derivada: el staging interno del origen no se hereda y el origen permanece intacto.
     $editionHub = Join-Path $RunRoot "edition-hub"
     $editionWorkspaces = Join-Path $editionHub "workspaces"
+    $env:FORJA_OBRAS = $editionWorkspaces
     $editionSource = Join-Path $editionWorkspaces "origen"
     $editionTarget = Join-Path $editionWorkspaces "origen-2a-edicion"
     New-Item -ItemType Directory -Force -Path (Join-Path $editionSource "fichas") | Out-Null
@@ -245,14 +320,31 @@ Ana recibe una llamada y decide salir. En la calle descubre la trampa y cambia d
     Write-Utf8 -Path (Join-Path $editionSource "config.json") -Content ($publishedConfig | ConvertTo-Json -Depth 8)
     New-Item -ItemType Directory -Force -Path (Join-Path $editionSource ".forja-transaccion\siguiente") | Out-Null
     Write-Utf8 -Path (Join-Path $editionSource ".forja-transaccion\manifest.json") -Content '{"estado":"preparada"}'
+    # La edición es otra obra: no hereda el git ni el libro compilado del origen.
+    New-Item -ItemType Directory -Force -Path (Join-Path $editionSource ".git"), (Join-Path $editionSource "publicacion") | Out-Null
+    Write-Utf8 -Path (Join-Path $editionSource "publicacion\origen.md") -Content "# Libro del origen"
+    # Relato antiguo: sin explicitud en config.json; su nivel efectivo está en AGENTS.md.
+    Write-Utf8 -Path (Join-Path $editionSource "AGENTS.md") -Content "# Fixture`n`n- **Explicitud:** medio (sugerido pero presente)."
+    # Un origen sin explicitud declarada en ningún sitio no puede editarse sin suponer un nivel.
+    $sinNivel = Join-Path $editionWorkspaces "origen-sin-nivel"
+    Copy-Item -LiteralPath $editionSource -Destination $sinNivel -Recurse
+    Remove-Item -LiteralPath (Join-Path $sinNivel "AGENTS.md")
+    Assert-Throws { & (Join-Path $RepoRoot "scripts
+ew-edicion-relato.ps1") -Origen "origen-sin-nivel" -Slug "origen-sin-nivel-2a" -ForjaRootOverride $editionHub | Out-Null } "la edición rechaza un origen sin explicitud"
     & (Join-Path $RepoRoot "scripts\new-edicion-relato.ps1") -Origen "origen" -Slug "origen-2a-edicion" -ForjaRootOverride $editionHub | Out-Null
+    Assert-True (-not (Test-Path -LiteralPath (Join-Path $editionTarget "publicacion"))) "la edición no hereda el libro compilado"
+    Assert-True ((git -C $editionTarget rev-parse --show-toplevel 2>$null) -and ((Resolve-Path (git -C $editionTarget rev-parse --show-toplevel)).Path -eq (Resolve-Path $editionTarget).Path)) "la edición tiene su propio repositorio git"
+    Assert-True ($null -eq (git -C $editionTarget rev-parse --verify --quiet HEAD 2>$null)) "la edición nace sin commits"
     Assert-Equal "publicado" ((Get-Content -Raw -LiteralPath (Join-Path $editionSource "config.json") | ConvertFrom-Json).estado) "la edición no altera el origen"
     Assert-Equal "correccion" ((Get-Content -Raw -LiteralPath (Join-Path $editionTarget "config.json") | ConvertFrom-Json).estado) "la edición queda corregible"
     Assert-True (Test-Path -LiteralPath (Join-Path $editionTarget "relato-edicion-anterior.md")) "la edición conserva el manuscrito publicado"
     Assert-True (-not (Test-Path -LiteralPath (Join-Path $editionTarget ".forja-transaccion"))) "la edición no hereda staging interno"
+    Assert-Equal "medio" ((Get-Content -Raw -LiteralPath (Join-Path $editionTarget "config.json") | ConvertFrom-Json).explicitud) "la edición conserva la explicitud del origen"
+    Assert-True ((Get-Content -Raw -LiteralPath (Join-Path $editionTarget "AGENTS.md")) -match "\*\*Explicitud:\*\* medio") "AGENTS.md de la edición declara el nivel del origen"
 
     Write-Output "OK: regresión de workflow de relato superada."
 } finally {
+    $env:FORJA_OBRAS = $previousObras
     if (Test-Path -LiteralPath $RunRoot) {
         Remove-Item -LiteralPath $RunRoot -Recurse -Force
     }

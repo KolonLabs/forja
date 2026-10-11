@@ -1,0 +1,30 @@
+{
+  "agent": "director",
+  "env": {
+    "CLAUDE_CODE_DISABLE_BACKGROUND_TASKS": "1"
+  },
+  "permissions": {
+    "allow": [
+      "Read",
+      "Glob",
+      "Grep",
+      "Skill",
+      "Agent",
+      "TodoWrite",
+      "Edit",
+      "Bash(python -X utf8 scripts/*)",
+      "Bash(python scripts/*)",
+      "Bash(pwsh -NoProfile -File scripts/compilar.ps1)",
+      "Bash(pwsh -NoProfile -File scripts/compilar.ps1 *)"
+    ],
+    "ask": [
+      "Edit(/**/draft.md)",
+      "Edit(/.opencode/**)",
+      "Edit(/.claude/**)"
+    ],
+    "deny": [
+      "WebFetch",
+      "WebSearch"
+    ]
+  }
+}

@@ -19,7 +19,7 @@ def source(path):
     if path.startswith(".opencode/skills/"):
         name = Path(path).parts[2]
         override = MULTI / "skills" / name / "SKILL.md"
-        return override if override.exists() else SHARED / ".opencode" / "skills" / name / "SKILL.md"
+        return override if override.exists() else SHARED / "skills" / name / "SKILL.md"
     if path in ("PIPELINE.md", "ORQUESTACION.md"):
         return MULTI / path
     if path.startswith(".opencode/commands/"):
@@ -54,15 +54,15 @@ class MultiHiloContractTests(unittest.TestCase):
             with self.subTest(agent=name):
                 config = frontmatter(f".opencode/agents/{name}.md")
                 self.assertEqual(config["permission"], {"*": "deny"})
-                self.assertEqual(config["model"], "venice/qwen-3-8-max")
+                self.assertEqual(config["model"], "venice/qwen-3-8-flash")
                 self.assertEqual(config["options"], {"maxCompletionTokens": 64000})
 
     def test_specialists_use_deepseek_and_validator_is_cold(self):
         expected = {
-            "director": "deepseek/deepseek-v4-pro",
-            "guionista": "deepseek/deepseek-v4-pro",
-            "auditor-beats": "deepseek/deepseek-v4-pro",
-            "validador": "deepseek/deepseek-v4-pro",
+            "director": "deepseek/deepseek-flash",
+            "guionista": "deepseek/deepseek-flash",
+            "auditor-beats": "deepseek/deepseek-flash",
+            "validador": "deepseek/deepseek-flash",
         }
         for name, model in expected.items():
             with self.subTest(agent=name):
@@ -115,6 +115,15 @@ class MultiHiloContractTests(unittest.TestCase):
         self.assertIn("local al `parent_id`", self.texts[".opencode/skills/beats-estructura/SKILL.md"])
         self.assertIn("renumber-siblings", self.texts[".opencode/skills/beats-estructura/SKILL.md"])
 
+
+
+    def test_explicit_scenes_show_not_tell(self):
+        for path in (".opencode/agents/escritor.md", ".opencode/agents/integrador.md",
+                     ".opencode/agents/validador.md", ".opencode/agents/director.md",
+                     ".opencode/skills/contexto-subagente/SKILL.md", "ORQUESTACION.md"):
+            with self.subTest(path=path):
+                self.assertIn("sentencias que cuentan", self.texts[path])
+        self.assertIn("progresion", self.texts[".opencode/agents/escritor.md"])
 
 if __name__ == "__main__":
     unittest.main()

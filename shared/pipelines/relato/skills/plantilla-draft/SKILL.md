@@ -1,6 +1,7 @@
 ---
 name: plantilla-draft
 description: Formato de borrador de relato por escena con anclas invisibles para correcciones localizadas.
+user-invocable: false
 ---
 
 # Draft de relato

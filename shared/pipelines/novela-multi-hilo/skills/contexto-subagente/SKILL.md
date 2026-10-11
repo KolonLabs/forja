@@ -1,7 +1,7 @@
 ---
 name: contexto-subagente
 description: Define el contexto mínimo para subagentes de novela multi-hilo usando proyecto, stable_id, parent_id, nivel, seq local e hilo.
-compatibility: opencode
+user-invocable: false
 ---
 
 # Contexto de subagentes — Novela Multi-Hilo
@@ -91,7 +91,7 @@ Salida: reemplaza solo el tramo indicado, en el mismo archivo leído (`capitulos
 3. Contexto de hilo: época, ubicación y tono propio; si la escena abre bloque tras otra época/POV, se pide reanclaje. En capítulos puente o espejo, contexto mínimo del otro hilo y `fichas/conexion-*.md`.
 4. Prosa de transición y antecedentes necesarios (sin cuota fija de beats ni notas históricas irrelevantes). Paquete de capítulo preparado una vez: memoria de lo ocurrido, separada de planes futuros.
 5. Fichas relevantes inline por `stable_id`; personajes, zonas y props declarados de la escena.
-6. Reglas de voz, POV, mecánica de prosa y extensión orientativa ya resueltas por el director. Restricciones pertinentes del proyecto, inline. Contrato editorial común: Obligatorio, Libre y Ejemplos opcionales; escena continua; distinción de conocimiento; libertad de ejecución sin alterar canon.
+6. Reglas de voz, POV, mecánica de prosa y extensión orientativa ya resueltas por el director. En escenas explícitas, además, las reglas de detalle: acto a acto con progresión y transiciones, reacción del POV y sensación concreta; sin sentencias que cuentan en lugar de mostrar. Restricciones pertinentes del proyecto, inline. Contrato editorial común: Obligatorio, Libre y Ejemplos opcionales; escena continua; distinción de conocimiento; libertad de ejecución sin alterar canon.
 7. Escritor sin herramientas: no se le dan órdenes de leer archivos ni cargar skills.
 
 Output: solo prosa de TODOS los beats con marcador de escena e identidades, sin notas rutinarias. Contexto insuficiente o canon contradictorio -> `BLOQUEO`. El director prepara la candidata pendiente, presenta la escena completa con hash/versión y se detiene para validación explícita del usuario (checkpoint obligatorio de narrativa). Después obtiene revisión editorial por hash; ambas aprobaciones son necesarias antes de aceptar/sincronizar. Aprobar una escena no autoriza la siguiente; los beats no se marcan completos hasta sincronizar. No se indexa narrativa no aceptada.

@@ -1,6 +1,7 @@
 ---
 name: validacion-crudeza
 description: Verifica que la explicitud de una escena de relato respete el brief y sus registros sin cuotas ni eufemismos forzados.
+user-invocable: false
 ---
 
 # Crudeza — Relato
@@ -9,7 +10,9 @@ Evalúa este aspecto solo si la escena lo activa. Comprueba que el tratamiento n
 
 La crudeza no es una cuota de detalle ni un motivo para añadir contenido. Devuelve una observación concreta por beat cuando haya desajuste.
 
-## Mostrar, no contar
+El nivel manda: con explicitud `maximo` o `alto` se aplica «Mostrar, no contar». Con `medio`, el lenguaje es directo y sin eufemismos pero lo más gráfico se elide; con `bajo`, el contenido adulto se menciona sin describirse; con `minimo`, no aparece. Por debajo de `alto`, una elipsis no es un acto fuera de cámara que corregir; lo que se corrige es el detalle que supere el nivel. Si el nivel falta, no supongas `maximo`: señálalo al director.
+
+## Mostrar, no contar (`maximo` y `alto`)
 
 En escenas explícitas, el acto se muestra con precisión física y progresión: quién, dónde, cómo y con qué resultado en el cuerpo. La lengua, los círculos, el dedo, la humedad, la presión, los fluidos y los sonidos se narran cuando la escena los contiene, con sensación y geometría coherentes, no como inventario mecánico.
 

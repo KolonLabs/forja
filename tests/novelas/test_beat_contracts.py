@@ -18,7 +18,7 @@ def source(path):
     if path.startswith(".opencode/skills/"):
         name = Path(path).parts[2]
         override = SIMPLE / "skills" / name / "SKILL.md"
-        return override if override.exists() else SHARED / ".opencode" / "skills" / name / "SKILL.md"
+        return override if override.exists() else SHARED / "skills" / name / "SKILL.md"
     if path in ("PIPELINE.md", "ORQUESTACION.md"):
         return SIMPLE / path
     if path.startswith(".opencode/commands/"):
@@ -207,6 +207,15 @@ class BeatContractTests(unittest.TestCase):
             self.assertIn("respeta el contrato del consumidor", text)
             self.assertIn("sin exigir un hash de candidata inexistente", text)
 
+
+
+    def test_explicit_scenes_show_not_tell(self):
+        for path in (".opencode/agents/escritor.md", ".opencode/agents/integrador.md",
+                     ".opencode/agents/validador.md", ".opencode/agents/director.md",
+                     ".opencode/skills/contexto-subagente/SKILL.md", "ORQUESTACION.md"):
+            with self.subTest(path=path):
+                self.assertIn("sentencias que cuentan", self.texts[path])
+        self.assertIn("progresion", self.texts[".opencode/agents/escritor.md"])
 
 if __name__ == "__main__":
     unittest.main()

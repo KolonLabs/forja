@@ -12,24 +12,24 @@ Referencia para **director** y subagentes. Fases en `PIPELINE.md`.
    - `H_NNNN` y `B_NNNN` son **displays derivados de `seq`**, nunca identidad persistida.
    - Toda referencia interna (`parent_id`, conexiones cross-hilo, fichas, `cola_d.md`) usa `stable_id`.
 4. **Estados en guion:** `⬜` → `🔄` (al empezar la escena) → `✅` (tras `aceptar`+`sincronizar` con conformidad humana y revisión editorial del mismo hash). Lo marca el **director**.
-5. **Backup** antes de sobrescribir archivos con contenido existente.
+5. **Sin copias de seguridad:** no se crean copias con fecha; el historial es el git de la obra.
 6. **Hilos:** el campo `hilo` es siempre el `stable_id` de una entidad `tipo=hilo`. `hilo-sumeria` es slug humano de navegación, nunca identidad.
 
 ---
 
 ## Matriz de agentes (9 agentes)
 
-| Agente | Invocado por | Lee | Escribe | Invoca | Modelo |
+| Agente | Invocado por | Lee | Escribe | Invoca | Modelo (opencode · Claude Code) |
 |--------|--------------|-----|---------|--------|--------|
-| **director** | usuario `/generar`, `/revisar`, `/expandir`, `/publicar`, `/refinar-hechos`, `/validar-hechos`, `/revisar-guion` | `PIPELINE.md`, `config.json`, `BRIEF.md`, `AGENTS.md`, `contexto.md`, guiones según fase | `config.json`, `contexto.md`, `diseno-hilo.md`, `cola_d.md`, estados en guiones, `draft.md` y candidatas vía `scripts/persistir-escena.py`, `capitulo.md`, `novela.md` | guionista, escritor, validador, integrador, memoria, cronista, entidades, auditor-beats | `deepseek-v4-pro` |
-| **guionista** | director | Briefing + archivos del modo (ver tabla modos abajo) | Guiones según modo y escala | — | `deepseek-v4-pro` |
-| **auditor-beats** | director | `guion.md` o `guion-novela.md`, `_actos.md`, `AGENTS.md` | — (read-only, diagnóstico al director) | — | `deepseek-v4-pro` |
-| **escritor** | director | Contexto preparado inline: guion de la escena completa, fichas, voz/POV, hilo y costuras | Nada; devuelve prosa completa de la escena, sin herramientas | — | `venice/qwen-3-8-max` (completion máx. 64000) |
-| **validador** | director | Candidato y SHA256, guion, canon, contexto de hilo y costuras; briefing neutral | Nada; JSON de incidencias (`bloqueante/corregir/opcional`), sin scores | — | `deepseek-v4-pro` |
-| **integrador** | director | Fragmentos afectados y ambos extremos inline; incidencias concretas | Nada; devuelve secciones corregidas completas, sin herramientas | — | `venice/qwen-3-8-max` (completion máx. 64000) |
-| **memoria** | director | `config.json`, especificación de entidades del cap, hilo(s) activo(s) | — (solo briefing de ~600 tokens) | — | `deepseek-v4-flash` |
-| **cronista** | director (cierre de cap) | `draft.md` completo, `config.json`, hilo(s) activo(s) | Qdrant (summaries L1-L4 + entidades `dinamico`), Neo4j (relaciones por escena), `config.json` (contadores) | — | `deepseek-v4-flash` |
-| **entidades** | director | Nombre, tipo, descripción de entidad + contexto narrativo | Qdrant (`upsert-entity`) + `fichas/<tipo>_<slug>.md` | — | `deepseek-v4-pro` |
+| **director** | usuario `/generar`, `/revisar`, `/expandir`, `/publicar`, `/refinar-hechos`, `/validar-hechos`, `/revisar-guion` | `PIPELINE.md`, `config.json`, `BRIEF.md`, `AGENTS.md`, `contexto.md`, guiones según fase | `config.json`, `contexto.md`, `diseno-hilo.md`, `cola_d.md`, estados en guiones, `draft.md` y candidatas vía `scripts/persistir-escena.py`, `capitulo.md`, `novela.md` | guionista, escritor, validador, integrador, memoria, cronista, entidades, auditor-beats | `deepseek-flash` · `claude-sonnet-5-5` |
+| **guionista** | director | Briefing + archivos del modo (ver tabla modos abajo) | Guiones según modo y escala | — | `deepseek-flash` · `claude-sonnet-5-5` |
+| **auditor-beats** | director | `guion.md` o `guion-novela.md`, `_actos.md`, `AGENTS.md` | — (read-only, diagnóstico al director) | — | `deepseek-flash` · `claude-sonnet-5-5` |
+| **escritor** | director | Contexto preparado inline: guion de la escena completa, fichas, voz/POV, hilo y costuras | Nada; devuelve prosa completa de la escena, sin herramientas | — | `venice/qwen-3-8-flash` (completion máx. 64000 en opencode) · `claude-opus-5-5` |
+| **validador** | director | Candidato y SHA256, guion, canon, contexto de hilo y costuras; briefing neutral | Nada; JSON de incidencias (`bloqueante/corregir/opcional`), sin scores | — | `deepseek-flash` · `claude-sonnet-5-5` |
+| **integrador** | director | Fragmentos afectados y ambos extremos inline; incidencias concretas | Nada; devuelve secciones corregidas completas, sin herramientas | — | `venice/qwen-3-8-flash` (completion máx. 64000 en opencode) · `claude-opus-5-5` |
+| **memoria** | director | `config.json`, especificación de entidades del cap, hilo(s) activo(s) | — (solo briefing de ~600 tokens) | — | `deepseek-v4-flash` · `claude-haiku-5-5` |
+| **cronista** | director (cierre de cap) | `draft.md` completo, `config.json`, hilo(s) activo(s) | Qdrant (summaries L1-L4 + entidades `dinamico`), Neo4j (relaciones por escena), `config.json` (contadores) | — | `deepseek-v4-flash` · `claude-sonnet-5-5` |
+| **entidades** | director | Nombre, tipo, descripción de entidad + contexto narrativo | Qdrant (`upsert-entity`) + `fichas/<tipo>_<slug>.md` | — | `deepseek-flash` · `claude-haiku-5-5` |
 
 ---
 
@@ -95,7 +95,7 @@ No modificar archivos
 | `plantilla-personaje` / `plantilla-lugar` / `plantilla-objeto` / `plantilla-animal` / `plantilla-arco` / `plantilla-evento` / `plantilla-hilo` / `plantilla-organizacion` | automática | entidades | Campos obligatorios por tipo de entidad |
 | `estilo-explicito` / `estilo-contemporaneo` / `estilo-erotico` / `estilo-fantasia` / `estilo-noir` / `estilo-romantico` / `estilo-thriller` | automática | escritor, integrador, validador (tono) | Voz narrativa: vocabulario, ritmo, crudeza, foco sensorial |
 | `estilo-prosa` | automática | director (crear/validar estilos) | Meta-skill: estructura que debe tener un skill de estilo |
-| `validacion-crudeza` | automática | validador | Evalúa vocabulario explícito, ausencia de eufemismos |
+| `validacion-crudeza` | automática | validador | Vocabulario explícito, eufemismos y mostrar-no-contar; en escena explícita, resúmenes o veredictos que sustituyan al acto son `corregir` |
 | `validacion-tono` | automática | validador | Evalúa coherencia tonal contra el estilo activo |
 | `validacion-geometria` | automática | validador | Evalúa ritmo, cadencia, fluidez de frases |
 | `validacion-coherencia` | automática | validador | Evalúa continuidad física, consistencia de personajes, lógica |
@@ -132,7 +132,7 @@ Pasos, IN/OUT y gates completos de cada fase: ver `PIPELINE.md`. Esta tabla es s
 | FASE 3 | `escritura` | director + escritor/validador/integrador/cronista/memoria/auditor-beats | Bucle beat a beat, capítulo por capítulo, según la tabla de Trenzado |
 | FASE 4 | `publicacion` | director | Limpiar drafts y concatenar → `novela.md` |
 
-**Transiciones:** `diseno → diseno_hilos → hilos_beats → trenzado → fichas → escritura → publicacion → finalizado`. `publicado` lo asigna solo el hub (`/crear-libro`) sobre un workspace ya `finalizado`.
+**Transiciones:** `diseno → diseno_hilos → hilos_beats → trenzado → fichas → escritura → publicacion → finalizado`. `publicado` lo asigna solo `/compilar` sobre un workspace ya `finalizado`.
 
 ---
 ## Plantillas de briefing (director → subagente)
@@ -234,6 +234,7 @@ Contrato editorial: Obligatorio = acontecimientos/decisiones/consecuencias/restr
 Guion de la escena COMPLETA: todos los beats con stable_id [seq] parent_id — acción — tono/extensión — hilo
 Fichas: [lista por stable_id], inline
 Voz/POV, mecánica de prosa y extensión orientativa: [reglas ya resueltas por el director, inline]
+Escena explícita: acto a acto con progresión y transiciones; reacción del POV; sensación concreta; prohibidas las sentencias que cuentan en lugar de mostrar.
 Briefing memoria: [~600 tokens, filtrado por los stable_id de hilo activos]
 Prosa de transición: [escena anterior de la misma lectura si existe]
 {{#if puente o espejo}}Otro hilo: [qué acaba de ocurrir allí] + fichas/conexion-*.md; {{#if espejo}}beat espejo: [texto]{{/if}}{{/if}}
@@ -281,7 +282,7 @@ Briefing esperado: ~600 tokens. Estructura:
   4. Entidades del capítulo (fijo + dinámico desde Qdrant), por stable_id
   5. Relaciones activas (Neo4j) de personajes del capítulo
   6. Hilos activos, su estado y sus conexiones cross-hilo pendientes
-  7. [Opcional] Referencias tipo=referencia con tag relevancia_por_hilo=<hilo_activo> (máx. 2; incluir solo si aportan contexto no cubierto por los summaries; contar en el presupuesto de ~600 tokens)
+  7. [Opcional] Referencias tipo=referencia con tag `relevancia_por_hilo:<stable_id del hilo activo>` (máx. 2; incluir solo si aportan contexto no cubierto por los summaries; contar en el presupuesto de ~600 tokens)
 Summaries: buscar por (nivel, parent_id, seq[, hilo]); el UUID nunca es entrada
 ```
 
@@ -347,7 +348,7 @@ Output: Qdrant (upsert-entity) + fichas/<tipo>_<slug>.md
 | `publicacion` | FASE 4 |
 | `finalizado` | FASE 4 completada — listo para el hub |
 
-`publicado` no lo escribe el workspace: lo asigna `/crear-libro` desde el hub tras compilar todas las salidas.
+`publicado` no lo escribe el director: lo asigna `/compilar` (`scripts/compilar.ps1`) tras generar todas las salidas.
 
 **Valores de `config.json.hilos[].estado`:**
 
@@ -393,4 +394,4 @@ Output: Qdrant (upsert-entity) + fichas/<tipo>_<slug>.md
 | Crear carpetas `capitulos/cap-NN-slug/` | **guionista** modo `trenzado` |
 | Separadores `---` entre bloques de hilo | **director** (al ensamblar el draft) |
 | Init Qdrant/Neo4j | **director** (`scripts/qdrant.py`, `scripts/neo4j.py`) |
-| Asignar `publicado` | **hub** (`/crear-libro`) — nunca el director |
+| Asignar `publicado` | **`scripts/compilar.ps1`** (`/compilar`) — nunca el director |

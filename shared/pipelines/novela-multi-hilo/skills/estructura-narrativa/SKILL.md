@@ -1,6 +1,7 @@
 ---
 name: estructura-narrativa
 description: Estructura narrativa y técnicas de escritura para novelas con múltiples hilos narrativos. Úsalo cuando necesites generar, revisar o analizar la estructura de una novela multi-hilo.
+user-invocable: false
 ---
 
 # Estructura de Novela Multi-Hilo

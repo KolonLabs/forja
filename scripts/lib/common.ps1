@@ -4,6 +4,59 @@
 $ErrorActionPreference = "Stop"
 
 # ------------------------------------------------------------
+# Raíces de obras y publicados (ADR 0026)
+# ------------------------------------------------------------
+
+function Resolve-ForjaRoot {
+    # Una raíz de contenido vive fuera del hub: la variable de entorno manda y,
+    # si no está definida, se usa la carpeta hermana del hub.
+    param([string]$Hub, [string]$Variable, [string]$Default)
+
+    $value = [Environment]::GetEnvironmentVariable($Variable)
+    if ([string]::IsNullOrWhiteSpace($value)) {
+        $value = Join-Path (Split-Path -Parent $Hub) $Default
+    }
+    return [System.IO.Path]::GetFullPath($value)
+}
+
+function Get-ObrasRoot {
+    param([string]$Hub = $HubRoot)
+    return Resolve-ForjaRoot -Hub $Hub -Variable "FORJA_OBRAS" -Default "Obras"
+}
+
+function Get-PublicadosRoot {
+    param([string]$Hub = $HubRoot)
+    return Resolve-ForjaRoot -Hub $Hub -Variable "FORJA_PUBLICADOS" -Default "Publicados"
+}
+
+function Initialize-ObraGit {
+    # Cada obra es su propio repositorio local. No se hace ningún commit: los
+    # puntos de restauración los decide la persona usuaria.
+    param([string]$TargetDir)
+
+    $gitignore = @(
+        "node_modules/"
+        "__pycache__/"
+        "*.pyc"
+        ".forja-transaccion/"
+        "escena-*.pendiente.md"
+        "publicacion/"
+        ".publicacion-*/"
+    ) -join "`n"
+    [System.IO.File]::WriteAllText((Join-Path $TargetDir ".gitignore"), $gitignore + "`n", [System.Text.UTF8Encoding]::new($false))
+
+    if (Test-Path -LiteralPath (Join-Path $TargetDir ".git")) { return }
+    if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
+        Write-Warning "git no está disponible: la obra se crea sin repositorio. Ejecuta 'git init' en $TargetDir."
+        return
+    }
+    $output = & git -C $TargetDir init -q -b main 2>&1 | Out-String
+    if ($LASTEXITCODE -ne 0) {
+        throw "Initialize-ObraGit: git init falló en $TargetDir. $output"
+    }
+}
+
+# ------------------------------------------------------------
 # Validación
 # ------------------------------------------------------------
 
@@ -63,6 +116,116 @@ function Test-HechosStructure {
     }
 }
 
+
+function Test-ContinuacionBrief {
+    # Campos opcionales para continuar una historia previa: `canon_previo` (Markdown
+    # que BRIEF.md muestra como canon heredado) y `fichas_semilla` (fichas ya
+    # reconstruidas para la nueva entrega). Solo relato: las novelas guardan sus
+    # entidades en Qdrant y no leerian estas fichas.
+    param($Brief)
+
+    $names = $Brief.PSObject.Properties.Name
+    $tieneCanon = $names.Contains("canon_previo") -and $null -ne $Brief.canon_previo
+    $tieneFichas = $names.Contains("fichas_semilla") -and $null -ne $Brief.fichas_semilla
+    if (-not $tieneCanon -and -not $tieneFichas) { return }
+
+    if ($Brief.escala -ne "relato") {
+        throw "continuacion: canon_previo y fichas_semilla solo se admiten en la escala relato."
+    }
+
+    if ($tieneCanon) {
+        if (-not ($Brief.canon_previo -is [string]) -or [string]::IsNullOrWhiteSpace($Brief.canon_previo)) {
+            throw "continuacion: canon_previo debe ser Markdown no vacio."
+        }
+    }
+
+    if ($tieneFichas) {
+        $fichas = @($Brief.fichas_semilla)
+        if ($fichas.Count -eq 0) { throw "continuacion: fichas_semilla no puede estar vacio; omite el campo." }
+        $vistas = @{}
+        foreach ($ficha in $fichas) {
+            $fichaNames = if ($ficha -is [psobject]) { $ficha.PSObject.Properties.Name } else { @() }
+            if (-not $fichaNames.Contains("ruta") -or -not $fichaNames.Contains("contenido")) {
+                throw "continuacion: cada ficha de fichas_semilla requiere 'ruta' y 'contenido'."
+            }
+            if (-not ($ficha.ruta -is [string]) -or $ficha.ruta -cnotmatch '^fichas/[a-z0-9]+([_-][a-z0-9]+)*\.md$') {
+                throw "continuacion: ruta de ficha invalida '$($ficha.ruta)'. Formato: fichas/<tipo>_<slug>.md en minusculas, sin subdirectorios."
+            }
+            if (-not ($ficha.contenido -is [string]) -or [string]::IsNullOrWhiteSpace($ficha.contenido)) {
+                throw "continuacion: la ficha '$($ficha.ruta)' no tiene contenido."
+            }
+            if ($vistas.ContainsKey($ficha.ruta)) {
+                throw "continuacion: ruta de ficha duplicada '$($ficha.ruta)'."
+            }
+            $vistas[$ficha.ruta] = $true
+        }
+    }
+}
+
+function Write-FichasSemilla {
+    param([string]$TargetDir, $Brief)
+
+    if (-not $Brief.PSObject.Properties.Name.Contains("fichas_semilla") -or -not $Brief.fichas_semilla) { return }
+
+    $fichasDir = Join-Path $TargetDir "fichas"
+    New-Item -ItemType Directory -Force -Path $fichasDir | Out-Null
+    $fichasRaiz = [System.IO.Path]::GetFullPath($fichasDir) + [System.IO.Path]::DirectorySeparatorChar
+    foreach ($ficha in @($Brief.fichas_semilla)) {
+        $destino = [System.IO.Path]::GetFullPath((Join-Path $TargetDir ($ficha.ruta -replace '/', [System.IO.Path]::DirectorySeparatorChar)))
+        if (-not $destino.StartsWith($fichasRaiz)) {
+            throw "Write-FichasSemilla: la ruta '$($ficha.ruta)' sale de fichas/."
+        }
+        if (Test-Path -LiteralPath $destino) {
+            throw "Write-FichasSemilla: ya existe '$($ficha.ruta)'; no se sobrescribe."
+        }
+        $contenido = ($ficha.contenido -replace "`r`n", "`n").TrimEnd() + "`n"
+        [System.IO.File]::WriteAllText($destino, $contenido, [System.Text.UTF8Encoding]::new($false))
+    }
+}
+
+function Write-OpencodeConfig {
+    # opencode sube hasta la raiz de git y hereda del hub sus agentes
+    # (scaffolder, bibliotecario). El workspace es autonomo: se desactivan aqui,
+    # calculados desde lo que el hub realmente contiene.
+    #
+    # Las skills del hub (scaffolding-*, importacion-fuentes) tambien quedan
+    # descubribles, pero no se pueden denegar desde opencode.json: la regla
+    # `skill: allow` del propio agente se evalua despues y prevalece (ADR 0023).
+    param([string]$TargetDir)
+
+    $agentes = [ordered]@{}
+    $hubAgents = Join-Path $HubRoot ".opencode\agents"
+    if (Test-Path -LiteralPath $hubAgents -PathType Container) {
+        foreach ($f in (Get-ChildItem -LiteralPath $hubAgents -File -Filter "*.md" | Sort-Object Name)) {
+            $agentes[[System.IO.Path]::GetFileNameWithoutExtension($f.Name)] = [ordered]@{ disable = $true }
+        }
+    }
+
+    $config = [ordered]@{
+        '$schema' = "https://opencode.ai/config.json"
+        default_agent = "director"
+    }
+    if ($agentes.Count -gt 0) { $config.agent = $agentes }
+
+    $json = $config | ConvertTo-Json -Depth 6
+    [System.IO.File]::WriteAllText((Join-Path $TargetDir "opencode.json"), $json + "`n", [System.Text.UTF8Encoding]::new($false))
+}
+
+function Get-ExplicitudTexto {
+    # Nivel de explicitud con su significado. No hay valor por defecto: new-project lo exige.
+    param([string]$Nivel)
+    $significado = @{
+        "maximo" = "explícito total; vocabulario directo, sin eufemismos; sexo, violencia y cuerpo descritos sin filtro"
+        "alto"   = "explícito con criterio; las escenas fuertes existen pero no son gratuitas"
+        "medio"  = "sugerido pero presente; lenguaje directo, lo más gráfico se elide"
+        "bajo"   = "contenido adulto implícito; se menciona, no se describe"
+        "minimo" = "sin contenido explícito"
+    }
+    if ([string]::IsNullOrWhiteSpace($Nivel) -or -not $significado.ContainsKey($Nivel)) {
+        throw "Get-ExplicitudTexto: explicitud ausente o no soportada: '$Nivel'"
+    }
+    return "$Nivel ($($significado[$Nivel]))"
+}
 
 function Get-ListText {
     param($Items)
@@ -138,6 +301,22 @@ function Inject-Pipeline {
         }
     }
 
+    # 3b. Utilidades comunes a todas las escalas: renumerar.ps1 y la compilación
+    # de la obra (compilar.ps1, build-pdf.ps1, build.css, templates/; ADR 0026).
+    $sharedScripts = Join-Path $SharedDir "scripts"
+    if (Test-Path -LiteralPath $sharedScripts -PathType Container) {
+        $targetScripts = Join-Path $TargetDir "scripts"
+        if (-not (Test-Path -LiteralPath $targetScripts -PathType Container)) {
+            New-Item -ItemType Directory -Force -Path $targetScripts | Out-Null
+        }
+        Get-ChildItem -LiteralPath $sharedScripts | ForEach-Object {
+            $dest = Join-Path $targetScripts $_.Name
+            # Un directorio existente se reemplaza: Copy-Item lo anidaría dentro.
+            if ($_.PSIsContainer -and (Test-Path -LiteralPath $dest)) { Remove-Item -LiteralPath $dest -Recurse -Force }
+            Copy-Item -LiteralPath $_.FullName -Destination $dest -Recurse -Force
+        }
+    }
+
     # 4. PIPELINE.md
     Copy-Item -LiteralPath (Join-Path $ScaleDir "PIPELINE.md") -Destination (Join-Path $TargetDir "PIPELINE.md") -Force
 
@@ -155,39 +334,45 @@ function Inject-Pipeline {
     }
 
     # 7. Skills filtrados por escala
-    $hubSkills = Join-Path $SharedDir ".opencode\skills"
-    $wsSkills = Join-Path $targetOC "skills"
+    $hubSkills = Join-Path $SharedDir "skills"
+    # Las skills viven en .claude/skills: lo leen Claude Code y opencode (ADR 0023).
+    $wsSkills = Join-Path $TargetDir ".claude\skills"
+    New-Item -ItemType Directory -Force -Path $wsSkills | Out-Null
     $excluded = @()
     $allowed = @()
+    # Estilos: cada workspace recibe solo su estilo base y, si lo hay, el secundario.
+    # Con los siete, un modelo puede cargar por su cuenta un estilo que no toca.
+    $styleNames = @($EstiloBase, $EstiloSecundario) | Where-Object { -not [string]::IsNullOrWhiteSpace($_) } | Select-Object -Unique
+    if ($styleNames.Count -eq 0) {
+        $configPath = Join-Path $TargetDir "config.json"
+        if (Test-Path -LiteralPath $configPath -PathType Leaf) {
+            $workspaceConfig = Get-Content -LiteralPath $configPath -Raw -Encoding UTF8 | ConvertFrom-Json
+            $styleNames = @($workspaceConfig.estilo_base, $workspaceConfig.estilo_secundario) | Where-Object { -not [string]::IsNullOrWhiteSpace($_) } | Select-Object -Unique
+        }
+    }
+    if ($styleNames.Count -eq 0) {
+        throw "Inject-Pipeline ${Escala}: falta estilo_base para seleccionar las skills de estilo."
+    }
+    foreach ($styleName in $styleNames) {
+        if (-not (Test-Path -LiteralPath (Join-Path $hubSkills "estilo-$styleName") -PathType Container)) {
+            throw "Inject-Pipeline ${Escala}: skill de estilo no encontrada: estilo-$styleName"
+        }
+    }
+    $estilosNarrativos = @("explicito", "contemporaneo", "erotico", "fantasia", "noir", "romantico", "thriller")
+    $estilosInactivos = @($estilosNarrativos | Where-Object { $_ -notin $styleNames } | ForEach-Object { "estilo-$_" })
+
     if ($Escala -eq "relato") {
         # Relato no parte de un paquete genérico por exclusión: recibe solo las
         # invariantes que realmente usa. El resto se define como override propio
         # de escala en $ScaleDir\skills.
-        $styleNames = @($EstiloBase, $EstiloSecundario) | Where-Object { -not [string]::IsNullOrWhiteSpace($_) } | Select-Object -Unique
-        if ($styleNames.Count -eq 0) {
-            $configPath = Join-Path $TargetDir "config.json"
-            if (Test-Path -LiteralPath $configPath -PathType Leaf) {
-                $workspaceConfig = Get-Content -LiteralPath $configPath -Raw -Encoding UTF8 | ConvertFrom-Json
-                $styleNames = @($workspaceConfig.estilo_base, $workspaceConfig.estilo_secundario) | Where-Object { -not [string]::IsNullOrWhiteSpace($_) } | Select-Object -Unique
-            }
-        }
-        if ($styleNames.Count -eq 0) {
-            throw "Inject-Pipeline relato: falta estilo_base para seleccionar las skills de estilo."
-        }
-        foreach ($styleName in $styleNames) {
-            $skillName = "estilo-$styleName"
-            if (-not (Test-Path -LiteralPath (Join-Path $hubSkills $skillName) -PathType Container)) {
-                throw "Inject-Pipeline relato: skill de estilo no encontrada: $skillName"
-            }
-            $allowed += $skillName
-        }
-        $allowed += "mecanica-prosa"
+        $allowed += @($styleNames | ForEach-Object { "estilo-$_" })
+        $allowed += @("mecanica-prosa", "renumeracion-ids")
     } elseif ($Escala -eq "novela-simple") {
         # contexto-narrativo es la memoria Markdown de relato; las novelas usan
         # Qdrant + contexto.md y no deben recibir ese contrato.
-        $excluded = @("diseno-hilo","plantilla-hilo","trenzado-narrativo","validacion-cross-hilo","contexto-narrativo")
+        $excluded = @("diseno-hilo","plantilla-hilo","trenzado-narrativo","validacion-cross-hilo","contexto-narrativo") + $estilosInactivos
     } elseif ($Escala -eq "novela-multi-hilo") {
-        $excluded = @("contexto-narrativo")
+        $excluded = @("contexto-narrativo") + $estilosInactivos
     }
 
     if (Test-Path -LiteralPath $hubSkills) {
@@ -235,7 +420,52 @@ function Inject-Pipeline {
         }
     }
 
-    # 11. Scripts Python de infraestructura (solo novelas)
+    # 11. Capa Claude Code (ADR 0024): agentes, comandos, permisos y CLAUDE.md
+    # escritos a mano por escala, equivalentes a los de opencode. Las skills ya
+    # estan en .claude/skills. Si la escala aun no tiene capa Claude, se omite.
+    $scaleClaude = Join-Path $ScaleDir "claude"
+    if (Test-Path -LiteralPath $scaleClaude -PathType Container) {
+        $targetCl = Join-Path $TargetDir ".claude"
+        foreach ($d in @("agents", "commands")) {
+            New-Item -ItemType Directory -Force -Path (Join-Path $targetCl $d) | Out-Null
+        }
+        if ($Escala -ne "relato") {
+            $commonClAgents = Join-Path $SharedDir ".claude\agents"
+            if (Test-Path -LiteralPath $commonClAgents) {
+                Get-ChildItem -LiteralPath $commonClAgents -File -Filter "*.md" | ForEach-Object {
+                    Copy-Item -LiteralPath $_.FullName -Destination (Join-Path $targetCl "agents\$($_.Name)") -Force
+                }
+            }
+            # Hooks de los subagentes de novela (p. ej. proteger-guionista.ps1).
+            $commonClHooks = Join-Path $SharedDir ".claude\hooks"
+            if (Test-Path -LiteralPath $commonClHooks) {
+                New-Item -ItemType Directory -Force -Path (Join-Path $targetCl "hooks") | Out-Null
+                Get-ChildItem -LiteralPath $commonClHooks -File | ForEach-Object {
+                    Copy-Item -LiteralPath $_.FullName -Destination (Join-Path $targetCl "hooks\$($_.Name)") -Force
+                }
+            }
+        }
+        Get-ChildItem -LiteralPath (Join-Path $scaleClaude "agents") -File -Filter "*.md" | ForEach-Object {
+            Copy-Item -LiteralPath $_.FullName -Destination (Join-Path $targetCl "agents\$($_.Name)") -Force
+        }
+        $commonClCommands = Join-Path $SharedDir ".claude\commands"
+        if (Test-Path -LiteralPath $commonClCommands) {
+            Get-ChildItem -LiteralPath $commonClCommands -File -Filter "*.md" | ForEach-Object {
+                if ($_.Name -in $excludedCommands) { return }
+                Copy-Item -LiteralPath $_.FullName -Destination (Join-Path $targetCl "commands\$($_.Name)") -Force
+            }
+        }
+        $scaleClCommands = Join-Path $scaleClaude "commands"
+        if (Test-Path -LiteralPath $scaleClCommands) {
+            Get-ChildItem -LiteralPath $scaleClCommands -File -Filter "*.md" | ForEach-Object {
+                Copy-Item -LiteralPath $_.FullName -Destination (Join-Path $targetCl "commands\$($_.Name)") -Force
+            }
+        }
+        Copy-Item -LiteralPath (Join-Path $scaleClaude "settings.json") -Destination (Join-Path $targetCl "settings.json") -Force
+        Copy-Item -LiteralPath (Join-Path $scaleClaude "CLAUDE.md") -Destination (Join-Path $TargetDir "CLAUDE.md") -Force
+    }
+
+    # 12. Scripts Python de infraestructura (solo novelas)
     if ($Escala -ne "relato") {
         $scriptsDir = Join-Path $TargetDir "scripts"
         if (-not (Test-Path -LiteralPath $scriptsDir)) {
@@ -576,6 +806,11 @@ function Write-BriefMd {
         if ($r.decisiones_usuario) { $reflexionBlock += "`n`n### Decisiones del usuario`n`n" + (Get-ListText $r.decisiones_usuario) }
     }
 
+    $canonBlock = ""
+    if ($Brief.PSObject.Properties.Name.Contains("canon_previo") -and $Brief.canon_previo) {
+        $canonBlock = "`n`n## Canon heredado`n`n" + $Brief.canon_previo.TrimEnd()
+    }
+
     $settingBlock = ""
     if ($Brief.setting) {
         $settingBlock = "`n`n## Setting`n`n$($Brief.setting)"
@@ -599,13 +834,13 @@ $(if ($Brief.PSObject.Properties.Name.Contains("premisa") -and $Brief.premisa) {
 - **Genero:** $generoLine
 - **Estilo base:** $($Brief.estilo_base)$(if ($Brief.PSObject.Properties.Name.Contains("estilo_secundario") -and $Brief.estilo_secundario) { " + $($Brief.estilo_secundario) (matiz; prevalece el base)" } else { "" })
 - **Tono:** $(if ($Brief.PSObject.Properties.Name.Contains("tono") -and $Brief.tono) { $Brief.tono } else { "---" })
-- **Explicitud:** $(if ($Brief.PSObject.Properties.Name.Contains("explicitud") -and $Brief.explicitud) { $Brief.explicitud } else { "maximo" })
+- **Explicitud:** $(Get-ExplicitudTexto $Brief.explicitud)
 - **POV:** $(if ($Brief.PSObject.Properties.Name.Contains("pov") -and $Brief.pov) { $Brief.pov } else { "---" })
 - **Atmosfera:** $(if ($Brief.PSObject.Properties.Name.Contains("atmosfera") -and $Brief.atmosfera) { $Brief.atmosfera } else { "---" })
 - **Extension estimada:** $(if ($Brief.PSObject.Properties.Name.Contains("extension_estimada") -and $Brief.extension_estimada) { $Brief.extension_estimada } else { "---" })
 
 ## Protagonistas
-$($protasBlock)$($personajesBlock)$($antagBlock)$($settingBlock)$($temasBlock)$($refsBlock)$($reflexionBlock)
+$($protasBlock)$($personajesBlock)$($antagBlock)$($settingBlock)$($temasBlock)$($refsBlock)$($reflexionBlock)$($canonBlock)
 "@ | Set-Content -LiteralPath (Join-Path $TargetDir "BRIEF.md") -Encoding UTF8
 }
 
@@ -681,7 +916,7 @@ function Write-ActosMdMultiHilo {
 function Write-AgentsMd {
     param([string]$TargetDir, $Brief, [string]$Escala)
 
-    $explicitud = if ($Brief.PSObject.Properties.Name.Contains("explicitud") -and $Brief.explicitud) { $Brief.explicitud } else { "maximo" }
+    $explicitud = Get-ExplicitudTexto $Brief.explicitud
     $tonoRule = if ($Brief.PSObject.Properties.Name.Contains("tono") -and $Brief.tono) { $Brief.tono } else { "coherente con $($Brief.estilo_base)" }
     $restricciones = if ($Brief.PSObject.Properties.Name.Contains("restricciones") -and $Brief.restricciones) { Get-ListText $Brief.restricciones } else { "- (ninguna)" }
     $temas = if ($Brief.PSObject.Properties.Name.Contains("temas") -and $Brief.temas) { Get-ListText $Brief.temas } else { "- (ver BRIEF.md)" }
@@ -721,7 +956,7 @@ function Write-AgentsMd {
     }
     # La lista documentada debe coincidir con lo realmente inyectado: si no,
     # AGENTS.md anuncia skills inexistentes u omite las que los agentes cargan.
-    $skillsDir = Join-Path $TargetDir ".opencode\skills"
+    $skillsDir = Join-Path $TargetDir ".claude\skills"
     if (Test-Path -LiteralPath $skillsDir -PathType Container) {
         $instalados = @(Get-ChildItem -LiteralPath $skillsDir -Directory | Select-Object -ExpandProperty Name)
         $fantasma = @($skillsActivos | Where-Object { $_ -notin $instalados })
@@ -776,7 +1011,7 @@ El director usa ``scripts/relato-transaccion.ps1`` para hechos, diseño, ajustes
 - **Idioma:** espanol, contenido en espanol.
 - **Estilo:** $estiloRef$estiloSecondaryRule
 - **Tono:** $tonoRule
-- **Explicitud:** $explicitud (sin eufemismos, vocabulario directo).
+- **Explicitud:** $explicitud.
 - **POV:** $(if ($Brief.PSObject.Properties.Name.Contains("pov") -and $Brief.pov) { $Brief.pov } else { "segun BRIEF.md" }).
 
 ### Temas
@@ -784,6 +1019,9 @@ $temas
 
 ### Restricciones
 $restricciones
+
+### Referencias
+Si existe ``referencias/``, contiene material de consulta aportado por el autor (obra previa, documentación, notas). Puede ser útil al diseñar, guionizar, escribir o validar: consúltalo cuando la tarea toque su tema. No es una regla por sí mismo: ``AGENTS.md`` y ``BRIEF.md`` prevalecen sobre él.
 
 ### Skills activos
 $skillsStr

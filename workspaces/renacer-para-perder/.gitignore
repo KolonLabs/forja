@@ -1,6 +1,0 @@
-# Backups y cache de trabajo
-*.bak
-*.bak-*
-*.backup.*
-__pycache__/
-*.pyc

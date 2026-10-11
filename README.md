@@ -1,21 +1,23 @@
 # Forja - Sistema multi-agente de generacion de ficcion
 
-Forja es el hub que crea y compila proyectos de ficcion. No escribe manuscritos directamente: cada obra vive en un workspace aislado, con su propio pipeline, agentes y skills.
+Forja es el hub que crea y compila proyectos de ficcion. No escribe manuscritos directamente: cada obra vive en un workspace aislado fuera del hub (por defecto en `../Obras/<slug>`), con su propio pipeline, agentes, skills y repositorio git.
 
 ## Flujo rapido
 
 1. Desde el hub, ejecuta `/nuevo-proyecto` y completa el briefing editorial.
-2. Abre el workspace creado: `opencode --cwd "workspaces/<slug>"`.
+2. Abre el workspace creado: `opencode --cwd "<ruta que indica el hub>"`.
 3. Dentro del workspace, desarrolla la obra y ejecuta `/publicar` para generar el manuscrito limpio.
-4. Vuelve al hub y ejecuta `/crear-libro` para ensamblar Markdown y, opcionalmente, EPUB y PDF.
+4. En el mismo workspace, ejecuta `/compilar` para generar el libro en `publicacion/` (Markdown y, opcionalmente, EPUB y PDF).
+5. Para reunir varios relatos en una antología, vuelve al hub y ejecuta `/crear-libro`.
 
 Si un relato publicado requiere cambios de contenido, crea primero una edición derivada con `/nueva-edicion`; no uses `/recompilar-libro`, que solo regenera formatos.
 
 ```text
 /nuevo-proyecto
-opencode --cwd "workspaces/<slug>"
+opencode --cwd "../Obras/<slug>"
 /publicar
-/crear-libro <slug-libro> <workspace1> [workspace2 ...] [--epub] [--pdf]
+/compilar --epub
+/crear-libro <slug-antologia> <relato1> <relato2> [...] [--epub] [--pdf]
 ```
 
 Consulta la [guia operativa del hub](docs/operacion-hub.md) para elegir escala, conocer los requisitos y ver ejemplos completos.
@@ -25,11 +27,11 @@ Consulta la [guia operativa del hub](docs/operacion-hub.md) para elegir escala, 
 | Comando | Uso |
 |---|---|
 | `/nuevo-proyecto` | Conduce un briefing editorial de siete fases y crea un workspace. |
-| `/crear-libro` | Compila una novela o una antologia desde workspaces finalizados. |
+| `/crear-libro` | Ensambla una antología desde dos o más relatos finalizados. |
 | `/nueva-edicion` | Abre una edición corregible e independiente de un relato publicado. |
-| `/recompilar-libro` | Añade o regenera formatos de un libro ya publicado sin tocar sus fuentes. |
+| `/recompilar-libro` | Añade o regenera formatos de una antología ya publicada sin tocar sus fuentes. |
 
-Los comandos de escritura (`/generar`, `/corregir`, `/revisar`, `/expandir`, `/publicar`) se ejecutan dentro del workspace, no desde el hub.
+Los comandos de escritura (`/generar`, `/corregir`, `/revisar`, `/expandir`, `/publicar`) y `/compilar` se ejecutan dentro del workspace, no desde el hub.
 
 ## Estructura
 
@@ -37,9 +39,9 @@ Los comandos de escritura (`/generar`, `/corregir`, `/revisar`, `/expandir`, `/p
 |-----------|----------|
 | `.opencode/` | Hub: agentes, skills de scaffolding y comandos. |
 | `shared/` | Fuente de verdad del pipeline de ficcion. |
-| `workspaces/` | Proyectos aislados, cada uno con su propia configuracion. |
 | `scripts/` | Infraestructura para crear workspaces y compilar libros. |
-| `publicados/` | Libros compilados en Markdown y, si se solicitan, EPUB y PDF. |
+| `../Obras/` (`FORJA_OBRAS`) | Fuera del hub: una carpeta y un repositorio git por obra. Los commits los decide la persona usuaria. |
+| `../Publicados/` (`FORJA_PUBLICADOS`) | Fuera del hub: antologías compiladas en Markdown y, si se solicitan, EPUB y PDF. |
 
 Cada workspace nuevo recibe `GUIA.md`, una ayuda rápida para elegir el comando adecuado según el estado de la obra y el objetivo editorial.
 

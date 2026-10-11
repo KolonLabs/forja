@@ -1,6 +1,7 @@
 ---
 name: validacion-coherencia
 description: Comprueba continuidad factual de una escena de relato sin puntuaciones ni etiquetas heredadas.
+user-invocable: false
 ---
 
 # Coherencia — Relato

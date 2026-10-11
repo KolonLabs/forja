@@ -4,11 +4,13 @@ Esta guia describe como operar el hub. Los workspaces son autonomos: este docume
 
 ## Antes de empezar
 
-Ejecuta `/nuevo-proyecto`, `/rehidratar-relato`, `/importar-proyecto`, `/nueva-edicion` y `/crear-libro` desde la raiz del hub. Abre un workspace existente con:
+Ejecuta `/nuevo-proyecto`, `/rehidratar-relato`, `/importar-proyecto`, `/nueva-edicion` y `/crear-libro` desde la raiz del hub. Las obras viven fuera del hub (ADR 0026): en `FORJA_OBRAS` o, si no esta definida, en la carpeta `Obras` hermana del hub; las antologias, en `FORJA_PUBLICADOS` o `Publicados`. `.\scripts\ruta-obra.ps1 [-Slug <slug>] [-Publicados]` imprime esas rutas. Abre un workspace existente con:
 
 ```powershell
-opencode --cwd "workspaces/<slug>"
+opencode --cwd "$(.\scripts\ruta-obra.ps1 -Slug <slug>)"
 ```
+
+Cada obra es su propio repositorio git. Ni los scripts ni los agentes hacen commits ni crean copias de seguridad: haz commit cuando quieras un punto de restauracion.
 
 Usa slugs en `kebab-case`: minusculas, numeros y guiones simples, por ejemplo `cronicas-del-deseo`.
 
@@ -26,7 +28,7 @@ El wizard propone la escala durante el briefing. La opcion `--escala` permite ad
 
 1. Desde el hub, ejecuta `/nuevo-proyecto`.
 2. Responde al briefing de siete fases: gancho, personajes, mundo, voz y limites, estructura, reflexion y persistencia.
-3. Confirma explicitamente el brief final. Solo entonces se crea `workspaces/<slug>/`.
+3. Confirma explicitamente el brief final. Solo entonces se crea la obra en la raiz de obras, con `git init` y sin commits.
 4. Abre el workspace y ejecuta sus comandos de escritura para desarrollar la obra.
 
 Ejemplos:
@@ -57,34 +59,44 @@ Al terminar `/publicar`, el director deja el workspace en estado `finalizado`. L
 
 ## Flujo 3: compilar un libro
 
-Vuelve a una sesion situada en la raiz del hub y ejecuta:
+Una obra se compila dentro de su propio workspace:
 
 ```text
-/crear-libro <slug-libro> <workspace1> [workspace2 ...] [--epub] [--pdf] [--pdf-formato <formato>] [--pdf-motor <motor>] [--titulo "<titulo>"] [--autor "<autor>"]
+/compilar [--epub] [--pdf] [--pdf-formato <formato>] [--pdf-motor <motor>] [--titulo "<titulo>"] [--autor "<autor>"]
+```
+
+Ejemplo:
+
+```text
+/compilar --epub --pdf --pdf-formato paperback --titulo "Barniz de sangre"
+```
+
+El libro se crea en `publicacion/` dentro de la obra, con `<slug>.md`, `manifest.json` (hash del manuscrito y commit de la obra) y, si se pidieron, `<slug>.epub` y `<slug>.pdf`. Acepta obras en `finalizado` o `publicado`; cuando todas las salidas terminan correctamente, la obra pasa a `publicado`. `publicacion/` no se versiona: se regenera desde el manuscrito.
+
+### Antologias
+
+Para reunir varios relatos, vuelve a una sesion situada en la raiz del hub y ejecuta:
+
+```text
+/crear-libro <slug-libro> <relato1> <relato2> [relato3 ...] [--epub] [--pdf] [--pdf-formato <formato>] [--pdf-motor <motor>] [--titulo "<titulo>"] [--autor "<autor>"]
 ```
 
 Reglas de composicion:
 
-- Una novela forma un libro y requiere exactamente un workspace fuente.
-- Una antologia admite uno o varios relatos.
-- No se pueden mezclar relatos y novelas ni repetir un workspace fuente.
-
-Ejemplos:
+- Una antologia requiere al menos dos relatos en `finalizado`.
+- No admite novelas ni fuentes repetidas.
 
 ```text
 /crear-libro cronicas-del-deseo rutina la-fachada --epub
-/crear-libro barniz-de-sangre barniz-de-sangre --epub --pdf --pdf-formato paperback --titulo "Barniz de sangre" --autor "Amaro Alba"
 ```
 
-El libro se crea en `publicados/<slug-libro>/` con `<slug-libro>.md`, `manifest.json` y, si se pidieron, `<slug-libro>.epub` y `<slug-libro>.pdf`. Cuando todas las salidas solicitadas terminan correctamente, las fuentes pasan de `finalizado` a `publicado`.
-
-Un workspace `publicado` no puede volver a entrar en `/crear-libro` de forma implicita. Para añadir o regenerar formatos de ese mismo libro, usa:
+La antologia se crea en `<raiz de publicados>/<slug-libro>/` con `<slug-libro>.md`, `manifest.json` y los formatos pedidos. Cuando todas las salidas terminan correctamente, las fuentes pasan de `finalizado` a `publicado`. Para añadir o regenerar formatos de una antologia, usa:
 
 ```text
 /recompilar-libro <slug-libro> [--epub] [--pdf] [--pdf-formato <formato>] [--pdf-motor <motor>]
 ```
 
-El comando recompila desde el Markdown congelado y el manifiesto de `publicados/<slug-libro>/`; no lee ni modifica workspaces.
+El comando recompila desde el Markdown congelado y el manifiesto del libro; no lee ni modifica obras.
 
 ## Flujo 4: corregir un relato publicado
 
@@ -94,7 +106,7 @@ Una corrección de contenido es una edición nueva, no una recompilación. Desde
 /nueva-edicion <workspace-publicado> <slug-edicion> [--titulo "Título"] [--motivo "..."]
 ```
 
-Solo admite relatos en `publicado`. El original permanece intacto. El hub crea `workspaces/<slug-edicion>/`, conserva la versión de partida en `relato-edicion-anterior.md` y deja el derivado en estado `correccion`.
+Solo admite relatos en `publicado`. El original permanece intacto. El hub crea la obra `<slug-edicion>` en la raiz de obras, con su propio git y sin el historial del origen, conserva la versión de partida en `relato-edicion-anterior.md` y deja el derivado en estado `correccion`.
 
 Abre ese workspace y ejecuta una pasada completa o puntual:
 

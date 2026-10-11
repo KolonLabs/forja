@@ -95,7 +95,7 @@ Objetivo: revisar los hechos del brief (del scaffolder) a la luz de las referenc
 | Paso | Agente | Acción |
 |------|--------|--------|
 | 0.1.1 Revisión de hechos | director + usuario | El director presenta los hechos de `_actos.md` al usuario. A la luz de las referencias leídas (paso 0.0), los hilos confirmados (paso 0.2) y las conexiones (paso 0.3), el director propone ajustes: añadir, eliminar, fusionar, dividir o reescribir hechos. El usuario confirma, rechaza o pide cambios adicionales. El director aplica los cambios vía guionista si la reescritura es estructural. Itera hasta que el usuario confirma el conjunto. |
-| 0.1.2 Ingesta referencias | `entidades` (×N) | Ingestar cada archivo de `referencias/` en Qdrant como `tipo=referencia`: leer el Markdown, identificar temas, construir el índice estructurado (`fijo` = `resumen` + `temas[]`), asignar tags `relevancia_por_hilo`. |
+| 0.1.2 Ingesta referencias | `entidades` (×N) | Ingestar cada archivo de `referencias/` en Qdrant como `tipo=referencia`: leer el Markdown, identificar temas, construir el índice estructurado (`fijo` = `resumen` + `temas[]`), asignar tags `relevancia_por_hilo:<stable_id_hilo>`. |
 | 0.1.3 Fichas básicas | `entidades` (×N, incremental) | Fichas básicas en Qdrant + `fichas/<tipo>_<slug>.md` para entidades clave |
 
 **Gate:** Hechos refinados y confirmados por el usuario. Referencias ingeridas en Qdrant. Entidades clave de cada hilo fichadas (básico).
@@ -207,7 +207,7 @@ Itera por cada capítulo en el orden de la tabla de Trenzado:
 
 | Paso | Agente | Acción |
 |------|--------|--------|
-| 3.1.1 | `memoria` (deepseek-v4-flash) | Consulta Qdrant (L4, L3 por arco, L2 recientes cross-hilo, entidades) + Neo4j (relaciones activas) → briefing ~600 tokens filtrado por hilo(s) activo(s) |
+| 3.1.1 | `memoria` | Consulta Qdrant (L4, L3 por arco, L2 recientes cross-hilo, entidades) + Neo4j (relaciones activas) → briefing ~600 tokens filtrado por hilo(s) activo(s) |
 
 #### 3.2 Auditoría de costuras cross-hilo (capítulo ya ensamblado)
 
@@ -247,7 +247,7 @@ Por cada escena `⬜` del capítulo, en el orden del trenzado:
 
 | Paso | Agente | Acción |
 |------|--------|--------|
-| 3.3.1 | director | Prepara el contexto inline (canon, memoria, voz/POV, fichas, hilo y costuras puente/espejo) e invoca al `escritor` UNA vez con la escena completa |
+| 3.3.1 | director | Prepara el contexto inline (canon, memoria, voz/POV, fichas, hilo, costuras puente/espejo y pasajes pertinentes de `referencias/`) e invoca al `escritor` UNA vez con la escena completa |
 | 3.3.2 | director | Comprueba terminación real (`stop`/`length`), guarda la salida y ejecuta `persistir-escena.py preparar --finish stop`; queda `escena-<SID>.pendiente.md` con SHA256 |
 | 3.3.3 | director + usuario | **Checkpoint obligatorio:** presenta la escena completa con hash/versión y se detiene; sin conformidad no hay revisión ni aceptación |
 | 3.3.4 | `validador` (read-only) | Revisión editorial de escena con el hash vigente. Si ≥2 hilos: + `validacion-cross-hilo` como incidencias |
@@ -265,7 +265,7 @@ Por cada escena `⬜` del capítulo, en el orden del trenzado:
 
 | Paso | Agente | Acción |
 |------|--------|--------|
-| 3.5.1 | `cronista` (deepseek-v4-flash) | Por cada escena (L1) del draft: upsert L1 en Qdrant (etiquetado por hilo), actualizar `dinamico` de entidades con cambio inequívoco, aplicar nuevas relaciones o cambios de rol en Neo4j (`upsert-relationship`) |
+| 3.5.1 | `cronista` | Por cada escena (L1) del draft: upsert L1 en Qdrant (etiquetado por hilo), actualizar `dinamico` de entidades con cambio inequívoco, aplicar nuevas relaciones o cambios de rol en Neo4j (`upsert-relationship`) |
 | 3.5.2 | `cronista` + `auditoria-neo4j` | Tras procesar todas las escenas: upsert L2 (capítulo), L3 (si cierre arco), L4 (cada 10 caps). Auditoría Neo4j cross-hilo (solo lectura): detectar discrepancias residuales no materializables desde el draft |
 | 3.5.3 | `cronista` | Actualiza `config.json`: `capitulos_completados++`, `ultimo_beat_seq`, `hilos[].ultimo_capitulo` |
 | 3.5.4 | director | Revisa discrepancias residuales; si son errores de lectura del cronista, las descarta; si son contradictorias, decide |
@@ -305,7 +305,7 @@ Por cada escena `⬜` del capítulo, en el orden del trenzado:
 diseno → diseno_hilos → hilos_beats → trenzado → fichas → escritura → publicacion → finalizado
 ```
 
-`finalizado` es el estado terminal del workspace. `publicado` lo asigna solo el hub con `/crear-libro`, que además exige `finalizado` como estado de entrada. El director nunca escribe `publicado`.
+`finalizado` es el estado terminal del workspace. `publicado` lo asigna solo `/compilar` (`scripts/compilar.ps1`), que exige `finalizado` o `publicado` como estado de entrada. El director nunca escribe `publicado`.
 
 **Sub-estados y detección:** `config.json.estado` refleja el estado principal. Los sub-estados de diseño (`diseno`, `diseno_hilos`) comparten el valor `"diseno"` en el arranque inicial. El director detecta el progreso por:
 - `config.json.hilos[].estado` → `"pendiente"`: falta FASE 0.2
@@ -327,7 +327,7 @@ Al avanzar FASE 0.2, el director escribe `config.json.estado = "diseno_hilos"`. 
 
 ## Skills activos (44)
 
-**Invariantes del hub (40).** Se inyectan desde `shared/.opencode/skills/`:
+**Invariantes del hub (40).** Se inyectan desde `shared/skills/` en `.claude/skills/` del workspace (las leen opencode y Claude Code):
 
 `mecanica-prosa`, `hechos-estructura`, `hechos-distribuidos`, `tonos-beat`, `plantilla-ficha`, `plantilla-personaje`, `plantilla-lugar`, `plantilla-objeto`, `plantilla-animal`, `plantilla-arco`, `plantilla-evento`, `plantilla-organizacion`, `plantilla-grupo`, `plantilla-ser-sobrenatural`, `validacion-crudeza`, `validacion-coherencia`, `validacion-geometria`, `validacion-sensorial`, `validacion-tono`, `consistencia-narrativa`, `desarrollo-narrativa`, `fichas-personajes`, `cronista-ops`, `estilo-explicito`, `estilo-contemporaneo`, `estilo-erotico`, `estilo-fantasia`, `estilo-noir`, `estilo-romantico`, `estilo-thriller`, `estilo-prosa`, `qdrant`, `neo4j`, `auditoria-neo4j`, `scaffolding-hecho`, `scaffolding-acto`, `diseno-hilo`, `trenzado-narrativo`, `validacion-cross-hilo`, `plantilla-hilo`
 

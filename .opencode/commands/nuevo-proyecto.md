@@ -5,7 +5,7 @@ agent: scaffolder
 
 # /nuevo-proyecto
 
-Briefing editorial **antes** de crear el workspace. El scaffolder conduce una conversación en 7 fases para que la idea llegue **definida** a `workspaces/<slug>/`.
+Briefing editorial **antes** de crear el workspace. El scaffolder conduce una conversación en 7 fases para que la idea llegue **definida** a su obra (`.\scripts\ruta-obra.ps1 -Slug <slug>`, fuera del hub); antes de persistir, el pre-flight editorial de la Fase 7 extrae y resuelve las ambigüedades de hechos y brief.
 
 ## Entrada del comando
 
@@ -34,7 +34,7 @@ Argumentos recibidos: `$ARGUMENTS`
 1. **3-5 preguntas por turno** — no bombardear con 20.
 2. **Profundiza** si la respuesta es vaga (ej. "un thriller en Madrid" → ¿qué amenaza concreta?, ¿quién sufre?, ¿qué plazo?).
 3. **Cuestiona con respeto** — señala clichés, lagunas, contradicciones.
-4. **No crear el workspace** hasta: (a) briefing completo, (b) reflexión editorial, (c) confirmación explícita.
+4. **No crear el workspace** hasta: (a) briefing completo, (b) reflexión editorial, (c) pre-flight editorial de hechos y brief, (d) confirmación explícita.
 5. **La fase 6 (reflexión) es OBLIGATORIA** — no se puede saltar ni en modo directo.
 
 ## Flujo (7 fases)
@@ -102,7 +102,7 @@ Argumentos recibidos: `$ARGUMENTS`
   thriller      — Urgente, paranoica, cortante, tensión constante
   ```
 - "¿Te sirve un solo estilo o quieres fusión con un secundario? (ej. thriller + explicito, fantasia + erotico)"
-- "¿Nivel de crudeza (explicitud)? (maximo / alto / medio / bajo / minimo)"
+- "¿Nivel de crudeza (explicitud)? (maximo / alto / medio / bajo / minimo)" — obligatorio, sin valor por defecto: el script rechaza el brief si falta.
 - "¿Punto de vista narrativo? (1ª persona / 3ª limitada / 3ª omnisciente / múltiple)"
 - "¿Hay restricciones? ¿Qué NO quieres que aparezca? (sin flashbacks, sin voz en off, sin ciertos temas, sin violencia sexual explícita, sin incesto…)"
 - "¿Hay límites específicos de contenido que respetar?"
@@ -173,17 +173,20 @@ Preguntar: "¿Quieres ajustar algo o creamos el workspace ya?"
 
 ### Fase 7 — Persistir y crear
 
-1. **Validar unicidad del slug** listando `workspaces/` (excluye `legacy`).
-2. **Construir el brief JSON** en contexto y pasarlo al script por stdin:
+1. **Pre-flight editorial de hechos y brief (obligatorio).** Relee hechos y brief con el checklist de ambigüedades (agencia, referentes, orden, progresión física, POV/información, tono vs restricciones, identidades, decisiones del usuario, detalles en conflicto). Presenta las conclusiones, aplica las precisiones de redacción y declara lo abierto en `reflexion_agente.riesgos`. No se salta.
+2. **Validar unicidad del slug**: la ruta de `.\scripts\ruta-obra.ps1 -Slug <slug>` no debe existir (excluye `legacy`).
+3. **Construir el brief JSON** en contexto y pasarlo al script por stdin:
 ```powershell
 $briefJson | .\scripts\new-project.ps1
 ```
-3. **Confirmar creación** y mostrar instrucciones:
+4. **Confirmar creación** y mostrar instrucciones:
 ```
-Workspace creado: workspaces/<slug>/
+Workspace creado: <ruta que imprime el script>
+   (repositorio git propio, sin commits)
 
-   Para empezar:
-     opencode --cwd "workspaces/<slug>"
+   Para empezar (opencode o Claude Code):
+     opencode --cwd "<ruta>"
+     o Claude Code en la carpeta <ruta> (agente principal: director)
 
    En la sesión:
      /generar
@@ -245,6 +248,8 @@ Workspace creado: workspaces/<slug>/
   }
 }
 ```
+
+Solo en continuaciones de relato se admiten `canon_previo` (Markdown que `BRIEF.md` muestra como «Canon heredado») y `fichas_semilla` (lista de `{ruta, contenido}` con rutas `fichas/<tipo>_<slug>.md`). Las fichas deben estar reconstruidas para la nueva entrega, no copiadas.
 
 `_mapa` y `hechos` son obligatorios en todas las escalas. Las novelas inicializan siempre Qdrant y Neo4j; no existe `--sin-infra`.
 

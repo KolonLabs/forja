@@ -1,0 +1,35 @@
+{
+  "agent": "director",
+  "permissions": {
+    "defaultMode": "dontAsk",
+    "allow": [
+      "Read",
+      "Glob",
+      "Grep",
+      "Skill",
+      "Agent",
+      "TodoWrite",
+      "Edit(/.forja-transaccion/siguiente/**)",
+      "Edit(/fichas/**)",
+      "Bash(pwsh -NoProfile -File scripts/relato-transaccion.ps1 *)",
+      "PowerShell(pwsh -NoProfile -File scripts/relato-transaccion.ps1 *)",
+      "Bash(pwsh -NoProfile -File scripts/renumerar.ps1 *)",
+      "PowerShell(pwsh -NoProfile -File scripts/renumerar.ps1 *)",
+      "Bash(pwsh -NoProfile -File scripts/compilar.ps1)",
+      "Bash(pwsh -NoProfile -File scripts/compilar.ps1 *)",
+      "PowerShell(pwsh -NoProfile -File scripts/compilar.ps1)",
+      "PowerShell(pwsh -NoProfile -File scripts/compilar.ps1 *)"
+    ],
+    "deny": [
+      "Edit(/config.json)",
+      "Edit(/_actos.md)",
+      "Edit(/guion.md)",
+      "Edit(/relato-draft.md)",
+      "Edit(/contexto_narrativo.md)",
+      "Edit(/correcciones.md)",
+      "Edit(/relato.md)",
+      "WebFetch",
+      "WebSearch"
+    ]
+  }
+}

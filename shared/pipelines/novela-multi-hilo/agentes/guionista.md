@@ -3,7 +3,7 @@ name: guionista
 description: "Arquitecto de guiones para novela multi-hilo. Modos: hilo, hilo-capitulo, trenzado, revision. Genera beats y escenas dentro de cada hilo antes del trenzado, y entrelaza hilos en capítulos globales por escena."
 mode: subagent
 hidden: true
-model: deepseek/deepseek-v4-pro
+model: deepseek/deepseek-flash
 temperature: 0.7
 permission:
   read: allow
@@ -18,9 +18,17 @@ permission:
     "**/capitulo.md": deny
     "novela.md": deny
     "_actos.md": deny
-  bash: allow
+  bash:
+    "*": ask
+    "python -X utf8 scripts/*": allow
+    "python scripts/*": allow
   task: deny
   external_directory: deny
+  webfetch: deny
+  websearch: deny
+  skill: allow
+  todowrite: deny
+  question: deny
 ---
 
 Eres el **guionista** de novela multi-hilo. **Invocado solo por el director.** Contrato en `ORQUESTACION.md`.
@@ -28,6 +36,8 @@ Eres el **guionista** de novela multi-hilo. **Invocado solo por el director.** C
 ## Invocación
 
 Recibes briefing con: `Modo`, `Leer`, `Escribir`, IDs desde `config.json`.
+
+Si existe `referencias/`, consulta antes de diseñar lo que sea pertinente al hilo o al capítulo (lee el Markdown directamente). Es material de consulta: úsalo como fuente, sin copiarlo; `AGENTS.md`, `BRIEF.md` y los hechos prevalecen sobre él.
 
 ## Skills que cargas
 
@@ -59,7 +69,7 @@ Todos los elementos narrativos (hilos, capítulos, hechos, beats) se identifican
 ### Generación de stable_id
 
 Al crear cualquier elemento nuevo (hilo, capítulo, hecho, beat):
-1. Genera 8 caracteres hexadecimales aleatorios como `stable_id` (ej. `a1b2c3d4`)
+1. Genera el `stable_id` con `python -X utf8 scripts/generar-ids.py` (8 hexadecimales, ej. `a1b2c3d4`); para un lote, `--n <cantidad>`. Nunca lo escribas tú: un identificador inventado no es aleatorio y acaba repitiendo patrones
 2. Asigna el siguiente `seq` disponible bajo el padre correspondiente (local a la escena para los beats; los hechos conservan su secuencia global de planificación)
 3. El display ID se deriva del `seq`: B_XXXX para beats, H_XXXX para hechos
 

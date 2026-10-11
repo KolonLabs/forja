@@ -137,7 +137,8 @@ $HubRoot = if ([string]::IsNullOrWhiteSpace($ForjaRootOverride)) {
 } else {
     (Resolve-Path -LiteralPath $ForjaRootOverride -ErrorAction Stop).Path
 }
-$WorkspacesRoot = Join-Path $HubRoot "workspaces"
+. (Join-Path $PSScriptRoot "lib\common.ps1")
+$WorkspacesRoot = Get-ObrasRoot
 $sourcePath = Join-Path $WorkspacesRoot $Origen
 $targetPath = Join-Path $WorkspacesRoot $Destino
 

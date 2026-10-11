@@ -1,11 +1,27 @@
 ---
+name: entidades
 description: Gestiona entidades narrativas de novela multi-hilo con stable_id UUID opaco, payload unificado en Qdrant, referencias de hilo y respaldo Markdown.
 mode: subagent
-model: deepseek/deepseek-v4-pro
+hidden: true
+model: deepseek/deepseek-flash
 temperature: 0.65
 permission:
+  read: allow
+  glob: allow
+  grep: allow
+  list: allow
   edit: allow
-  bash: allow
+  bash:
+    "*": ask
+    "python -X utf8 scripts/*": allow
+    "python scripts/*": allow
+  task: deny
+  external_directory: deny
+  webfetch: deny
+  websearch: deny
+  skill: allow
+  todowrite: deny
+  question: deny
 ---
 
 Antes de crear o modificar fichas, carga:
@@ -55,7 +71,7 @@ referencia
   }
   ```
 
-- Ingestión (FASE 0.1.0): el director invoca `entidades` por cada archivo de `referencias/`.
+- Ingestión (FASE 0.1.2): el director invoca `entidades` por cada archivo de `referencias/`.
   1. Lee el archivo Markdown completo.
   2. Identifica los temas principales (cada unidad conceptual autónoma del documento).
   3. Construye el índice: resumen ejecutivo + lista de temas con título, palabras clave y descripción.
@@ -82,7 +98,7 @@ El `stable_id` no codifica tipo, nombre, slug, proyecto ni hilo. Están prohibid
 
 ### Generación de `stable_id`
 
-1. Genera una vez un UUID aleatorio, opaco y canónico, por ejemplo `7b7e34b6-9f5d-4c40-a5e3-81c1f4517e2c`.
+1. Genera una vez un UUID aleatorio, opaco y canónico con `python -X utf8 scripts/generar-ids.py --uuid` (por ejemplo `7b7e34b6-9f5d-4c40-a5e3-81c1f4517e2c`). Nunca lo escribas tú: un identificador inventado no es aleatorio.
 2. Comprueba que no exista dentro del `proyecto`.
 3. Persiste el mismo valor en Qdrant, Markdown, Neo4j y conexiones cross-hilo.
 4. No lo regeneres al cambiar nombre, slug, tipo, estado o pertenencia a un hilo.

@@ -37,7 +37,6 @@ No modifica guion, config, fichas, summaries ni Neo4j.
 """
 
 import argparse
-from datetime import datetime, timezone
 import hashlib
 import importlib.util
 import json
@@ -185,7 +184,8 @@ def validate_candidate(data, sid, expected, expected_hilo=""):
     return bodies
 
 
-def atomic_write(path, data, backup=False):
+def atomic_write(path, data):
+    # Sin copia previa: el historial de la obra es su git (ADR 0026).
     old = path.read_bytes() if path.exists() else None
     if old == data:
         return False
@@ -196,12 +196,6 @@ def atomic_write(path, data, backup=False):
             stream.write(data)
             stream.flush()
             os.fsync(stream.fileno())
-        if backup and old is not None:
-            stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
-            with path.with_name(f"{path.name}.{stamp}.bak").open("xb") as stream:
-                stream.write(old)
-                stream.flush()
-                os.fsync(stream.fileno())
         os.replace(temporary, path)
     finally:
         if temporary is not None:
@@ -351,7 +345,7 @@ def run(args):
         prefix = text[:start]
         separator = "\n" if prefix and not prefix.endswith("\n") else ""
         updated = (prefix + separator).encode("utf-8") + candidate + text[end:].encode("utf-8")
-        result.update(estado="aceptado", cambio=atomic_write(draft, updated, backup=True))
+        result.update(estado="aceptado", cambio=atomic_write(draft, updated))
     else:
         if not accepted:
             raise ValueError("La escena del draft no es exactamente el candidato revisado")

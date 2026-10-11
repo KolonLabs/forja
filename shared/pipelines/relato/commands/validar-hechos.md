@@ -15,4 +15,4 @@ Comprueba:
 - que las pautas, evoluciones y consecuencias que deban verse estén expresadas con suficiente contexto;
 - que un hecho no imponga beats, escenas, prosa ni una coreografía cerrada.
 
-En `diseno`, presenta bloqueos y mejoras; modifica hechos solo con aprobación del usuario. En estados posteriores es una auditoría de solo lectura.
+En `diseno`, presenta bloqueos y mejoras; modifica hechos solo con aprobación del usuario. En `fichas` es una auditoría: un cambio aprobado se aplica con `/refinar-hechos`, que deja los beats del hecho pendientes de revisión. En estados posteriores es una auditoría de solo lectura.

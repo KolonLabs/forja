@@ -1,6 +1,7 @@
 ---
 name: plantilla-guion
 description: Estructura y campos del guion de novela simple con actos, capítulos, hechos, escenas y beats identificados por stable_id y ordenados por seq local al padre.
+user-invocable: false
 ---
 
 # Guion: [TÍTULO]

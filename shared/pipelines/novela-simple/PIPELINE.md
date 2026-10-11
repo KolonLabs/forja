@@ -93,7 +93,7 @@ Recorre los capitulos de `guion-novela.md` en orden, con autorizacion de avance 
 
 | Paso | Agente | Acción |
 |------|--------|--------|
-| 2.1.1 | `memoria` (deepseek-v4-flash) | Consulta Qdrant (L4, L3, L2 recientes, entidades) + Neo4j (relaciones activas) → briefing ~600 tokens |
+| 2.1.1 | `memoria` | Consulta Qdrant (L4, L3, L2 recientes, entidades) + Neo4j (relaciones activas) → briefing ~600 tokens |
 
 #### 2.2 Guion del capítulo
 
@@ -110,12 +110,12 @@ Por cada escena del capítulo (todos sus beats a la vez):
 
 | Paso | Agente | Acción |
 |------|--------|--------|
-| 2.3.1 | director + `escritor` | Contexto de capitulo preparado una vez y tramo pertinente inline. Escritor genera una escena sin herramientas; completion maxima 64000 (razonamiento + salida). Sin notas rutinarias. |
+| 2.3.1 | director + `escritor` | Contexto de capitulo preparado una vez y tramo pertinente inline. Escritor genera una escena sin herramientas; completion maxima 64000 en opencode (razonamiento + salida). Sin notas rutinarias. |
 | 2.3.1b | director | `persistir-escena.py preparar`: comprobar finish, IDs, orden y cuerpos; guardar candidato pendiente y SHA256. No sobrescribir draft aprobado ni Qdrant. |
 | 2.3.1c | director + usuario | **Checkpoint obligatorio de narrativa.** Presentar la escena completa con stable_id y hash/version; detenerse y esperar respuesta explicita antes de revision editorial, aceptacion o avance. Ajustes solicitados autorizan corregir solo esta escena y volver a presentarla. |
 | 2.3.2 | `validador` (modo escena, read-only) | Una revision editorial independiente: cobertura, continuidad, personajes/POV, prosa y restricciones. Solo incidencias concretas; aprobacion ligada al hash. Sin scores por beat ni cuotas sensoriales. |
 | 2.3.3 | director + `integrador` (condicional) | Cambios mecanicos exactos o una llamada del integrador para fragmentos afectados. Nuevo candidato/hash: volver a 2.3.1c, esperar conformidad y obtener revision focalizada; canon incierto bloquea. |
-| 2.3.4 | director | Solo con conformidad explicita del usuario y revision editorial aprobada para el mismo hash: `aceptar` guarda con backup; `sincronizar` actualiza Qdrant en lote. Solo tras exito marca los beats ✅. Reintentos del mismo texto idempotentes sin regenerar. |
+| 2.3.4 | director | Solo con conformidad explicita del usuario y revision editorial aprobada para el mismo hash: `aceptar` guarda de forma atómica; `sincronizar` actualiza Qdrant en lote. Solo tras exito marca los beats ✅. Reintentos del mismo texto idempotentes sin regenerar. |
 | 2.3.5 | director + usuario | **Autorizacion de avance.** Aprobar una escena no autoriza la siguiente escena: preguntar cual se inicia y esperar confirmacion, salvo que el usuario haya aprobado expresamente texto y ese avance en la misma respuesta. Sin generacion ni preparacion especulativa. |
 
 > **Flujo vigente:** contexto preparado -> generacion -> candidato comprobado -> presentar al usuario y detenerse -> revision editorial -> correccion selectiva si procede (nuevo texto vuelve al checkpoint) -> aceptacion y sincronizacion con ambas aprobaciones -> avance solo autorizado. El checkpoint de guion se conserva; las restricciones, identidades y cobertura siguen siendo obligatorias.
@@ -131,7 +131,7 @@ Por cada escena del capítulo (todos sus beats a la vez):
 
 | Paso | Agente | Acción |
 |------|--------|--------|
-| 2.5.1 | `cronista` (deepseek-v4-flash) | Por cada escena (L1) del draft: upsert L1 en Qdrant, actualizar `dinamico` de entidades con cambio inequívoco, aplicar nuevas relaciones o cambios de rol en Neo4j (`upsert-relationship`) |
+| 2.5.1 | `cronista` | Por cada escena (L1) del draft: upsert L1 en Qdrant, actualizar `dinamico` de entidades con cambio inequívoco, aplicar nuevas relaciones o cambios de rol en Neo4j (`upsert-relationship`) |
 | 2.5.2 | `cronista` + `auditoria-neo4j` | Tras procesar todas las escenas: upsert L2 (capítulo), L3 (si cierre arco), L4 (cada 10 caps). Auditoría Neo4j (solo lectura): detectar discrepancias residuales |
 | 2.5.3 | `cronista` | Actualiza `config.json`: `capitulos_completados++`, `ultimo_beat_seq` |
 | 2.5.4 | director | Revisa discrepancias residuales; si son errores de lectura del cronista, las descarta; si son contradictorias, decide |
@@ -165,7 +165,7 @@ Por cada escena del capítulo (todos sus beats a la vez):
 diseno → fichas → escritura → publicacion → finalizado
 ```
 
-`finalizado` es el estado terminal del workspace. `publicado` lo asigna solo el hub con `/crear-libro`, que además exige `finalizado` como estado de entrada. El director nunca escribe `publicado`.
+`finalizado` es el estado terminal del workspace. `publicado` lo asigna solo `/compilar` (`scripts/compilar.ps1`), que exige `finalizado` o `publicado` como estado de entrada. El director nunca escribe `publicado`.
 
 **Bucle en FASE 2:** itera capítulo por capítulo. `config.json.capitulos_completados` avanza.
 
@@ -179,7 +179,7 @@ diseno → fichas → escritura → publicacion → finalizado
 
 ## Skills activos (40)
 
-**Invariantes del hub (36).** Se inyectan desde `shared/.opencode/skills/`:
+**Invariantes del hub (36).** Se inyectan desde `shared/skills/` en `.claude/skills/` del workspace (las leen opencode y Claude Code):
 
 `mecanica-prosa`, `tonos-beat`, `hechos-estructura`, `hechos-distribuidos`, `plantilla-ficha`, `plantilla-personaje`, `plantilla-lugar`, `plantilla-objeto`, `plantilla-animal`, `plantilla-arco`, `plantilla-evento`, `plantilla-organizacion`, `plantilla-grupo`, `plantilla-ser-sobrenatural`, `validacion-crudeza`, `validacion-coherencia`, `validacion-geometria`, `validacion-sensorial`, `validacion-tono`, `consistencia-narrativa`, `desarrollo-narrativa`, `fichas-personajes`, `cronista-ops`, `estilo-explicito`, `estilo-contemporaneo`, `estilo-erotico`, `estilo-fantasia`, `estilo-noir`, `estilo-romantico`, `estilo-thriller`, `estilo-prosa`, `qdrant`, `neo4j`, `auditoria-neo4j`, `scaffolding-hecho`, `scaffolding-acto`
 

@@ -2,7 +2,8 @@
 # Recibe: $Brief (PSObject con los datos del brief, ya validado)
 # Requiere: $HubRoot (definido en el dispatcher)
 
-$TargetDir = Join-Path $HubRoot "workspaces\$($Brief.slug)"
+# Las obras viven fuera del hub, cada una con su propio git (ADR 0026).
+$TargetDir = Join-Path (Get-ObrasRoot) $Brief.slug
 if (Test-Path -LiteralPath $TargetDir) {
     throw "Ya existe un workspace con slug '$($Brief.slug)': $TargetDir"
 }
@@ -23,19 +24,14 @@ try {
     # 1. Crear estructura de directorios
     $dirs = @(
         "$TargetDir\.opencode\agents",
-        "$TargetDir\.opencode\skills",
+        "$TargetDir\.claude\skills",
         "$TargetDir\.opencode\commands",
         "$TargetDir\fichas"
     )
     foreach ($d in $dirs) { New-Item -Force -ItemType Directory $d | Out-Null }
 
-# 2. Escribir opencode.json
-@"
-{
-  "`$schema": "https://opencode.ai/config.json",
-  "default_agent": "director"
-}
-"@ | Set-Content -LiteralPath (Join-Path $TargetDir "opencode.json") -Encoding UTF8
+# 2. Escribir opencode.json (aislado del hub)
+Write-OpencodeConfig -TargetDir $TargetDir
 
 # 2. Inyectar pipeline
 Write-Host "Inyectando pipeline relato..."
@@ -47,9 +43,13 @@ Write-BriefMd -TargetDir $TargetDir -Brief $Brief
 Write-ActosMd -TargetDir $TargetDir -Brief $Brief -AsignarIdsGlobales
 Write-AgentsMd -TargetDir $TargetDir -Brief $Brief -Escala "relato"
 Write-MapaMd -TargetDir $TargetDir -Brief $Brief
+Write-FichasSemilla -TargetDir $TargetDir -Brief $Brief
 
 # 4. Confirmación
-$skillCount = (Get-ChildItem (Join-Path $TargetDir ".opencode\skills") -Directory).Count
+# Repositorio propio de la obra, sin commits (ADR 0026).
+Initialize-ObraGit -TargetDir $TargetDir
+
+$skillCount = (Get-ChildItem (Join-Path $TargetDir ".claude\skills") -Directory).Count
 
 Write-Host ""
 Write-Host "============================================"
@@ -61,7 +61,8 @@ Write-Host "  Estilo:    $($Brief.estilo_base)"
 Write-Host "  Skills:    $skillCount activos"
 Write-Host ""
 Write-Host "  Para comenzar:"
-Write-Host "    opencode --cwd ""workspaces\$($Brief.slug)"""
+Write-Host "    opencode --cwd ""$TargetDir"""
+Write-Host "    o, en Claude Code, abre una sesión en esa carpeta (agente principal: director)"
 Write-Host "    /generar"
 Write-Host ""
 } catch {

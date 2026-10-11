@@ -3,7 +3,7 @@ name: entidades
 description: Propone fichas Markdown para entidades recurrentes o críticas de relato.
 mode: subagent
 hidden: true
-model: deepseek/deepseek-v4-pro
+model: deepseek/deepseek-flash
 temperature: 0.65
 permission:
   read: allow

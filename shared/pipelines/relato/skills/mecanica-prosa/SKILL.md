@@ -1,7 +1,7 @@
 ---
 name: mecanica-prosa
 description: Formato mínimo de prosa por escena para relato, sin volver a dividirla por beats.
-compatibility: opencode
+user-invocable: false
 ---
 
 # Mecánica de prosa — Relato
@@ -26,7 +26,7 @@ El español omite el sujeto cuando ya se conoce. Repetir el nombre («Miguel… 
 - Primera mención en una escena nueva o tras un cambio de escenario.
 - Cuando hay dos personajes en escena y omitir el sujeto crearía ambigüedad real sobre quién actúa.
 - Tras un párrafo largo (6+ líneas) sin referencia al personaje, para reanclar.
-- En el POV alterno de este relato, al reanudar el foco en Miguel o en Elena después de haber estado en el otro.
+- Si el relato alterna el foco entre personajes, al reanudarlo en uno después de haber estado en el otro.
 
 ### Cuándo NO nombrar
 

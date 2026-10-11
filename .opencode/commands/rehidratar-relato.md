@@ -15,7 +15,7 @@ Argumentos recibidos: `$ARGUMENTS`
 /rehidratar-relato <origen> <slug-destino> [--actos actual|backup]
 ```
 
-- `<origen>` y `<slug-destino>` son slugs de `workspaces/`; deben ser distintos.
+- `<origen>` y `<slug-destino>` son slugs de obras de la raíz de obras (`.\scripts\ruta-obra.ps1` la imprime: `FORJA_OBRAS` o, por defecto, la carpeta `Obras` hermana del hub); deben ser distintos.
 - `--actos actual` usa `_actos.md` del origen (valor por defecto).
 - `--actos backup` usa el único `_actos_backup_*.md` disponible. Si hay varios, detente y pide que se elija la semilla manualmente.
 - El destino debe ser nuevo. Este comando nunca sustituye ni elimina un workspace existente.

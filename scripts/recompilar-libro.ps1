@@ -12,8 +12,10 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
-$ForjaRoot = Split-Path -Parent $PSScriptRoot
-$PublicadosRoot = Join-Path $ForjaRoot "publicados"
+$HubRoot = Split-Path -Parent $PSScriptRoot
+. (Join-Path $PSScriptRoot "lib\common.ps1")
+$PublicadosRoot = Get-PublicadosRoot
+$BuildScripts = Join-Path $HubRoot "shared\scripts"
 $utf8NoBom = [System.Text.UTF8Encoding]::new($false)
 
 function Assert-KebabSlug {
@@ -24,68 +26,10 @@ function Assert-KebabSlug {
     }
 }
 
-function Find-Pandoc {
-    $command = Get-Command pandoc -ErrorAction SilentlyContinue | Select-Object -First 1
-    if ($command) {
-        if ($command.Path) { return $command.Path }
-        if ($command.Source) { return $command.Source }
-    }
-
-    foreach ($candidate in @(
-        $env:PANDOC_PATH,
-        $env:PANDOC,
-        "C:\Program Files\Pandoc\pandoc.exe",
-        "C:\Program Files (x86)\Pandoc\pandoc.exe",
-        "$env:LOCALAPPDATA\Programs\Pandoc\pandoc.exe",
-        "$env:LOCALAPPDATA\Pandoc\pandoc.exe",
-        "C:\ProgramData\chocolatey\bin\pandoc.exe",
-        "$env:USERPROFILE\scoop\shims\pandoc.exe"
-    )) {
-        if (-not $candidate) { continue }
-        $resolved = Resolve-Path -LiteralPath $candidate -ErrorAction SilentlyContinue
-        if ($resolved) { return $resolved.Path }
-    }
-
-    throw "No se encontro Pandoc. Instala Pandoc o define PANDOC_PATH."
-}
-
 function Get-FileSha256 {
     param([string]$Path)
 
     return (Get-FileHash -LiteralPath $Path -Algorithm SHA256).Hash.ToLowerInvariant()
-}
-
-function Invoke-EpubBuild {
-    param(
-        [string]$InputPath,
-        [string]$OutputPath,
-        [string]$Titulo,
-        [string]$Autor
-    )
-
-    $pandoc = Find-Pandoc
-    $arguments = @(
-        $InputPath,
-        "--from", "markdown",
-        "--to", "epub",
-        "--metadata", "title=$Titulo",
-        "--metadata", "author=$Autor",
-        "--metadata", "lang=es",
-        "--toc", "--toc-depth=1",
-        "-o", $OutputPath
-    )
-    $cssPath = Join-Path $PSScriptRoot "build.css"
-    if (Test-Path -LiteralPath $cssPath -PathType Leaf) {
-        $arguments += "--css", $cssPath
-    }
-
-    Write-Host "Generando EPUB..."
-    $output = & $pandoc @arguments 2>&1 | Out-String
-    if ($LASTEXITCODE -ne 0 -or -not (Test-Path -LiteralPath $OutputPath -PathType Leaf)) {
-        $logPath = Join-Path (Split-Path -Parent $OutputPath) ("{0}.epub-build-error.log" -f [System.IO.Path]::GetFileNameWithoutExtension($OutputPath))
-        [System.IO.File]::WriteAllText($logPath, $output, $utf8NoBom)
-        throw "Pandoc no pudo generar el EPUB. Revisa $logPath"
-    }
 }
 
 Assert-KebabSlug $Libro
@@ -128,7 +72,7 @@ try {
 
     if ($Epub) {
         $epubPath = Join-Path $stageDir "$Libro.epub"
-        Invoke-EpubBuild -InputPath $stageMarkdown -OutputPath $epubPath -Titulo $manifest.titulo -Autor $manifest.autor
+        & (Join-Path $BuildScripts "build-epub.ps1") -InputMarkdown $stageMarkdown -OutputEpub $epubPath -Titulo $manifest.titulo -Autor $manifest.autor
         $manifest.artefactos | Add-Member -NotePropertyName "epub" -NotePropertyValue ([ordered]@{
             archivo = "$Libro.epub"
             sha256 = Get-FileSha256 $epubPath
@@ -136,7 +80,7 @@ try {
     }
     if ($Pdf) {
         $pdfPath = Join-Path $stageDir "$Libro.pdf"
-        & (Join-Path $PSScriptRoot "build-pdf.ps1") -InputMarkdown $stageMarkdown -OutputPdf $pdfPath -Titulo $manifest.titulo -Autor $manifest.autor -PdfFormat $PdfFormat -PdfEngine $PdfEngine
+        & (Join-Path $BuildScripts "build-pdf.ps1") -InputMarkdown $stageMarkdown -OutputPdf $pdfPath -Titulo $manifest.titulo -Autor $manifest.autor -PdfFormat $PdfFormat -PdfEngine $PdfEngine
         $manifest.artefactos | Add-Member -NotePropertyName "pdf" -NotePropertyValue ([ordered]@{
             archivo = "$Libro.pdf"
             sha256 = Get-FileSha256 $pdfPath

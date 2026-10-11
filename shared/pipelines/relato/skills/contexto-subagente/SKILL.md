@@ -1,7 +1,7 @@
 ---
 name: contexto-subagente
 description: Define el contexto mínimo de agentes de relato para no sobrecargar la generación.
-compatibility: opencode
+user-invocable: false
 ---
 
 # Contexto de subagentes — Relato
@@ -20,7 +20,7 @@ Recibe una `E_XXXX` completa, todas sus acciones `B_XXXX`, escena anterior/sigui
 
 ## Validador e integrador
 
-Reciben la escena completa y, para una corrección, los tramos señalados por ancla más sus vecinos inmediatos. El validador señala problemas por beat; el integrador devuelve solo reemplazos.
+Reciben la escena completa y, para una corrección, la prosa literal de los tramos señalados por ancla más sus vecinos inmediatos; si la escena aún no está persistida, el director pega ese texto en el briefing y el integrador no lo busca en disco. El validador señala problemas por beat; el integrador devuelve solo reemplazos.
 
 ## Memoria
 

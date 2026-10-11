@@ -1,6 +1,7 @@
 ---
 name: validacion-tono
 description: Revisa el arco tonal de una escena de relato sin convertir preferencias expresivas en bloqueos.
+user-invocable: false
 ---
 
 # Tono — Relato

@@ -3,7 +3,7 @@ name: guionista
 description: Diseña beats globales y escenas operativas para relatos.
 mode: subagent
 hidden: true
-model: deepseek/deepseek-v4-pro
+model: deepseek/deepseek-flash
 temperature: 0.65
 permission:
   read: allow
@@ -31,11 +31,11 @@ Cuando un hecho describa regularidad, escalada, repetición, deterioro o una con
 
 Puedes crear beats de continuidad que materialicen el mundo y las relaciones ya fijados, pero no inventes un giro irreversible, una relación nueva, una revelación, una restricción ni un desenlace. Si una pauta solo pudiera hacerse perceptible añadiendo uno de ellos, devuélvelo como bloqueo al director en vez de escribirlo.
 
-Cada beat contiene una acción concreta, una consecuencia y un registro opcional solo si se desvía del arco tonal que previsiblemente tendrá su escena. No añadas etiquetas de hecho, extensión, prosa, sensorialidad ni psicología. Al final devuelve una cobertura temporal `H_XXXX → B_XXXX`; es una salida de control para el director y no forma parte del guion persistente.
+Cada beat contiene una acción completa (quién hace qué a quién, desde su preparación hasta que cambia), su consecuencia, un registro opcional solo si se desvía del arco tonal que previsiblemente tendrá su escena y un peso opcional (`[peso: breve|extenso]`) solo si se aparta del peso normal de la escena. Aplica la sección «Atomicidad» de `beats-estructura`: ni dos acciones distintas en un beat ni una acción partida en sus gestos; el cómo se ejecuta, las listas, las indicaciones de ritmo y el diálogo no fijado son del escritor. No añadas etiquetas de hecho, cifras de extensión, prosa, sensorialidad ni psicología. Al final devuelve una cobertura temporal `H_XXXX → B_XXXX`; es una salida de control para el director y no forma parte del guion persistente.
 
 ## Modo `escenas`
 
-Agrupa beats contiguos en `E_XXXX`, una unidad dramática que el escritor pueda generar en una respuesta. Divide una situación amplia cuando cambie objetivo, información, poder, foco, ritmo dominante o resultado. No crees una frontera solo por cantidad de beats.
+Agrupa beats contiguos en `E_XXXX`, una unidad dramática que el escritor pueda generar en una respuesta. Divide una situación amplia cuando cambie objetivo, información, poder, foco, ritmo dominante o resultado. No crees una frontera solo por cantidad de beats; mide el tamaño por acciones completas. Si una escena encadena tantas acciones largas (`[peso: extenso]`) que no cabe en una respuesta del escritor, divídela en su giro más claro.
 
 Cada escena declara ubicación, tiempo/POV, objetivo, resultado, arco tonal y `Salida: continua|separador`. Una salida continua conserva la continuidad visual al publicar. No alteres beats ni añadas una jerarquía de tramos.
 

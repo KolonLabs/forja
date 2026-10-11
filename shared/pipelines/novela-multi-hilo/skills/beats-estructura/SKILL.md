@@ -1,6 +1,7 @@
 ---
 name: beats-estructura
 description: Use ONLY when the user is proponiendo, revisando o desarrollando beats, escenas, capítulos o trenzado de novela multi-hilo. Define el contrato de unidad dramática, formato, identidad, orden, personajes, zonas e hilos.
+user-invocable: false
 ---
 
 # Skill — Estructura de Beats (Novela Multi-Hilo)

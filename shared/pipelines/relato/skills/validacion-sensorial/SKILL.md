@@ -1,6 +1,7 @@
 ---
 name: validacion-sensorial
 description: Detecta carencias sensoriales relevantes para la comprensión o intención de una escena de relato.
+user-invocable: false
 ---
 
 # Sensorialidad — Relato

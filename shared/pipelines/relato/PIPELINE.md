@@ -14,13 +14,13 @@ H_XXXX (hechos de briefing)
 
 | ID | Función |
 |---|---|
-| `H_XXXX` | Hecho del briefing. Se congela al iniciar la escritura. |
-| `B_XXXX` | Acción causal mínima. Es global, único y no se renumera tras persistirse. |
-| `E_XXXX` | Unidad dramática y de generación. Agrupa beats contiguos y no se renumera tras persistirse. |
+| `H_XXXX` | Hecho del briefing. Se congela al iniciar la escritura; en `fichas` solo cambia con autorización y obliga a revisar sus beats. |
+| `B_XXXX` | Acción causal completa. Es global, único y no se renumera tras persistirse, salvo petición expresa de la persona usuaria (`renumeracion-ids`). |
+| `E_XXXX` | Unidad dramática y de generación. Agrupa beats contiguos y no se renumera tras persistirse, salvo petición expresa de la persona usuaria (`renumeracion-ids`). |
 
 El orden en `guion.md` es el orden narrativo. Los IDs solo identifican: no existen `stable_id`, `parent_id`, `seq` ni UUID. `config.json.ultimo_hecho_seq`, `ultimo_beat_seq` y `ultimo_escena_seq` son los contadores canónicos: el director asigna desde contador + 1 y los actualiza al persistir, sin recalcularlos ni reutilizar IDs retirados.
 
-Un beat contiene únicamente acción, consecuencia y, cuando difiere del arco tonal de su escena, un registro opcional: `[registro: explícito / visceral]`. No contiene hecho de origen, prosa, extensión, sensorialidad ni psicología.
+Un beat contiene únicamente una acción completa, su consecuencia y, cuando difiere del arco tonal de su escena, un registro opcional: `[registro: explícito / visceral]`; y, cuando su peso se aparta de lo normal, una marca relativa `[peso: breve|extenso]` sin cifras. No contiene hecho de origen, prosa, número de palabras, cuotas, sensorialidad, psicología ni diálogo entrecomillado: el guion indica qué ocurre y el escritor decide cómo (`beats-estructura`).
 
 ## FASE 1 — Diseño (`diseno`)
 
@@ -39,6 +39,7 @@ Si para hacer perceptible un patrón el guionista necesitara un giro irreversibl
 
 ## FASE 2 — Componentes (`fichas`)
 
+0. **Hechos ajustados tras el diseño.** Con autorización del usuario, `/refinar-hechos` puede modificar o añadir hechos en `fichas` (transacción `hechos`, `fichas → fichas`, sin retirar IDs). Cada `H_XXXX` modificado queda en `config.json.hechos_revision_pendiente`. El director revisa los beats que lo realizan (guionista `reparar` + `auditor-beats` sobre ese tramo) y cierra la revisión con una transacción `guion`, que debe cambiar `guion.md`. El helper impide confirmar `componentes` mientras haya revisiones pendientes.
 1. El director crea las fichas necesarias para la primera escena y las entidades recurrentes o críticas para continuidad.
 2. Las fichas restantes se crean bajo demanda cuando una escena las necesita.
 3. Prepara una transacción `componentes`, inicializa en staging `contexto_narrativo.md` y `relato-draft.md` mediante `plantilla-draft`, deja `config.json.estado = "escritura"` y confirma el conjunto.
@@ -48,6 +49,8 @@ Si para hacer perceptible un patrón el guionista necesitara un giro irreversibl
 **Transición:** `estado = escritura`, confirmada por `componentes`.
 
 ## FASE 3 — Escritura por escena (`escritura`)
+
+Por defecto, cada `/generar` escribe y confirma una sola escena y se detiene para revisión. `/generar completo` encadena todas las escenas pendientes sin detenerse, cada una en su propia transacción, y solo para ante una pregunta bloqueante, un bloqueo factual no resuelto o un rechazo del helper.
 
 Por cada `E_XXXX`, en orden:
 
@@ -66,7 +69,7 @@ Por cada `E_XXXX`, en orden:
 2. Prepara una transacción `publicar`, genera en su staging `relato.md` con el título de `config.json` y deja `config.json.estado = "finalizado"`.
 3. Elimina anclas `B_XXXX` y marcadores de escena. Convierte en `---` solo los marcadores con `salida: separador`; los de `continua` se eliminan sin corte visible. Confirma la transacción; el helper rechaza IDs de control, separadores duplicados, título sin prosa y manuscrito vacío.
 
-**Transición:** `estado = finalizado`. El hub asigna `publicado` tras compilar.
+**Transición:** `estado = finalizado`. `/compilar` asigna `publicado` tras compilar.
 
 ## Correcciones y memoria
 

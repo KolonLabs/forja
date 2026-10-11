@@ -784,6 +784,15 @@ def cmd_renumber_siblings(args):
     Does NOT touch children of siblings — only their own seq.
     """
     collection = "beats" if args.nivel in ("L0", "beat") else "summaries"
+    if collection == "beats":
+        # El seq de un beat es local a su escena: sin padre se desplazarian los beats de todo el proyecto.
+        if not args.parent_id:
+            print("Error: --nivel L0 requiere --parent-id (stable_id de la escena).", file=sys.stderr)
+            sys.exit(1)
+        # Los beats no guardan hilo en el payload; la escena padre ya los delimita.
+        if args.hilo:
+            print("Aviso: --hilo se ignora en L0; la escena (--parent-id) ya delimita los beats.", file=sys.stderr)
+            args.hilo = None
     must = [
         {"key": "proyecto",  "match": {"value": args.proyecto}},
         {"key": "seq",       "range": {"gte": args.from_seq}},
@@ -1194,7 +1203,8 @@ def main():
     p = sub.add_parser("renumber-siblings",
         help="Shift seq of all siblings with seq >= from_seq. Used after insert/delete.")
     p.add_argument("--proyecto",  required=True)
-    p.add_argument("--nivel",     required=True, choices=["L1", "L2", "L3", "L4"])
+    p.add_argument("--nivel",     required=True, choices=["L0", "L1", "L2", "L3", "L4"],
+                   help="L0 = beats (requires --parent-id); L1-L4 = summaries")
     p.add_argument("--parent-id", help="Parent stable ID (only renumber siblings of this parent)")
     p.add_argument("--from-seq",  type=int, required=True, help="Shift from this seq onwards")
     p.add_argument("--direction", required=True, choices=["up", "down"], help="up=+step, down=-step")

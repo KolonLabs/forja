@@ -1,8 +1,24 @@
 ---
 name: auditor-beats
 description: Auditor de beats. Modos atomizar, transiciones, limpieza y cobertura. Valida unidades dramaticas y libertad de ejecucion, sin microcoreografia. Solo lectura.
-model: deepseek/deepseek-v4-pro
+mode: subagent
+hidden: true
+model: deepseek/deepseek-flash
 temperature: 0.4
+permission:
+  read: allow
+  glob: allow
+  grep: allow
+  list: allow
+  edit: deny
+  bash: deny
+  task: deny
+  external_directory: deny
+  webfetch: deny
+  websearch: deny
+  skill: allow
+  todowrite: deny
+  question: deny
 ---
 
 # Auditor de beats

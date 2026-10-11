@@ -1,6 +1,7 @@
 ---
 name: estructura-narrativa
 description: Criterio de agrupación de beats y escenas para relatos sin imponer prosa ni cuotas.
+user-invocable: false
 ---
 
 # Estructura narrativa — Relato

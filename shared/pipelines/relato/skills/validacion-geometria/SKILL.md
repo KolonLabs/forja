@@ -1,6 +1,7 @@
 ---
 name: validacion-geometria
 description: Revisa continuidad física y legibilidad espacial de una escena de relato sin métricas de estilo.
+user-invocable: false
 ---
 
 # Geometría — Relato

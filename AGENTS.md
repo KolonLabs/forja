@@ -1,6 +1,6 @@
 # Forja Hub — Sistema multi-agente de generación de ficción con workspaces aislados
 
-Forja Hub es un **contenedor de proyectos** de generación de ficción. No escribe ficción directamente: cada proyecto vive en su propio workspace bajo `workspaces/`, con pipeline, agentes, skills y datos aislados. El hub proporciona las herramientas para crear workspaces y compilar libros desde ellos.
+Forja Hub es un **contenedor de proyectos** de generación de ficción. No escribe ficción directamente: cada proyecto vive en su propio workspace fuera del hub (`FORJA_OBRAS`, por defecto `../Obras/<slug>`), con pipeline, agentes, skills, datos y repositorio git aislados (ADR 0026). El hub proporciona las herramientas para crear workspaces y compilar libros desde ellos.
 
 ## Arquitectura
 
@@ -29,12 +29,16 @@ Forja/
 │       └── importar-proyecto.md       # /importar-proyecto (fuentes libres)
 ├── shared/                            # Fuente de verdad del pipeline de ficción
 │   ├── GUIA.md                        # Ayuda de comandos inyectada en cada workspace nuevo
-│   ├── .opencode/
+│   ├── skills/                        # 41 skills invariantes, neutras para ambos entornos
+│   ├── scripts/                       # Utilidades para todas las escalas (renumerar.ps1)
+│   ├── .opencode/                     # Capa opencode común
 │   │   ├── agents/                    # Agentes fijos: memoria, cronista (solo novelas)
-│   │   ├── skills/                    # 41 skills invariantes (+ exclusivos por escala)
-│   │   └── commands/                  # /generar, /revisar, /expandir, /publicar
+│   │   └── commands/                  # /generar, /revisar, /expandir, /publicar…
+│   ├── .claude/                       # Capa Claude Code común (mismos agentes y comandos)
+│   │   ├── agents/
+│   │   └── commands/
 │   └── pipelines/                     # Pipeline por escala
-│       ├── relato/                    # agentes/ + skills/ + commands/ + PIPELINE + ORQUESTACION
+│       ├── relato/                    # agentes/ + skills/ + commands/ (opencode) + claude/ + PIPELINE + ORQUESTACION
 │       ├── novela-simple/
 │       └── novela-multi-hilo/
 ├── scripts/                           # Infraestructura del hub
@@ -48,23 +52,21 @@ Forja/
 │   ├── rehidratar-relato.ps1          # Extractor de evidencia editorial legado
 │   ├── preparar-importacion-proyecto.ps1 # Empaqueta fuentes libres para análisis editorial
 │   ├── recompilar-libro.ps1           # Regenera formatos desde un libro publicado
-│   ├── build-pdf.ps1                  # Compila PDF con Pandoc y un motor local
-│   ├── templates/forja-kdp.typ         # Plantilla PDF reutilizable
-│   ├── build.css                      # Estilos EPUB
+│   ├── ruta-obra.ps1                  # Imprime la raíz de obras, la de una obra o la de publicados
 │   ├── qdrant.py                      # Multi-tenant (colecciones compartidas por proyecto)
 │   └── neo4j.py                       # Multi-tenant (grafo compartido por proyecto)
-├── workspaces/                        # Proyectos hijos (workspaces aislados)
-│   ├── legacy/                        # Workspaces legacy (referencia)
-│   └── <slug>/                        # Un workspace por proyecto
-└── publicados/                        # Libros compilados desde workspaces
-    └── <libro>/                       # Un libro = uno o varios workspaces
+└── (fuera del hub, ADR 0026)
+    ../Obras/                          # FORJA_OBRAS: un workspace y un repositorio git por obra
+    │   ├── legacy/                    # Workspaces legacy (referencia)
+    │   └── <slug>/                    # Cada obra compila su libro en publicacion/ con /compilar
+    ../Publicados/                     # FORJA_PUBLICADOS: antologías compiladas en el hub
 ```
 
 ## Agentes del hub
 
 | Agente | Modelo | Fuente | Rol |
 |--------|--------|--------|-----|
-| **scaffolder** | `deepseek-v4-pro` | `.opencode/agents/scaffolder.md` | Wizard de briefing editorial, rehidratación e importación de fuentes libres. NO escribe ficción. Crea workspaces. |
+| **scaffolder** | `deepseek/deepseek-flash` | `.opencode/agents/scaffolder.md` | Wizard de briefing editorial, rehidratación e importación de fuentes libres. NO escribe ficción. Crea workspaces. |
 | **bibliotecario** | `deepseek-v4-flash` | `.opencode/agents/bibliotecario.md` | Deriva ediciones de relatos publicados, ensambla libros desde workspaces finalizados y recompila formatos. No escribe ni edita contenido narrativo. |
 
 Ninguno de los dos **se inyecta en workspaces**. Ambos viven solo en el hub.
@@ -74,9 +76,9 @@ Ninguno de los dos **se inyecta en workspaces**. Ambos viven solo en el hub.
 | Comando | Descripción |
 |---------|-------------|
 | `/nuevo-proyecto` | Wizard de briefing (7 fases) + creación de workspace |
-| `/crear-libro` | Ensambla un libro desde workspaces finalizados (1+ relatos o 1 novela) |
+| `/crear-libro` | Ensambla una antología desde dos o más relatos finalizados (una obra única se compila dentro con `/compilar`) |
 | `/nueva-edicion` | Deriva un relato publicado en un workspace de corrección independiente |
-| `/recompilar-libro` | Añade o regenera EPUB/PDF desde el Markdown congelado de un libro publicado |
+| `/recompilar-libro` | Añade o regenera EPUB/PDF desde el Markdown congelado de una antología publicada |
 | `/rehidratar-relato` | Extrae evidencia de un relato legado y reconstruye un workspace nuevo de diseño tras validación editorial |
 | `/importar-proyecto` | Extrae evidencia de archivos libres y reconstruye un argumento confirmado antes de crear el workspace |
 
@@ -88,7 +90,7 @@ Los comandos de escritura (`/generar`, `/corregir`, `/revisar`, `/expandir`, `/p
 /nuevo-proyecto
 ```
 
-El scaffolder conduce un briefing editorial en 7 fases (gancho → personajes → mundo → voz → estructura → reflexión → persistir). En Fase 5 determina la escala y construye los hechos narrativos. Al finalizar, construye un JSON con el brief y lo pipea a `scripts/new-project.ps1` por stdin. El script crea el workspace con los agentes, skills y archivos correspondientes a la escala.
+El scaffolder conduce un briefing editorial en 7 fases (gancho → personajes → mundo → voz → estructura → reflexión → persistir), con un pre-flight editorial obligatorio de hechos y brief (Fase 7.1) antes de crear el workspace. En Fase 5 determina la escala y construye los hechos narrativos. Al finalizar, construye un JSON con el brief y lo pipea a `scripts/new-project.ps1` por stdin. El script crea el workspace con los agentes, skills y archivos correspondientes a la escala.
 
 ## Cómo publicar y compilar
 
@@ -98,13 +100,19 @@ El scaffolder conduce un briefing editorial en 7 fases (gancho → personajes �
 ```
 Genera `relato.md` (relato) o `novela.md` (novela) en la raíz del workspace. Sin beats, sin escenas, sin actos. Solo texto limpio con capítulos (novela) o texto continuo (relato).
 
-**Desde el hub:**
+**Dentro del workspace, para compilar el libro:**
 ```
-/crear-libro <slug-libro> <workspace1> [workspace2...] [--epub] [--pdf] [--pdf-formato <formato>] [--pdf-motor <motor>] [--titulo "<título>"] [--autor "<autor>"]
+/compilar [--epub] [--pdf] [--pdf-formato <formato>] [--pdf-motor <motor>] [--titulo "<título>"] [--autor "<autor>"]
 ```
-Lo ejecuta el agente **bibliotecario**: lee los archivos limpios de workspaces en estado `finalizado`, los ensambla en `publicados/<libro>/` y, cuando todas las salidas solicitadas terminan correctamente, actualiza las fuentes a `config.json.estado = "publicado"`. El director nunca asigna `publicado`.
+Ejecuta `scripts/compilar.ps1`, determinista: lee el manuscrito limpio y escribe `publicacion/` (Markdown, EPUB/PDF opcionales y `manifest.json` con hash y commit). Acepta `finalizado` o `publicado` y, solo si todas las salidas terminan correctamente, asigna `publicado`. El director nunca escribe ese estado a mano.
 
-Para añadir o regenerar EPUB/PDF de un libro ya publicado se usa `/recompilar-libro <slug-libro> [--epub] [--pdf] [--pdf-formato <formato>] [--pdf-motor <motor>]`. Opera solo sobre el Markdown y `manifest.json` congelados en `publicados/<libro>/`; no modifica workspaces.
+**Desde el hub, solo antologías:**
+```
+/crear-libro <slug-libro> <relato1> <relato2> [relato3...] [--epub] [--pdf] [--pdf-formato <formato>] [--pdf-motor <motor>] [--titulo "<título>"] [--autor "<autor>"]
+```
+Lo ejecuta el agente **bibliotecario**: lee dos o más relatos en estado `finalizado`, los ensambla en `<raíz de publicados>/<libro>/` y, cuando todas las salidas solicitadas terminan correctamente, actualiza las fuentes a `publicado`.
+
+Para añadir o regenerar EPUB/PDF de una antología se usa `/recompilar-libro <slug-libro> [--epub] [--pdf] [--pdf-formato <formato>] [--pdf-motor <motor>]`. Opera solo sobre el Markdown y `manifest.json` congelados del libro; no modifica obras.
 
 Si cambia el contenido de un relato publicado, se usa `/nueva-edicion <workspace-publicado> <slug-edicion> [--titulo "..."] [--motivo "..."]`. Crea un workspace derivado en estado `correccion`, con `relato-edicion-anterior.md` como referencia inmutable. Tras `/corregir` y `/publicar`, la edición queda `finalizado` y se compila con un slug de libro nuevo. Este flujo no está disponible todavía para novelas.
 
@@ -117,7 +125,8 @@ Para recuperar ideas desde notas, escaletas o guiones libres se usa `/importar-p
 - **Idioma**: español (todo el contenido, vocabulario e interacción).
 - **Crudeza**: máximo (explícito total). Sin eufemismos. Vocabulario directo y crudo.
 - **No modificar otros workspaces** sin permiso explícito del usuario.
-- **Cada workspace es autónomo**: tiene su propio `.opencode/` con agentes, skills y comandos inyectados según su escala. No conoce directorios superiores.
+- **Cada obra es un repositorio git propio** fuera del hub (ADR 0026). Los commits los decide la persona usuaria: ni scripts ni agentes hacen commits ni crean copias de seguridad.
+- **Cada workspace es autónomo**: tiene su propio `.opencode/` con agentes y comandos y su propio `.claude/skills/` con las skills (las leen opencode y Claude Code), inyectados según su escala. No conoce directorios superiores; su `opencode.json` desactiva los agentes del hub (ADR 0023).
 - **shared/ es inmutable** para workspaces creados. Las mejoras al pipeline se aplican manualmente desde el hub.
 - **Revisión previa a commit**: antes de `git commit` y `git push`, presentar el `git diff --stat` y un resumen breve de los cambios al usuario para su validación. No commitear si el usuario pide ajustes o marca un problema.
 
@@ -131,21 +140,25 @@ Para recuperar ideas desde notas, escaletas o guiones libres se usa `/importar-p
 
 | Ubicación | Contenido |
 |-----------|-----------|
-| `shared/.opencode/agents/` | 2 agentes fijos: memoria, cronista (solo se inyectan en novelas) |
-| `shared/.opencode/skills/` | 41 skills: invariantes + exclusivos por escala |
+| `shared/skills/` | 41 skills: invariantes + exclusivos por escala. Neutras: se inyectan en `.claude/skills/`, que leen opencode y Claude Code |
+| `shared/.opencode/agents/`, `shared/.claude/agents/` | 2 agentes fijos (memoria, cronista), uno por entorno; solo se inyectan en novelas |
+| `shared/scripts/` | Utilidades que se copian a `scripts/` en todas las escalas: `renumerar.ps1` (renumera definiciones `H_`/`E_`/`B_` y devuelve la tabla viejo → nuevo; la skill `renumeracion-ids` guía al LLM en la revisión de referencias) y la compilación de la obra (`compilar.ps1`, `build-epub.ps1`, `build-pdf.ps1`, `build.css`, `templates/forja-kdp.typ`), que el hub también usa para las antologías |
 | `shared/GUIA.md` | Guía de decisión por defecto (relato). Si la escala define `shared/pipelines/<escala>/GUIA.md`, prevalece esa |
-| `shared/.opencode/commands/` | 8 comandos: generar, revisar, expandir, corregir, publicar, refinar-hechos, revisar-guion, validar-hechos. `corregir` solo se inyecta en relato |
-| `shared/pipelines/<escala>/` | Agentes, skills, scripts y overrides de comandos propios de escala + `PIPELINE.md` + `ORQUESTACION.md` |
+| `shared/.opencode/commands/`, `shared/.claude/commands/` | 9 comandos por entorno: generar, revisar, expandir, corregir, publicar, compilar, refinar-hechos, revisar-guion, validar-hechos. `corregir` solo se inyecta en relato |
+| `shared/pipelines/<escala>/` | Agentes (`agentes/`), skills, scripts y overrides de comandos propios de escala + `PIPELINE.md` + `ORQUESTACION.md` |
+| `shared/pipelines/<escala>/claude/` | Capa Claude Code de la escala: `agents/`, `commands/`, `settings.json` y `CLAUDE.md` |
 
-Al crear un workspace, el script inyecta agentes y skills de su escala y aplica, después de los comandos comunes, los overrides de comando que correspondan. Los agentes escala-específicos (director, guionista, escritor, validador, integrador, entidades) viven en `shared/pipelines/<escala>/agentes/`.
+Al crear un workspace, el script inyecta agentes y comandos de su escala en `.opencode/` y en `.claude/`, las skills en `.claude/skills/` (solo los estilos activos) y aplica, después de los comandos comunes, los overrides de comando que correspondan.
+
+**Dos entornos equivalentes (ADR 0024).** Cada agente y comando existe en versión opencode y en versión Claude Code, escritas a mano. Comparten cuerpo salvo las adaptaciones de entorno (carga de skills, modelos, presupuesto de salida). Un cambio en una capa se revisa en la otra; `tests/paridad-entornos-regression.ps1` detecta desfases de inventario, restos de un entorno en el otro y modelos fuera del reparto. Los agentes escala-específicos (director, guionista, escritor, validador, integrador, entidades) viven en `shared/pipelines/<escala>/agentes/`.
 
 ## Escalas soportadas
 
 | Escala | Fases | Qdrant/Neo4j | Hilos | Agentes | Skills (~) |
 |--------|-------|:---:|:---:|:---:|:---:|
 | **relato** | 4 fases | No | No | 7 | 15 (+1 por estilo secundario) |
-| **novela-simple** | 4 fases | Sí | No | 9 | 40 |
-| **novela-multi-hilo** | 8 fases | Sí | Sí (mín. 2) | 9 | 44 |
+| **novela-simple** | 4 fases | Sí | No | 9 | 34 (+1 por estilo secundario) |
+| **novela-multi-hilo** | 8 fases | Sí | Sí (mín. 2) | 9 | 38 (+1 por estilo secundario) |
 
 ## Jerarquía narrativa
 

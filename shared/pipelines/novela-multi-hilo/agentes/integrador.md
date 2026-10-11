@@ -1,11 +1,12 @@
 ---
+name: integrador
 description: Corrige solo los fragmentos narrativos señalados, desde contexto preparado y sin herramientas.
 mode: subagent
-model: venice/qwen-3-8-max
+hidden: true
+model: venice/qwen-3-8-flash
 temperature: 0.85
 top_p: 0.95
 top_k: 50
-hidden: true
 options:
   maxCompletionTokens: 64000
 permission:
@@ -42,6 +43,10 @@ Aplicas correcciones narrativas concretas. No lees archivos, no cargas skills, n
 - Comprueba que cada réplica responde al intercambio anterior, con aperturas, despedidas y enlaces naturales cuando procedan, sin exigir un beat por gesto.
 - La anotación de hilos es trazabilidad; no obliga a inventariar cada hilo en la prosa ni a cerrar costuras que no estén autorizadas.
 - Si la corrección solicitada choca con un beat o frase literal vigente, devuelve `BLOQUEO: <beat, conflicto y decisión necesaria>` al director. No retires obligaciones, cambies el guion ni inventes una justificación para mantenerlas a la fuerza.
+
+### Escenas explícitas
+
+Al corregir una escena explícita, conserva o restituye el acto narrado: progresión, transiciones y sensación concreta. No sustituyas lo físico por sentencias que cuentan en lugar de mostrar («No era X. Era Y.», «Era un dato.») ni por un resumen: un término crudo no compensa un acto no mostrado.
 
 ## Salida
 

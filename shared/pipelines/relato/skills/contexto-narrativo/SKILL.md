@@ -1,6 +1,7 @@
 ---
 name: contexto-narrativo
 description: Memoria local compacta de relato, actualizada por escenas operativas.
+user-invocable: false
 ---
 
 # Contexto narrativo — Relato

@@ -165,7 +165,7 @@ class NarrativeContractTests(unittest.TestCase):
         for name in WRITERS:
             with self.subTest(agent=name):
                 config = self.agents[name]["config"]
-                self.assertEqual(config["model"], "venice/qwen-3-8-max")
+                self.assertEqual(config["model"], "venice/qwen-3-8-flash")
                 self.assertEqual(config["options"], {"maxCompletionTokens": 64000})
                 self.assertIs(type(config["options"]["maxCompletionTokens"]), int)
                 for key in ("maxCompletionTokens", "maxOutputTokens", "maxTokens",

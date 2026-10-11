@@ -17,10 +17,10 @@ $ForjaRoot = if ([string]::IsNullOrWhiteSpace($ForjaRootOverride)) {
     (Resolve-Path -LiteralPath $ForjaRootOverride -ErrorAction Stop).Path
 }
 $HubRoot = $ForjaRoot
-$WorkspacesRoot = Join-Path $ForjaRoot "workspaces"
 $utf8NoBom = [System.Text.UTF8Encoding]::new($false)
 
 . (Join-Path $PSScriptRoot "lib\common.ps1")
+$WorkspacesRoot = Get-ObrasRoot
 
 function Assert-KebabSlug {
     param([string]$Value, [string]$Name)
@@ -105,15 +105,33 @@ try {
         Remove-Item -LiteralPath $inheritedTransaction -Recurse -Force
     }
 
+    # La edición es una obra nueva (ADR 0026): no hereda el historial git del
+    # origen ni sus libros compilados. Su repositorio se crea al final.
+    foreach ($inherited in @(".git", "publicacion")) {
+        $inheritedPath = Join-Path $stagePath $inherited
+        if (Test-Path -LiteralPath $inheritedPath) {
+            Remove-Item -LiteralPath $inheritedPath -Recurse -Force
+        }
+    }
+
     # La edición recibe el pipeline vigente, no una copia potencialmente obsoleta del origen.
     $stageOpenCode = Join-Path $stagePath ".opencode"
     if (Test-Path -LiteralPath $stageOpenCode) {
         Remove-Item -LiteralPath $stageOpenCode -Recurse -Force
     }
-    foreach ($directory in @("agents", "skills", "commands")) {
+    foreach ($directory in @("agents", "commands")) {
         New-Item -ItemType Directory -Force -Path (Join-Path $stageOpenCode $directory) | Out-Null
     }
+    # La capa .claude (skills, agentes y comandos) tambien se regenera desde el pipeline vigente (ADR 0023, 0024).
+    foreach ($directory in @("agents", "commands")) {
+        $stageCl = Join-Path $stagePath ".claude\$directory"
+        if (Test-Path -LiteralPath $stageCl) { Remove-Item -LiteralPath $stageCl -Recurse -Force }
+    }
+    $stageSkills = Join-Path $stagePath ".claude\skills"
+    if (Test-Path -LiteralPath $stageSkills) { Remove-Item -LiteralPath $stageSkills -Recurse -Force }
+    New-Item -ItemType Directory -Force -Path $stageSkills | Out-Null
     Inject-Pipeline -TargetDir $stagePath -Escala "relato" -EstiloBase $sourceConfig.estilo_base -EstiloSecundario $sourceConfig.estilo_secundario
+    Write-OpencodeConfig -TargetDir $stagePath
 
     # Las ediciones derivadas reciben el contrato vigente. Se normalizan solo
     # metadatos de control: headings B y marcadores de escena; nunca la prosa.
@@ -146,6 +164,20 @@ try {
         manuscrito_origen = "relato-edicion-anterior.md"
         manuscrito_origen_sha256 = (Get-FileHash -LiteralPath $snapshotPath -Algorithm SHA256).Hash.ToLowerInvariant()
     }) -Force
+    # La edición conserva la explicitud del origen; no se supone ningún nivel. En relatos
+    # antiguos que no la guardaban en config.json, el registro es su AGENTS.md.
+    if (-not ($config.PSObject.Properties.Name -contains "explicitud") -or [string]::IsNullOrWhiteSpace($config.explicitud)) {
+        $agentsOrigen = Join-Path $stagePath "AGENTS.md"
+        $nivelOrigen = $null
+        if (Test-Path -LiteralPath $agentsOrigen -PathType Leaf) {
+            $m = [regex]::Match((Get-Content -LiteralPath $agentsOrigen -Raw -Encoding UTF8), '\*\*Explicitud:\*\*\s*(maximo|alto|medio|bajo|minimo)\b')
+            if ($m.Success) { $nivelOrigen = $m.Groups[1].Value }
+        }
+        if (-not $nivelOrigen) {
+            throw "new-edicion-relato: el origen no declara explicitud ni en config.json ni en AGENTS.md; añádela al config.json del origen."
+        }
+        $config | Add-Member -NotePropertyName "explicitud" -NotePropertyValue $nivelOrigen -Force
+    }
     [System.IO.File]::WriteAllText(
         (Join-Path $stagePath "config.json"),
         ($config | ConvertTo-Json -Depth 12),
@@ -196,6 +228,7 @@ Este workspace está en ``correccion`` y procede de ``$Origen``. No modifiques `
 "@
     [System.IO.File]::AppendAllText((Join-Path $stagePath "AGENTS.md"), $editionAgentsNote, $utf8NoBom)
 
+    Initialize-ObraGit -TargetDir $stagePath
     Move-Item -LiteralPath $stagePath -Destination $targetPath
     $completed = $true
 
@@ -204,7 +237,7 @@ Este workspace está en ``correccion`` y procede de ``$Origen``. No modifiques `
     Write-Host "  Origen:   $Origen (publicado, sin modificar)"
     Write-Host "  Edición:  $editionNumber"
     Write-Host "  Estado:   correccion"
-    Write-Host "  Siguiente: opencode --cwd `"workspaces\$Slug`""
+    Write-Host "  Siguiente: opencode --cwd `"$targetPath`" (o Claude Code en esa carpeta)"
     Write-Host "             /corregir completa"
 } finally {
     if (-not $completed -and (Test-Path -LiteralPath $stagePath)) {

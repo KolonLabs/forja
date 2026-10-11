@@ -1,6 +1,7 @@
 ---
 name: plantilla-ficha
 description: Plantilla ligera de fichas Markdown para entidades relevantes de un relato sin infraestructura ni cronista.
+user-invocable: false
 ---
 
 # Ficha — [NOMBRE]

@@ -1,11 +1,27 @@
 ---
+name: entidades
 description: Gestiona entidades narrativas de novela simple con stable_id UUID opaco, payload unificado en Qdrant y respaldo Markdown.
 mode: subagent
-model: deepseek/deepseek-v4-pro
+hidden: true
+model: deepseek/deepseek-flash
 temperature: 0.65
 permission:
+  read: allow
+  glob: allow
+  grep: allow
+  list: allow
   edit: allow
-  bash: allow
+  bash:
+    "*": ask
+    "python -X utf8 scripts/*": allow
+    "python scripts/*": allow
+  task: deny
+  external_directory: deny
+  webfetch: deny
+  websearch: deny
+  skill: allow
+  todowrite: deny
+  question: deny
 ---
 
 Antes de crear o modificar fichas, carga:
@@ -83,7 +99,7 @@ El `stable_id` no contiene el tipo, el nombre, el slug ni el proyecto. Están pr
 
 Al crear una entidad nueva:
 
-1. Genera una vez un UUID aleatorio, opaco y canónico, por ejemplo `7b7e34b6-9f5d-4c40-a5e3-81c1f4517e2c`.
+1. Genera una vez un UUID aleatorio, opaco y canónico con `python -X utf8 scripts/generar-ids.py --uuid` (por ejemplo `7b7e34b6-9f5d-4c40-a5e3-81c1f4517e2c`). Nunca lo escribas tú: un identificador inventado no es aleatorio.
 2. Comprueba que no exista dentro del `proyecto`.
 3. Persiste ese valor en Qdrant y en la ficha Markdown.
 4. No lo regeneres al cambiar nombre, slug, tipo, estado o archivo.

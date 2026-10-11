@@ -44,9 +44,10 @@ if ($Brief.PSObject.Properties.Name.Contains("estilo_secundario") -and $Brief.es
     throw "new-project: estilo_secundario '$($Brief.estilo_secundario)' no soportado. Valores validos: $($validEstilos -join ', ')"
 }
 
-# Validar explicitud (opcional; si se especifica, debe ser uno de los valores soportados)
+# Validar explicitud (obligatoria: no se supone ningun nivel por defecto; la elige el autor en la Fase 4)
 $validExplicitud = @("maximo", "alto", "medio", "bajo", "minimo")
-if ($Brief.PSObject.Properties.Name.Contains("explicitud") -and $Brief.explicitud -and ($Brief.explicitud -notin $validExplicitud)) {
+Test-BriefField $Brief "explicitud" "new-project"
+if ($Brief.explicitud -notin $validExplicitud) {
     throw "new-project: explicitud '$($Brief.explicitud)' no soportada. Valores validos: $($validExplicitud -join ', ')"
 }
 
@@ -68,6 +69,9 @@ if ($Brief.PSObject.Properties.Name.Contains("_no_infra")) {
 
 # Validar estructura de hechos
 Test-HechosStructure $Brief
+
+# Campos opcionales de continuacion (canon_previo, fichas_semilla)
+Test-ContinuacionBrief $Brief
 
 # Delegar al script de la escala
 $scaleScript = Join-Path $PSScriptRoot "new-$($Brief.escala).ps1"

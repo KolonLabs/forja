@@ -1,22 +1,24 @@
 ---
-description: Crea un libro (Markdown/EPUB/PDF) desde workspaces finalizados. Una novela = un libro. Varios relatos = antología.
+description: Ensambla una antología (Markdown/EPUB/PDF) desde dos o más relatos finalizados. Una obra única se compila dentro de la obra con /compilar.
 agent: bibliotecario
 ---
 
 # /crear-libro
 
-Ensambla un libro desde los archivos limpios (`relato.md` / `novela.md`) de los workspaces indicados.
+Ensambla una antología desde los manuscritos limpios (`relato.md`) de los relatos indicados. Las obras viven en la raíz de obras (`FORJA_OBRAS`; por defecto, la carpeta `Obras` hermana del hub) y el libro se escribe en la raíz de publicados (`FORJA_PUBLICADOS`; por defecto, `Publicados`). Ver ADR 0026.
+
+Una novela o un relato suelto no pasan por aquí: se compilan dentro de su propia obra con `/compilar`.
 
 ## Entrada del comando
 
 Argumentos recibidos: `$ARGUMENTS`
 
-Interpreta esos argumentos antes de actuar. El primer valor es el slug del libro y los siguientes, hasta una opción `--...`, son los workspaces fuente. Ejecuta el script una sola vez con los valores resultantes; no inventes rutas ni modifiques manuscritos.
+Interpreta esos argumentos antes de actuar. El primer valor es el slug del libro y los siguientes, hasta una opción `--...`, son los relatos fuente. Ejecuta el script una sola vez con los valores resultantes; no inventes rutas ni modifiques manuscritos.
 
 ## Sintaxis
 
 ```
-/crear-libro <slug-libro> <workspace1> [workspace2 ...] [--epub] [--pdf] [--pdf-formato <formato>] [--pdf-motor <motor>] [--titulo "<título>"] [--autor "<autor>"]
+/crear-libro <slug-libro> <relato1> <relato2> [relato3 ...] [--epub] [--pdf] [--pdf-formato <formato>] [--pdf-motor <motor>] [--titulo "<título>"] [--autor "<autor>"]
 ```
 
 | Parámetro | Descripción | Default |
@@ -28,26 +30,25 @@ Interpreta esos argumentos antes de actuar. El primer valor es el slug del libro
 | `--titulo` | Título mostrado en la portada/metadatos | El propio `<slug-libro>` |
 | `--autor` | Nombre de autor en la portada/metadatos | `Amaro Alba` |
 
-## Ejemplos
+## Ejemplo
 
 ```
 /crear-libro cronicas-del-deseo rutina la-fachada --epub
-/crear-libro mi-novela mi-novela --epub --pdf --pdf-formato paperback --titulo "Mi Novela" --autor "Amaro Alba"
 ```
 
 ## Qué hace
 
-1. Lee `relato.md` o `novela.md` de cada workspace fuente
-2. Ensambla el contenido en `publicados/<slug-libro>/<slug-libro>.md`
+1. Lee `relato.md` de cada relato fuente
+2. Ensambla el contenido en `<raíz de publicados>/<slug-libro>/<slug-libro>.md`
 3. Opcionalmente compila EPUB con `--epub` y/o PDF con `--pdf`
-4. Rechaza mezclas de relatos y novelas, o más de una novela
+4. Rechaza menos de dos fuentes, novelas y fuentes repetidas
 5. Escribe `manifest.json` con fuentes congeladas, hashes y formatos generados
-6. Solo si todas las salidas solicitadas terminan correctamente, marca `config.json.estado = "publicado"` en los workspaces fuente
+6. Solo si todas las salidas solicitadas terminan correctamente, marca `config.json.estado = "publicado"` en los relatos fuente
 
 ## Requisitos
 
-- Los workspaces fuente deben estar en estado `finalizado` tras ejecutar `/publicar`
-- El archivo `relato.md` o `novela.md` debe existir en la raíz de cada workspace
+- Los relatos fuente deben estar en estado `finalizado` tras ejecutar `/publicar`
+- El archivo `relato.md` debe existir en la raíz de cada obra
 - Pandoc debe estar instalado para `--epub` y `--pdf`
 - Para PDF se requiere además Typst, wkhtmltopdf o XeLaTeX (el motor `auto` los prueba en ese orden)
 
@@ -55,5 +56,5 @@ Interpreta esos argumentos antes de actuar. El primer valor es el slug del libro
 
 El comando ejecuta:
 ```powershell
-.\scripts\crear-libro.ps1 -Libro "<slug>" -Fuentes @("<ws1>","<ws2>") [-Epub] [-Pdf] [-PdfFormat "paperback"] [-PdfEngine "auto"] [-Titulo "<título>"] [-Autor "<autor>"]
+.\scripts\crear-libro.ps1 -Libro "<slug>" -Fuentes @("<relato1>","<relato2>") [-Epub] [-Pdf] [-PdfFormat "paperback"] [-PdfEngine "auto"] [-Titulo "<título>"] [-Autor "<autor>"]
 ```

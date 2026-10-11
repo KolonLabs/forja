@@ -15,10 +15,10 @@ Argumentos recibidos: `$ARGUMENTS`
 /importar-proyecto <slug-destino> --fuente "<ruta-o-url-1>" [--fuente "<ruta-o-url-2>" ...]
 ```
 
-- El destino debe ser un slug nuevo en `workspaces/`.
+- El destino debe ser un slug nuevo en la raíz de obras (`.\scripts\ruta-obra.ps1` la imprime: `FORJA_OBRAS` o, por defecto, la carpeta `Obras` hermana del hub).
 - Cada `--fuente` puede ser un archivo, un directorio o una URL HTTPS pública. Las rutas locales leen `.md`, `.markdown` y `.txt` de forma recursiva; las URL admiten texto, Markdown y HTML público convertido a texto.
 - Se excluyen `.git`, `.opencode`, `.forja-transaccion`, dependencias y directorios de compilación. Los formatos binarios se registran como no leídos; no se interpretan a ciegas.
-- Las fuentes son solo lectura y pueden estar fuera de `workspaces/` si el usuario las ha autorizado explícitamente. Una URL debe ser HTTPS, no puede apuntar a hosts o IP privadas y todas sus redirecciones se validan con el mismo criterio.
+- Las fuentes son solo lectura y pueden estar fuera de la raíz de obras si el usuario las ha autorizado explícitamente. Una URL debe ser HTTPS, no puede apuntar a hosts o IP privadas y todas sus redirecciones se validan con el mismo criterio.
 
 ## Flujo obligatorio
 
@@ -53,7 +53,7 @@ Argumentos recibidos: `$ARGUMENTS`
 
    ```powershell
    # Solo para escalas novela-simple y novela-multi-hilo
-   $refDest = Join-Path "workspaces\$slug" "referencias"
+   $refDest = Join-Path (.\scripts\ruta-obra.ps1 -Slug $slug) "referencias"
    $manifiesto = Get-Content $resultado.manifiesto -Raw | ConvertFrom-Json
    foreach ($fc in $manifiesto.fuentes_canonicas) {
        if ($fc.tipo -eq "archivo" -and (Test-Path -LiteralPath $fc.ruta)) {

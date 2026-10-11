@@ -1,6 +1,7 @@
 ---
 name: beats-estructura
 description: Use ONLY when the user is proponiendo, revisando o desarrollando beats, escenas o capítulos de novela simple. Define formato, identidad, orden, personajes y zonas.
+user-invocable: false
 ---
 
 # Skill — Estructura de Beats (Novela Simple)

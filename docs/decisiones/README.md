@@ -15,8 +15,8 @@ Este directorio conserva decisiones arquitectonicas y operativas que deben sobre
 |---|---|---|
 | [0001](0001-hub-y-workspaces-aislados.md) | El hub orquesta; los workspaces son autonomos. | Aceptada |
 | [0002](0002-contrato-de-creacion-e-infraestructura.md) | La escala determina infraestructura y el brief es un contrato validado. | Aceptada |
-| [0003](0003-publicacion-y-compilacion.md) | Publicación y compilación inicial de libros. | Sustituida parcialmente por ADR 0004 |
-| [0004](0004-finalizado-y-recompilacion-de-formatos.md) | `finalizado` es la única entrada de compilación; `publicado` es terminal y los formatos se recompilan desde un manifiesto. | Aceptada |
+| [0003](0003-publicacion-y-compilacion.md) | Publicación y compilación inicial de libros. | Sustituida parcialmente por ADR 0004 y ADR 0026 |
+| [0004](0004-finalizado-y-recompilacion-de-formatos.md) | `finalizado` es la única entrada de compilación; `publicado` es terminal y los formatos se recompilan desde un manifiesto. | Sustituida parcialmente por ADR 0026 (lugar y agente de la compilación de una obra única) |
 | [0005](0005-ediciones-derivadas-de-relato.md) | Los cambios de contenido de un relato publicado se hacen en una edición derivada. | Aceptada |
 | [0006](0006-beats-globales-y-escenas-derivadas-en-relato.md) | Relato diseña beats globales antes de derivar escenas; usa IDs H/B/E visibles sin infraestructura. | Aceptada |
 | [0007](0007-escritura-por-escenas-operativas-en-relato.md) | Relato escribe y valida por escenas operativas; su contrato de recurrencias fue sustituido por ADR 0013. | Sustituida parcialmente por ADR 0013 |
@@ -34,3 +34,8 @@ Este directorio conserva decisiones arquitectonicas y operativas que deben sobre
 | [0019](0019-narrativa-por-escena-y-checkpoint-en-novelas.md) | Las novelas escriben por escena con contexto preparado sin herramientas, persistencia con hash y checkpoint humano obligatorio. | Aceptada |
 | [0020](0020-contrato-editorial-de-beats-y-detalle-explicito.md) | El beat es una unidad dramática; la ejecución es del escritor y las escenas explícitas se muestran con progresión. | Aceptada |
 | [0021](0021-alcance-de-relato-sin-checkpoint.md) | Relato conserva su autonomía y solo adopta el paquete de escena explícita. | Aceptada |
+| [0022](0022-continuacion-de-relatos-con-canon-y-fichas-semilla.md) | Las continuaciones de relato reciben canon heredado y fichas semilla reconstruidas, sin acoplar workspaces. | Aceptada |
+| [0023](0023-skills-compartidas-en-claude-skills-y-aislamiento-del-hub-en-opencode.md) | Las skills de un workspace viven solo en `.claude/skills` y opencode desactiva los agentes del hub. | Aceptada |
+| [0024](0024-dos-entornos-equivalentes-opencode-y-claude-code.md) | Cada agente y comando existe en versión opencode y Claude Code escritas a mano, con skills compartidas y modelos acordados por rol. | Aceptada |
+| [0025](0025-explicitud-obligatoria-y-validacion-por-nivel.md) | La explicitud es obligatoria en el brief y `validacion-crudeza` aplica el criterio del nivel del proyecto. | Aceptada |
+| [0026](0026-obras-como-repositorios-independientes-fuera-del-hub.md) | Cada obra es un repositorio git propio fuera del hub, sin copias de seguridad automáticas, y se compila a sí misma con `/compilar`; el hub solo ensambla antologías. | Aceptada |

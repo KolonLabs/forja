@@ -310,13 +310,11 @@ class PersistirEscenaTests(unittest.TestCase):
         self.draft.write_bytes(original)
         self.accept()
         self.assertEqual(self.draft.read_bytes(), PREFIX + self.pending.read_bytes() + SUFFIX)
-        backups = list(self.chapter.glob("draft.md.*.bak"))
-        self.assertEqual(len(backups), 1)
-        self.assertEqual(backups[0].read_bytes(), original)
-        self.assertRegex(backups[0].name, r"draft\.md\.[0-9]{8}T[0-9]{12}Z\.bak")
+        # El historial es el git de la obra: aceptar no deja copias del draft.
+        self.assertEqual(list(self.chapter.glob("*.bak")), [])
         for _ in range(2):
             self.assertFalse(self.accept()["cambio"])
-        self.assertEqual(list(self.chapter.glob("draft.md.*.bak")), backups)
+        self.assertEqual(list(self.chapter.glob("*.bak")), [])
 
     def test_aceptar_reemplaza_solo_escena(self):
         self.prepare()
@@ -325,7 +323,7 @@ class PersistirEscenaTests(unittest.TestCase):
         self.draft.write_bytes(original)
         self.accept()
         self.assertEqual(self.draft.read_bytes(), PREFIX + self.pending.read_bytes() + SUFFIX)
-        self.assertEqual(next(self.chapter.glob("*.bak")).read_bytes(), original)
+        self.assertEqual(list(self.chapter.glob("*.bak")), [])
         self.assertFalse(self.accept()["cambio"])
         self.assertFalse(self.accept()["cambio"])
 

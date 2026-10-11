@@ -25,8 +25,10 @@ function Assert-Throws {
     throw "ASSERT: $Message"
 }
 
+$previousObras = $env:FORJA_OBRAS
 try {
     $hub = Join-Path $RunRoot "hub"
+    $env:FORJA_OBRAS = Join-Path $hub "workspaces"
     $source = Join-Path $hub "workspaces\origen"
     $target = Join-Path $hub "workspaces\origen-reinicio"
     New-Item -ItemType Directory -Force -Path $source | Out-Null
@@ -116,6 +118,7 @@ Ana recibe una llamada y debe decidir si abandona su rutina.
 
     Write-Host "OK: regresión de rehidratación de relato superada."
 } finally {
+    $env:FORJA_OBRAS = $previousObras
     if (Test-Path -LiteralPath $RunRoot) {
         Remove-Item -LiteralPath $RunRoot -Recurse -Force
     }
