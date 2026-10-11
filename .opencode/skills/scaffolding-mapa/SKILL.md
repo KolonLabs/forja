@@ -37,11 +37,17 @@ _actos.md (actos con hechos H_XXXX) → guion.md (escenas + beats B_XXXX) → re
 | guion.md | guionista | guionista, director (estados) | Escenas, hechos, beats |
 | relato-draft.md | director | escritor (por escena) | Prosa continua por escena; anclas invisibles de beat |
 | relato.md | director (/publicar) | — | Versión limpia publicable |
+| publicacion/ | /compilar (`scripts/compilar.ps1`) | /compilar | Libro compilado (Markdown, EPUB/PDF, manifest.json); no se versiona |
 | EDICION.md | /nueva-edicion (solo edición) | — | Linaje y motivo de la edición derivada |
 | relato-edicion-anterior.md | /nueva-edicion (solo edición) | — | Manuscrito publicado de referencia, solo lectura |
 | correcciones.md | /nueva-edicion, director | director | Registro de las correcciones de una edición |
 | contexto_narrativo.md | director | director | Memoria del relato |
 | fichas/ | entidades | entidades | Fichas de entidades |
+| scripts/ | Script | — | Helpers de la escala, `renumerar.ps1` y compilación (`compilar.ps1`, `build-epub.ps1`, `build-pdf.ps1`) |
+| .gitignore | Script | — | Repositorio git propio de la obra; los commits los decide la persona usuaria |
+
+## Historial
+La obra es su propio repositorio git. Nadie crea copias de seguridad ni hace commits automáticos: el historial son los commits que decide la persona usuaria.
 
 ## Convención de nombres
 Fichas: <tipo>_<slug>.md (personaje_miguel.md, lugar_parking.md)
@@ -53,9 +59,10 @@ Fichas: <tipo>_<slug>.md (personaje_miguel.md, lugar_parking.md)
 | FASE 2: Componentes | fichas | entidades → fichas/ + reconciliación |
 | FASE 3: Por escena | escritura | escritor → validador → ±integrador por cada `E_XXXX` |
 | FASE 4: Finalizar | escritura | /publicar → relato.md y estado `finalizado` |
+| Compilar | finalizado / publicado | /compilar → publicacion/ y estado `publicado` |
 
 ## Transiciones
-diseno → fichas → escritura → finalizado → publicado (hub)
+diseno → fichas → escritura → finalizado → publicado (/compilar)
 
 ## Agentes
 director, guionista, auditor-beats, escritor, validador, integrador, entidades
@@ -71,7 +78,7 @@ Añadir respecto al relato:
 - `guion-novela.md` en jerarquía y archivos
 - `capitulos/cap-NN-slug/` (guion.md, draft.md, capitulo.md, `escena-<SID>.pendiente.md`)
 - `scripts/persistir-escena.py` (preparar / aceptar / sincronizar; lo opera el director)
-- `novela.md` como salida publicable
+- `novela.md` como salida publicable; `/compilar` genera el libro en `publicacion/`
 - `contexto.md` en vez de `contexto_narrativo.md` (incluye el registro de checkpoint de narrativa)
 - Checkpoint humano de narrativa por escena: el director presenta la candidata con hash y se detiene; escritor e integrador no escriben archivos
 - `referencias/` (material de referencia no-narrativo si el proyecto fue importado; vacío si no hay)
@@ -80,7 +87,7 @@ Añadir respecto al relato:
 - Sin `contexto-narrativo`: esa skill es la memoria Markdown de relato
 - Infraestructura: Qdrant + Neo4j activos
 - Transiciones: diseno → fichas → escritura → publicacion → finalizado
-  (`publicado` lo asigna el hub con `/crear-libro`, nunca el director)
+  (`publicado` lo asigna `/compilar`, nunca el director)
 
 ### Novela multi-hilo
 
@@ -94,7 +101,7 @@ Añadir respecto a novela simple:
 - `referencias/` (material de referencia no-narrativo si el proyecto fue importado; vacío si no hay)
 - Skills extra: diseno-hilo, plantilla-hilo, trenzado-narrativo, validacion-cross-hilo
 - Transiciones: diseno → diseno_hilos → trenzado → fichas → escritura → publicacion → finalizado
-  (`publicado` lo asigna el hub con `/crear-libro`, nunca el director)
+  (`publicado` lo asigna `/compilar`, nunca el director)
 ```
 
 ## Instrucciones para el scaffolder

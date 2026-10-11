@@ -28,7 +28,7 @@ param(
 $ErrorActionPreference = "Stop"
 $utf8NoBom = [System.Text.UTF8Encoding]::new($false)
 $extensionesAdmitidas = @(".md", ".markdown", ".txt")
-$directoriosExcluidos = @(".git", ".opencode", ".forja-transaccion", "node_modules", "bin", "obj", ".venv", "venv", "dist", "build")
+$directoriosExcluidos = @(".git", ".opencode", ".claude", ".forja-transaccion", "publicacion", "node_modules", "bin", "obj", ".venv", "venv", "dist", "build")
 
 function Test-DirectorioExcluido {
     param([string]$Nombre)

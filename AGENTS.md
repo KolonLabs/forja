@@ -47,7 +47,7 @@ Forja/
 │   ├── new-relato.ps1                 # Creador de workspace relato
 │   ├── new-novela-simple.ps1          # Creador de workspace novela simple
 │   ├── new-novela-multi-hilo.ps1      # Creador de workspace novela multi-hilo
-│   ├── crear-libro.ps1                # Ensambla libro desde workspaces finalizados
+│   ├── crear-libro.ps1                # Ensambla antologías desde relatos finalizados
 │   ├── new-edicion-relato.ps1         # Deriva una edición corregible de un relato publicado
 │   ├── rehidratar-relato.ps1          # Extractor de evidencia editorial legado
 │   ├── preparar-importacion-proyecto.ps1 # Empaqueta fuentes libres para análisis editorial
@@ -67,7 +67,7 @@ Forja/
 | Agente | Modelo | Fuente | Rol |
 |--------|--------|--------|-----|
 | **scaffolder** | `deepseek/deepseek-flash` | `.opencode/agents/scaffolder.md` | Wizard de briefing editorial, rehidratación e importación de fuentes libres. NO escribe ficción. Crea workspaces. |
-| **bibliotecario** | `deepseek-v4-flash` | `.opencode/agents/bibliotecario.md` | Deriva ediciones de relatos publicados, ensambla libros desde workspaces finalizados y recompila formatos. No escribe ni edita contenido narrativo. |
+| **bibliotecario** | `deepseek-v4-flash` | `.opencode/agents/bibliotecario.md` | Deriva ediciones de relatos publicados, ensambla antologías de relatos finalizados y recompila sus formatos. No escribe ni edita contenido narrativo. |
 
 Ninguno de los dos **se inyecta en workspaces**. Ambos viven solo en el hub.
 
@@ -90,7 +90,7 @@ Los comandos de escritura (`/generar`, `/corregir`, `/revisar`, `/expandir`, `/p
 /nuevo-proyecto
 ```
 
-El scaffolder conduce un briefing editorial en 7 fases (gancho → personajes → mundo → voz → estructura → reflexión → persistir), con un pre-flight editorial obligatorio de hechos y brief (Fase 7.1) antes de crear el workspace. En Fase 5 determina la escala y construye los hechos narrativos. Al finalizar, construye un JSON con el brief y lo pipea a `scripts/new-project.ps1` por stdin. El script crea el workspace con los agentes, skills y archivos correspondientes a la escala.
+El scaffolder conduce un briefing editorial en 7 fases (gancho → personajes → mundo → voz → estructura → reflexión → persistir), con un pre-flight editorial obligatorio de hechos y brief (Fase 7.1) antes de crear el workspace. En Fase 5 determina la escala y construye los hechos narrativos. Al finalizar, construye un JSON con el brief y lo pipea a `scripts/new-project.ps1` por stdin. El script crea la obra en la raíz de obras (`FORJA_OBRAS`, por defecto `../Obras/<slug>`; `scripts/ruta-obra.ps1` la imprime) con los agentes, skills, scripts y archivos de su escala, su `.gitignore` y `git init` sin commits (ADR 0026).
 
 ## Cómo publicar y compilar
 

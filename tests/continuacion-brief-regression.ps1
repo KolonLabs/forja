@@ -127,6 +127,11 @@ try {
     Assert-True ((Get-Content -Raw -LiteralPath (Join-Path $creado ".gitignore")) -match "(?m)^\.forja-transaccion/$") ".gitignore de la obra excluye el staging"
     Assert-True ((Get-Content -Raw -LiteralPath (Join-Path $creado ".gitignore")) -notmatch "draft") ".gitignore de la obra versiona los borradores"
     Assert-True (-not (Test-Path -LiteralPath (Join-Path $hubCopia "workspaces"))) "el hub no recibe obras"
+    $agentsObra = Get-Content -Raw -LiteralPath (Join-Path $creado "AGENTS.md") -Encoding UTF8
+    Assert-True ($agentsObra -match "## Historial y publicación" -and $agentsObra -match "/compilar" -and $agentsObra -match "No crees copias de seguridad") "AGENTS.md de la obra declara git propio, sin copias y /compilar"
+    Assert-True (Test-Path -LiteralPath (Join-Path $creado "scripts\compilar.ps1")) "la obra nace con compilar.ps1"
+    $mapaSkill = Get-Content -Raw -LiteralPath (Join-Path $hubCopia ".opencode\skills\scaffolding-mapa\SKILL.md") -Encoding UTF8
+    Assert-True ($mapaSkill -notmatch "lo asigna el hub" -and $mapaSkill -match "publicacion/") "la skill de MAPA no atribuye publicado al hub y documenta publicacion/"
     Assert-True ((Get-Content -Raw -LiteralPath (Join-Path $creado ".claude\settings.json") | ConvertFrom-Json).agent -eq "director") "Claude Code arranca en el director"
     Assert-True ((Get-Content -Raw -LiteralPath (Join-Path $creado "CLAUDE.md")) -match "@AGENTS.md") "CLAUDE.md importa AGENTS.md"
     Assert-True ((Get-Content -Raw -LiteralPath (Join-Path $creado "opencode.json") | ConvertFrom-Json).agent.scaffolder.disable -eq $true) "opencode desactiva el scaffolder del hub"

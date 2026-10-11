@@ -33,6 +33,8 @@ try {
     Write-Utf8 -Path (Join-Path $fuentes "sub\escaleta.txt") -Content "El hermano oculta la carta.`nEl conflicto escala en una cena familiar."
     Write-Utf8 -Path (Join-Path $fuentes "duplicada.markdown") -Content "Una mujer recibe una carta que no reconoce.`nLa voz es íntima y melancólica."
     Write-Utf8 -Path (Join-Path $fuentes "node_modules\ignorar.md") -Content "Este contenido no puede entrar en el paquete."
+    Write-Utf8 -Path (Join-Path $fuentes ".claude\skills\x\SKILL.md") -Content "Skill de workspace que no es evidencia."
+    Write-Utf8 -Path (Join-Path $fuentes "publicacion\libro.md") -Content "Libro compilado que duplica el manuscrito."
     Write-Utf8 -Path (Join-Path $fuentes "referencia.docx") -Content "Formato no admitido."
     Write-Utf8 -Path (Join-Path $segundaFuente "mundo.txt") -Content "La ciudad está vacía cuando llega el amanecer."
     $sourceHash = (Get-FileHash -LiteralPath (Join-Path $fuentes "nota.md") -Algorithm SHA256).Hash
@@ -44,6 +46,7 @@ try {
     $paquete = Get-Content -LiteralPath $resultado.paquete -Raw
     Assert-True ($paquete -match "F_001" -and $paquete -match "0001 \| Una mujer recibe una carta" -and $paquete -match "La ciudad está vacía") "conserva evidencia con líneas"
     Assert-True ($paquete -notmatch "Este contenido no puede entrar") "no lee dependencias excluidas"
+    Assert-True ($paquete -notmatch "Skill de workspace" -and $paquete -notmatch "Libro compilado") "no lee la capa .claude ni el libro compilado de una obra"
     Assert-True ((Get-FileHash -LiteralPath (Join-Path $fuentes "nota.md") -Algorithm SHA256).Hash -eq $sourceHash) "no modifica fuentes"
     Assert-True (Test-Path -LiteralPath $resultado.manifiesto) "emite manifiesto separado"
     $manifiesto = Get-Content -LiteralPath $resultado.manifiesto -Raw | ConvertFrom-Json

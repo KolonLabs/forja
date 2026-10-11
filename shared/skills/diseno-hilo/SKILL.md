@@ -13,7 +13,7 @@ user-invocable: false
 ## Ubicación
 
 ```
-workspaces/<slug>/hilos/hilo-<slug-del-hilo>/diseno-hilo.md
+hilos/hilo-<slug-del-hilo>/diseno-hilo.md
 ```
 
 `hilo-<slug-del-hilo>` es el slug humano del hilo (p. ej. `hilo-aurelio`), el mismo que usa el resto del pipeline en `config.json.hilos[].slug` y en las rutas de `guion-hilo.md`, `cap-NN/` y `cola_d.md`. No es un UUID — la identidad opaca del hilo como entidad (`stable_id`, usado en Qdrant/Neo4j) es un campo aparte y nunca forma parte de la ruta del archivo.

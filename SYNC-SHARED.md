@@ -1,5 +1,7 @@
 # Sincronización pendiente con `shared/` (escala novela-multi-hilo)
 
+> **Rutas anteriores a ADR 0026.** Este documento es anterior al traslado de las obras fuera del hub: donde dice `workspaces\canida-2`, la obra está hoy en la raíz de obras (`.\scripts\ruta-obra.ps1 -Slug canida-2`). Las skills que menciona en `.opencode/skills/` viven ahora en `shared/skills/` (ADR 0023).
+
 Este documento resume el rediseño del pipeline hecho en el workspace `canida-2` y qué hace falta aplicar en el repo padre (`Forja/shared/`) para que **todos los workspaces futuros** de esta escala nazcan ya con las mejoras. `shared/` es inmutable desde dentro de un workspace (regla del hub) — esta sincronización debe ejecutarse desde la raíz de Forja.
 
 > **Alcance: SOLO `novela-multi-hilo`.** Todo el análisis, la verificación y las recomendaciones de este documento están acotadas a esa escala. Dos de los archivos implicados (`hechos-distribuidos` y `scripts/lib/common.ps1`) son compartidos por las tres escalas (`relato`, `novela-simple`, `novela-multi-hilo`) — **este documento no analiza ni decide su impacto en las otras dos**. Eso queda explícitamente como responsabilidad de Forja (la sesión que opera desde la raíz del hub), no de este workspace. Donde eso aplica, está marcado en rojo abajo.

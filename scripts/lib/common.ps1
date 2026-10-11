@@ -184,9 +184,10 @@ function Write-FichasSemilla {
 }
 
 function Write-OpencodeConfig {
-    # opencode sube hasta la raiz de git y hereda del hub sus agentes
-    # (scaffolder, bibliotecario). El workspace es autonomo: se desactivan aqui,
-    # calculados desde lo que el hub realmente contiene.
+    # opencode sube hasta la raiz de git y heredaba del hub sus agentes
+    # (scaffolder, bibliotecario) cuando las obras vivian dentro del hub. Con
+    # ADR 0026 la obra tiene su propio git fuera del hub; se mantiene la
+    # desactivacion hasta verificarlo (DT-015).
     #
     # Las skills del hub (scaffolding-*, importacion-fuentes) tambien quedan
     # descubribles, pero no se pueden denegar desde opencode.json: la regla
@@ -714,6 +715,7 @@ guion.md (E_XXXX + B_XXXX)
   → /corregir, /revisar o /expandir
   → /publicar
   → relato.md (manuscrito limpio)
+  → /compilar → publicacion/ (libro; no se versiona)
 ```
 
 ## Archivos de edición
@@ -728,7 +730,7 @@ guion.md (E_XXXX + B_XXXX)
 | contexto_narrativo.md | Memoria local que se actualiza desde la primera escena afectada. |
 | .forja-transaccion/ | Staging recuperable gestionado por el director; no se edita a mano. |
 
-Estado actual: `correccion`. No modifiques `relato-edicion-anterior.md`; termina con `/publicar` para volver a `finalizado`.
+Estado actual: `correccion`. No modifiques `relato-edicion-anterior.md`; termina con `/publicar` para volver a `finalizado` y compila la edición con `/compilar`. Esta edición es un repositorio git propio, sin el historial del origen.
 '@) -f $Titulo, $Numero, $Origen
     $utf8NoBom = [System.Text.UTF8Encoding]::new($false)
     [System.IO.File]::WriteAllText((Join-Path $TargetDir "MAPA.md"), $content, $utf8NoBom)
@@ -1027,6 +1029,10 @@ Si existe ``referencias/``, contiene material de consulta aportado por el autor 
 $skillsStr
 $hiloSection
 $integritySection
+## Historial y publicación
+
+Esta obra es su propio repositorio git (ADR 0026 del hub). No crees copias de seguridad (``*.bak``, ``*_backup_*``) ni hagas commits: el historial son los commits que decide la persona usuaria. El libro se compila con ``/compilar`` en ``publicacion/``, que no se versiona.
+
 ## Infraestructura
 $infraSection
 

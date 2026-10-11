@@ -57,7 +57,7 @@ El paquete temporal y su manifiesto se eliminan al terminar o cancelar, salvo pe
 
 Cuando el usuario quiere una segunda entrega (relato) de una historia ya cerrada, el workspace anterior es **evidencia de solo lectura**: nunca lo modifiques ni lo enlaces. Los workspaces son autónomos y el nuevo no conoce al anterior.
 
-1. Lee del origen, con autorización expresa, `BRIEF.md`, `fichas/`, `contexto_narrativo.md` y el draft. Si es posible, empaquétalos con `scripts/preparar-importacion-proyecto.ps1` para conservar ruta y hash.
+1. Lee del origen, con autorización expresa, `BRIEF.md`, `fichas/`, `contexto_narrativo.md` y el draft. La obra anterior está en `.\scripts\ruta-obra.ps1 -Slug <origen>`, fuera del hub. Si es posible, empaquétalos con `scripts/preparar-importacion-proyecto.ps1` para conservar ruta y hash.
 2. **Reconstruye las fichas, no las copies.** Conserva los rasgos de continuidad (edades, parentescos, tics, frases de referencia, distribución de los lugares). Reinicia el estado narrativo a «al empezar la nueva entrega», sin IDs `E_`/`B_` del origen. Reescribe la función narrativa y el uso para la nueva historia; elimina las restricciones de la entrega anterior que ya no valen (por ejemplo, «no descubre nada»).
 3. **Matriz de conocimiento.** En `canon_previo` incluye qué sabe y qué ignora cada personaje al empezar, y el estado de cada relación. Es la base de la ironía dramática.
 4. **Compatibilidad con el draft.** Si la nueva historia se superpone con escenas de la anterior, verifica la geometría y los testigos en el draft antes de fijar los hechos.
@@ -272,7 +272,7 @@ Presenta las conclusiones en el resumen final y aplica las precisiones de redacc
 
 #### 7.2 Validar slug
 
-Comprueba que no exista `.\scripts\ruta-obra.ps1 -Slug <slug>` (las obras viven en la raíz de obras (`.\scripts\ruta-obra.ps1` la imprime: `FORJA_OBRAS` o, por defecto, la carpeta `Obras` hermana del hub); excluye `legacy`). Si ya existe, pide un slug alternativo.
+Las obras viven fuera del hub, en la raíz de obras (`FORJA_OBRAS` o, por defecto, la carpeta `Obras` hermana del hub; ADR 0026). Comprueba que no exista la ruta que devuelve `.\scripts\ruta-obra.ps1 -Slug <slug>`. El slug `legacy` está reservado. Si ya existe, pide un slug alternativo.
 
 #### 7.3 Construir brief JSON
 
