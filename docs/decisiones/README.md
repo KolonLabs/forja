@@ -42,3 +42,4 @@ Este directorio conserva decisiones arquitectonicas y operativas que deben sobre
 | [0027](0027-raiz-comun-forja-resultados.md) | Obras y publicados viven juntos en `Forja-resultados/`, hermana del hub (`FORJA_RESULTADOS`). | Aceptada |
 | [0028](0028-borradores-de-revision.md) | `/borrador` genera versiones limpias de revisión sin cambiar el estado: todo el relato confirmado, o un único capítulo de novela con sus escenas completas. | Aceptada |
 | [0029](0029-secretos-del-usuario.md) | Los secretos del usuario viven en `~/.forja/secretos.env`, fuera de los repositorios, y se leen solo con los helpers de `shared/scripts`. | Aceptada |
+| [0030](0030-produccion-de-audiolibros-con-elevenlabs.md) | Los audiolibros se producen con la API de ElevenLabs (etiquetas de emoción y efectos, guion revisado, caché por fragmento) y se entregan primero a Author's Republic; la publicación es manual. | Aceptada (implementación pendiente) |
