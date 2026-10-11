@@ -248,6 +248,7 @@ Ana recibe una llamada y decide salir. En la calle descubre la trampa y cambia d
     # Compilación en la obra (ADR 0026): solo Markdown, sin depender de Pandoc.
     $compilar = Join-Path $scripts "compilar.ps1"
     Copy-Item -LiteralPath (Join-Path $RepoRoot "shared\scripts\compilar.ps1") -Destination $compilar -Force
+    Copy-Item -LiteralPath (Join-Path $RepoRoot "shared\scripts\publicacion-comun.ps1") -Destination (Join-Path $scripts "publicacion-comun.ps1") -Force
     & $compilar | Out-Null
     $publicacion = Join-Path $workspace "publicacion"
     $libroMd = Get-Content -Raw -LiteralPath (Join-Path $publicacion "fixture-relato.md")
@@ -284,7 +285,7 @@ Ana recibe una llamada y decide salir. En la calle descubre la trampa y cambia d
     Assert-True ($ocConfig.agent.scaffolder.disable -eq $true -and $ocConfig.agent.bibliotecario.disable -eq $true) "opencode desactiva los agentes del hub"
     Assert-True ((Get-Content -Raw -LiteralPath (Join-Path $injected ".opencode\commands\revisar.md")) -match "aún no fue escrita") "inyección aplica override de comandos de relato"
     Assert-True ((Get-Content -Raw -LiteralPath (Join-Path $injected ".opencode\agents\director.md")) -match 'Prepara `escritura`') "inyección aplica director transaccional"
-    foreach ($tool in @("compilar.ps1", "build-epub.ps1", "build-pdf.ps1", "build.css", "templates\forja-kdp.typ")) {
+    foreach ($tool in @("compilar.ps1", "borrador.ps1", "publicacion-comun.ps1", "build-epub.ps1", "build-pdf.ps1", "build.css", "templates\forja-kdp.typ")) {
         Assert-True (Test-Path -LiteralPath (Join-Path $injected "scripts\$tool")) "inyección incluye scripts\$tool"
     }
     Assert-True (Test-Path -LiteralPath (Join-Path $injected ".opencode\commands\compilar.md")) "inyección incluye /compilar en opencode"

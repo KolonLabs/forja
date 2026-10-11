@@ -201,6 +201,7 @@ diseno → fichas → escritura → publicacion → finalizado
 - `/expandir B_NNNN [instrucciones]` — expansión de un beat
 - `/publicar` — salida limpia (`capitulo.md` por capítulo + `novela.md`)
 - `/compilar [--epub] [--pdf]` — compila el libro en `publicacion/` y asigna `publicado` (`scripts/compilar.ps1`)
+- `/borrador [cap-NN] [--epub] [--pdf]` — versión limpia de revisión de un capítulo (el en curso por defecto), solo con sus escenas completas; no cambia el estado (`scripts/borrador.ps1`)
 
 ## Infraestructura
 

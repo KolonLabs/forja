@@ -143,9 +143,9 @@ Para recuperar ideas desde notas, escaletas o guiones libres se usa `/importar-p
 |-----------|-----------|
 | `shared/skills/` | 41 skills: invariantes + exclusivos por escala. Neutras: se inyectan en `.claude/skills/`, que leen opencode y Claude Code |
 | `shared/.opencode/agents/`, `shared/.claude/agents/` | 2 agentes fijos (memoria, cronista), uno por entorno; solo se inyectan en novelas |
-| `shared/scripts/` | Utilidades que se copian a `scripts/` en todas las escalas: `renumerar.ps1` (renumera definiciones `H_`/`E_`/`B_` y devuelve la tabla viejo → nuevo; la skill `renumeracion-ids` guía al LLM en la revisión de referencias) y la compilación de la obra (`compilar.ps1`, `build-epub.ps1`, `build-pdf.ps1`, `build.css`, `templates/forja-kdp.typ`), que el hub también usa para las antologías |
+| `shared/scripts/` | Utilidades que se copian a `scripts/` en todas las escalas: `renumerar.ps1` (renumera definiciones `H_`/`E_`/`B_` y devuelve la tabla viejo → nuevo; la skill `renumeracion-ids` guía al LLM en la revisión de referencias) y la compilación de la obra (`compilar.ps1`, `borrador.ps1`, `publicacion-comun.ps1`, `build-epub.ps1`, `build-pdf.ps1`, `build.css`, `templates/forja-kdp.typ`), que el hub también usa para las antologías |
 | `shared/GUIA.md` | Guía de decisión por defecto (relato). Si la escala define `shared/pipelines/<escala>/GUIA.md`, prevalece esa |
-| `shared/.opencode/commands/`, `shared/.claude/commands/` | 9 comandos por entorno: generar, revisar, expandir, corregir, publicar, compilar, refinar-hechos, revisar-guion, validar-hechos. `corregir` solo se inyecta en relato |
+| `shared/.opencode/commands/`, `shared/.claude/commands/` | 10 comandos por entorno: generar, revisar, expandir, corregir, publicar, compilar, borrador, refinar-hechos, revisar-guion, validar-hechos. `corregir` solo se inyecta en relato |
 | `shared/pipelines/<escala>/` | Agentes (`agentes/`), skills, scripts y overrides de comandos propios de escala + `PIPELINE.md` + `ORQUESTACION.md` |
 | `shared/pipelines/<escala>/claude/` | Capa Claude Code de la escala: `agents/`, `commands/`, `settings.json` y `CLAUDE.md` |
 

@@ -40,3 +40,4 @@ Este directorio conserva decisiones arquitectonicas y operativas que deben sobre
 | [0025](0025-explicitud-obligatoria-y-validacion-por-nivel.md) | La explicitud es obligatoria en el brief y `validacion-crudeza` aplica el criterio del nivel del proyecto. | Aceptada |
 | [0026](0026-obras-como-repositorios-independientes-fuera-del-hub.md) | Cada obra es un repositorio git propio fuera del hub, sin copias de seguridad automáticas, y se compila a sí misma con `/compilar`; el hub solo ensambla antologías. | Aceptada; rutas por defecto sustituidas por ADR 0027 |
 | [0027](0027-raiz-comun-forja-resultados.md) | Obras y publicados viven juntos en `Forja-resultados/`, hermana del hub (`FORJA_RESULTADOS`). | Aceptada |
+| [0028](0028-borradores-de-revision.md) | `/borrador` genera versiones limpias de revisión sin cambiar el estado: todo el relato confirmado, o un único capítulo de novela con sus escenas completas. | Aceptada |

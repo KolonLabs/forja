@@ -15,7 +15,9 @@
       "Bash(python -X utf8 scripts/*)",
       "Bash(python scripts/*)",
       "Bash(pwsh -NoProfile -File scripts/compilar.ps1)",
-      "Bash(pwsh -NoProfile -File scripts/compilar.ps1 *)"
+      "Bash(pwsh -NoProfile -File scripts/compilar.ps1 *)",
+      "Bash(pwsh -NoProfile -File scripts/borrador.ps1)",
+      "Bash(pwsh -NoProfile -File scripts/borrador.ps1 *)"
     ],
     "ask": [
       "Edit(/**/draft.md)",

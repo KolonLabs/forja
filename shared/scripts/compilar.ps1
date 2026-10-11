@@ -18,39 +18,12 @@ $ErrorActionPreference = "Stop"
 $WorkspaceRoot = Split-Path -Parent $PSScriptRoot
 $utf8NoBom = [System.Text.UTF8Encoding]::new($false)
 
-function Get-FileSha256 {
-    param([string]$Path)
+. (Join-Path $PSScriptRoot "publicacion-comun.ps1")
 
-    return (Get-FileHash -LiteralPath $Path -Algorithm SHA256).Hash.ToLowerInvariant()
-}
-
-function Get-GitEstado {
-    # Commit de la obra y si el manuscrito tiene cambios sin commitear. Sin git
-    # o sin commits devuelve nulos: la compilación no depende del historial.
-    param([string]$ManuscriptName)
-
-    $estado = [ordered]@{ commit = $null; manuscrito_sin_commit = $null }
-    if (-not (Test-Path -LiteralPath (Join-Path $WorkspaceRoot ".git"))) { return $estado }
-    if (-not (Get-Command git -ErrorAction SilentlyContinue)) { return $estado }
-
-    $commit = & git -C $WorkspaceRoot rev-parse --verify --quiet HEAD 2>$null
-    if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($commit)) { return $estado }
-    $estado.commit = "$commit".Trim()
-    $cambios = & git -C $WorkspaceRoot status --porcelain -- $ManuscriptName 2>$null
-    $estado.manuscrito_sin_commit = -not [string]::IsNullOrWhiteSpace(($cambios | Out-String))
-    return $estado
-}
-
-$configPath = Join-Path $WorkspaceRoot "config.json"
-if (-not (Test-Path -LiteralPath $configPath -PathType Leaf)) {
-    throw "compilar: falta config.json en $WorkspaceRoot."
-}
-$configRaw = Get-Content -LiteralPath $configPath -Raw -Encoding UTF8
-try {
-    $config = $configRaw | ConvertFrom-Json -ErrorAction Stop
-} catch {
-    throw "compilar: config.json no es válido. $_"
-}
+$obraConfig = Read-ObraConfig -WorkspaceRoot $WorkspaceRoot
+$configPath = $obraConfig.Path
+$configRaw = $obraConfig.Raw
+$config = $obraConfig.Config
 
 if ($config.estado -notin @("finalizado", "publicado")) {
     throw "compilar: la obra está en estado '$($config.estado)'. Ejecuta /publicar hasta llegar a 'finalizado' antes de compilar."
@@ -59,9 +32,6 @@ if ($config.tipo -notin @("relato", "novela")) {
     throw "compilar: tipo '$($config.tipo)' no soportado. Debe ser relato o novela."
 }
 $slug = "$($config.slug)"
-if ($slug -notmatch "^[a-z0-9]+(-[a-z0-9]+)*$") {
-    throw "compilar: config.json.slug '$slug' no es un slug kebab-case."
-}
 
 $manuscriptName = if ($config.tipo -eq "novela") { "novela.md" } else { "relato.md" }
 $manuscriptPath = Join-Path $WorkspaceRoot $manuscriptName
@@ -109,7 +79,7 @@ try {
     }
 
     $timestamp = (Get-Date).ToString("yyyy-MM-ddTHH:mm:ss")
-    $git = Get-GitEstado -ManuscriptName $manuscriptName
+    $git = Get-GitEstado -WorkspaceRoot $WorkspaceRoot -Paths @($manuscriptName)
     $manifest = [ordered]@{
         schema_version = 1
         obra = $slug
@@ -121,7 +91,7 @@ try {
             archivo = $manuscriptName
             sha256 = Get-FileSha256 $manuscriptPath
             commit = $git.commit
-            sin_commit = $git.manuscrito_sin_commit
+            sin_commit = $git.sin_commit
         }
         artefactos = $artifacts
     }
@@ -139,6 +109,11 @@ try {
     Move-Item -LiteralPath $stageDir -Destination $outputDir
     $completed = $true
     if (Test-Path -LiteralPath $previousDir) {
+        # Los borradores de revisión (ADR 0028) no forman parte del libro: se conservan.
+        $borradores = Join-Path $previousDir "borrador"
+        if (Test-Path -LiteralPath $borradores) {
+            Move-Item -LiteralPath $borradores -Destination (Join-Path $outputDir "borrador")
+        }
         Remove-Item -LiteralPath $previousDir -Recurse -Force
     }
 
@@ -149,7 +124,7 @@ try {
     if ($Pdf) { Write-Host "  PDF:        $(Join-Path $outputDir "$slug.pdf")" }
     Write-Host "  Manifiesto: $(Join-Path $outputDir "manifest.json")"
     Write-Host "  Estado:     publicado"
-    if ($git.manuscrito_sin_commit) {
+    if ($git.sin_commit) {
         Write-Host "  Aviso:      $manuscriptName tiene cambios sin commitear; el manifiesto no apunta a un commit que lo contenga."
     }
 } catch {

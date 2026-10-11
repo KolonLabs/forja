@@ -130,8 +130,8 @@ try {
     Assert-True ((Get-ChildItem -LiteralPath (Join-Path $creado ".claude\skills") -Directory).Count -ge 15) "skills en .claude/skills"
     Assert-True ((Get-ChildItem -LiteralPath (Join-Path $creado ".opencode\agents") -File).Count -eq 7) "7 agentes opencode"
     Assert-True ((Get-ChildItem -LiteralPath (Join-Path $creado ".claude\agents") -File).Count -eq 7) "7 agentes Claude Code"
-    Assert-True ((Get-ChildItem -LiteralPath (Join-Path $creado ".opencode\commands") -File).Count -eq 9) "9 comandos opencode"
-    Assert-True ((Get-ChildItem -LiteralPath (Join-Path $creado ".claude\commands") -File).Count -eq 9) "9 comandos Claude Code"
+    Assert-True ((Get-ChildItem -LiteralPath (Join-Path $creado ".opencode\commands") -File).Count -eq 10) "10 comandos opencode"
+    Assert-True ((Get-ChildItem -LiteralPath (Join-Path $creado ".claude\commands") -File).Count -eq 10) "10 comandos Claude Code"
     # La obra vive fuera del hub, con su propio git y sin commits (ADR 0026).
     Assert-True (Test-Path -LiteralPath (Join-Path $creado ".git")) "la obra nace con su repositorio git"
     Assert-True ($null -eq (git -C $creado rev-parse --verify --quiet HEAD 2>$null)) "la obra nace sin commits"

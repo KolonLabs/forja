@@ -349,6 +349,7 @@ Los cuatro últimos son los que hacen a esta escala consciente de los hilos: def
 - `/expandir B_NNNN [instrucciones]` — expansión de un beat
 - `/publicar` — salida limpia (`capitulo.md` por capítulo + `novela.md`), deja el workspace en `finalizado`
 - `/compilar [--epub] [--pdf]` — compila el libro en `publicacion/` y asigna `publicado` (`scripts/compilar.ps1`)
+- `/borrador [cap-NN] [--epub] [--pdf]` — versión limpia de revisión de un capítulo (el en curso por defecto), solo con sus escenas completas; no cambia el estado (`scripts/borrador.ps1`)
 
 `/corregir` no se inyecta en esta escala: contempla solo ediciones derivadas de relato.
 

@@ -38,12 +38,13 @@ _actos.md (actos con hechos H_XXXX) → guion.md (escenas + beats B_XXXX) → re
 | relato-draft.md | director | escritor (por escena) | Prosa continua por escena; anclas invisibles de beat |
 | relato.md | director (/publicar) | — | Versión limpia publicable |
 | publicacion/ | /compilar (`scripts/compilar.ps1`) | /compilar | Libro compilado (Markdown, EPUB/PDF, manifest.json); no se versiona |
+| publicacion/borrador/ | /borrador (`scripts/borrador.ps1`) | /borrador | Versiones limpias de revisión del trabajo en curso; no cambian el estado ni se versionan |
 | EDICION.md | /nueva-edicion (solo edición) | — | Linaje y motivo de la edición derivada |
 | relato-edicion-anterior.md | /nueva-edicion (solo edición) | — | Manuscrito publicado de referencia, solo lectura |
 | correcciones.md | /nueva-edicion, director | director | Registro de las correcciones de una edición |
 | contexto_narrativo.md | director | director | Memoria del relato |
 | fichas/ | entidades | entidades | Fichas de entidades |
-| scripts/ | Script | — | Helpers de la escala, `renumerar.ps1` y compilación (`compilar.ps1`, `build-epub.ps1`, `build-pdf.ps1`) |
+| scripts/ | Script | — | Helpers de la escala, `renumerar.ps1` y compilación (`compilar.ps1`, `borrador.ps1`, `build-epub.ps1`, `build-pdf.ps1`) |
 | .gitignore | Script | — | Repositorio git propio de la obra; los commits los decide la persona usuaria |
 
 ## Historial

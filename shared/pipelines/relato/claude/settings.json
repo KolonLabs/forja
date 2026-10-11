@@ -18,7 +18,11 @@
       "Bash(pwsh -NoProfile -File scripts/compilar.ps1)",
       "Bash(pwsh -NoProfile -File scripts/compilar.ps1 *)",
       "PowerShell(pwsh -NoProfile -File scripts/compilar.ps1)",
-      "PowerShell(pwsh -NoProfile -File scripts/compilar.ps1 *)"
+      "PowerShell(pwsh -NoProfile -File scripts/compilar.ps1 *)",
+      "Bash(pwsh -NoProfile -File scripts/borrador.ps1)",
+      "Bash(pwsh -NoProfile -File scripts/borrador.ps1 *)",
+      "PowerShell(pwsh -NoProfile -File scripts/borrador.ps1)",
+      "PowerShell(pwsh -NoProfile -File scripts/borrador.ps1 *)"
     ],
     "deny": [
       "Edit(/config.json)",

@@ -25,6 +25,8 @@ permission:
     "pwsh -NoProfile -File scripts/renumerar.ps1 *": allow
     "pwsh -NoProfile -File scripts/compilar.ps1": allow
     "pwsh -NoProfile -File scripts/compilar.ps1 *": allow
+    "pwsh -NoProfile -File scripts/borrador.ps1": allow
+    "pwsh -NoProfile -File scripts/borrador.ps1 *": allow
   external_directory: deny
   webfetch: deny
   websearch: deny

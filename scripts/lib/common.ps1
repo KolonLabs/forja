@@ -1043,7 +1043,7 @@ $hiloSection
 $integritySection
 ## Historial y publicación
 
-Esta obra es su propio repositorio git (ADR 0026 del hub). No crees copias de seguridad (``*.bak``, ``*_backup_*``) ni hagas commits: el historial son los commits que decide la persona usuaria. El libro se compila con ``/compilar`` en ``publicacion/``, que no se versiona.
+Esta obra es su propio repositorio git (ADR 0026 del hub). No crees copias de seguridad (``*.bak``, ``*_backup_*``) ni hagas commits: el historial son los commits que decide la persona usuaria. El libro se compila con ``/compilar`` en ``publicacion/``, que no se versiona; ``/borrador`` genera versiones de revisión en ``publicacion/borrador/`` sin cambiar el estado.
 
 ## Infraestructura
 $infraSection

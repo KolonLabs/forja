@@ -28,7 +28,7 @@ Registrar escena, hash/version, decision del usuario y alcance de avance en `con
 
 | Agente | Invocado por | Lee | Escribe | Invoca | Modelo (opencode · Claude Code) |
 |--------|--------------|-----|---------|--------|--------|
-| **director** | usuario `/generar`, `/revisar`, `/expandir`, `/publicar`, `/compilar`, `/refinar-hechos`, `/validar-hechos`, `/revisar-guion` | `PIPELINE.md`, `MAPA.md`, `config.json`, `BRIEF.md`, `AGENTS.md`, `contexto.md`, guiones según fase | `config.json`, `contexto.md`, estados en guiones | guionista, escritor, validador, integrador, memoria, cronista, entidades, auditor-beats | `deepseek/deepseek-flash` · `claude-sonnet-5-5` |
+| **director** | usuario `/generar`, `/revisar`, `/expandir`, `/publicar`, `/compilar`, `/borrador`, `/refinar-hechos`, `/validar-hechos`, `/revisar-guion` | `PIPELINE.md`, `MAPA.md`, `config.json`, `BRIEF.md`, `AGENTS.md`, `contexto.md`, guiones según fase | `config.json`, `contexto.md`, estados en guiones | guionista, escritor, validador, integrador, memoria, cronista, entidades, auditor-beats | `deepseek/deepseek-flash` · `claude-sonnet-5-5` |
 | **guionista** | director | Briefing + archivos del modo (ver tabla modos abajo) | Guiones según modo | — | `deepseek/deepseek-flash` · `claude-sonnet-5-5` |
 | **auditor-beats** | director | `guion.md` o `guion-novela.md`, `_actos.md`, `AGENTS.md` | — (read-only, diagnóstico al director) | — | `deepseek-flash` · `claude-sonnet-5-5` |
 | **escritor** | director | Contexto preparado inline, guion de escena, transicion, fichas y voz pertinentes | Nada; devuelve prosa con IDs, sin herramientas, completion maxima 64000 en opencode | — | `venice/qwen-3-8-flash` · `claude-opus-5-5` |

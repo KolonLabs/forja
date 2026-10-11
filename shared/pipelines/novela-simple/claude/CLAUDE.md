@@ -2,7 +2,7 @@
 
 # Claude Code
 
-- El agente principal es `director` (campo `agent` de `.claude/settings.json`). Los comandos `/generar`, `/revisar`, `/expandir`, `/publicar`, `/compilar`, `/revisar-guion`, `/refinar-hechos` y `/validar-hechos` los lanza la persona usuaria y los ejecuta él.
+- El agente principal es `director` (campo `agent` de `.claude/settings.json`). Los comandos `/generar`, `/revisar`, `/expandir`, `/publicar`, `/compilar`, `/borrador`, `/revisar-guion`, `/refinar-hechos` y `/validar-hechos` los lanza la persona usuaria y los ejecuta él.
 - Agentes y comandos de Claude Code viven en `.claude/agents` y `.claude/commands`; los de opencode, en `.opencode/`. Son equivalentes: un cambio en uno se revisa en el otro.
 - Las skills viven solo en `.claude/skills/` y las leen los dos entornos.
 - Punto de reanudación: sección «Estado del trabajo» de `contexto.md` y `config.json` (`estado`, `capitulos_completados`, `ultimo_beat_seq`). No repitas pasos ya cerrados.
