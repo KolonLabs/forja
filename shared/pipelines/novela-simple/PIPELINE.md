@@ -202,6 +202,7 @@ diseno → fichas → escritura → publicacion → finalizado
 - `/publicar` — salida limpia (`capitulo.md` por capítulo + `novela.md`)
 - `/compilar [--epub] [--pdf]` — compila el libro en `publicacion/` y asigna `publicado` (`scripts/compilar.ps1`)
 - `/borrador [cap-NN] [--epub] [--pdf]` — versión limpia de revisión de un capítulo (el en curso por defecto), solo con sus escenas completas; no cambia el estado (`scripts/borrador.ps1`)
+- `/borrador --guion [cap-NN] [--anotado]` — el guion de un capítulo como texto de lectura, con etiquetas `B_NNNN` y sin marcas; no cambia el estado (ADR 0036)
 
 ## Infraestructura
 

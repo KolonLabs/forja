@@ -15,6 +15,7 @@ Esta guía responde **qué comando usar según tu objetivo**. Para el contrato d
 | Generar el manuscrito limpio | `/publicar` | Todos los capítulos de la tabla de Trenzado están cerrados. | Para corregir prosa: primero usa `/revisar` o `/expandir`. |
 | Compilar el libro (EPUB/PDF) | `/compilar [--epub] [--pdf]` | El manuscrito está `finalizado`, o ya `publicado` y quieres regenerar formatos. | Para cambiar el texto: el manuscrito no se toca al compilar. |
 | Leer o revisar un capítulo en curso | `/borrador [cap-NN] [--epub] [--pdf]` | Quieres una versión limpia de un capítulo, completo o a medias, con solo sus escenas completas. Sin capítulo, usa el capítulo en curso. No cambia el estado. | Para publicar o para la novela entera: el borrador es siempre de un solo capítulo. |
+| Revisar el guion de un capítulo | `/borrador --guion [cap-NN] [--hilo <hilo>] [--anotado] [--epub] [--pdf]` | Quieres leer los beats como texto, con su etiqueta `B_NNNN` para comentarlos con el director, sin estados, `stable_id` ni marcas; `--anotado` añade tono, extensión, personajes y zona. Sin capítulo, el primero con beats pendientes. En multi-hilo, antes de ensamblar, indica el hilo. No cambia el estado. | Para cambiar el guion: usa `/revisar-guion`. |
 
 `/corregir` no está disponible en novela: es un comando de ediciones derivadas de relato.
 

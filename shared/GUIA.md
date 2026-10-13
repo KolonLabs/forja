@@ -17,6 +17,7 @@ Esta guía responde **qué comando usar según tu objetivo**. Para el contrato d
 | Generar el manuscrito limpio | `/publicar` | Todos los beats están cerrados o has terminado una edición derivada. | Para corregir prosa: primero revisa o corrige el draft. |
 | Compilar el libro (EPUB/PDF) | `/compilar [--epub] [--pdf]` | El manuscrito está `finalizado`, o ya `publicado` y quieres regenerar formatos. | Para cambiar el texto: el manuscrito no se toca al compilar. |
 | Leer o revisar lo escrito hasta ahora | `/borrador [--epub] [--pdf]` | Quieres una versión limpia de la prosa confirmada, sin anclas ni marcadores, para leerla o compartirla. No cambia el estado. | Para publicar: el borrador no es el libro. |
+| Revisar el guion con calma | `/borrador --guion [--anotado] [--epub] [--pdf]` | Quieres leer los beats como texto, con su etiqueta `B_XXXX` para comentarlos, sin estados ni marcas; `--anotado` añade tono, extensión y datos de escena. No cambia el estado. | Para cambiar el guion: usa `/revisar-guion` o `/corregir estructura`. |
 
 ## Camino habitual
 

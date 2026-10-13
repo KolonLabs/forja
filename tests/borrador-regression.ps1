@@ -1,4 +1,4 @@
-# borrador-regression.ps1 — Borradores de revisión de relato y novela (ADR 0028).
+# borrador-regression.ps1 — Borradores de revisión de relato y novela, de prosa y de guion (ADR 0028 y 0036).
 [CmdletBinding()]
 param()
 
@@ -162,6 +162,65 @@ Esto no es prosa.
     $novelaBorradores = @(Get-ChildItem -LiteralPath (Join-Path $novela "publicacion\borrador\prosa") -Force | ForEach-Object Name)
     Assert-True (($novelaBorradores -join ",") -eq "novela-prueba-cap-01-borrador.epub") "novela: con -Epub solo queda el EPUB del capítulo, sin .md, manifest ni temporales"
     Assert-True ((Get-Content -Raw -LiteralPath (Join-Path $novela "config.json") | ConvertFrom-Json).estado -eq "escritura") "novela: no cambia el estado"
+
+    # --- Guion (ADR 0036) ---
+    # Relato: guion completo; por defecto etiqueta y acción, sin tonos, datos de escena ni ⚡.
+    $relatoG = New-Obra "relato-guion" @{ slug = "relato-g"; titulo = "Relato G"; tipo = "relato"; escala = "relato"; estado = "fichas" }
+    Write-Utf8 -Path (Join-Path $relatoG "guion.md") -Content @"
+# Guion — Relato G
+
+## Escenas
+
+### E_0001 — Inicio
+
+- Ubicación: Casa
+- Objetivo: Salir.
+- Salida: continua
+
+#### Beats
+
+$Pend B_0001 — Ana abre la puerta. [Clínico — BREVE]
+$Pend B_0002 — Luis le pide que se quede $([char]0x26A1) "Quédate" [Tenso — EXTENSA] [elipsis]
+
+### E_0002 — Calle
+
+- Salida: separador
+
+#### Beats
+
+$Pend B_0003 — Ana cruza la calle. [Contemplativo — MEDIA]
+"@
+    & (Join-Path $relatoG "scripts\borrador.ps1") -Guion | Out-Null
+    $relatoGMd = Join-Path $relatoG "publicacion\borrador\guion\relato-g-guion-borrador.md"
+    Assert-True ((Get-Cuerpo $relatoGMd) -ceq "## E_0001 — Inicio`n`n**B_0001** Ana abre la puerta.`n`n**B_0002** Luis le pide que se quede`n`n## E_0002 — Calle`n`n**B_0003** Ana cruza la calle.") "guion relato: etiqueta y acción, sin tonos, datos ni literalidad"
+    Assert-True ((Get-Content -Raw -LiteralPath $relatoGMd) -match "Relato G \(guion, borrador\)" -and (Get-Content -Raw -LiteralPath $relatoGMd) -match "escenas: 2 · beats: 3") "guion relato: portada y cobertura"
+    & (Join-Path $relatoG "scripts\borrador.ps1") -Guion -Anotado | Out-Null
+    $anotado = Get-Cuerpo (Join-Path $relatoG "publicacion\borrador\guion\relato-g-guion-anotado-borrador.md")
+    Assert-True ($anotado -match [regex]::Escape("*Ubicación: Casa*") -and $anotado -match [regex]::Escape("**B_0002** Luis le pide que se quede $([char]0x26A1) `"Quédate`" · [Tenso — EXTENSA] [elipsis]")) "guion relato: --anotado añade datos de escena, literalidad y etiquetas"
+    Assert-True (Test-Path -LiteralPath $relatoGMd) "guion relato: la versión anotada no sustituye a la limpia"
+    Assert-True ((Get-Content -Raw -LiteralPath (Join-Path $relatoG "publicacion\borrador\guion\relato-g-guion-borrador.manifest.json") | ConvertFrom-Json).tipo -eq "borrador-guion") "guion relato: manifiesto de tipo borrador-guion"
+    Assert-True ((Get-Content -Raw -LiteralPath (Join-Path $relatoG "config.json") | ConvertFrom-Json).estado -eq "fichas") "guion relato: no cambia el estado"
+    Assert-Throws { & (Join-Path $relatoG "scripts\borrador.ps1") -Anotado | Out-Null } "guion: --anotado sin --guion se rechaza" "solo se usan con --guion"
+    Assert-Throws { & (Join-Path $relatoG "scripts\borrador.ps1") -Guion -Hilo uno | Out-Null } "guion: --hilo fuera de multi-hilo se rechaza" "solo existe en novela multi-hilo"
+
+    # Novela: capítulo en curso del guion (primero con beats pendientes); beats sin etiqueta salen sin ella.
+    & (Join-Path $novela "scripts\borrador.ps1") -Guion | Out-Null
+    $novelaG = Get-Cuerpo (Join-Path $novela "publicacion\borrador\guion\novela-prueba-cap-01-guion-borrador.md")
+    Assert-True ($novelaG -ceq "# Capítulo 1 — El inicio`n`n## E_0001 — La llegada`n`n**B_0001** Llega.`n`nMira.`n`n## La duda`n`nDuda.`n`n**B_0004** Decide.`n`n## La salida`n`nSale.`n`n## El final`n`nTermina.") "guion novela: capítulo en curso, etiquetas visuales y sin stable_id, seq ni estados"
+    & (Join-Path $novela "scripts\borrador.ps1") -Guion -Capitulo 2 | Out-Null
+    Assert-True ((Get-Cuerpo (Join-Path $novela "publicacion\borrador\guion\novela-prueba-cap-02-guion-borrador.md")) -ceq "# Capítulo 2 — Nada`n`n## Vacía`n`nNada.") "guion novela: capítulo indicado"
+    Assert-Throws { & (Join-Path $novela "scripts\borrador.ps1") -Guion -Capitulo 7 | Out-Null } "guion novela: rechaza un capítulo inexistente" "no identifica"
+    New-Item -ItemType Directory -Force -Path (Join-Path $novela "capitulos\cap-03-sin-guion") | Out-Null
+    Assert-Throws { & (Join-Path $novela "scripts\borrador.ps1") -Guion -Capitulo 3 | Out-Null } "guion novela: rechaza un capítulo sin guion" "no tiene guion.md"
+
+    # Multi-hilo antes de ensamblar: guiones por hilo; con más de un hilo hay que indicarlo.
+    $multi = New-Obra "multihilo" @{ slug = "multi"; titulo = "Multi"; tipo = "novela"; escala = "novela-multi-hilo"; estado = "hilos_beats" }
+    foreach ($h in "uno", "dos") {
+        Write-Utf8 -Path (Join-Path $multi "hilos\hilo-$h\cap-01\guion.md") -Content "# Hilo $h — cap-01: Apertura`n`n<!-- ESCENA aa$($h)0001: Arranque | hilo: hh$h -->`n### E_0001 — Arranque`n`n- $Pend B_0001 $([char]0x00B7) b1$($h)0001 [1] — Empieza el hilo $h ``[Tenso — MEDIA]`` ``[Personajes: Ana]```n"
+    }
+    Assert-Throws { & (Join-Path $multi "scripts\borrador.ps1") -Guion | Out-Null } "guion multi-hilo: sin --hilo con varios hilos se rechaza" "indica el hilo"
+    & (Join-Path $multi "scripts\borrador.ps1") -Guion -Hilo dos | Out-Null
+    Assert-True ((Get-Cuerpo (Join-Path $multi "publicacion\borrador\guion\multi-dos-cap-01-guion-borrador.md")) -ceq "# Hilo dos — cap-01: Apertura`n`n## E_0001 — Arranque`n`n**B_0001** Empieza el hilo dos") "guion multi-hilo: capítulo del hilo indicado, sin etiquetas entre comillas invertidas"
 
     Write-Host "OK: borrador-regression"
 } finally {

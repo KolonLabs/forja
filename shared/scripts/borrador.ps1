@@ -1,10 +1,17 @@
-# borrador.ps1 -- Versión limpia de revisión del trabajo en curso (ADR 0028).
-# Relato: toda la prosa confirmada de relato-draft.md. Novela: un único capítulo
-# (el indicado o el capítulo en curso), solo con sus escenas completas. Escribe en
-# publicacion/borrador/prosa/ y nunca cambia el estado ni toca draft, guion o manuscrito.
+# borrador.ps1 -- Versión limpia de revisión del trabajo en curso (ADR 0028 y 0036).
+# Prosa: relato completo desde relato-draft.md; en novela, un único capítulo (el
+# indicado o el capítulo en curso), solo con sus escenas completas. Escribe en
+# publicacion/borrador/prosa/.
+# Guion (-Guion): los beats para revisión humana, con su etiqueta visual y su acción;
+# -Anotado añade tono, extensión y notas. Relato completo; en novela, un capítulo (en
+# multi-hilo, de capitulos/ o de un hilo con -Hilo). Escribe en publicacion/borrador/guion/.
+# Nunca cambia el estado ni toca draft, guion o manuscrito.
 
 param(
     [string]$Capitulo,
+    [switch]$Guion,
+    [switch]$Anotado,
+    [string]$Hilo,
     [switch]$Epub,
     [switch]$Pdf,
     [ValidateSet("paperback", "paperback-5x8", "hardcover", "hardcover-9pt", "hardcover-6x9", "hardcover-6x9-9pt")]
@@ -218,32 +225,222 @@ function Get-NovelaBorrador {
     }
 }
 
+function ConvertTo-GuionEscenas {
+    # Escenas y beats de un guion, en orden. Una escena empieza con su marcador
+    # <!-- ESCENA … --> (novela) o con su encabezado ### E_NNNN — Nombre (relato).
+    param([string]$Texto)
+
+    $escenas = [System.Collections.Generic.List[object]]::new()
+    $actual = $null
+    $soloMarcador = $false
+    foreach ($linea in $Texto -split "`n") {
+        $marca = [regex]::Match($linea, "^<!--\s*ESCENA\s+($Id)\s*:\s*([^|<>]+?)\s*(?:\|[^>]*)?-->")
+        if ($marca.Success) {
+            $actual = [pscustomobject]@{ Etiqueta = $null; Nombre = $marca.Groups[2].Value.Trim(); Datos = [System.Collections.Generic.List[string]]::new(); Beats = [System.Collections.Generic.List[object]]::new() }
+            $escenas.Add($actual)
+            $soloMarcador = $true
+            continue
+        }
+        $cabecera = [regex]::Match($linea, '^###\s+(E_\d{4,})\s*[—-]\s*(.+?)\s*$')
+        if ($cabecera.Success) {
+            if ($actual -and $soloMarcador -and $actual.Beats.Count -eq 0) {
+                $actual.Etiqueta = $cabecera.Groups[1].Value
+                $actual.Nombre = $cabecera.Groups[2].Value
+            } else {
+                $actual = [pscustomobject]@{ Etiqueta = $cabecera.Groups[1].Value; Nombre = $cabecera.Groups[2].Value; Datos = [System.Collections.Generic.List[string]]::new(); Beats = [System.Collections.Generic.List[object]]::new() }
+                $escenas.Add($actual)
+            }
+            $soloMarcador = $false
+            continue
+        }
+        if (-not $actual) { continue }
+        $beat = [regex]::Match($linea, "^\s*(?:[-*]\s+)?($estadosBeat)\s*(?:(B_\d{4,})(?:\s*$([char]0x00B7)\s*$Id)?|$Id)(?:\s+\[\d+\])?\s+[—-]\s+(.+?)\s*$")
+        if ($beat.Success) {
+            $actual.Beats.Add((ConvertTo-GuionBeat -Estado $beat.Groups[1].Value -Etiqueta $beat.Groups[2].Value -Resto $beat.Groups[3].Value))
+            continue
+        }
+        # Datos de la escena (- Ubicación: …, **Objetivo:** …) antes de su primer beat.
+        if ($actual.Beats.Count -eq 0 -and $linea -match '^\s*(?:-\s+[^:\n]{1,40}:\s+\S|\*\*[^*\n]{1,40}:?\*\*:?\s*\S)') {
+            $actual.Datos.Add(($linea.Trim() -replace '^-\s+', ''))
+        }
+    }
+    return $escenas
+}
+
+function ConvertTo-GuionBeat {
+    # Separa la acción del beat de sus anotaciones: las etiquetas finales entre
+    # corchetes (tono, personajes, zona, hilos, [elipsis]) y la literalidad ⚡.
+    param([string]$Estado, [string]$Etiqueta, [string]$Resto)
+
+    $etiquetas = [System.Collections.Generic.List[string]]::new()
+    $accion = $Resto
+    while ($true) {
+        $final = [regex]::Match($accion, '\s*`?(\[[^\[\]]*\])`?\s*$')
+        if (-not $final.Success -or $final.Index -eq 0) { break }
+        $etiquetas.Insert(0, $final.Groups[1].Value)
+        $accion = $accion.Substring(0, $final.Index)
+    }
+    $literal = "\s*$([char]0x26A1)\s*(?:`"[^`"]*`"|$([char]0x00AB)[^$([char]0x00BB)]*$([char]0x00BB)|$([char]0x201C)[^$([char]0x201D)]*$([char]0x201D))"
+    return [pscustomobject]@{
+        Cerrado = ($Estado -eq $beatCerrado)
+        Etiqueta = $Etiqueta
+        Accion = ([regex]::Replace($accion, $literal, '')).Trim()
+        AccionLiteral = $accion.Trim()
+        Etiquetas = $etiquetas.ToArray()
+    }
+}
+
+function Format-GuionEscenas {
+    param([object[]]$Escenas)
+
+    $partes = @()
+    foreach ($escena in $Escenas) {
+        $partes += if ($escena.Etiqueta) { "## $($escena.Etiqueta) — $($escena.Nombre)" } else { "## $($escena.Nombre)" }
+        if ($Anotado -and $escena.Datos.Count -gt 0) {
+            $partes += (($escena.Datos | ForEach-Object { "*$($_ -replace '\*', '')*" }) -join "  `n")
+        }
+        foreach ($beat in $escena.Beats) {
+            $texto = if ($Anotado) { $beat.AccionLiteral } else { $beat.Accion }
+            if ($Anotado -and $beat.Etiquetas.Count -gt 0) { $texto += " · " + ($beat.Etiquetas -join " ") }
+            $partes += if ($beat.Etiqueta) { "**$($beat.Etiqueta)** $texto" } else { $texto }
+        }
+    }
+    return ($partes -join "`n`n")
+}
+
+function Get-GuionResumen {
+    param([object[]]$Escenas)
+    $beats = @($Escenas | ForEach-Object { $_.Beats } | Where-Object { $_ })
+    return [pscustomobject]@{
+        Escenas = $Escenas.Count
+        Beats = $beats.Count
+        Cerrados = @($beats | Where-Object { $_.Cerrado }).Count
+        SinEtiqueta = @($beats | Where-Object { -not $_.Etiqueta }).Count
+    }
+}
+
+function Get-CapitulosConGuion {
+    param([string]$Raiz)
+    if (-not (Test-Path -LiteralPath $Raiz -PathType Container)) { return @() }
+    return @(Get-ChildItem -LiteralPath $Raiz -Directory | Where-Object {
+        $_.Name -match '^cap-\d+' -and (Test-Path -LiteralPath (Join-Path $_.FullName "guion.md") -PathType Leaf)
+    } | Sort-Object { [int]([regex]::Match($_.Name, '^cap-(\d+)').Groups[1].Value) })
+}
+
+function Get-RelatoGuionBorrador {
+    $guionPath = Join-Path $WorkspaceRoot "guion.md"
+    if (-not (Test-Path -LiteralPath $guionPath -PathType Leaf)) {
+        throw "borrador: no existe guion.md; todavía no hay guion."
+    }
+    $escenas = @(ConvertTo-GuionEscenas (Read-Texto $guionPath) | Where-Object { $_.Beats.Count -gt 0 })
+    if ($escenas.Count -eq 0) { throw "borrador: guion.md todavía no tiene beats." }
+    $resumen = Get-GuionResumen $escenas
+    return [pscustomobject]@{
+        Base = "$slug-guion$sufijoAnotado-borrador"
+        Encabezado = ""
+        Cuerpo = Format-GuionEscenas $escenas
+        Cobertura = "guion completo · escenas: $($resumen.Escenas) · beats: $($resumen.Beats)"
+        Alcance = [ordered]@{ escenas = $resumen.Escenas; beats = $resumen.Beats; beats_cerrados = $resumen.Cerrados; anotado = [bool]$Anotado }
+        Fuentes = @("guion.md")
+        SinEtiqueta = $resumen.SinEtiqueta
+    }
+}
+
+function Get-NovelaGuionBorrador {
+    # Capítulos con guion: los de capitulos/ o, en multi-hilo, los de un hilo.
+    $capitulosDir = Join-Path $WorkspaceRoot "capitulos"
+    $hilosDir = Join-Path $WorkspaceRoot "hilos"
+    $hiloNombre = $null
+    if (-not [string]::IsNullOrWhiteSpace($Hilo)) {
+        $hiloNombre = if ($Hilo -like "hilo-*") { $Hilo } else { "hilo-$Hilo" }
+        if (-not (Test-Path -LiteralPath (Join-Path $hilosDir $hiloNombre) -PathType Container)) { throw "borrador: no existe hilos/$hiloNombre." }
+    } elseif ($esMultiHilo -and (Get-CapitulosConGuion $capitulosDir).Count -eq 0) {
+        # Antes de ensamblar, los guiones viven en cada hilo.
+        $hilos = @(if (Test-Path -LiteralPath $hilosDir -PathType Container) {
+            Get-ChildItem -LiteralPath $hilosDir -Directory | Where-Object { (Get-CapitulosConGuion $_.FullName).Count -gt 0 } | Sort-Object Name
+        })
+        if ($hilos.Count -gt 1) {
+            throw "borrador: los capítulos aún no están ensamblados; indica el hilo con --hilo ($(($hilos | ForEach-Object { $_.Name -replace '^hilo-', '' }) -join ', '))."
+        }
+        if ($hilos.Count -eq 1) { $hiloNombre = $hilos[0].Name }
+    }
+    $raiz = if ($hiloNombre) { Join-Path $hilosDir $hiloNombre } else { $capitulosDir }
+    $relBase = if ($hiloNombre) { "hilos/$hiloNombre" } else { "capitulos" }
+    $capitulos = Get-CapitulosConGuion $raiz
+    if ($capitulos.Count -eq 0) { throw "borrador: ningún capítulo de $relBase/ tiene todavía guion.md." }
+
+    if ([string]::IsNullOrWhiteSpace($Capitulo)) {
+        # Capítulo en curso: el primero con beats pendientes; si todos están cerrados, el último.
+        $pendiente = "(?m)^\s*(?:[-*]\s+)?(?:$([regex]::Escape([string][char]0x2B1C))|$([regex]::Escape([char]::ConvertFromUtf32(0x1F504))))"
+        $elegido = $capitulos | Where-Object { (Read-Texto (Join-Path $_.FullName "guion.md")) -match $pendiente } | Select-Object -First 1
+        if (-not $elegido) { $elegido = $capitulos[-1] }
+    } else {
+        $patron = if ($Capitulo -match '^\d+$') { "^cap-0*$([int]$Capitulo)(-|$)" } else { "^$([regex]::Escape($Capitulo))(-|$)" }
+        $todos = @(if (Test-Path -LiteralPath $raiz -PathType Container) { Get-ChildItem -LiteralPath $raiz -Directory | Where-Object { $_.Name -match $patron } })
+        if ($todos.Count -ne 1) { throw "borrador: '$Capitulo' no identifica un único capítulo en $relBase/." }
+        $elegido = $capitulos | Where-Object { $_.FullName -eq $todos[0].FullName } | Select-Object -First 1
+        if (-not $elegido) { throw "borrador: $relBase/$($todos[0].Name) no tiene guion.md." }
+    }
+
+    $texto = Read-Texto (Join-Path $elegido.FullName "guion.md")
+    $numero = [int]([regex]::Match($elegido.Name, '^cap-(\d+)').Groups[1].Value)
+    if ($hiloNombre) {
+        $h1 = [regex]::Match($texto, '(?m)^#\s+(.+?)\s*$')
+        $encabezado = "# $(if ($h1.Success) { $h1.Groups[1].Value } else { "$hiloNombre · $($elegido.Name)" })"
+    } else {
+        $titulo = [regex]::Match($texto, '(?m)^#\s+Cap[ií]tulo\s+\S+\s+[—-]\s+(.+?)\s*$')
+        $encabezado = "# Capítulo $numero — $(if ($titulo.Success) { $titulo.Groups[1].Value } else { $elegido.Name })"
+    }
+    $escenas = @(ConvertTo-GuionEscenas $texto | Where-Object { $_.Beats.Count -gt 0 })
+    if ($escenas.Count -eq 0) { throw "borrador: $relBase/$($elegido.Name) todavía no tiene beats." }
+    $resumen = Get-GuionResumen $escenas
+    $prefijo = if ($hiloNombre) { "$slug-$($hiloNombre -replace '^hilo-', '')" } else { $slug }
+    return [pscustomobject]@{
+        Base = "$prefijo-cap-$('{0:D2}' -f $numero)-guion$sufijoAnotado-borrador"
+        Encabezado = $encabezado
+        Cuerpo = Format-GuionEscenas $escenas
+        Cobertura = "guion · $($encabezado.Substring(2)) · escenas: $($resumen.Escenas) · beats: $($resumen.Beats), $($resumen.Cerrados) escritos"
+        Alcance = [ordered]@{ capitulo = $elegido.Name; hilo = $hiloNombre; escenas = $resumen.Escenas; beats = $resumen.Beats; beats_cerrados = $resumen.Cerrados; anotado = [bool]$Anotado }
+        Fuentes = @("$relBase/$($elegido.Name)/guion.md")
+        SinEtiqueta = $resumen.SinEtiqueta
+    }
+}
+
 $obra = Read-ObraConfig -WorkspaceRoot $WorkspaceRoot
 $config = $obra.Config
 $slug = "$($config.slug)"
 if ($config.tipo -notin @("relato", "novela")) {
     throw "borrador: tipo '$($config.tipo)' no soportado. Debe ser relato o novela."
 }
-if ($config.tipo -eq "novela") {
-    $borrador = Get-NovelaBorrador
+$esMultiHilo = "$($config.escala)" -eq "novela-multi-hilo"
+if (-not $Guion -and ($Anotado -or -not [string]::IsNullOrWhiteSpace($Hilo))) {
+    throw "borrador: --anotado y --hilo solo se usan con --guion."
+}
+if (-not [string]::IsNullOrWhiteSpace($Hilo) -and -not $esMultiHilo) {
+    throw "borrador: --hilo solo existe en novela multi-hilo."
+}
+if ($config.tipo -eq "relato" -and -not [string]::IsNullOrWhiteSpace($Capitulo)) {
+    throw "borrador: un relato no tiene capítulos; ejecuta /borrador sin capítulo."
+}
+$sufijoAnotado = if ($Anotado) { "-anotado" } else { "" }
+if ($Guion) {
+    $borrador = if ($config.tipo -eq "novela") { Get-NovelaGuionBorrador } else { Get-RelatoGuionBorrador }
 } else {
-    if (-not [string]::IsNullOrWhiteSpace($Capitulo)) {
-        throw "borrador: un relato no tiene capítulos; ejecuta /borrador sin capítulo."
-    }
-    $borrador = Get-RelatoBorrador
+    $borrador = if ($config.tipo -eq "novela") { Get-NovelaBorrador } else { Get-RelatoBorrador }
 }
 if ([string]::IsNullOrWhiteSpace($Titulo)) {
     $Titulo = if ($config.titulo) { "$($config.titulo)" } else { $slug }
 }
 
 $fecha = (Get-Date).ToString("yyyy-MM-dd HH:mm")
+$marca = if ($Guion) { "guion, borrador" } else { "borrador" }
 $nota = "*Borrador del $fecha · $($borrador.Cobertura). No es el texto final.*"
-$markdown = "# $Titulo (borrador)`n`n## $Autor`n`n$nota`n`n"
+$markdown = "# $Titulo ($marca)`n`n## $Autor`n`n$nota`n`n"
 if ($borrador.Encabezado) { $markdown += "$($borrador.Encabezado)`n`n" }
 $markdown += "$($borrador.Cuerpo)`n"
 
 $borradorRoot = Join-Path $WorkspaceRoot "publicacion\borrador"
-$outputDir = Join-Path $borradorRoot "prosa"
+$outputDir = Join-Path $borradorRoot $(if ($Guion) { "guion" } else { "prosa" })
 New-Item -ItemType Directory -Force -Path $outputDir | Out-Null
 $stageDir = Join-Path $outputDir (".tmp-" + [guid]::NewGuid().ToString("N"))
 $base = $borrador.Base
@@ -254,19 +451,19 @@ try {
     $artifacts = [ordered]@{ markdown = [ordered]@{ archivo = "$base.md"; sha256 = Get-FileSha256 $mdPath } }
     if ($Epub) {
         $epubPath = Join-Path $stageDir "$base.epub"
-        & (Join-Path $PSScriptRoot "build-epub.ps1") -InputMarkdown $mdPath -OutputEpub $epubPath -Titulo "$Titulo (borrador)" -Autor $Autor
+        & (Join-Path $PSScriptRoot "build-epub.ps1") -InputMarkdown $mdPath -OutputEpub $epubPath -Titulo "$Titulo ($marca)" -Autor $Autor
         $artifacts.epub = [ordered]@{ archivo = "$base.epub"; sha256 = Get-FileSha256 $epubPath }
     }
     if ($Pdf) {
         $pdfPath = Join-Path $stageDir "$base.pdf"
-        & (Join-Path $PSScriptRoot "build-pdf.ps1") -InputMarkdown $mdPath -OutputPdf $pdfPath -Titulo "$Titulo (borrador)" -Autor $Autor -PdfFormat $PdfFormat -PdfEngine $PdfEngine
+        & (Join-Path $PSScriptRoot "build-pdf.ps1") -InputMarkdown $mdPath -OutputPdf $pdfPath -Titulo "$Titulo ($marca)" -Autor $Autor -PdfFormat $PdfFormat -PdfEngine $PdfEngine
         $artifacts.pdf = [ordered]@{ archivo = "$base.pdf"; sha256 = Get-FileSha256 $pdfPath; formato = $PdfFormat; motor_solicitado = $PdfEngine }
     }
 
     $git = Get-GitEstado -WorkspaceRoot $WorkspaceRoot -Paths $borrador.Fuentes
     $manifest = [ordered]@{
         schema_version = 1
-        tipo = "borrador"
+        tipo = $(if ($Guion) { "borrador-guion" } else { "borrador" })
         obra = $slug
         titulo = $Titulo
         generado = (Get-Date).ToString("yyyy-MM-ddTHH:mm:ss")
@@ -302,6 +499,9 @@ try {
     if (-not $soloFormatos) { Write-Host "  Markdown: $(Join-Path $outputDir "$base.md")" }
     if ($Epub) { Write-Host "  EPUB:     $(Join-Path $outputDir "$base.epub")" }
     if ($Pdf) { Write-Host "  PDF:      $(Join-Path $outputDir "$base.pdf")" }
+    if ($Guion -and $borrador.SinEtiqueta -gt 0) {
+        Write-Host "  Aviso:    $($borrador.SinEtiqueta) beats sin etiqueta visual; ejecuta python -X utf8 scripts/etiquetas-guion.py"
+    }
     Write-Host "  Estado:   sin cambios ($($config.estado))"
 } finally {
     if (Test-Path -LiteralPath $stageDir) { Remove-Item -LiteralPath $stageDir -Recurse -Force }
