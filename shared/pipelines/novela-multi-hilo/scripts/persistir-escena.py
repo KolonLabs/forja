@@ -4,6 +4,7 @@
 preparar --capitulo capitulos/cap-NN-slug --escena SID --entrada archivo --finish stop
 aceptar --capitulo capitulos/cap-NN-slug --escena SID --revision '<JSON>'
 sincronizar --capitulo capitulos/cap-NN-slug --escena SID --revision '<JSON>'
+limpiar --capitulo capitulos/cap-NN-slug [--simular]
 
 Revision (JSON inline): objeto con escena_stable_id (string), candidato_sha256
 (64 hex minusculas), estado (literal "aprobado"), incidencias (lista de objetos).
@@ -34,6 +35,17 @@ Tampoco hay transaccion entre el lote de vectores y la reparacion de flags;
 si falla el segundo, el reintento solo procesa los puntos aun pendientes.
 Un fallo remoto deja draft aceptado y candidato disponibles para reintentar.
 No modifica guion, config, fichas, summaries ni Neo4j.
+
+Limpieza automatica (ADR 0031): aceptar y sincronizar, al terminar bien,
+retiran del capitulo los intermedios que ya no aportan nada: candidatos
+`escena-*.pendiente.md` cuyo contenido ya esta en el draft y entradas
+`escena-<SID>*.entrada.md` de escenas del draft anteriores a su ultima
+escritura. Conservan el candidato y las entradas de una escena en curso y las
+entradas posteriores al draft. Sin candidato, aceptar y sincronizar usan la
+escena del draft si coincide con el hash revisado, de modo que los reintentos
+siguen siendo seguros. `limpiar` hace la misma limpieza a mano, solo para
+contingencias (intermedios anteriores a este cambio o una limpieza fallida).
+No hay copias de seguridad; el historial es el git de la obra (ADR 0026).
 """
 
 import argparse
@@ -55,7 +67,8 @@ backend = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(backend)
 ID = r"[A-Za-z0-9][A-Za-z0-9_-]*"
 MARKER = re.compile(rf"<!-- ESCENA ({ID}): ([^\r\n<>|]+?)(?:[ \t]*\|[ \t]*hilo:[ \t]*({ID}))?[ \t]*-->[ \t]*\r?$")
-BEAT = re.compile(rf"(?:[-*][ \t]+)?[\u2b1c\U0001f504\u2705][ \t]+({ID})[ \t]+\[([1-9][0-9]*)\][ \t]+(.+)")
+# La etiqueta visual opcional `B_NNNN · ` (ADR 0033) no es identidad: se ignora.
+BEAT = re.compile(rf"(?:[-*][ \t]+)?[\u2b1c\U0001f504\u2705][ \t]+(?:B_\d+[ \t]*\u00b7[ \t]*)?({ID})[ \t]+\[([1-9][0-9]*)\][ \t]+(.+)")
 HEADING = re.compile(rf"##[ \t]+({ID})[ \t]+\[([1-9][0-9]*)\](?:[ \t]+\S[^\r\n]*)?[ \t]*$")
 META = re.compile(
     r"(?im)^[ \t]*(?:[-*>_\[]+[ \t]*)?(?:"
@@ -266,7 +279,52 @@ def synchronize(proyecto, sid, bodies):
     return len(changed) + len(flags)
 
 
+def draft_scene(chapter, sid):
+    draft = confined(chapter / "draft.md", chapter, managed=True)
+    text = draft.read_bytes().decode("utf-8") if draft.exists() else ""
+    markers = scene_markers(text)
+    for index, (marker_sid, _, offset, _) in enumerate(markers):
+        if marker_sid == sid:
+            end = markers[index + 1][2] if index + 1 < len(markers) else len(text)
+            return text[offset:end].encode("utf-8")
+    raise ValueError("No hay candidato ni escena en el draft; ejecutar preparar")
+
+
+def clean(chapter, simulate):
+    """Retira entradas y candidatos ya incorporados al draft; conserva lo vivo."""
+    draft_path = confined(chapter / "draft.md", chapter, managed=True)
+    draft = draft_path.read_bytes() if draft_path.exists() else b""
+    in_draft = {sid for sid, _, _, _ in scene_markers(draft.decode("utf-8"))}
+    draft_time = draft_path.stat().st_mtime if draft_path.exists() else 0
+    removed, kept, live = [], [], set()
+    for pending in sorted(chapter.glob("escena-*.pendiente.md")):
+        sid = pending.name[len("escena-"):-len(".pendiente.md")]
+        candidate = pending.read_bytes()
+        if candidate and candidate in draft:
+            removed.append(pending)
+        else:
+            live.add(sid)
+            kept.append(pending)
+    for entry in sorted(chapter.glob("escena-*.entrada.md")):
+        sid = entry.name[len("escena-"):].split(".", 1)[0]
+        # Una entrada posterior al ultimo draft puede ser trabajo aun sin preparar.
+        if sid not in live and sid in in_draft and entry.stat().st_mtime <= draft_time:
+            removed.append(entry)
+        else:
+            kept.append(entry)
+    if not simulate:
+        for path in removed:
+            path.unlink()
+    return {"estado": "simulado" if simulate else "limpio",
+            "eliminados": [p.name for p in removed], "conservados": [p.name for p in kept]}
+
+
 def run(args):
+    if args.command == "limpiar":
+        chapter = confined(args.capitulo, confined(ROOT / "capitulos", ROOT))
+        if not chapter.is_dir():
+            raise ValueError("El capitulo debe ser un directorio existente")
+        return clean(chapter, args.simular)
     if not re.fullmatch(ID, args.escena):
         raise ValueError("stable_id de escena invalido")
     if args.command == "preparar" and args.finish != "stop":
@@ -314,7 +372,9 @@ def run(args):
             or any(not isinstance(item, dict) or item.get("gravedad") != "opcional"
                    for item in review["incidencias"])):
         raise ValueError("Revision bloqueante o invalida. Esquema: " + json.dumps(REVIEW_SCHEMA))
-    candidate = pending.read_bytes()
+    # Sin candidato (ya limpiado), la escena del draft lo sustituye: el hash de la
+    # revision garantiza que es el texto revisado y los reintentos siguen siendo seguros.
+    candidate = pending.read_bytes() if pending.exists() else draft_scene(chapter, args.escena)
     digest = hashlib.sha256(candidate).hexdigest()
     if review["candidato_sha256"] != digest:
         raise ValueError("Hash de revision obsoleto: no coincide con el candidato")
@@ -351,6 +411,11 @@ def run(args):
             raise ValueError("La escena del draft no es exactamente el candidato revisado")
         count = synchronize(proyecto, args.escena, bodies)
         result.update(estado="sincronizado", beats_actualizados=count, cambio=bool(count))
+    # Con la escena ya en el draft, entrada y candidato sobran (ADR 0031).
+    try:
+        result["limpieza"] = clean(chapter, False)["eliminados"]
+    except (OSError, ValueError) as error:
+        result["limpieza_error"] = str(error)
     return result
 
 
@@ -366,6 +431,9 @@ def main(argv=None):
             sub.add_argument("--finish", required=True, choices=["stop"])
         else:
             sub.add_argument("--revision", required=True, help="Objeto JSON inline; esquema en --help global")
+    sub = commands.add_parser("limpiar")
+    sub.add_argument("--capitulo", required=True)
+    sub.add_argument("--simular", action="store_true", help="Lista lo que se eliminaria sin borrar")
     args = parser.parse_args(argv)
     try:
         print(json.dumps(run(args), ensure_ascii=True))

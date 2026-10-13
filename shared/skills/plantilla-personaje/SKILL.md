@@ -83,6 +83,13 @@ user-invocable: false
 
 ---
 
+## Canon heredado *(solo si el personaje viene de otra obra; skill `referencias`)*
+- Origen: (obra y dossier `referencias/<dossier>.md`)
+- Tiempo transcurrido: (desde el final de la obra previa)
+- Estado al final de la obra previa: (con cita [cap. N: «…»])
+- No contradecir: (hechos con cita [cap. N: «…»])
+- Evolución permitida: (qué puede haber cambiado y por qué)
+
 <!-- DINÁMICO — Actualizado por el agente cronista tras cada capítulo -->
 
 ## Estado actual

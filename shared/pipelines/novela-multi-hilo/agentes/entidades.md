@@ -60,6 +60,7 @@ referencia
   {
     "titulo": "Biblia científica Cánida",
     "origen": "referencias/01-biblia-cientifica.md",
+    "tipo_referencia": "documentacion",
     "resumen": "2-3 frases ejecutivas del documento",
     "temas": [
       {
@@ -74,7 +75,7 @@ referencia
 - Ingestión (FASE 0.1.2): el director invoca `entidades` por cada archivo de `referencias/`.
   1. Lee el archivo Markdown completo.
   2. Identifica los temas principales (cada unidad conceptual autónoma del documento).
-  3. Construye el índice: resumen ejecutivo + lista de temas con título, palabras clave y descripción.
+  3. Construye el índice: resumen ejecutivo + lista de temas con título, palabras clave y descripción, y copia en `tipo_referencia` el `tipo` de la cabecera (`canon-previo`, `documentacion` o `guia-previa`).
   4. Asigna `relevancia_por_hilo:<stable_id_hilo>` a los tags de la entidad por cada hilo al que algún tema del documento sea directamente relevante.
   5. Ejecuta `upsert-entity` con el índice serializado en `--fijo-file`. No genera ficha Markdown: el archivo en `referencias/` ya es la fuente legible.
 

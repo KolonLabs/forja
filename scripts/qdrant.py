@@ -36,6 +36,7 @@ import argparse
 import datetime
 import json
 import os
+import re
 import sys
 import uuid
 import urllib.request
@@ -65,8 +66,15 @@ def embed(text: str) -> List[float]:
 
 # ── ID generation ─────────────────────────────────────────────────────────────
 
+# Etiquetas de lectura del guion (B_0012, E_0003) y displays de hecho (H_0001): nunca identidad (ADR 0033).
+VISUAL_LABEL = re.compile(r"[BEH]_\d+")
+
+
 def make_point_id(stable_id: str) -> str:
     """Deterministic UUID v5 from stable_id."""
+    if VISUAL_LABEL.fullmatch(str(stable_id)):
+        raise SystemExit(f"Error: '{stable_id}' is a visual label from the guion (ADR 0033), not a stable_id; "
+                         "use the stable_id from the beat line or the scene marker")
     return str(uuid.uuid5(uuid.NAMESPACE_URL, stable_id))
 
 

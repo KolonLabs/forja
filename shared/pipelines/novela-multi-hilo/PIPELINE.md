@@ -48,7 +48,7 @@ El `draft.md` de cada capítulo usa **una sola forma de encabezado**:
 ...prosa...
 ```
 
-- El escritor y el integrador escriben exactamente ese heading. `B_NNNN` es display derivado de `seq`, nunca encabezado.
+- El escritor y el integrador escriben exactamente ese heading. `B_NNNN` es una etiqueta visual del guion (ADR 0033), nunca encabezado.
 - El director localiza cada beat por `stable_id`, no por posición ni por display.
 - En FASE 4 se eliminan headings, marcadores de escena y notas del escritor. Solo sobrevive la prosa y los `---` entre bloques de hilo.
 
@@ -58,7 +58,7 @@ El `draft.md` de cada capítulo usa **una sola forma de encabezado**:
 |----|--------|-------|
 | `H_NNNN` | Evento que debe ocurrir (planificación). Puede ser lineal o distribuido `[D]`. Un hecho pertenece a un único hilo — `[D]` es siempre intra-hilo. | `guion-hilo.md` |
 | Escena (`stable_id`, sin display numérico propio) | Unidad de agrupación de beats por coherencia de contexto (mismo espacio/tiempo/cast). Es la **unidad atómica del trenzado**. | `hilos/hilo-<slug>/cap-NN/guion.md` (nace aquí), `capitulos/cap-NN-slug/guion.md` (destino tras trenzar) |
-| `B_NNNN` | Beat: unidad dramática con compromiso verificable (display derivado de `seq`) | `hilos/hilo-<slug>/cap-NN/guion.md` (bajo una escena, antes de trenzar), `capitulos/.../guion.md` (después) |
+| `B_NNNN` | Beat: unidad dramática con compromiso verificable (etiqueta visual de lectura, ADR 0033) | `hilos/hilo-<slug>/cap-NN/guion.md` (bajo una escena, antes de trenzar), `capitulos/.../guion.md` (después) |
 
 - Los `stable_id` son opacos, inmutables y globales a la novela. El `seq` de un beat es **local a su escena padre**; los hechos conservan su secuencia de planificación (`ultimo_hecho_seq`).
 - En `guion-hilo.md` solo hay **hechos**; los beats y escenas se generan en FASE 0.3, **dentro de cada hilo**, agrupando hechos en capítulos-borrador por coherencia de contexto (no por cuota fija de hechos).
@@ -95,7 +95,7 @@ Objetivo: revisar los hechos del brief (del scaffolder) a la luz de las referenc
 | Paso | Agente | Acción |
 |------|--------|--------|
 | 0.1.1 Revisión de hechos | director + usuario | El director presenta los hechos de `_actos.md` al usuario. A la luz de las referencias leídas (paso 0.0), los hilos confirmados (paso 0.2) y las conexiones (paso 0.3), el director propone ajustes: añadir, eliminar, fusionar, dividir o reescribir hechos. El usuario confirma, rechaza o pide cambios adicionales. El director aplica los cambios vía guionista si la reescritura es estructural. Itera hasta que el usuario confirma el conjunto. |
-| 0.1.2 Ingesta referencias | `entidades` (×N) | Ingestar cada archivo de `referencias/` en Qdrant como `tipo=referencia`: leer el Markdown, identificar temas, construir el índice estructurado (`fijo` = `resumen` + `temas[]`), asignar tags `relevancia_por_hilo:<stable_id_hilo>`. |
+| 0.1.2 Ingesta referencias | `entidades` (×N) | **Valida antes** con `python -X utf8 scripts/validar-referencias.py`: con errores, no ingieras y avisa. Ingestar cada archivo de `referencias/` en Qdrant como `tipo=referencia`: leer el Markdown, identificar temas, construir el índice estructurado (`fijo` = `resumen` + `temas[]`), asignar tags `relevancia_por_hilo:<stable_id_hilo>`. |
 | 0.1.3 Fichas básicas | `entidades` (×N, incremental) | Fichas básicas en Qdrant + `fichas/<tipo>_<slug>.md` para entidades clave |
 
 **Gate:** Hechos refinados y confirmados por el usuario. Referencias ingeridas en Qdrant. Entidades clave de cada hilo fichadas (básico).
@@ -252,7 +252,7 @@ Por cada escena `⬜` del capítulo, en el orden del trenzado:
 | 3.3.3 | director + usuario | **Checkpoint obligatorio:** presenta la escena completa con hash/versión y se detiene; sin conformidad no hay revisión ni aceptación |
 | 3.3.4 | `validador` (read-only) | Revisión editorial de escena con el hash vigente. Si ≥2 hilos: + `validacion-cross-hilo` como incidencias |
 | 3.3.5 | `integrador` (condicional) | Solo fragmentos con incidencia `bloqueante`/`corregir`; devuelve secciones completas. Nuevo texto vuelve a `preparar`, se presenta y se espera de nuevo |
-| 3.3.6 | director | Con conformidad y review `aprobado` del mismo hash: `aceptar` → `sincronizar` → marca beats `✅` en lote. Autorización de avance a la siguiente escena por separado |
+| 3.3.6 | director | Con conformidad y review `aprobado` del mismo hash: `aceptar` → `sincronizar` → marca beats `✅` en lote (entrada y candidato se retiran solos). Autorización de avance a la siguiente escena por separado |
 
 #### 3.4 Revisión global
 

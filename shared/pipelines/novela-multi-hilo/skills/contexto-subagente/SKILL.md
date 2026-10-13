@@ -17,7 +17,7 @@ stable_id, seq, parent_id, acción, tono, extensión, hilo
 - `stable_id` es inmutable.
 - `seq` siempre es local a `parent_id`.
 - `hilo` es el `stable_id` de una entidad `tipo=hilo`; `[Hilos: hilo-<slug>]` es solo anotación humana.
-- `i9j0k1l2 [34]` se deriva de `seq: 34` para presentación y nunca es identidad.
+- Las etiquetas `B_NNNN`/`E_NNNN` del guion son de lectura y nunca son identidad (ADR 0033): al subagente se le pasa `stable_id [seq]`.
 - Renumerar cambia solo `seq`, filtrado por `parent_id` y `hilo` cuando aplique.
 - Summaries se buscan por `(nivel, parent_id, seq[, hilo])`; el UUID físico nunca es entrada.
 

@@ -9,7 +9,7 @@ Referencia para **director** y subagentes. Fases en `PIPELINE.md`.
 1. **Quién escribe qué:** solo el agente indicado en la columna «Escribe» modifica ese archivo.
 2. **Briefing de spawn:** el director pasa siempre rutas relativas al workspace, IDs (`H_`/`B_`), y `Modo`.
 3. **IDs:** cada elemento tiene un `stable_id` opaco e inmutable y un `seq` posicional. Los hechos usan la secuencia global de planificación (`config.json` → `ultimo_hecho_seq`); el `seq` de los beats es **local a su escena padre** y se renumera con `renumber-siblings` filtrado por `parent_id` y `hilo`.
-   - `H_NNNN` y `B_NNNN` son **displays derivados de `seq`**, nunca identidad persistida.
+   - `H_NNNN` es display derivado de `seq`; `B_NNNN` y `E_NNNN` son etiquetas visuales de lectura (`scripts/etiquetas-guion.py`, ADR 0033). Ninguno es identidad persistida.
    - Toda referencia interna (`parent_id`, conexiones cross-hilo, fichas, `cola_d.md`) usa `stable_id`.
 4. **Estados en guion:** `⬜` → `🔄` (al empezar la escena) → `✅` (tras `aceptar`+`sincronizar` con conformidad humana y revisión editorial del mismo hash). Lo marca el **director**.
 5. **Sin copias de seguridad:** no se crean copias con fecha; el historial es el git de la obra.

@@ -25,7 +25,7 @@ fichas/<tipo>_<slug>.md (entidades en markdown, primarias en Qdrant)
 | `H_NNNN` | Evento que debe ocurrir (1-2 frases de guion). Puede ser lineal o distribuido `[D]`. | `guion-novela.md`, `capitulos/.../guion.md` |
 | `B_NNNN` | Compromiso narrativo de una unidad dramatica, no microaccion ni prosa prefijada | `capitulos/.../guion.md` (bajo un hecho) |
 
-- IDs globales, 4 dígitos, nunca reutilizar.
+- `H_NNNN`: global, 4 dígitos, nunca reutilizar. `B_NNNN` y `E_NNNN`: etiquetas visuales correlativas en orden de lectura, que se renumeran con `scripts/etiquetas-guion.py` tras cada cambio de guion; la identidad es el `stable_id` (ADR 0033).
 - Estados: ✅ completo · 🔄 en progreso · ⬜ pendiente.
 - Un hecho `[D · H_XX–H_YY]` no genera capítulos ni escenas propias — sus beats se inyectan en las escenas de los hechos lineales dentro del rango.
 - Skills: `beats-estructura`, `tonos-beat`, `plantilla-guion`, `hechos-distribuidos`.
@@ -58,7 +58,7 @@ Objetivo: revisar los hechos del guion a la luz de las referencias leídas, ante
 | Paso | Agente | Acción |
 |------|--------|--------|
 | 0.1.1 Revisión de hechos | director + usuario | El director presenta los hechos de `guion-novela.md` al usuario. A la luz de las referencias leídas (paso 0.a), el director propone ajustes: añadir, eliminar, fusionar, dividir o reescribir hechos. El usuario confirma, rechaza o pide cambios. El director aplica vía guionista si la reescritura es estructural. Itera hasta confirmación. |
-| 0.1.2 Ingesta referencias | `entidades` (×N) | **Solo si `referencias/` existe:** ingestar cada archivo como `tipo=referencia` en Qdrant (`fijo` = índice estructurado con `resumen` + `temas[]`, sin `dinamico`). El archivo original queda intacto en `referencias/` como fuente legible. |
+| 0.1.2 Ingesta referencias | `entidades` (×N) | **Solo si `referencias/` existe:** **Valida antes** con `python -X utf8 scripts/validar-referencias.py`: con errores, no ingieras y avisa. ingestar cada archivo como `tipo=referencia` en Qdrant (`fijo` = índice estructurado con `resumen` + `temas[]`, sin `dinamico`). El archivo original queda intacto en `referencias/` como fuente legible. |
 | 0.1.3 Fichas básicas | `entidades` (×N) | Fichas básicas en Qdrant + `fichas/<tipo>_<slug>.md` para entidades clave |
 
 **Gate:** Hechos refinados y confirmados por el usuario. Referencias ingeridas en Qdrant. Fichas básicas de entidades clave.
@@ -115,7 +115,7 @@ Por cada escena del capítulo (todos sus beats a la vez):
 | 2.3.1c | director + usuario | **Checkpoint obligatorio de narrativa.** Presentar la escena completa con stable_id y hash/version; detenerse y esperar respuesta explicita antes de revision editorial, aceptacion o avance. Ajustes solicitados autorizan corregir solo esta escena y volver a presentarla. |
 | 2.3.2 | `validador` (modo escena, read-only) | Una revision editorial independiente: cobertura, continuidad, personajes/POV, prosa y restricciones. Solo incidencias concretas; aprobacion ligada al hash. Sin scores por beat ni cuotas sensoriales. |
 | 2.3.3 | director + `integrador` (condicional) | Cambios mecanicos exactos o una llamada del integrador para fragmentos afectados. Nuevo candidato/hash: volver a 2.3.1c, esperar conformidad y obtener revision focalizada; canon incierto bloquea. |
-| 2.3.4 | director | Solo con conformidad explicita del usuario y revision editorial aprobada para el mismo hash: `aceptar` guarda de forma atómica; `sincronizar` actualiza Qdrant en lote. Solo tras exito marca los beats ✅. Reintentos del mismo texto idempotentes sin regenerar. |
+| 2.3.4 | director | Solo con conformidad explicita del usuario y revision editorial aprobada para el mismo hash: `aceptar` guarda de forma atómica; `sincronizar` actualiza Qdrant en lote. Solo tras exito marca los beats ✅. Entrada y candidato se retiran solos al aceptar y sincronizar. Reintentos del mismo texto idempotentes sin regenerar. |
 | 2.3.5 | director + usuario | **Autorizacion de avance.** Aprobar una escena no autoriza la siguiente escena: preguntar cual se inicia y esperar confirmacion, salvo que el usuario haya aprobado expresamente texto y ese avance en la misma respuesta. Sin generacion ni preparacion especulativa. |
 
 > **Flujo vigente:** contexto preparado -> generacion -> candidato comprobado -> presentar al usuario y detenerse -> revision editorial -> correccion selectiva si procede (nuevo texto vuelve al checkpoint) -> aceptacion y sincronizacion con ambas aprobaciones -> avance solo autorizado. El checkpoint de guion se conserva; las restricciones, identidades y cobertura siguen siendo obligatorias.

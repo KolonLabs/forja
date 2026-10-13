@@ -144,7 +144,7 @@ Argumentos recibidos: `$ARGUMENTS`
 **Comunes a todas las escalas:**
 - "¿Extensión estimada en palabras?"
 - "¿Capítulos estimados?" (si novela)
-- "¿Referencias? Obras, autores, películas. ¿Qué tomar prestado y qué evitar?"
+- "¿Inspiraciones? Obras, autores, películas. ¿Qué tomar prestado y qué evitar?" (van al campo `referencias` del brief y a `## Inspiraciones` de `BRIEF.md`; el material de consulta de la carpeta `referencias/` es otra cosa, ADR 0032)
 - "Propongo el slug: `<slug-propuesto>`. ¿Te sirve o prefieres otro?"
 - "¿Título definitivo?"
 

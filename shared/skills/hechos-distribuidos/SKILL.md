@@ -36,23 +36,23 @@ Cada beat tiene:
 
 - `stable_id`: identidad opaca e inmutable.
 - `seq`: posición local a su `parent_id`.
-- Display humano: `e5f6g7h8 [25]`, derivado de `seq` al presentar y nunca almacenado.
+- Etiqueta de lectura en el guion: `B_NNNN · ` delante del `stable_id` (ADR 0033); cambia al renumerar y no es identidad.
 
-Las operaciones, gates y referencias cruzadas usan `stable_id`. El display aparece entre paréntesis únicamente para facilitar la lectura humana.
+Las operaciones, gates y referencias cruzadas usan `stable_id`. `cola_d.md` es para el modelo y cita solo el `stable_id`.
 
 Formato obligatorio de anotación:
 
 ```text
-tras stable_id (e5f6g7h8 [25]) en Escena 4
+tras <stable_id> en Escena 4
 ```
 
 Ejemplo real:
 
 ```text
-tras a1b2c3d4 (e5f6g7h8 [25]) en Escena 4
+tras a1b2c3d4 en Escena 4
 ```
 
-`e5f6g7h8 [25]` no identifica el punto de inserción: puede cambiar al renumerar. `a1b2c3d4` sí lo identifica y permanece estable.
+La etiqueta `B_NNNN` no identifica el punto de inserción: cambia al renumerar. `a1b2c3d4` sí lo identifica y permanece estable.
 
 ### Algoritmo para el guionista, modo `estructura-novela`
 
@@ -85,15 +85,15 @@ El director revisa las escenas reales y, para cada `[D]` pendiente:
 
 1. Decide cuantas instancias necesita por la evolucion y consecuencias del patron, sin cuota por longitud del rango. Cada instancia debe aportar algo distinto; su cantidad no prueba cobertura.
 2. Elige cada punto por `stable_id` de beat, no por display.
-3. Añade el display derivado entre paréntesis solo como ayuda visual.
+3. `cola_d.md` es para el modelo: cita solo el `stable_id`, sin la etiqueta `B_NNNN`, que cambia al renumerar (ADR 0033).
 4. Declara escena y criterio narrativo.
 
 ```text
 H_07 | H_06–H_10 | anotado | 3 |
 > Director:
-> - Instancia 1: tras a1b2c3d4 (e5f6g7h8 [25]) en Escena 4 "El parking". Muestra la mentira automática al volver.
-> - Instancia 2: tras e5f6a7b8 (B_0027) en Escena 5 "La fachada". Muestra rutina doméstica normal.
-> - Instancia 3: tras 11223344 (B_0035) en Escena 6 "El mensaje". Contraste antes de la revelación.
+> - Instancia 1: tras a1b2c3d4 en Escena 4 "El parking". Muestra la mentira automática al volver.
+> - Instancia 2: tras e5f6a7b8 en Escena 5 "La fachada". Muestra rutina doméstica normal.
+> - Instancia 3: tras 11223344 en Escena 6 "El mensaje". Contraste antes de la revelación.
 > Revisión: ligera
 ```
 
@@ -104,7 +104,7 @@ Cada instancia debe contener un `stable_id` válido en la fórmula `tras <stable
 - El gate valida `stable_id`.
 - No valida la posición usando `B_NNNN`.
 - Si falta `stable_id`, el pipeline se detiene aunque exista display.
-- Si display y `seq` actual discrepan, se recalcula el display; no se cambia `stable_id`.
+- Las etiquetas `B_NNNN` del guion se recalculan con `etiquetas-guion.py`; no se cambia `stable_id`.
 
 #### Fase D — Pasada 2: inyección
 
@@ -141,7 +141,7 @@ Incorrecto: escena "Interludio" formada solo por beats distribuidos.
 **2. Instancias intercaladas.** Las instancias del mismo `[D]` no pueden ser beats consecutivos. Pueden compartir escena si quedan separadas por beats lineales.
 
 ```text
-Correcto: inserciones tras a1b2c3d4 (B_0120) y e5f6a7b8 (B_0122), separadas por un beat lineal.
+Correcto: inserciones tras a1b2c3d4 y e5f6a7b8, separadas por un beat lineal.
 Incorrecto: tres instancias seguidas sin beats lineales entre ellas.
 ```
 
@@ -174,7 +174,7 @@ Tras cada inserción:
 - `stable_id` es inmutable.
 - Renumerar cambia solo `seq`.
 - `seq` siempre es local a `parent_id`.
-- Displays como `B_0001` se recalculan a partir de `seq` en presentación.
+- Las etiquetas como `B_0001` las recalcula `etiquetas-guion.py` tras cada cambio de guion (ADR 0033).
 - Las anotaciones de `cola_d.md` sobreviven porque referencian `stable_id`.
 - Los IDs de hechos no se cambian como efecto colateral de una inserción de beats.
 - Toda renumeración persistente se ejecuta mediante las operaciones atómicas de `cronista-ops`.

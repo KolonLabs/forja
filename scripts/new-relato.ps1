@@ -26,7 +26,8 @@ try {
         "$TargetDir\.opencode\agents",
         "$TargetDir\.claude\skills",
         "$TargetDir\.opencode\commands",
-        "$TargetDir\fichas"
+        "$TargetDir\fichas",
+        "$TargetDir\referencias"
     )
     foreach ($d in $dirs) { New-Item -Force -ItemType Directory $d | Out-Null }
 

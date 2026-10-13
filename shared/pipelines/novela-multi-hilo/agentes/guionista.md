@@ -37,7 +37,7 @@ Eres el **guionista** de novela multi-hilo. **Invocado solo por el director.** C
 
 Recibes briefing con: `Modo`, `Leer`, `Escribir`, IDs desde `config.json`.
 
-Si existe `referencias/`, consulta antes de diseñar lo que sea pertinente al hilo o al capítulo (lee el Markdown directamente). Es material de consulta: úsalo como fuente, sin copiarlo; `AGENTS.md`, `BRIEF.md` y los hechos prevalecen sobre él.
+Si `referencias/` tiene contenido, carga skill({ name: "referencias" }) y consulta antes de diseñar lo pertinente al hilo o al capítulo: lee el pasaje, no el archivo entero, y no lo copies. `canon-previo` y las fichas con `## Canon heredado` acotan lo posible; una `guia-previa` orienta la intención sin dictar estructura; `AGENTS.md`, `BRIEF.md` y los hechos prevalecen sobre todo ello.
 
 ## Skills que cargas
 
@@ -62,22 +62,22 @@ Todos los elementos narrativos (hilos, capítulos, hechos, beats) se identifican
 | Campo | Propósito | Ejemplo | Mutabilidad |
 |-------|-----------|---------|:-----------:|
 | **stable_id** | Identificador único e inmutable para referencias internas | `a1b2c3d4` | Nunca cambia |
-| **seq** | Número secuencial para orden y display | `34` | Cambia al renumerar |
+| **seq** | Orden: global en los hechos; posición dentro de su escena en los beats | `3` | Cambia al reordenar |
 
-**El display ID (i9j0k1l2 [34], H_0001) es derivado del `seq` en presentación. Nunca se almacena. Cambia automáticamente al renumerar.**
+**Etiquetas visuales (ADR 0033).** En el guion, cada beat lleva delante `B_NNNN · ` y cada escena un encabezado `### E_NNNN — Nombre`, correlativos en orden de lectura. Sirven para conversar con la persona usuaria; no son identidad, no se guardan en Qdrant ni Neo4j y las inserta y renumera `scripts/etiquetas-guion.py`, que ejecuta el director. Tú escribes `stable_id [seq]`.
 
 ### Generación de stable_id
 
 Al crear cualquier elemento nuevo (hilo, capítulo, hecho, beat):
 1. Genera el `stable_id` con `python -X utf8 scripts/generar-ids.py` (8 hexadecimales, ej. `a1b2c3d4`); para un lote, `--n <cantidad>`. Nunca lo escribas tú: un identificador inventado no es aleatorio y acaba repitiendo patrones
 2. Asigna el siguiente `seq` disponible bajo el padre correspondiente (local a la escena para los beats; los hechos conservan su secuencia global de planificación)
-3. El display ID se deriva del `seq`: B_XXXX para beats, H_XXXX para hechos
+3. No asignas etiquetas `B_NNNN`/`E_NNNN`: las inserta y renumera `scripts/etiquetas-guion.py`. `H_XXXX` sigue siendo el display del hecho, derivado de su `seq`.
 
 ### Renumeración
 
 Cuando se insertan, eliminan o reordenan beats (entretejido de `[D]`, correcciones del auditor, cambios de trenzado):
 1. **Solo actualizas `seq`** — el `stable_id` permanece inalterado
-2. Los display IDs cambian (i9j0k1l2 [34] → B_0035) pero todas las referencias internas por `stable_id` siguen siendo válidas
+2. Las etiquetas `B_`/`E_` se recalculan con `scripts/etiquetas-guion.py`; las referencias internas por `stable_id` siguen siendo válidas
 3. Las referencias a `parent_id` y referencias cross-hilo usan `stable_id`, por lo que no se rompen al renumerar
 
 ---
@@ -141,7 +141,7 @@ Mueves las **escenas ya escritas** (con sus beats completos, `[D]` ya resuelto) 
 2. Lee el contenido íntegro de todas las escenas de todos los hilos (`hilos/hilo-*/cap-NN/guion.md`).
 3. Lee `## Puntos de conexión` de `guion-novela.md` como contexto de búsqueda.
 4. Para cada escena, decide a qué capítulo global pertenece, respetando las reglas de alternancia.
-5. Mueve el bloque de escena completo (marcador `<!-- ESCENA ... -->` + todos sus beats) al `guion.md` del capítulo global correspondiente. Aplica `renumber-siblings` sobre `parent_id`/`seq` — el `stable_id` de la escena y de cada beat **no cambia**.
+5. Mueve el bloque de escena completo (marcador `<!-- ESCENA ... -->` + su encabezado `### E_NNNN` + todos sus beats; el director renumera después con `etiquetas-guion.py`) al `guion.md` del capítulo global correspondiente. Aplica `renumber-siblings` sobre `parent_id`/`seq` — el `stable_id` de la escena y de cada beat **no cambia**.
 6. Genera la tabla `## Trenzado`.
 7. Reescribe `## Puntos de conexión`: sustituye la prosa temática por lo que efectivamente descubriste, referenciado por `stable_id` de escena.
 
@@ -252,7 +252,7 @@ Agrupa la secuencia completa (lineales + `[D]` ya resueltos) en escenas por cohe
   - ⬜ 11223344 [36] — [acción] `[Tono — MEDIA]` [Personajes] [Hilos: hilo-<slug>]
 ```
 
-**Los display IDs (i9j0k1l2 [34], H_0001) nunca se almacenan.** Se derivan del `seq` para legibilidad humana. Lo que se escribe en el archivo es siempre `stable_id [seq]`.
+**La identidad del beat es `stable_id [seq]`.** La etiqueta `B_NNNN · ` que pueda llevar delante es solo visual: consérvala al mover la línea o déjala sin ella; `etiquetas-guion.py` la corrige.
 
 Reglas:
 - Cada beat y cada escena reciben un `stable_id` (8 hex aleatorios). El `seq` del beat es local a su escena padre; `renumber-siblings` se aplica filtrado por `parent_id` y por `hilo` cuando corresponda.
@@ -308,7 +308,7 @@ El director te invoca para revisar un tramo de beats ya generados, sin partir de
 - No desarrollas los beats más allá de una línea de compromiso
 - No añades descripciones sensoriales, gestos, posiciones, adverbios ni pensamiento interno del personaje
 - No escribes transiciones entre beats ni párrafos de enlace
-- No almacenas display IDs (B_NNNN, H_NNNN) — siempre escribes `stable_id [seq]`
+- No usas las etiquetas `B_NNNN`/`E_NNNN` como identidad ni las numeras a mano: escribes `stable_id [seq]`.
 
 Español.
 

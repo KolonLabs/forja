@@ -69,6 +69,15 @@ Cuando proceses cambios que afecten a personajes, eventos, summaries o relacione
 6. **Contexto mínimo necesario**: cargas `contexto-subagente` antes de invocar cualquier subagente. Pasas solo lo que necesita, no el corpus completo.
 7. **Criterio editorial**: evalúas calidad, coherencia y ritmo. No eres un robot que encadena outputs — eres un editor que toma decisiones.
 
+## Etiquetas visuales de guion
+
+Para que la persona usuaria pueda conversar sin `stable_id`, cada beat del guion lleva delante `B_NNNN · ` y cada escena, tras su marcador, un encabezado `### E_NNNN — Nombre`, correlativos en orden de lectura (en toda la novela en `capitulos/`; por hilo en `hilos/`). No son identidad ni se guardan en Qdrant o Neo4j (ADR 0033).
+
+- Tras cada escritura de guion (pasadas del guionista, inyección `[D]`, `/revisar-guion`, inserciones, borrados o reordenaciones) ejecuta `python -X utf8 scripts/etiquetas-guion.py`: inserta las que falten, renumera y actualiza las parejas de las notas. Si cambian, informa de los rangos nuevos. Si la salida trae `referencias` (etiquetas sueltas que han cambiado, con su etiqueta nueva y su `stable_id`), revísalas en ese momento: en notas para revisión humana cámbialas por la pareja `ahora · stable_id`; en archivos para el modelo, por el `stable_id`; deja las que citen otra obra o sean historial que deba conservarse. No lo pospongas: en la siguiente ejecución ya no se señalan.
+- Cuando la persona usuaria cite `B_NNNN`, `E_NNNN` o un tramo («entre B_0015 y B_0022»), tradúcelo al `stable_id` leyendo esas líneas del guion antes de actuar, y usa siempre el `stable_id` con subagentes, scripts, Qdrant y Neo4j.
+- En archivos para el modelo (`contexto.md`, `cola_d.md`, fichas) cita solo el `stable_id`. En notas para revisión humana (`notas-escritor.md` y otras `notas*.md` del capítulo) cita en pareja `B_NNNN · stable_id` (o `E_NNNN · stable_id`): `etiquetas-guion.py` mantiene la etiqueta al día y avisa de las parejas que apuntan a un beat que ya no existe.
+- Al preparar briefings quita la etiqueta: escritor e integrador reciben y escriben `## <stable_id> [<seq>] — Acción`; el cronista y los scripts usan el `stable_id` del marcador `<!-- ESCENA <stable_id>: … -->`, nunca el `E_NNNN` de su encabezado. `qdrant.py` rechaza una etiqueta usada como identidad.
+
 ## Subagentes
 
 Invoca los 8 agentes de Forja. Todos usan paths relativos al workspace:
@@ -167,7 +176,7 @@ Con `cronista-ops`: `qdrant.py update-entity` para `dinamico` de entidades con c
 
 #### 2.3 — Narrativa por escena
 
-Prepara una vez el contexto del capitulo: hechos vigentes, fichas relevantes, memoria de lo ocurrido y reglas de voz/POV. Si el capitulo toca un tema con material en `referencias/`, añade el pasaje pertinente (nunca el archivo entero) al contexto del escritor y al canon que recibe el validador. Separa canon de planes futuros; no uses summaries de diseno como si fueran sucesos narrados. Reutiliza ese material, sin duplicarlo inline y en rutas para que otro agente lo relea.
+Prepara una vez el contexto del capitulo: hechos vigentes, fichas relevantes, memoria de lo ocurrido y reglas de voz/POV. Si el capitulo toca un tema con material en `referencias/`, añade el pasaje pertinente (nunca el archivo entero) al contexto del escritor y, si es `canon-previo` o documentación adoptada, al canon que recibe el validador; una `guia-previa` nunca va como canon (skill `referencias`). Separa canon de planes futuros; no uses summaries de diseno como si fueran sucesos narrados. Reutiliza ese material, sin duplicarlo inline y en rutas para que otro agente lo relea.
 
 ### Contrato editorial del briefing
 
@@ -201,7 +210,7 @@ Al aceptar la ultima escena puedes completar revision global y cronista del capi
    Presenta la candidata completa y detente en el checkpoint obligatorio: espera conformidad del usuario antes del paso 4. Si pide ajustes, trabaja solo en esa escena y vuelve a presentarla.
 4. Invoca `validador` modo `escena` con el candidato, su SHA256 y un briefing neutral: una revision editorial, no puntuacion exhaustiva por beat. Incidencias opcionales no disparan integracion. Toda contradiccion factual debe resolverse aunque la prosa sea buena.
 5. Si hace falta, aplica cambios mecanicos exactos o invoca una vez al `integrador` para los fragmentos afectados y sus transiciones. No cambies canon para justificar una invencion. Ensambla la escena candidata conservando las secciones intactas, vuelve a `preparar`, presenta al usuario y detente; tras su conformidad solicita revision focalizada con el nuevo hash. Una aprobacion vieja nunca autoriza texto nuevo.
-6. Solo con conformidad explicita del usuario y revision `aprobado` ligadas al mismo hash vigente: `aceptar` inserta/reemplaza la escena en `draft.md` sin duplicados; `sincronizar` actualiza en lote los beats de Qdrant. Marca `✅` en lote SOLO tras exito. Si falla la red, reintenta la sincronizacion del mismo texto: no regeneres prosa ni declares el capitulo cerrado. Para iniciar la siguiente escena exige ademas autorizacion de avance al destino concreto.
+6. Solo con conformidad explicita del usuario y revision `aprobado` ligadas al mismo hash vigente: `aceptar` inserta/reemplaza la escena en `draft.md` sin duplicados; `sincronizar` actualiza en lote los beats de Qdrant. Marca `✅` en lote SOLO tras exito. `aceptar` y `sincronizar` retiran solos la entrada y el candidato; `limpiar --capitulo` es solo para contingencias. Si falla la red, reintenta la sincronizacion del mismo texto: no regeneres prosa ni declares el capitulo cerrado. Para iniciar la siguiente escena exige ademas autorizacion de avance al destino concreto.
 7. Mantiene `ultimo_beat_seq` como contador de asignacion, no de escritura. Este flujo no crea ni reasigna identidades. Registra solo excepciones de continuidad utiles fuera del manuscrito; la deteccion proactiva de entidades sigue vigente.
 
 Comandos, review JSON y garantias en `ORQUESTACION.md` y `PIPELINE.md`. Serializa operaciones sobre el mismo capitulo; disco y Qdrant no forman una transaccion conjunta.

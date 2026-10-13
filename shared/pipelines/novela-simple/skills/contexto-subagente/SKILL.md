@@ -16,7 +16,7 @@ stable_id, seq, parent_id, acción, tono, extensión
 
 - `stable_id` es inmutable.
 - `seq` siempre es local a `parent_id`.
-- `i9j0k1l2 [34]` se deriva de `seq: 34` en presentación y nunca es identidad persistida.
+- Las etiquetas `B_NNNN`/`E_NNNN` del guion son de lectura y nunca son identidad persistida (ADR 0033): al subagente se le pasa `stable_id [seq]`.
 - Renumerar cambia solo `seq` mediante las operaciones de `cronista-ops`.
 - Summaries se describen por `nivel`, `parent_id` y `seq`; el UUID físico nunca es entrada.
 

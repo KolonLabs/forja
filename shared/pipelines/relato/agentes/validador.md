@@ -27,6 +27,7 @@ Comprueba:
 
 - que cada `B_XXXX` realiza su acción sin contradicción factual;
 - continuidad con escenas vecinas, fichas y contexto;
+- que no contradice un `canon-previo` de `referencias/` ni el `## Canon heredado` de una ficha (bloqueo factual); una `guia-previa` nunca es canon;
 - arco tonal, ritmo y crudeza apropiados a la escena;
 - que los registros explícitos de beats no han sido suavizados ni extendidos artificialmente;
 - que los beats `[peso: extenso]` se demoran en su acción sin relleno ni repetición, y los `[peso: breve]` no se inflan;

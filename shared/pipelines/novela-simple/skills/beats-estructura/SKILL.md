@@ -16,7 +16,7 @@ user-invocable: false
 - Sin hilos: las anotaciones de hilo narrativo no aplican en esta escala.
 - Cada beat recibe un `stable_id` opaco e inmutable al crearse.
 - `seq` expresa la posición y siempre es local al `parent_id` de la escena.
-- El ID de presentación se deriva de `seq` y nunca se almacena.
+- La etiqueta de lectura `B_NNNN` no se deriva del `seq`: la pone `scripts/etiquetas-guion.py` en el guion y nunca es identidad (ADR 0033).
 
 ## Contrato de interpretacion
 
@@ -65,7 +65,7 @@ Ejemplo canónico:
 
 - `a1b2c3d4`: `stable_id` inmutable.
 - `[34]`: `seq` local a la escena padre.
-- `i9j0k1l2 [34]`: display derivado de `seq: 34` al presentar; nunca se persiste.
+- `B_NNNN · ` delante del `stable_id`: etiqueta visual de lectura que inserta y renumera `scripts/etiquetas-guion.py`; nunca es identidad (ADR 0033).
 - Las referencias cruzadas, fichas, `parent_id` y `cola_d.md` usan `stable_id`.
 
 ## Componentes
@@ -96,7 +96,7 @@ Al insertar, eliminar o reordenar hermanos:
 2. Usa `renumber-siblings` desde el primer `seq` afectado para abrir o cerrar el hueco.
 3. Actualiza solo `seq`.
 4. Mantén `stable_id`, `parent_id`, fichas y referencias externas.
-5. Deriva de nuevo displays como `i9j0k1l2 [34]` en la capa de presentación.
+5. Recalcula las etiquetas visuales con `python -X utf8 scripts/etiquetas-guion.py`.
 
 Nunca renumeres beats de otra escena por compartir el mismo valor de `seq`.
 

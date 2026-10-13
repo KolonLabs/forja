@@ -1,7 +1,7 @@
 # borrador.ps1 -- Versión limpia de revisión del trabajo en curso (ADR 0028).
 # Relato: toda la prosa confirmada de relato-draft.md. Novela: un único capítulo
 # (el indicado o el capítulo en curso), solo con sus escenas completas. Escribe en
-# publicacion/borrador/ y nunca cambia el estado ni toca draft, guion o manuscrito.
+# publicacion/borrador/prosa/ y nunca cambia el estado ni toca draft, guion o manuscrito.
 
 param(
     [string]$Capitulo,
@@ -110,7 +110,7 @@ function Get-CapituloEstado {
             $escenas.Add($actual)
             continue
         }
-        $beat = [regex]::Match($linea, "^(?:[-*]\s+)?($estadosBeat)\s+$Id\s+\[\d+\]")
+        $beat = [regex]::Match($linea, "^(?:[-*]\s+)?($estadosBeat)\s+(?:B_\d+\s*$([char]0x00B7)\s*)?$Id\s+\[\d+\]")
         if ($beat.Success) {
             if ($beat.Groups[1].Value -ne $beatCerrado) { $pendientes = $true }
             if ($actual) {
@@ -242,7 +242,8 @@ $markdown = "# $Titulo (borrador)`n`n## $Autor`n`n$nota`n`n"
 if ($borrador.Encabezado) { $markdown += "$($borrador.Encabezado)`n`n" }
 $markdown += "$($borrador.Cuerpo)`n"
 
-$outputDir = Join-Path $WorkspaceRoot "publicacion\borrador"
+$borradorRoot = Join-Path $WorkspaceRoot "publicacion\borrador"
+$outputDir = Join-Path $borradorRoot "prosa"
 New-Item -ItemType Directory -Force -Path $outputDir | Out-Null
 $stageDir = Join-Path $outputDir (".tmp-" + [guid]::NewGuid().ToString("N"))
 $base = $borrador.Base
@@ -279,18 +280,26 @@ try {
 
     # El borrador anterior de este mismo alcance se sustituye entero: no quedan
     # formatos viejos junto a los nuevos.
-    foreach ($ext in @("md", "epub", "pdf", "manifest.json")) {
-        $previo = Join-Path $outputDir "$base.$ext"
-        if (Test-Path -LiteralPath $previo) { Remove-Item -LiteralPath $previo -Force }
+    # También la versión suelta en publicacion/borrador/, anterior a la carpeta prosa/.
+    foreach ($dir in @($outputDir, $borradorRoot)) {
+        foreach ($ext in @("md", "epub", "pdf", "manifest.json")) {
+            $previo = Join-Path $dir "$base.$ext"
+            if (Test-Path -LiteralPath $previo) { Remove-Item -LiteralPath $previo -Force }
+        }
     }
-    Get-ChildItem -LiteralPath $stageDir -File | ForEach-Object {
+    # Con -Epub o -Pdf el .md y el manifest son ficheros de trabajo: solo se
+    # conservan los formatos pedidos. Sin ellos, el borrador es el propio .md.
+    $soloFormatos = $Epub -or $Pdf
+    Get-ChildItem -LiteralPath $stageDir -File | Where-Object {
+        -not $soloFormatos -or $_.Extension -in @(".epub", ".pdf")
+    } | ForEach-Object {
         Move-Item -LiteralPath $_.FullName -Destination (Join-Path $outputDir $_.Name)
     }
 
     Write-Host ""
     Write-Host "=== Borrador generado: $outputDir ==="
     Write-Host "  Alcance:  $($borrador.Cobertura)"
-    Write-Host "  Markdown: $(Join-Path $outputDir "$base.md")"
+    if (-not $soloFormatos) { Write-Host "  Markdown: $(Join-Path $outputDir "$base.md")" }
     if ($Epub) { Write-Host "  EPUB:     $(Join-Path $outputDir "$base.epub")" }
     if ($Pdf) { Write-Host "  PDF:      $(Join-Path $outputDir "$base.pdf")" }
     Write-Host "  Estado:   sin cambios ($($config.estado))"

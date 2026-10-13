@@ -20,6 +20,13 @@ user-invocable: false
 - Situación confirmada al cierre de la última escena pertinente.
 - Cambios relevantes y su `E_XXXX` de origen.
 
+## Canon heredado *(solo si el personaje viene de otra obra; skill `referencias`)*
+- Origen: (obra y dossier `referencias/<dossier>.md`)
+- Tiempo transcurrido: (desde el final de la obra previa)
+- Estado al final de la obra previa: (con cita [cap. N: «…»])
+- No contradecir: (hechos con cita [cap. N: «…»])
+- Evolución permitida: (qué puede haber cambiado y por qué)
+
 ## Uso
 
 - No crees una ficha para una mención incidental.

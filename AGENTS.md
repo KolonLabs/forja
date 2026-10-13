@@ -29,7 +29,7 @@ Forja/
 │       └── importar-proyecto.md       # /importar-proyecto (fuentes libres)
 ├── shared/                            # Fuente de verdad del pipeline de ficción
 │   ├── GUIA.md                        # Ayuda de comandos inyectada en cada workspace nuevo
-│   ├── skills/                        # 41 skills invariantes, neutras para ambos entornos
+│   ├── skills/                        # 43 skills invariantes, neutras para ambos entornos
 │   ├── scripts/                       # Utilidades para todas las escalas (renumerar.ps1)
 │   ├── .opencode/                     # Capa opencode común
 │   │   ├── agents/                    # Agentes fijos: memoria, cronista (solo novelas)
@@ -142,9 +142,9 @@ Para recuperar ideas desde notas, escaletas o guiones libres se usa `/importar-p
 
 | Ubicación | Contenido |
 |-----------|-----------|
-| `shared/skills/` | 41 skills: invariantes + exclusivos por escala. Neutras: se inyectan en `.claude/skills/`, que leen opencode y Claude Code |
+| `shared/skills/` | 43 skills: invariantes + exclusivos por escala. Neutras: se inyectan en `.claude/skills/`, que leen opencode y Claude Code |
 | `shared/.opencode/agents/`, `shared/.claude/agents/` | 2 agentes fijos (memoria, cronista), uno por entorno; solo se inyectan en novelas |
-| `shared/scripts/` | Utilidades que se copian a `scripts/` en todas las escalas: `renumerar.ps1` (renumera definiciones `H_`/`E_`/`B_` y devuelve la tabla viejo → nuevo; la skill `renumeracion-ids` guía al LLM en la revisión de referencias) y la compilación de la obra (`compilar.ps1`, `borrador.ps1`, `publicacion-comun.ps1`, `build-epub.ps1`, `build-pdf.ps1`, `build.css`, `templates/forja-kdp.typ`), que el hub también usa para las antologías, y la lectura de secretos (`secretos.ps1`, `secretos.py`; ADR 0029) |
+| `shared/scripts/` | Utilidades que se copian a `scripts/` en todas las escalas: `renumerar.ps1` (renumera definiciones `H_`/`E_`/`B_` y devuelve la tabla viejo → nuevo; la skill `renumeracion-ids` guía al LLM en la revisión de referencias) y la compilación de la obra (`compilar.ps1`, `borrador.ps1`, `publicacion-comun.ps1`, `build-epub.ps1`, `build-pdf.ps1`, `build.css`, `templates/forja-kdp.typ`), que el hub también usa para las antologías, la lectura de secretos (`secretos.ps1`, `secretos.py`; ADR 0029) y la validación de `referencias/` (`validar-referencias.py`; ADR 0032) |
 | `shared/GUIA.md` | Guía de decisión por defecto (relato). Si la escala define `shared/pipelines/<escala>/GUIA.md`, prevalece esa |
 | `shared/.opencode/commands/`, `shared/.claude/commands/` | 10 comandos por entorno: generar, revisar, expandir, corregir, publicar, compilar, borrador, refinar-hechos, revisar-guion, validar-hechos. `corregir` solo se inyecta en relato |
 | `shared/pipelines/<escala>/` | Agentes (`agentes/`), skills, scripts y overrides de comandos propios de escala + `PIPELINE.md` + `ORQUESTACION.md` |

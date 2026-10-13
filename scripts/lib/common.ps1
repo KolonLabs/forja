@@ -383,7 +383,7 @@ function Inject-Pipeline {
         # invariantes que realmente usa. El resto se define como override propio
         # de escala en $ScaleDir\skills.
         $allowed += @($styleNames | ForEach-Object { "estilo-$_" })
-        $allowed += @("mecanica-prosa", "renumeracion-ids")
+        $allowed += @("mecanica-prosa", "renumeracion-ids", "referencias")
     } elseif ($Escala -eq "novela-simple") {
         # contexto-narrativo es la memoria Markdown de relato; las novelas usan
         # Qdrant + contexto.md y no deben recibir ese contrato.
@@ -812,7 +812,8 @@ function Write-BriefMd {
 
     $refsBlock = ""
     if ($Brief.referencias) {
-        $refsBlock = "`n`n## Referencias`n`n" + (Get-ListText $Brief.referencias)
+        # Inspiraciones (obras, autores, películas); la carpeta referencias/ es otra cosa (ADR 0032).
+        $refsBlock = "`n`n## Inspiraciones`n`n" + (Get-ListText $Brief.referencias)
     }
 
     $reflexionBlock = ""
@@ -1039,7 +1040,7 @@ $temas
 $restricciones
 
 ### Referencias
-Si existe ``referencias/``, contiene material de consulta aportado por el autor (obra previa, documentación, notas). Puede ser útil al diseñar, guionizar, escribir o validar: consúltalo cuando la tarea toque su tema. No es una regla por sí mismo: ``AGENTS.md`` y ``BRIEF.md`` prevalecen sobre él.
+``referencias/`` guarda material de consulta aportado por el autor, de tres tipos: ``canon-previo`` (hechos de una obra anterior, con citas; contradecirlo es bloqueante), ``documentacion`` y ``guia-previa`` (orienta la intención, nunca es canon). Las inspiraciones de tono están en ``BRIEF.md``. Cuando la tarea toque su tema, carga la skill ``referencias`` y lee solo el pasaje pertinente. ``AGENTS.md``, ``BRIEF.md`` y los hechos prevalecen sobre ellas. ``scripts/validar-referencias.py`` comprueba su formato.
 
 ### Skills activos
 $skillsStr

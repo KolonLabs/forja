@@ -22,7 +22,11 @@
       "Bash(pwsh -NoProfile -File scripts/borrador.ps1)",
       "Bash(pwsh -NoProfile -File scripts/borrador.ps1 *)",
       "PowerShell(pwsh -NoProfile -File scripts/borrador.ps1)",
-      "PowerShell(pwsh -NoProfile -File scripts/borrador.ps1 *)"
+      "PowerShell(pwsh -NoProfile -File scripts/borrador.ps1 *)",
+      "Bash(python -X utf8 scripts/validar-referencias.py)",
+      "Bash(python -X utf8 scripts/validar-referencias.py *)",
+      "PowerShell(python -X utf8 scripts/validar-referencias.py)",
+      "PowerShell(python -X utf8 scripts/validar-referencias.py *)"
     ],
     "deny": [
       "Edit(/config.json)",

@@ -10,6 +10,8 @@ Carga solo las skills del modo solicitado: `beats-estructura` y `tonos-beat` en 
 
 ## Modo `beats`
 
+Si `referencias/` tiene contenido, carga la skill `referencias` y consulta antes lo pertinente al relato: lee el pasaje, no el archivo entero, y no lo copies. `canon-previo` y las fichas con `## Canon heredado` acotan lo posible; una `guia-previa` orienta la intención sin dictar estructura; `AGENTS.md`, `BRIEF.md` y los hechos prevalecen sobre todo ello.
+
 Genera todos los `B_XXXX` para el arco completo, no hecho por hecho de forma aislada. Antes de listarlos, identifica en cada `H_XXXX` el núcleo obligatorio, la secuencia o pauta que debe hacerse visible y el estado que deja. Los hechos son contratos de contenido: pueden incluir un patrón, una evolución o ejemplos de contexto; no son una lista literal de escenas.
 
 Cuando un hecho describa regularidad, escalada, repetición, deterioro o una consecuencia sostenida, decide con criterio cuántas apariciones representativas necesita y dónde producen mayor contraste. Intercálalas con beats de trabajo, relación, rutina, ocultación, espera o consecuencia que ya estén respaldados por el brief y el arco. Cada regreso al patrón debe cambiar riesgo, control, intimidad, exposición o coste; una repetición que no cambie función se elimina. Una secuencia continua solo se mantiene si su escalada exige que las acciones sean contiguas.

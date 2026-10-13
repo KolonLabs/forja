@@ -93,7 +93,7 @@ Ejemplo opcional de formato, no canon ni conducta obligatoria:
 
 - `stable_id` es opaco, inmutable y se genera al crear el beat.
 - `seq` siempre es local al `parent_id` de la escena.
-- `i9j0k1l2 [34]` se deriva de `seq: 34` al presentar y nunca se almacena.
+- `B_NNNN · ` delante del `stable_id`: etiqueta visual de lectura que inserta y renumera `scripts/etiquetas-guion.py`; nunca es identidad (ADR 0033). Cada escena lleva tras su marcador `### E_NNNN — Nombre`, también visual.
 - Fichas, `cola_d.md` y demás referencias usan `stable_id`.
 
 EXTENSION: `BREVE` (concentrado) | `MEDIA` (moderado) | `EXTENSA` (amplio). Peso narrativo orientativo, sin cuota de frases ni palabras; ver `tonos-beat`.

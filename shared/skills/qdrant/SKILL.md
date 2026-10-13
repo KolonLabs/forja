@@ -174,6 +174,7 @@ referencia
   {
     "titulo": "Biblia científica Cánida",
     "origen": "referencias/01-biblia-cientifica.md",
+    "tipo_referencia": "documentacion",
     "resumen": "2-3 frases ejecutivas del documento",
     "temas": [
       {
@@ -188,7 +189,7 @@ referencia
   El director (vía `entidades`) construye este índice leyendo cada archivo de `referencias/` en FASE 0.1. Qdrant embede la serialización completa de `fijo` (JSON); el contenido extenso del archivo original **no** se embede ni se almacena en Qdrant.
 
 - Tags: para cada tema relevante a un hilo, el director añade `relevancia_por_hilo:<stable_id_hilo>` a los tags de la entidad. Un archivo puede ser relevante a un hilo solo en algunos temas; en ese caso se incluyen los tags de los hilos a los que algún tema afecta.
-- El agente `memoria` lo incluye en el briefing **solo** cuando el hilo activo del capítulo tiene el tag `relevancia_por_hilo:<stable_id_hilo>`. Para extraer el contenido detallado de un tema, memoria **lee el archivo en `referencias/`** usando el campo `fijo.origen`.
+- En multi-hilo, el agente `memoria` lo incluye en el briefing **solo** cuando el hilo activo del capítulo tiene el tag `relevancia_por_hilo:<stable_id_hilo>`; en novela simple, sin hilos, por similitud con el objetivo del capítulo. Para extraer el contenido detallado de un tema, memoria **lee el archivo en `referencias/`** usando el campo `fijo.origen`.
 
 Los IDs de entidad son UUIDs opacos. El tipo, el nombre, el proyecto y el slug no se codifican dentro del ID. Están prohibidos los IDs con prefijos semánticos (`per-`, `lug-`, `obj-`, `hilo-`, etc.).
 

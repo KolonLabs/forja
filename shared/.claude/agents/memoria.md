@@ -124,7 +124,7 @@ Para incluir una referencia en el briefing:
 3. El `fijo` devuelto contiene el índice (`titulo`, `origen`, `resumen`, `temas[]` con `palabras_clave` y `descripcion`). Identifica el tema más relevante al objetivo del capítulo comparando `palabras_clave` y `descripcion` con el objetivo.
 4. Si necesitas el contenido detallado del tema, lee el archivo en `referencias/` usando `fijo.origen` y localiza el pasaje por el título del tema. No cargues el archivo entero en el briefing: selecciona solo el pasaje pertinente.
 
-No incluyas el contenido completo en el briefing: extrae un resumen del tema relevante (2-3 frases del `fijo.temas[].descripcion` o un pasaje corto del archivo `referencias/`). Cuenta dentro del presupuesto de ~600 tokens.
+Indica el `tipo_referencia`: una `guia-previa` es orientación, nunca canon. No incluyas el contenido completo en el briefing: extrae un resumen del tema relevante (2-3 frases del `fijo.temas[].descripcion` o un pasaje corto del archivo `referencias/`). Cuenta dentro del presupuesto de ~600 tokens.
 
 ## Consultas Neo4j
 

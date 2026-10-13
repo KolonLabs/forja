@@ -60,7 +60,7 @@ Agrupa escenas de uno o varios hilos en cada capítulo global, respetando las re
 
 ### Paso 4: Mover los bloques de escena
 
-Para cada escena asignada: mueve el bloque completo (marcador `<!-- ESCENA <stable_id>: Nombre -->` + todos sus beats) a `capitulos/cap-NN-slug/guion.md`. Aplica `renumber-siblings` sobre `parent_id`/`seq`. El `stable_id` de la escena y de cada beat **no cambia**.
+Para cada escena asignada: mueve el bloque completo (marcador `<!-- ESCENA <stable_id>: Nombre -->` + su encabezado `### E_NNNN` + todos sus beats; el director renumera después con `etiquetas-guion.py`) a `capitulos/cap-NN-slug/guion.md`. Aplica `renumber-siblings` sobre `parent_id`/`seq`. El `stable_id` de la escena y de cada beat **no cambia**.
 
 ### Paso 5: Generar la tabla y reescribir los puntos de conexión
 

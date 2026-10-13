@@ -6,9 +6,9 @@ disable-model-invocation: true
 
 # /expandir
 
-`/expandir [B_NNN o stable_id o descripcion] [enfoque]`
+`/expandir [B_NNNN, E_NNNN, stable_id o descripcion] [enfoque]`
 
-1. Localiza el fragmento y conserva la escena aceptada sin tocarla.
+1. Localiza el fragmento (una etiqueta `B_NNNN`/`E_NNNN` se traduce al `stable_id` leyendo su línea en el guion) y conserva la escena aceptada sin tocarla.
 2. Prepara original, guion, enfoque solicitado, canon/voz y las transiciones anterior/posterior, todo inline.
 3. Escritor en expansion puntual: sin herramientas ni cuotas de frases, devuelve solo secciones solicitadas con stable_id y seq intactos. No cambia acciones ni canon.
 4. Ensambla la candidata con el resto intacto y ejecuta `preparar`. Presenta la escena completa con hash/version y detente en el checkpoint obligatorio de narrativa; espera conformidad explicita del usuario y despues solicita revision focalizada. Integrador solo ante incidencias concretas.

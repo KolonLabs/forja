@@ -5,9 +5,9 @@ agent: director
 
 # /revisar
 
-`/revisar [B_NNN o stable_id o descripcion] [instrucciones opcionales]`
+`/revisar [B_NNNN, E_NNNN, stable_id o descripcion] [instrucciones opcionales]`
 
-1. Resuelve el fragmento y su escena por `stable_id`; no uses el display como identidad persistente.
+1. Resuelve el fragmento y su escena por `stable_id`: una etiqueta `B_NNNN`/`E_NNNN` se traduce leyendo su línea en el guion; no la uses como identidad persistente.
 2. Copia la escena aceptada a un candidato sin modificar el draft original. Prepara canon, instruccion y ambos extremos de la transicion.
 3. Cambio mecanico exacto: aplica y comprueba el cambio. Correccion de prosa: una llamada al integrador, contexto inline, sin herramientas, solo fragmentos afectados.
 4. Ensambla la candidata completa conservando secciones intactas. `persistir-escena.py preparar` comprueba estructura y devuelve hash nuevo.

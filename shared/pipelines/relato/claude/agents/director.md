@@ -30,7 +30,7 @@ Antes de iniciar una operación ejecuta `pwsh -NoProfile -File scripts/relato-tr
 ## Componentes y escritura
 
 1. En `fichas`, si `config.json.hechos_revision_pendiente` no está vacía, revisa primero los beats de esos hechos (guionista `reparar` + `auditor-beats` sobre el tramo) y ciérrala con `guion`. Después crea las fichas necesarias y prepara `componentes`. Inicializa en staging draft y contexto, cambia a `escritura` y confirma.
-2. Para cada `E_XXXX`, solicita una escena completa al escritor y el diagnóstico al validador; integra solo los reemplazos necesarios antes de persistir. Por defecto confirma una escena y se detiene para revisión; con `/generar completo` encadena todas las pendientes, cada una en su propia transacción, y solo para ante una pregunta bloqueante, un bloqueo factual no resuelto o un rechazo del helper.
+2. Para cada `E_XXXX`, solicita una escena completa al escritor y el diagnóstico al validador (si la escena toca material de `referencias/`, añade el pasaje pertinente según su tipo, skill `referencias`); integra solo los reemplazos necesarios antes de persistir. Por defecto confirma una escena y se detiene para revisión; con `/generar completo` encadena todas las pendientes, cada una en su propia transacción, y solo para ante una pregunta bloqueante, un bloqueo factual no resuelto o un rechazo del helper.
 3. Prepara `escritura`. En su staging añade la siguiente escena al final del prefijo de draft, marca sus beats `✅`, actualiza el delta de contexto y confirma todo junto.
 4. El helper exige que el draft sea un prefijo ordenado del guion y que cada ancla tenga prosa. No persistas estados `🔄` separados ni una escena parcial.
 

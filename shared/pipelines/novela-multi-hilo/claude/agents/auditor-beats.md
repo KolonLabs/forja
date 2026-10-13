@@ -51,7 +51,7 @@ Para cada beat en `guion.md`:
 
 ### Output
 
-Devuelves al director una tabla con los beats problemáticos (usando formato `seq_id [stable_id]`):
+Devuelves al director una tabla con los beats problemáticos (usando formato `B_NNNN · stable_id`, tal como aparece en el guion):
 
 ```
 | Beat | Tipo | Problema | Propuesta |
@@ -132,7 +132,7 @@ Además de la prosa, señala gestos, miradas, posiciones, adverbios de modo, det
 
 ### Output
 
-Devuelves beats sobre-escritos con su reformulación (usando formato `seq_id [stable_id]`):
+Devuelves beats sobre-escritos con su reformulación (usando formato `B_NNNN · stable_id`, tal como aparece en el guion):
 
 ```
 | Beat | Problema | Propuesta |

@@ -8,7 +8,7 @@ Referencia para **director** y subagentes. Rutas en `MAPA.md`. Fases en `PIPELIN
 
 1. **Quién escribe qué:** solo el agente indicado en la columna «Escribe» modifica ese archivo.
 2. **Briefing de spawn:** `proyecto`, identidades opacas, seq local y modo. Para escritor/integrador, contexto inline ya preparado (sin ordenes de leer archivos o cargar skills). Los demas agentes reciben solo rutas pertinentes.
-3. **IDs:** asignar desde `config.json` → `ultimo_hecho_seq` / `ultimo_beat_seq`. Tras asignar, incrementar en el archivo que creó el ID. IDs globales `H_NNNN`, `B_NNNN` (4 dígitos, nunca se reinician).
+3. **IDs:** la identidad es el `stable_id`. Los contadores de `config.json` (`ultimo_hecho_seq`, `ultimo_beat_seq`) se incrementan en el archivo que crea el elemento. `H_NNNN` es el display del hecho; `B_NNNN` y `E_NNNN` son etiquetas visuales de lectura que inserta y renumera `scripts/etiquetas-guion.py` tras cada cambio de guion (ADR 0033).
 4. **Estados en guion:** `⬜` → `🔄` (al iniciar la narrativa) → `✅` solo tras conformidad del usuario, revision editorial del mismo hash y sincronizacion exitosa. El **director** actualiza los beats de la escena en lote; aprobar el validador por si solo no los completa.
 5. **Sin copias de seguridad:** no se crean copias con fecha; el historial es el git de la obra.
 6. **Contrato editorial comun:** `beats-estructura` y `contexto-subagente` rigen la formulacion e interpretacion: unidad dramatica, no microaccion; separar Obligatorio, Libre y Ejemplos opcionales en el contexto existente. Sin cuotas de beats ni division por puntuacion. Lo dicho, sabido, inferido y confirmado no se intercambia.

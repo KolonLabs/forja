@@ -7,6 +7,7 @@ import hashlib
 import importlib.util
 import io
 import json
+import os
 from pathlib import Path
 import shutil
 import tempfile
@@ -80,10 +81,16 @@ class PersistirEscenaTests(unittest.TestCase):
         return argparse.Namespace(**values)
 
     def prepare(self):
-        return scene.run(self.args())
+        result = scene.run(self.args())
+        # aceptar retira el candidato: las pruebas comparan con esta copia en memoria.
+        self.candidate = self.pending.read_bytes()
+        return result
 
     def review(self, **updates):
-        review = {"escena_stable_id": SID, "candidato_sha256": hashlib.sha256(self.pending.read_bytes()).hexdigest(),
+        # aceptar retira el candidato; la revision conserva el ultimo hash conocido.
+        if self.pending.exists():
+            self.candidate_hash = hashlib.sha256(self.pending.read_bytes()).hexdigest()
+        review = {"escena_stable_id": SID, "candidato_sha256": self.candidate_hash,
                   "estado": "aprobado", "incidencias": []}
         review.update(updates)
         return json.dumps(review)
@@ -226,7 +233,7 @@ class PersistirEscenaTests(unittest.TestCase):
     def test_finish_invalido_cli_no_toca_escena_ya_aceptada(self):
         self.prepare_and_accept()
         before = {path: (path.read_bytes(), path.stat().st_mtime_ns)
-                  for path in (self.pending, self.draft, self.source, self.guion)}
+                  for path in (self.draft, self.source, self.guion)}
         for finish in (["--finish", "length"], ["--finish", ""], []):
             with self.subTest(finish=finish), patch.object(scene, "read_guion") as reader:
                 with redirect_stderr(io.StringIO()), self.assertRaises(SystemExit) as result:
@@ -234,8 +241,10 @@ class PersistirEscenaTests(unittest.TestCase):
                                 "--entrada", str(self.source)] + finish)
                 self.assertEqual(result.exception.code, 2)
                 reader.assert_not_called()
-        self.assertFalse(self.prepare()["cambio"])
+        # aceptar retiro el candidato: preparar lo recrea y aceptar, sin cambiar el draft, lo vuelve a retirar.
+        self.assertTrue(self.prepare()["cambio"])
         self.assertFalse(self.accept()["cambio"])
+        self.assertFalse(self.pending.exists())
         self.assertEqual(before, {path: (path.read_bytes(), path.stat().st_mtime_ns) for path in before})
         self.assertEqual(list(self.chapter.glob("*.bak")), [])
         self.http.assert_not_called()
@@ -255,6 +264,20 @@ class PersistirEscenaTests(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     self.prepare()
                 self.assertFalse(self.pending.exists())
+
+    def test_etiqueta_visual_no_es_identidad(self):
+        # ADR 0033: «B_NNNN · » delante del stable_id es solo para leer.
+        etiquetado = (GUION.replace("✅ 27ae80c1", "✅ B_0001 · 27ae80c1")
+                      .replace(f"⬜ {BIDS[0]}", f"⬜ B_0002 · {BIDS[0]}")
+                      .replace(f"\U0001f504 {BIDS[1]}", f"\U0001f504 B_0007 · {BIDS[1]}"))
+        self.guion.write_bytes(etiquetado.encode("utf-8"))
+        self.assertEqual(scene.read_guion(self.guion)[SID]["beats"], [(BIDS[0], 1), (BIDS[1], 2)])
+        self.assertEqual(self.prepare()["beat_stable_ids"], BIDS)
+        self.assertEqual(self.accept()["estado"], "aceptado")
+        # Sin el separador «·», la etiqueta se tomaría por identidad: se rechaza.
+        self.guion.write_bytes(etiquetado.replace("B_0002 · ", "B_0002 ").encode("utf-8"))
+        with self.assertRaises(ValueError):
+            scene.read_guion(self.guion)
 
     def test_preparar_sin_limites_de_extension(self):
         for body in ("Te.", "La oficina espera. " * 500):
@@ -299,7 +322,8 @@ class PersistirEscenaTests(unittest.TestCase):
             self.assertFalse(self.accept()["cambio"])
         self.assertEqual(self.draft.stat().st_mtime_ns, before)
         self.assertEqual(list(self.chapter.glob("*.bak")), [])
-        self.assertEqual(self.pending.read_bytes(), self.draft.read_bytes())
+        self.assertEqual(self.candidate, self.draft.read_bytes())
+        self.assertFalse(self.pending.exists())
         self.assertEqual(self.guion.read_bytes(), GUION.encode("utf-8"))
         self.assertEqual(json.loads(self.config.read_text())["slug"], "prueba-aislada")
         self.http.assert_not_called()
@@ -309,7 +333,7 @@ class PersistirEscenaTests(unittest.TestCase):
         original = PREFIX + SUFFIX
         self.draft.write_bytes(original)
         self.accept()
-        self.assertEqual(self.draft.read_bytes(), PREFIX + self.pending.read_bytes() + SUFFIX)
+        self.assertEqual(self.draft.read_bytes(), PREFIX + self.candidate + SUFFIX)
         # El historial es el git de la obra: aceptar no deja copias del draft.
         self.assertEqual(list(self.chapter.glob("*.bak")), [])
         for _ in range(2):
@@ -322,7 +346,7 @@ class PersistirEscenaTests(unittest.TestCase):
                     + b"\n### Notas del escritor\nRetirar solo esta nota del borrador viejo.\n" + SUFFIX)
         self.draft.write_bytes(original)
         self.accept()
-        self.assertEqual(self.draft.read_bytes(), PREFIX + self.pending.read_bytes() + SUFFIX)
+        self.assertEqual(self.draft.read_bytes(), PREFIX + self.candidate + SUFFIX)
         self.assertEqual(list(self.chapter.glob("*.bak")), [])
         self.assertFalse(self.accept()["cambio"])
         self.assertFalse(self.accept()["cambio"])
@@ -331,13 +355,13 @@ class PersistirEscenaTests(unittest.TestCase):
         self.prepare()
         self.draft.write_bytes(b"# Cabecera\r\n\r\n" + SUFFIX)
         self.accept()
-        self.assertEqual(self.draft.read_bytes(), b"# Cabecera\r\n\r\n" + self.pending.read_bytes() + SUFFIX)
+        self.assertEqual(self.draft.read_bytes(), b"# Cabecera\r\n\r\n" + self.candidate + SUFFIX)
 
     def test_aceptar_anade_al_final_sin_perder_prefijo(self):
         self.prepare()
         self.draft.write_bytes(PREFIX.rstrip(b"\r\n"))
         self.accept()
-        self.assertEqual(self.draft.read_bytes(), PREFIX.rstrip(b"\r\n") + b"\n" + self.pending.read_bytes())
+        self.assertEqual(self.draft.read_bytes(), PREFIX.rstrip(b"\r\n") + b"\n" + self.candidate)
         self.assertFalse(self.accept()["cambio"])
 
     def test_aceptar_revalida_guion_y_candidato(self):
@@ -403,7 +427,7 @@ class PersistirEscenaTests(unittest.TestCase):
     def test_capitulo_temporal_no_hereda_permiso_de_entrada(self):
         self.prepare_and_accept()
         review = self.review()
-        before = self.draft.read_bytes(), self.pending.read_bytes()
+        before = self.draft.read_bytes(), self.pending.exists()
         target = self.base / "capitulo-temporal"
         target.mkdir()
         link = self.root / "capitulos" / "enlace-temporal"
@@ -418,7 +442,7 @@ class PersistirEscenaTests(unittest.TestCase):
                         scene.run(self.args(command, capitulo=str(chapter), revision=review))
                     reader.assert_not_called()
         self.assertEqual(list(target.iterdir()), [])
-        self.assertEqual((self.draft.read_bytes(), self.pending.read_bytes()), before)
+        self.assertEqual((self.draft.read_bytes(), self.pending.exists()), before)
         self.http.assert_not_called()
 
     def test_entrada_temporal_symlink_fuera_del_ambito_rechazado(self):
@@ -690,7 +714,7 @@ class PersistirEscenaTests(unittest.TestCase):
 
     def test_fallo_reparacion_flags_retry_sin_embedding(self):
         self.prepare_and_accept()
-        before = self.draft.read_bytes(), self.pending.read_bytes()
+        before = self.draft.read_bytes(), self.pending.exists()
         initial = self.points()
         for point, text in zip(initial, ("El t\u00e9 espera.", "La puerta se abre.")):
             point["payload"].update(narrative_text=text, vector_source="narrativa")
@@ -702,7 +726,7 @@ class PersistirEscenaTests(unittest.TestCase):
                 self.fake_backend(state)
                 self.assertEqual(self.sync()["beats_actualizados"], remaining)
                 self.assertEqual(self.sync()["beats_actualizados"], 0)
-                self.assertEqual((self.draft.read_bytes(), self.pending.read_bytes()), before)
+                self.assertEqual((self.draft.read_bytes(), self.pending.exists()), before)
         self.get_model.assert_not_called()
         self.assertEqual(list(self.chapter.glob("*.bak")), [])
 
@@ -850,6 +874,70 @@ class PersistirEscenaTests(unittest.TestCase):
         self.assertEqual(code, 1)
         self.assertEqual(output.getvalue(), "")
         self.assertEqual(json.loads(errors.getvalue())["estado"], "error")
+
+    def test_aceptar_y_sincronizar_limpian_solos_y_reintentan_desde_el_draft(self):
+        self.prepare()
+        entry = self.chapter / f"escena-{SID}.entrada.md"
+        entry.write_bytes(self.candidate)
+        live_pending = self.chapter / "escena-otra0001.pendiente.md"
+        live_pending.write_text("candidato en curso\n", encoding="utf-8")
+        old = self.pending.stat().st_mtime - 60
+        for path in (entry, live_pending):
+            os.utime(path, (old, old))
+
+        accepted = self.accept()
+        self.assertEqual(sorted(accepted["limpieza"]), sorted([entry.name, self.pending.name]))
+        self.assertFalse(entry.exists() or self.pending.exists())
+        self.assertTrue(live_pending.exists())
+        # Sin candidato, los reintentos usan la escena del draft ligada al hash revisado.
+        self.assertFalse(self.accept()["cambio"])
+        self.fake_backend()
+        self.assertEqual(self.sync()["beats_actualizados"], 2)
+        self.assertEqual(self.sync()["beats_actualizados"], 0)
+        with self.assertRaises(ValueError):
+            scene.run(self.args("sincronizar", revision=self.review(candidato_sha256="0" * 64)))
+        self.assertTrue(live_pending.exists())
+        self.assertEqual(self.draft.read_bytes(), self.candidate)
+
+    def test_limpiar_retira_lo_incorporado_y_conserva_lo_vivo(self):
+        self.prepare_and_accept()
+        # Restos anteriores a la limpieza automatica: limpiar es la via de contingencia.
+        self.pending.write_bytes(self.candidate)
+        before = self.draft.stat().st_mtime - 60
+        consumed = [self.chapter / f"escena-{SID}.entrada.md", self.chapter / f"escena-{SID}.rev1.entrada.md"]
+        for entry in consumed:
+            entry.write_text("version anterior\n", encoding="utf-8")
+            os.utime(entry, (before, before))
+        newer = self.chapter / f"escena-{SID}.rev2.entrada.md"
+        newer.write_text("trabajo sin preparar\n", encoding="utf-8")
+        os.utime(newer, (before + 120, before + 120))
+        live_pending = self.chapter / "escena-otra0001.pendiente.md"
+        live_pending.write_text("candidato en curso\n", encoding="utf-8")
+        live_entry = self.chapter / "escena-otra0001.entrada.md"
+        live_entry.write_text("candidato en curso\n", encoding="utf-8")
+        os.utime(live_entry, (before, before))
+        draft, guion = self.draft.read_bytes(), self.guion.read_bytes()
+        expected = sorted(p.name for p in consumed) + [self.pending.name]
+
+        simulated = scene.run(self.args("limpiar", simular=True))
+        self.assertEqual(simulated["estado"], "simulado")
+        self.assertEqual(sorted(simulated["eliminados"]), sorted(expected))
+        self.assertTrue(all(p.exists() for p in consumed + [self.pending]))
+
+        with redirect_stdout(io.StringIO()) as output:
+            self.assertEqual(scene.main(["limpiar", "--capitulo", str(self.chapter)]), 0)
+        self.assertEqual(sorted(json.loads(output.getvalue())["eliminados"]), sorted(expected))
+        self.assertFalse(any(p.exists() for p in consumed + [self.pending]))
+        self.assertTrue(newer.exists() and live_pending.exists() and live_entry.exists())
+        self.assertEqual((self.draft.read_bytes(), self.guion.read_bytes()), (draft, guion))
+        self.assertEqual(scene.run(self.args("limpiar", simular=False))["eliminados"], [])
+
+    def test_limpiar_sin_draft_conserva_todo_y_rechaza_fuera_del_ambito(self):
+        self.prepare()
+        self.assertEqual(scene.run(self.args("limpiar", simular=False))["eliminados"], [])
+        self.assertTrue(self.pending.exists())
+        with self.assertRaises(ValueError):
+            scene.run(self.args("limpiar", capitulo="capitulos/../../fuera", simular=False))
 
 
 if __name__ == "__main__":

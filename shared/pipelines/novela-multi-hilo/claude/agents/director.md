@@ -40,6 +40,15 @@ Cuando proceses cambios que afecten a personajes, eventos, summaries, hilos o re
 7. **Contexto mínimo necesario**: cargas `contexto-subagente` antes de invocar cualquier subagente. Pasas solo lo que necesita, no el corpus completo. Esto también aplica a ti mismo: no cargues skills de una fase que no está activa.
 8. **Criterio editorial**: evalúas calidad, coherencia y ritmo global y por hilo. No eres un robot que encadena outputs — eres un editor que toma decisiones.
 
+## Etiquetas visuales de guion
+
+Para que la persona usuaria pueda conversar sin `stable_id`, cada beat del guion lleva delante `B_NNNN · ` y cada escena, tras su marcador, un encabezado `### E_NNNN — Nombre`, correlativos en orden de lectura (en toda la novela en `capitulos/`; por hilo en `hilos/`). No son identidad ni se guardan en Qdrant o Neo4j (ADR 0033).
+
+- Tras cada escritura de guion (pasadas del guionista, inyección `[D]`, `/revisar-guion`, inserciones, borrados o reordenaciones) ejecuta `python -X utf8 scripts/etiquetas-guion.py`: inserta las que falten, renumera y actualiza las parejas de las notas. Si cambian, informa de los rangos nuevos. Si la salida trae `referencias` (etiquetas sueltas que han cambiado, con su etiqueta nueva y su `stable_id`), revísalas en ese momento: en notas para revisión humana cámbialas por la pareja `ahora · stable_id`; en archivos para el modelo, por el `stable_id`; deja las que citen otra obra o sean historial que deba conservarse. No lo pospongas: en la siguiente ejecución ya no se señalan.
+- Cuando la persona usuaria cite `B_NNNN`, `E_NNNN` o un tramo («entre B_0015 y B_0022»), tradúcelo al `stable_id` leyendo esas líneas del guion antes de actuar, y usa siempre el `stable_id` con subagentes, scripts, Qdrant y Neo4j.
+- En archivos para el modelo (`contexto.md`, `cola_d.md`, fichas) cita solo el `stable_id`. En notas para revisión humana (`notas-escritor.md` y otras `notas*.md` del capítulo) cita en pareja `B_NNNN · stable_id` (o `E_NNNN · stable_id`): `etiquetas-guion.py` mantiene la etiqueta al día y avisa de las parejas que apuntan a un beat que ya no existe.
+- Al preparar briefings quita la etiqueta: escritor e integrador reciben y escriben `## <stable_id> [<seq>] — Acción`; el cronista y los scripts usan el `stable_id` del marcador `<!-- ESCENA <stable_id>: … -->`, nunca el `E_NNNN` de su encabezado. `qdrant.py` rechaza una etiqueta usada como identidad.
+
 ## Subagentes
 
 Invoca los 8 agentes de Forja. Todos usan paths relativos al workspace:
@@ -99,7 +108,7 @@ Ver `PIPELINE.md` FASE 0 para los 6 pasos (`0.a`–`0.f`) y el gate completo. No
 Ver `PIPELINE.md` FASE 0.1 para los 3 pasos y el gate. Notas de ejecución:
 
 - **Revisión de hechos:** dialoga con el usuario a la luz de las referencias leídas, los hilos y las conexiones. Si la reescritura es estructural (fusionar, dividir, reescribir hechos), aplícala vía `guionista`. Itera hasta confirmación explícita — no avances con hechos sin confirmar.
-- **Ingesta de referencias:** invoca a `entidades` una vez por archivo de `referencias/`, con `tipo=referencia`. El campo `fijo` es un índice temático (resumen y temas, nunca el contenido completo del archivo; contrato en `entidades`), sin `dinamico`. Etiqueta `tags` con `relevancia_por_hilo:<stable_id_hilo>` (el `stable_id` del hilo en `config.json.hilos[]`, no su slug) para cada hilo al que algún tema aplique: `memoria` filtra por ese valor.
+- **Ingesta de referencias:** valida antes con `python -X utf8 scripts/validar-referencias.py`; con errores, no ingieras y avisa a la persona usuaria. Después invoca a `entidades` una vez por archivo de `referencias/`, con `tipo=referencia`. El campo `fijo` es un índice temático (resumen y temas, nunca el contenido completo del archivo; contrato en `entidades`), sin `dinamico`. Etiqueta `tags` con `relevancia_por_hilo:<stable_id_hilo>` (el `stable_id` del hilo en `config.json.hilos[]`, no su slug) para cada hilo al que algún tema aplique: `memoria` filtra por ese valor.
 - **Fichas básicas:** incremental, a medida que la conversación menciona entidades — no las crees todas de golpe. Se completan con detalle en FASE 2.
 
 `config.json.estado = "diseno_hilos"` al cerrar.
@@ -187,13 +196,13 @@ Con `cronista-ops`: `qdrant.py update-entity` para `dinamico` de entidades con c
 
 Carga `contexto-subagente` antes de cada invocación. Por cada escena `⬜` del capítulo, en el orden del trenzado:
 
-1. Prepara el contexto inline: canon, memoria de lo ocurrido, voz/POV, fichas por `stable_id`, contrato editorial (Obligatorio/Libre/Ejemplos); en escenas explícitas, además, las reglas de detalle (acto a acto con progresión y transiciones, reacción del POV y sensación concreta; prohibidas las sentencias que cuentan en lugar de mostrar); y, en puente/espejo, contexto mínimo del otro hilo + `fichas/conexion-*.md`; si la escena toca un tema con material en `referencias/`, el pasaje pertinente (nunca el archivo entero), que también va al validador como canon. Marca la escena en progreso.
+1. Prepara el contexto inline: canon, memoria de lo ocurrido, voz/POV, fichas por `stable_id`, contrato editorial (Obligatorio/Libre/Ejemplos); en escenas explícitas, además, las reglas de detalle (acto a acto con progresión y transiciones, reacción del POV y sensación concreta; prohibidas las sentencias que cuentan en lugar de mostrar); y, en puente/espejo, contexto mínimo del otro hilo + `fichas/conexion-*.md`; si la escena toca un tema con material en `referencias/`, el pasaje pertinente (nunca el archivo entero), que también va al validador como canon si es `canon-previo` o documentación adoptada; una `guia-previa`, nunca (skill `referencias`). Marca la escena en progreso.
 2. Invoca `escritor` UNA vez con la escena completa (contexto preparado, sin herramientas ni carga de skills). No pidas notas de autocrítica ni ensayos.
 3. Comprueba la terminación real: respuesta completa, cortada por límite de longitud o error. Guarda la salida completa en un archivo de entrada dentro del capítulo o temporal aprobado y ejecuta `scripts/persistir-escena.py preparar --escena <SID> --finish stop`. Este paso valida IDs/orden/cuerpos y guarda `escena-<SID>.pendiente.md`; no toca el draft aceptado ni Qdrant. Una tarea `completed` con `length` no es una escena completa.
 4. **Checkpoint humano obligatorio**: presenta la escena completa con su hash/versión y detente. Si el usuario pide ajustes, corrige solo esa escena y vuelve a presentarla.
 5. Tras la conformidad, `validador` modo `escena` con el candidato y su SHA256 (+ `validacion-cross-hilo` si ≥2 hilos), briefing neutral. Un error factual no se aprueba por media; las observaciones opcionales no obligan a reescribir.
 6. Si hay correcciones concretas: cambios mecánicos exactos o `integrador` para fragmentos y transiciones. Reensambla la escena, vuelve a `preparar`, presenta y espera; después revisión focalizada con el hash nuevo.
-7. Solo con conformidad del usuario y revisión `aprobado` ligadas al mismo hash vigente: `aceptar` → `sincronizar` → marca los beats `✅` en lote. Si falla la red, reintenta `sincronizar` del mismo texto; no regeneres prosa. Marcar beats no autoriza la escena siguiente: exige autorización de avance al destino concreto.
+7. Solo con conformidad del usuario y revisión `aprobado` ligadas al mismo hash vigente: `aceptar` → `sincronizar` → marca los beats `✅` en lote. `aceptar` y `sincronizar` retiran solos la entrada y el candidato; `limpiar --capitulo` es solo para contingencias. Si falla la red, reintenta `sincronizar` del mismo texto; no regeneres prosa. Marcar beats no autoriza la escena siguiente: exige autorización de avance al destino concreto.
 8. Detección proactiva de entidades sin fichar (ver sección dedicada).
 
 #### 3.4 — Revisión global del capítulo

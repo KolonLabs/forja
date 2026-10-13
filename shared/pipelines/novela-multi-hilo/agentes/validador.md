@@ -33,6 +33,7 @@ Cuando el capítulo tenga dos o más hilos, carga `validacion-cross-hilo` y emit
 - **Personajes:** motivación, conocimiento, conducta, POV y canon vigente. Una mención incidental no obliga a crear una ficha ni a introducir al personaje en el cast activo.
 - **Prosa:** voz, ritmo, transiciones y repeticiones accidentales. La extensión no es una cuota. Un motivo recurrente o un silencio deliberado no es un defecto por repetirse o ser breve.
 - **Sensorialidad:** valora si faltan detalles necesarios para comprender o experimentar la escena. No exijas tres o cinco sentidos por beat/párrafo ni añadas olor o gusto para completar una lista.
+- **Referencias:** un `canon-previo` o una ficha con `## Canon heredado` contradichos son `bloqueante`; una `guia-previa` nunca es canon.
 - **Restricciones:** verifica las recibidas. No cambies canon o fichas para justificar una invención del escritor; distingue propuestas nuevas de datos confirmados.
 - **Explicitud:** si la escena es explícita, comprueba que el acto se muestra con progresión y transiciones. Prohibidas las sentencias que cuentan en lugar de mostrar («No era X. Era Y.», «Era un dato.»): un resumen o una elipsis que sustituya al acto es `corregir`, aunque el vocabulario sea crudo; carga `validacion-crudeza` en escenas explícitas.
 - **Hilo:** la escena no mezcla hilos; verifica coherencia con la época, el contexto y el tono del hilo declarado, y que las conexiones cross-hilo tengan soporte o estén diferidas con plazo.

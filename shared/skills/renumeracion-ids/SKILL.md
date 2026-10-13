@@ -13,6 +13,7 @@ Renumerar tiene dos partes: la mecánica, que hace `scripts/renumerar.ps1`, y la
 - **Solo a petición expresa de la persona usuaria.** Por defecto no se renumera: lo insertado recibe el siguiente número libre y los identificadores persistidos son durables.
 - Nunca para «ordenar» por iniciativa propia ni como efecto secundario de otra tarea.
 - `stable_id` no se renumera nunca: este procedimiento solo cambia números visibles.
+- **Excepción, guiones de novela:** las etiquetas de lectura `B_NNNN · ` y `### E_NNNN —` no son identidad y se recalculan siempre, tras cada cambio de guion, con `python -X utf8 scripts/etiquetas-guion.py` (inserta las que falten, renumera en orden de lectura, actualiza las parejas `B_NNNN · stable_id` de las notas y devuelve en `referencias` las etiquetas sueltas que han cambiado, con su etiqueta nueva y su `stable_id`, para revisarlas en ese momento); no uses `renumerar.ps1` para ellas (ADR 0033).
 
 ## 1. Simular y aplicar
 
