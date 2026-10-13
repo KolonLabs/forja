@@ -1,4 +1,4 @@
-# borrador.ps1 -- Versión limpia de revisión del trabajo en curso (ADR 0028 y 0036).
+# borrador.ps1 -- Versión limpia de revisión del trabajo en curso (ADR 0028, 0036 y 0037).
 # Prosa: relato completo desde relato-draft.md; en novela, un único capítulo (el
 # indicado o el capítulo en curso), solo con sus escenas completas. Escribe en
 # publicacion/borrador/prosa/.
@@ -484,11 +484,11 @@ try {
             if (Test-Path -LiteralPath $previo) { Remove-Item -LiteralPath $previo -Force }
         }
     }
-    # Con -Epub o -Pdf el .md y el manifest son ficheros de trabajo: solo se
-    # conservan los formatos pedidos. Sin ellos, el borrador es el propio .md.
+    # El .md es la fuente del EPUB/PDF: se conserva siempre. Con -Epub o -Pdf el
+    # manifest es un fichero de trabajo y se elimina; sin ellos, se conserva.
     $soloFormatos = $Epub -or $Pdf
     Get-ChildItem -LiteralPath $stageDir -File | Where-Object {
-        -not $soloFormatos -or $_.Extension -in @(".epub", ".pdf")
+        -not ($soloFormatos -and $_.Name -like "*.manifest.json")
     } | ForEach-Object {
         Move-Item -LiteralPath $_.FullName -Destination (Join-Path $outputDir $_.Name)
     }
@@ -496,7 +496,7 @@ try {
     Write-Host ""
     Write-Host "=== Borrador generado: $outputDir ==="
     Write-Host "  Alcance:  $($borrador.Cobertura)"
-    if (-not $soloFormatos) { Write-Host "  Markdown: $(Join-Path $outputDir "$base.md")" }
+    Write-Host "  Markdown: $(Join-Path $outputDir "$base.md")"
     if ($Epub) { Write-Host "  EPUB:     $(Join-Path $outputDir "$base.epub")" }
     if ($Pdf) { Write-Host "  PDF:      $(Join-Path $outputDir "$base.pdf")" }
     if ($Guion -and $borrador.SinEtiqueta -gt 0) {

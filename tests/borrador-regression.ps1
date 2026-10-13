@@ -79,10 +79,10 @@ Vuelve a casa.
     Assert-True (Test-Path -LiteralPath $relatoMd) "compilar conserva publicacion/borrador/"
     Assert-True (Test-Path -LiteralPath (Join-Path $relato "publicacion\relato-prueba.md")) "compilar genera el libro"
 
-    # Con un formato pedido, el .md y el manifest son ficheros de trabajo: solo queda el formato.
+    # Con un formato pedido, el manifest es un fichero de trabajo; el .md, fuente del formato, se conserva (ADR 0037).
     & (Join-Path $relato "scripts\borrador.ps1") -Epub | Out-Null
     $relatoBorradores = @(Get-ChildItem -LiteralPath (Join-Path $relato "publicacion\borrador\prosa") -Force | ForEach-Object Name)
-    Assert-True (($relatoBorradores -join ",") -eq "relato-prueba-borrador.epub") "relato: con -Epub solo queda el EPUB del relato completo"
+    Assert-True (($relatoBorradores -join ",") -eq "relato-prueba-borrador.epub,relato-prueba-borrador.md") "relato: con -Epub quedan el EPUB y su .md, sin manifest"
 
     # Novela: un capítulo, solo escenas completas; un hueco intermedio se señala.
     $novela = New-Obra "novela" @{ slug = "novela-prueba"; titulo = "Novela de prueba"; tipo = "novela"; escala = "novela-multi-hilo"; estado = "escritura" }
@@ -160,7 +160,7 @@ Esto no es prosa.
     & (Join-Path $novela "scripts\borrador.ps1") -Capitulo 1 -Epub | Out-Null
     Assert-True (-not (Test-Path -LiteralPath (Join-Path $novela "publicacion\borrador\novela-prueba-cap-01-borrador.epub"))) "novela: retira el borrador suelto del mismo capítulo"
     $novelaBorradores = @(Get-ChildItem -LiteralPath (Join-Path $novela "publicacion\borrador\prosa") -Force | ForEach-Object Name)
-    Assert-True (($novelaBorradores -join ",") -eq "novela-prueba-cap-01-borrador.epub") "novela: con -Epub solo queda el EPUB del capítulo, sin .md, manifest ni temporales"
+    Assert-True (($novelaBorradores -join ",") -eq "novela-prueba-cap-01-borrador.epub,novela-prueba-cap-01-borrador.md") "novela: con -Epub quedan el EPUB y su .md, sin manifest ni temporales"
     Assert-True ((Get-Content -Raw -LiteralPath (Join-Path $novela "config.json") | ConvertFrom-Json).estado -eq "escritura") "novela: no cambia el estado"
 
     # --- Guion (ADR 0036) ---

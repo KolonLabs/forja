@@ -48,7 +48,7 @@ pwsh -NoProfile -File scripts/borrador.ps1 [-Capitulo <cap>] [-Guion] [-Anotado]
 ## Resultado
 
 - `publicacion/borrador/prosa/<slug>-borrador.*` (relato completo) o `<slug>-cap-NN-borrador.*` (un capítulo de novela o multi-hilo). Con `--guion`, en `publicacion/borrador/guion/`: `<slug>-guion-borrador.*`, `<slug>-cap-NN-guion-borrador.*` o, por hilo, `<slug>-<hilo>-cap-NN-guion-borrador.*`; `--anotado` añade `-anotado` antes de `-borrador`. Una versión suelta del mismo alcance en `publicacion/borrador/`, anterior a esta carpeta, se retira al regenerarlo.
-- Sin formatos, el borrador es el `.md`, con un `.manifest.json` que registra las escenas incluidas, los hashes de las fuentes y el commit. Con `--epub` o `--pdf` solo quedan los formatos pedidos: el `.md` y el manifest son ficheros de trabajo y se eliminan.
+- Sin formatos, el borrador es el `.md`, con un `.manifest.json` que registra las escenas incluidas, los hashes de las fuentes y el commit. Con `--epub` o `--pdf` se generan además los formatos pedidos y se conserva junto a ellos el `.md` en que se basan; el manifest es un fichero de trabajo y se elimina.
 - Cada ejecución sustituye el borrador anterior del mismo alcance. `publicacion/` no se versiona.
 - La portada y la primera línea indican que es un borrador, su fecha y su cobertura.
 - El estado de la obra no cambia.
