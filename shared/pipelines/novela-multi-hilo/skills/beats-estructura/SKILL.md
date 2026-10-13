@@ -57,7 +57,7 @@ Reserva `⚡` para palabras exactas exigidas por el usuario o cuya literalidad t
 - Compromiso: `Eva cuenta con normalidad su jornada; Luis relaciona el cambio de horario con una preocupación que ella no menciona`. La preocupación es inferencia de Luis, no reconocimiento de Eva.
 - Una unidad: `Luis solicita el cambio de turno y obtiene la autorización`. Pregunta, respuesta y gestos no requieren beats separados.
 - Dos cambios independientes: `Luis obtiene el cambio de turno; al salir descubre que han cancelado el tren`. La puntuación no decide: la autorización y el descubrimiento tienen consecuencias distintas.
-- Con hilos: `Laura firma el contrato del taller [Obrero — MEDIA] [Laura, Diego] [Zona: taller] [Hilos: hilo-taller]`, aunque la firma materialice una conexión con `hilo-patrimonio`; la conexión se declara cuando cambia algo en ambos.
+- Con hilos: `Laura firma el contrato del taller [Clínico — MEDIA] [Laura, Diego] [Zona: taller] [Hilos: hilo-taller]`, aunque la firma materialice una conexión con `hilo-patrimonio`; la conexión se declara cuando cambia algo en ambos.
 
 ## Representación técnica
 
@@ -90,9 +90,9 @@ Ejemplo canónico:
 
 ```text
 ✅ a1b2c3d4 [1] — Ricardo desembarca en Villaverde arrastrando la mochila por el muelle [Contemplativo — EXTENSA] [Ricardo] [Zona: muelle de Villaverde] [Hilos: hilo-ricardo]
-🔄 e5f6a7b8 [2] — Isabel recibe el informe sobre la desaparición de su hermano [Administrativo — BREVE] [Isabel, Funcionario] [Zona: Ministerio del Interior] [Hilos: hilo-isabel]
+🔄 e5f6a7b8 [2] — Isabel recibe el informe sobre la desaparición de su hermano [Clínico — BREVE] [Isabel, Funcionario] [Zona: Ministerio del Interior] [Hilos: hilo-isabel]
 ⬜ 11223344 [3] — Elena intercepta a Ricardo en el puerto y le ofrece alojamiento [Tenso — MEDIA] [Ricardo, Elena] [Zona: salida del puerto] [Hilos: hilo-ricardo, hilo-elena]
-⬜ 55667788 [4] — Isabel soborna al celador para acceder a los expedientes sellados [Clandestino — MEDIA] [Isabel, Celador] [Zona: archivo provincial] [Hilos: hilo-isabel]
+⬜ 55667788 [4] — Isabel soborna al celador para acceder a los expedientes sellados [Tenso — MEDIA] [Isabel, Celador] [Zona: archivo provincial] [Hilos: hilo-isabel]
 ```
 
 Estados: ✅ completo · 🔄 en progreso · ⬜ pendiente.

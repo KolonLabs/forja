@@ -24,7 +24,7 @@ Antes de iniciar una operación ejecuta `pwsh -NoProfile -File scripts/relato-tr
 1. Valida hechos y restricciones. Rechaza marcas `[D]`: relato usa exclusivamente hechos `H_XXXX` y beats `B_XXXX` ordinarios.
 2. Pide al guionista un mapa global desde el siguiente `B_XXXX` y la cobertura temporal `H → B`; debe inferir y distribuir autónomamente las pautas explícitas del arco, intercalándolas con sus consecuencias y contraste cotidiano. Conserva el mapa como provisional hasta el gate.
 3. Pide un único diagnóstico a `auditor-beats` y repara solo bloqueos.
-4. Pide las `E_XXXX`: cada una es una unidad de generación manejable, con arco tonal y `Salida: continua|separador`.
+4. Pide las `E_XXXX`: cada una es una unidad de generación manejable, con `Salida: continua|separador`.
 5. Completa en staging `guion.md` y `config.json.estado = fichas`, y confirma `diseno`.
 
 ## Componentes y escritura

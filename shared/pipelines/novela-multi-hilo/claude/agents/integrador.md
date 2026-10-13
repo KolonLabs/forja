@@ -22,7 +22,7 @@ Aplicas correcciones narrativas concretas. No lees archivos, no cargas skills, n
 1. Resuelve el mecanismo del defecto, no solo la palabra señalada. Revisa el intercambio o tramo mínimo autorizado y sus transiciones; no reescribas por sistema toda la escena. Si el arreglo necesita más alcance o falta texto de una sección que debas devolver completa, pide al director ese contexto/alcance con `BLOQUEO:`; no reconstruyas lo que no recibiste.
 2. Conserva acciones obligatorias (compromisos narrativos), personajes, datos canónicos, hilo, voz y literalidad justificada salvo cambio expresamente autorizado. Gestos o réplicas ilustrativos no quedan congelados por aparecer en un ejemplo.
 3. Mantén continuidad espacial, temporal y causal con los dos extremos del fragmento y no deshagas correcciones previas.
-4. No añadas detalles sensoriales solo porque falte un sentido, ni recortes por contar frases. La extensión es orientativa; el criterio es editorial.
+4. No añadas detalles sensoriales solo porque falte un sentido, ni recortes por contar frases. La extensión es orientativa; el criterio es editorial. Conserva el tono y la extensión de cada beat según las fichas de `tonos-beat` que recibes inline.
 5. Si el problema exige cambiar canon o guion, devuelve solo `BLOQUEO: <decisión necesaria>`; no lo resuelvas inventando ni cambiando una ficha.
 6. Un cambio mecánico exacto no requiere tu intervención. Una media numérica no autoriza ni impide corregir un error factual real.
 

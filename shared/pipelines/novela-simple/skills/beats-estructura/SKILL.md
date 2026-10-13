@@ -82,8 +82,8 @@ Ejemplo canónico:
 ```text
 ✅ a1b2c3d4 [1] — Ricardo desembarca en Villaverde arrastrando la mochila por el muelle [Contemplativo — EXTENSA] [Ricardo] [Zona: muelle de Villaverde]
 🔄 e5f6a7b8 [2] — Elena intercepta a Ricardo antes de que salga del puerto y le ofrece alojamiento [Tenso — MEDIA] [Ricardo, Elena] [Zona: salida del puerto]
-⬜ 11223344 [3] — Ricardo descubre que la habitación tiene una cerradura por fuera [Inquietante — BREVE] [Ricardo] [Zona: pensión Los Cedros, habitación 3]
-⬜ 55667788 [4] — Elena evade las preguntas sobre el pueblo mientras Marcos observa [Incómodo — MEDIA] [Ricardo, Elena, Marcos] [Zona: comedor de la pensión]
+⬜ 11223344 [3] — Ricardo descubre que la habitación tiene una cerradura por fuera [Revelación — BREVE] [Ricardo] [Zona: pensión Los Cedros, habitación 3]
+⬜ 55667788 [4] — Elena evade las preguntas sobre el pueblo mientras Marcos observa [Tenso — MEDIA] [Ricardo, Elena, Marcos] [Zona: comedor de la pensión]
 ```
 
 Estados: ✅ completo · 🔄 en progreso · ⬜ pendiente.

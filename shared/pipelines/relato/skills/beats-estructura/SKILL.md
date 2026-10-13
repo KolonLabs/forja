@@ -11,20 +11,18 @@ user-invocable: false
 ## Formato
 
 ```text
-⬜ B_0001 — Ana borra el aviso antes de que Luis lo vea.
-⬜ B_0002 — Luis pregunta qué estaba mirando Ana. [registro: tenso]
-⬜ B_0003 — Ana se lo enseña. [registro: revelación] [peso: extenso]
+⬜ B_0001 — Ana borra el aviso antes de que Luis lo vea. [Clínico — BREVE]
+⬜ B_0002 — Luis pregunta qué estaba mirando Ana. [Tenso — MEDIA]
+⬜ B_0003 — Ana se lo enseña. [Revelación — EXTENSA]
 ```
 
-El registro es opcional y solo aparece si el beat necesita apartarse del arco tonal de su `E_XXXX`. Ejemplos: `contenido`, `tenso`, `revelación`, `explícito / visceral`, `íntimo`, `brutal`.
-
-El peso es opcional y relativo: `[peso: breve]` o `[peso: extenso]` solo cuando el beat merece claramente menos o más detenimiento que el resto de su escena; sin marca, peso normal. Es independiente del registro (un beat `contenido` puede ser extenso; uno `explícito / visceral`, breve). No uses cifras.
+Todo beat lleva `[Tono — EXTENSIÓN]` del catálogo de `tonos-beat`, común a todas las escalas: uno o dos tonos (`Explícito / Visceral`) y una extensión, `BREVE`, `MEDIA` o `EXTENSA`, que indica peso dentro de la escena, nunca cifras. El tono y la extensión son independientes (un beat `Clínico` puede ser `EXTENSA`; uno `Explícito`, `BREVE`). `[elipsis]`, añadido a la etiqueta, marca un salto deliberado.
 
 No añadas etiquetas de hecho, número de palabras, cuotas, POV, lugar ni encabezados narrativos al beat.
 
 ## Atomicidad
 
-Un beat es **una acción completa**: quién hace qué a quién (y en qué situación), desde su preparación hasta que esa acción cambia. Dentro del mismo beat van la preparación que la sirve (acercarse, colocarse, cerrar la puerta), las indicaciones, los frenos y permisos que no cambian la acción y su escalada: esa progresión la desarrolla el escritor. Una acción larga lleva `[peso: extenso]`; si es muy larga, puede dividirse en dos fases de la misma acción.
+Un beat es **una acción completa**: quién hace qué a quién (y en qué situación), desde su preparación hasta que esa acción cambia. Dentro del mismo beat van la preparación que la sirve (acercarse, colocarse, cerrar la puerta), las indicaciones, los frenos y permisos que no cambian la acción y su escalada: esa progresión la desarrolla el escritor. Una acción larga es `EXTENSA`; si es muy larga, puede dividirse en dos fases de la misma acción.
 
 El beat se corta cuando:
 
@@ -47,7 +45,7 @@ El beat narra solo lo que el personaje POV hace o puede percibir. No repite las 
 
 ## Qué pertenece a la escena o al escritor
 
-- lugar, tiempo, POV, objetivo, resultado y arco tonal: `E_XXXX`;
+- lugar, tiempo, POV, objetivo y resultado: `E_XXXX`;
 - ritmo, frases, diálogo, imágenes, sensorialidad y psicología: escritor;
 - cobertura de `H_XXXX` y de sus pautas explícitas: comprobación temporal de diseño;
 - la decisión de intercalar beats de contraste, rutina o consecuencia cuando el arco los necesite.

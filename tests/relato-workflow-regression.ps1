@@ -64,13 +64,12 @@ $guionAbierto = @'
 - Tiempo y POV: Mañana, Ana
 - Objetivo: Resolver una llamada.
 - Resultado: Ana decide salir.
-- Arco tonal: calma → tensión → decisión
 - Salida: continua
 
 #### Beats
 
-⬜ B_0001 — Ana recibe una llamada que altera su plan.
-⬜ B_0002 — Ana decide salir pese al riesgo.
+⬜ B_0001 — Ana recibe una llamada que altera su plan. [Clínico — MEDIA]
+⬜ B_0002 — Ana decide salir pese al riesgo. [Tenso — BREVE]
 
 ### E_0002 — Consecuencia
 
@@ -78,12 +77,11 @@ $guionAbierto = @'
 - Tiempo y POV: Mediodía, Ana
 - Objetivo: Llegar a la cita.
 - Resultado: Descubre la trampa.
-- Arco tonal: tensión → revelación → amenaza
 - Salida: continua
 
 #### Beats
 
-⬜ B_0003 — Ana descubre que la cita era una trampa.
+⬜ B_0003 — Ana descubre que la cita era una trampa. [Revelación / Opresivo — EXTENSA]
 '@
 
 $guionCerrado = $guionAbierto.Replace("⬜ B_0001", "✅ B_0001").Replace("⬜ B_0002", "✅ B_0002").Replace("⬜ B_0003", "✅ B_0003")
@@ -115,6 +113,10 @@ try {
     New-Item -ItemType Directory -Force -Path $scripts | Out-Null
     $helper = Join-Path $scripts "relato-transaccion.ps1"
     Copy-Item -LiteralPath (Join-Path $RepoRoot "shared\pipelines\relato\scripts\relato-transaccion.ps1") -Destination $helper -Force
+    # Catálogo común de tonos (ADR 0035): relato-transaccion comprueba los tonos del guion con él.
+    $tonos = Join-Path $workspace ".claude\skills\tonos-beat"
+    New-Item -ItemType Directory -Force -Path $tonos | Out-Null
+    Copy-Item -LiteralPath (Join-Path $RepoRoot "shared\skills\tonos-beat\SKILL.md") -Destination $tonos -Force
     Write-Config -Workspace $workspace -Estado "diseno" -UltimoHecho 1
     Write-Utf8 -Path (Join-Path $workspace "_actos.md") -Content $actosUno
 

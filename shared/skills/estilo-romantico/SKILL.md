@@ -16,10 +16,10 @@ La voz romántica prioriza el vínculo: deseo, vulnerabilidad, conflicto afectiv
 
 ## Explicitud
 
-La explicitud no la decide este estilo. Obedece primero a `BRIEF.md` y al registro concreto del beat:
+La explicitud no la decide este estilo. Obedece primero a `BRIEF.md` y al tono concreto del beat:
 
-- Con `[registro: explícito / visceral]`, nombra la acción y el cuerpo con claridad física, sin fundidos a negro ni eufemismos forzados.
-- Con `[registro: íntimo]` o sin registro explícito, puede concentrarse en emoción, gesto y cercanía sin añadir detalle gráfico que la acción no pide.
-- Con `[registro: elipsis]`, el salto es deliberado y no una suavización automática propia del estilo.
+- Con tono `Explícito` o `Visceral`, nombra la acción y el cuerpo con claridad física, sin fundidos a negro ni eufemismos forzados.
+- Con tono `Íntimo`, puede concentrarse en emoción, gesto y cercanía sin añadir detalle gráfico que la acción no pide.
+- Con `[elipsis]`, el salto es deliberado y no una suavización automática propia del estilo.
 
 Si existe un estilo secundario, este estilo base prevalece en voz y cámara; el secundario solo aporta matices compatibles. Nunca contradigas hechos, restricciones, acción nuclear, crudeza fijada ni registros del guion.

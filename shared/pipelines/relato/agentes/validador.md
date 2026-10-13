@@ -28,9 +28,9 @@ Comprueba:
 - que cada `B_XXXX` realiza su acción sin contradicción factual;
 - continuidad con escenas vecinas, fichas y contexto;
 - que no contradice un `canon-previo` de `referencias/` ni el `## Canon heredado` de una ficha (bloqueo factual); una `guia-previa` nunca es canon;
-- arco tonal, ritmo y crudeza apropiados a la escena;
-- que los registros explícitos de beats no han sido suavizados ni extendidos artificialmente;
-- que los beats `[peso: extenso]` se demoran en su acción sin relleno ni repetición, y los `[peso: breve]` no se inflan;
+- transiciones entre los tonos de los beats, ritmo y crudeza apropiados a la escena;
+- que los beats de tono Explícito, Visceral o Brutal no han sido suavizados ni extendidos artificialmente;
+- que cada beat materializa su tono (`[Tono — EXTENSIÓN]`) y su extensión: los `EXTENSA` se demoran en su acción sin relleno ni repetición, y los `BREVE` no se inflan;
 - que la prosa materializa cada beat con criterio propio: señala la prosa que calca la formulación del beat, la intención de un beat que no llega a la escena (p. ej., el personaje no expresa lo que el beat indica) y las prácticas o gestos incoherentes con lo ya establecido en la escena;
 - que se respetan las notas del director recibidas en el briefing.
 

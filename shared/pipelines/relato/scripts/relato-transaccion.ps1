@@ -104,6 +104,56 @@ function Get-RelatoGuionEscenas {
     return $escenas.ToArray()
 }
 
+function Get-CatalogoTonos {
+    # Tonos y extensiones de la skill tonos-beat común de la obra (ADR 0035).
+    $skill = Join-Path $WorkspaceRoot ".claude\skills\tonos-beat\SKILL.md"
+    if (-not (Test-Path -LiteralPath $skill -PathType Leaf)) {
+        throw "Falta .claude/skills/tonos-beat/SKILL.md: no se puede comprobar el tono de los beats."
+    }
+    $tonos = [System.Collections.Generic.List[string]]::new()
+    $extensiones = [System.Collections.Generic.List[string]]::new()
+    $seccion = ""
+    foreach ($linea in (Get-Content -LiteralPath $skill -Encoding UTF8)) {
+        if ($linea.StartsWith("## ")) { $seccion = $linea.Substring(3).Trim().ToLowerInvariant(); continue }
+        if ($seccion.StartsWith("cat") -and $linea.StartsWith("### ")) { $tonos.Add($linea.Substring(4).Trim()); continue }
+        if ($seccion.StartsWith("extensi")) {
+            $ext = [regex]::Match($linea, '^\|\s*`([A-ZÁÉÍÓÚ]+)`')
+            if ($ext.Success) { $extensiones.Add($ext.Groups[1].Value) }
+        }
+    }
+    return [pscustomobject]@{ Tonos = $tonos.ToArray(); Extensiones = $extensiones.ToArray() }
+}
+
+function Assert-MarcasDeBeat {
+    # Todo beat lleva [Tono — EXTENSIÓN] del catálogo común; la escena no declara arco tonal aparte (ADR 0035).
+    param([string]$GuionPath)
+
+    $catalogo = Get-CatalogoTonos
+    $fallos = [System.Collections.Generic.List[string]]::new()
+    foreach ($linea in (Get-Content -LiteralPath $GuionPath -Encoding UTF8)) {
+        if ($linea -match '^\s*-\s*Arco tonal:') {
+            $fallos.Add("arco tonal de escena retirado: el recorrido tonal es la secuencia de tonos de los beats")
+            continue
+        }
+        $beat = [regex]::Match($linea, '^\s*(?:[-*]\s*)?(?:⬜|🔄|✅)?\s*(B_\d{4})\s+—')
+        if (-not $beat.Success) { continue }
+        $id = $beat.Groups[1].Value
+        if ($linea -match '\[(registro|peso):') {
+            $fallos.Add("${id}: formato anterior [registro:]/[peso:]; usa [Tono — EXTENSIÓN]")
+            continue
+        }
+        $etiqueta = [regex]::Match($linea, '\[([^\[\]]+?)\s+—\s+([A-ZÁÉÍÓÚ]+)\]')
+        if (-not $etiqueta.Success) { $fallos.Add("${id}: sin [Tono — EXTENSIÓN]"); continue }
+        $tonos = @($etiqueta.Groups[1].Value -split '\s*/\s*')
+        if ($tonos.Count -gt 2) { $fallos.Add("${id}: más de dos tonos") }
+        foreach ($tono in $tonos) { if ($tono -notin $catalogo.Tonos) { $fallos.Add("${id}: tono «$tono»") } }
+        if ($etiqueta.Groups[2].Value -notin $catalogo.Extensiones) { $fallos.Add("${id}: extensión «$($etiqueta.Groups[2].Value)»") }
+    }
+    if ($fallos.Count -gt 0) {
+        throw "Marcas tonales no válidas según tonos-beat ($($catalogo.Tonos -join ', '); $($catalogo.Extensiones -join ', ')): $($fallos -join '; ')."
+    }
+}
+
 function Test-RelatoIdSequence {
     param([string[]]$Esperados, [string[]]$Actuales)
 
@@ -425,6 +475,10 @@ function Assert-Stage {
     $escenas = @(Get-RelatoGuionEscenas -GuionPath (Join-Path $NextRoot "guion.md"))
     Assert-ConfigCounters -NextConfig $nextConfig -CurrentConfig $currentConfig -Escenas $escenas -Operation $Operation
     Assert-StateTransition -Operation $Operation -NextConfig $nextConfig -CurrentConfig $currentConfig
+
+    if ($Operation -in @("diseno", "guion")) {
+        Assert-MarcasDeBeat -GuionPath (Join-Path $NextRoot "guion.md")
+    }
 
     switch ($Operation) {
         "guion" {

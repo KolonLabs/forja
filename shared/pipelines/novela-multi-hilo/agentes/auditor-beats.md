@@ -64,6 +64,7 @@ Para cada beat en `guion.md`:
 3. **¿El beat describe atmósfera, sensación, sonido o pensamiento interno en lugar de un compromiso?** → Tipo `prosa`: márcalo para modo `limpieza` y reformúlalo.
 4. **¿La acción exige gestos, posiciones, adverbios o ambiente concretos?** → Tipo `microcoreografía`: propón la acción sin el detalle y reubica lo útil en la cabecera o descártalo.
 5. **¿Exige un número de beats o una cobertura por conteo?** → Tipo `cuota`: reporta el criterio real de cobertura (detonante, presión, cambio y consecuencia).
+6. **¿Su `[Tono — EXTENSIÓN]` contradice la acción o su peso en la escena?** → Tipo `tono`: propón la etiqueta del catálogo de `tonos-beat` que corresponde; la extensión no se mide por cuotas.
 
 ### Output
 

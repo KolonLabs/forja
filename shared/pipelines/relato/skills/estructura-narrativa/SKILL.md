@@ -27,11 +27,11 @@ Abre una nueva escena cuando ocurra un giro reconocible de:
 
 No abras una escena solo por la cantidad de beats. Una situación continua puede contener varias `E_XXXX` si esas fases tienen función propia.
 
-## Arco tonal
+## Tono
 
-La escena declara su trayectoria, por ejemplo `contenido → tenso → revelación`. Los beats heredan esa trayectoria. Usa `[registro: ...]` solo para marcar un momento que requiere un tratamiento distinto, especialmente en cambios hacia o desde contenido explícito.
+La escena no declara arco tonal: su recorrido es la secuencia de `[Tono — EXTENSIÓN]` de sus beats, del catálogo de `tonos-beat` (ADR 0035). Cuida las transiciones entre beats contiguos, especialmente hacia o desde contenido explícito.
 
-El registro orienta al escritor; no dicta frases, longitud, detalle sensorial ni diálogo. Excepción: una escena explícita activa el nivel de detalle de `estilo-explicito` (acto mostrado con progresión), que prevalece sobre la contención en ese tramo.
+El tono orienta al escritor; no dicta frases, longitud, detalle sensorial ni diálogo. Excepción: una escena explícita activa el nivel de detalle de `estilo-explicito` (acto mostrado con progresión), que prevalece sobre la contención en ese tramo.
 
 ## Salida
 
@@ -40,4 +40,4 @@ El registro orienta al escritor; no dicta frases, longitud, detalle sensorial ni
 
 ## Libertad del escritor
 
-El guion no prescribe ritmo de frase, imágenes, monólogo, sensorialidad ni vocabulario. Esas decisiones pertenecen al escritor dentro de los hechos, acciones y registros pactados.
+El guion no prescribe ritmo de frase, imágenes, monólogo, sensorialidad ni vocabulario. Esas decisiones pertenecen al escritor dentro de los hechos, acciones y tonos pactados.

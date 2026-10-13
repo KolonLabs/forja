@@ -79,7 +79,7 @@ No modificar archivos
 | `mecanica-prosa` | al preparar contexto | director; reglas inline para escritor e integrador | Formato de prosa: dialogos, parrafos, lineas obligatorias y cursiva |
 | `beats-estructura` | automática | guionista, escritor (lectura) | Formato `B_NNNN` — acción. `[Tono — EXTENSIÓN]` |
 | `hechos-estructura` | automática | guionista | Formato `H_NNNN` — hecho narrativo |
-| `tonos-beat` | automática | guionista (asignar), escritor (ejecutar) | Catálogo de 15 tonos + reglas BREVE/MEDIA/EXTENSA |
+| `tonos-beat` | automática | guionista (asignar), auditor-beats y validador (comprobar); escritor e integrador la reciben inline del director | Catálogo común de 13 tonos + reglas BREVE/MEDIA/EXTENSA |
 | `estructura-narrativa` | automática | guionista | Jerarquía: actos → capítulos → escenas → beats |
 | `plantilla-guion` | automática | guionista | Estructura de archivos de guion |
 | `plantilla-ficha` | automática | entidades | Estructura FIJO/DINÁMICO para 10 tipos de entidad |

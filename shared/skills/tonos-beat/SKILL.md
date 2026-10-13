@@ -8,11 +8,18 @@ user-invocable: false
 
 ## Propósito
 
-Este skill define las características de escritura para cada tono individual de beat. Los tonos son independientes entre sí: el guión los asigna en combinaciones (`Hipnótico / Erótico`, `Explícito / Dominante`) y el escritor combina las características de cada uno al desarrollar el beat.
+Este skill define las características de escritura para cada tono individual de beat. Los tonos son independientes entre sí: el guión los asigna en combinaciones (`Hipnótico / Explícito`, `Explícito / Dominante`) y el escritor combina las características de cada uno al desarrollar el beat. El catálogo y el formato son los mismos en relato, novela simple y novela multi-hilo (ADR 0035).
 
 **Regla fundamental**: el tono orienta la expresión local dentro del estilo y las restricciones aprobadas. Puede modular ritmo, registro y foco, pero no altera hechos, conducta, conocimiento, consentimiento ni intensidad o explicitud fijados. No confirma sospechas, impone obediencia ni añade acciones para representar una etiqueta.
 
 El catálogo ofrece recursos de ejecución, no listas de elementos obligatorios. Sus focos sensoriales, gestos, silencios y metáforas son opciones con función, nunca cuotas. Los ejemplos son opcionales y ajenos al canon: no se trasladan sus personajes, frases ni acciones al guion. La literalidad ⚡ se rige por `mecanica-prosa`, no por el tono o la importancia de una réplica. Una frase ⚡ vigente incompatible se remite al director antes de generar; no se degrada a sugerencia.
+
+## Formato
+
+- **Todo beat** lleva al final de su acción `[Tono — EXTENSIÓN]`, con uno o dos tonos del catálogo separados por `/` y una extensión (`BREVE`, `MEDIA`, `EXTENSA`). Relato: `⬜ B_0007 — Ana abre el sobre. [Revelación — BREVE]`. Novela: `⬜ B_0007 · a1b2c3d4 [3] — Ana abre el sobre [Revelación — BREVE] [Ana] [Zona: despacho]`.
+- **Una sola instrucción tonal por tramo:** las escenas no declaran arco tonal; su recorrido es la secuencia de tonos de sus beats. El escritor recibe solo el tono de cada beat, dentro del marco de tono de la obra (`BRIEF.md`). El tono que una estructura de novela anota por capítulo o bloque orienta al guionista al planificar y no se pasa al escritor como instrucción.
+- **`[elipsis]`** no es un tono: marca un beat que salta deliberadamente un intervalo. Se añade a su etiqueta de tono (`[Clínico — BREVE] [elipsis]`) y el escritor lo resuelve con un corte, sin desarrollar lo omitido.
+- Un tono que el catálogo no tiene se propone a la persona usuaria y se añade aquí con su ficha; nunca se inventa en el guion.
 
 ---
 
@@ -161,6 +168,25 @@ siguió tirándole del hombro durante el último tramo de escalera.
 
 ---
 
+### Íntimo
+
+| Atributo | Valor |
+|----------|-------|
+| **Ritmo** | Cercano y pausado; el tiempo se dilata en lo que se comparte, sin detener el compromiso del beat |
+| **Registro** | Cercanía emocional o corporal desde el POV: ternura, complicidad, vulnerabilidad o deseo contenido, sin énfasis gráfico |
+| **Foco sensorial** | Proximidad: voz baja, piel, respiración, gestos pequeños, objetos compartidos; solo lo pertinente a la acción |
+| **Vocabulario** | Cálido y preciso, sin cursilería ni eufemismos que oculten lo que el beat establece |
+| **Diálogos** | Confidencias, frases a media voz o pausas con función; el intercambio comprometido se conserva completo |
+| **Atmósfera** | Resguardo y exposición a la vez; no añade actos ni los vuelve gráficos: si el beat exige detalle explícito, su tono es Explícito |
+
+**Ejemplo:**
+```
+Carlos le apartó el pelo de la cara antes de contestar. Ana no se movió;
+dejó que la mano se quedara un momento más en su mejilla.
+```
+
+---
+
 ### Dominante
 
 | Atributo | Valor |
@@ -177,6 +203,29 @@ siguió tirándole del hombro durante el último tramo de escalera.
 —Primero revisaremos el original —dijo Ana—. Después hablaremos de cerrarlo.
 
 —No sin la autorización —respondió Carlos.
+```
+
+---
+
+### Sumiso
+
+| Atributo | Valor |
+|----------|-------|
+| **Ritmo** | Atento a la espera y a la respuesta; la cadencia sigue la iniciativa ajena que el beat establece, sin apresurar ni aplazar su resultado |
+| **Registro** | Cesión del control vivida desde el POV que la acepta o la busca —entrega, expectativa, alivio o inquietud según el beat—, sin presentarla como anulación de la persona |
+| **Foco sensorial** | El propio cuerpo y su posición respecto al otro: exposición, quietud, contacto recibido, la voz que indica; solo lo pertinente a la acción |
+| **Vocabulario** | Obediencia, espera y entrega cuando describan la conducta aprobada, sin intensificarla ni rebajarla |
+| **Diálogos** | Respuestas, peticiones o silencios según el compromiso narrativo; ceder puede incluir pedir, negociar o poner límites |
+| **Atmósfera** | Peso de renunciar a decidir y de sus consecuencias; el tono no establece consentimiento ni su falta (se conserva tal como esté fijado) ni añade actos de sumisión para representar la etiqueta |
+
+Dominante y Sumiso orientan desde lados opuestos de la misma asimetría: el beat lleva el que corresponde a su POV, no ambos.
+
+**Ejemplo:**
+```
+—Firma aquí —dijo Carlos, y le acercó el expediente.
+
+Ana dejó que él marcara cada página con el dedo. Era más fácil no decidir
+el orden; bastaba con seguir su mano.
 ```
 
 ---
@@ -223,6 +272,26 @@ Ana miró la fecha del recibo. No sabía cuánto tardaría Carlos en volver.
 
 ---
 
+### Contemplativo
+
+| Atributo | Valor |
+|----------|-------|
+| **Ritmo** | Pausado, de respiración larga; la acción avanza sin prisa y admite demorarse en lo observado cuando tiene función |
+| **Registro** | Observación serena o melancólica desde el POV; la interioridad aflora en lo que se mira, sin explicar su sentido ni convertirla en reflexión abstracta |
+| **Foco sensorial** | Paisaje, luz, objetos y rutinas pertinentes al momento; un detalle concreto antes que una enumeración |
+| **Vocabulario** | Sencillo y preciso, con imágenes contenidas; sin lirismo decorativo ni sentencias que cuenten lo que el pasaje muestra |
+| **Diálogos** | Escasos o pausados cuando los hay, sin forzar silencios; el intercambio comprometido por el beat se conserva completo |
+| **Atmósfera** | Quietud aparente; no anula la tensión subyacente ni aplaza los resultados que el beat compromete |
+
+**Ejemplo:**
+```
+Ana dejó el expediente sobre la mesa y se quedó mirando el patio. La luz
+de la tarde subía por la pared de enfrente, ventana a ventana, como cada
+día a esa hora.
+```
+
+---
+
 ---
 
 ## Extensiones de beat
@@ -231,9 +300,11 @@ Cada beat lleva una extension que indica su peso narrativo relativo. El guionist
 
 | Extension | Aliento orientativo | Cuando usarla |
 |-----------|---------------------|---------------|
-| `BREVE` | Concentrado | Un cambio narrativo que admite tratamiento concentrado; no convierte cada gesto o replica en beat |
+| `BREVE` | Concentrado | Un cambio narrativo que admite tratamiento concentrado: se resuelve y sigue; no convierte cada gesto o replica en beat |
 | `MEDIA` | Desarrollo moderado | Un evento con contexto y reaccion |
-| `EXTENSA` | Desarrollo amplio | Puntos de giro y desarrollo emocional denso |
+| `EXTENSA` | Desarrollo amplio | Una accion que merece demorarse: larga o con fases (por ejemplo, un acto explicito), un punto de giro o un desarrollo emocional denso |
+
+La extensión mide cuánto se detiene la prosa en la acción del beat, no cuántas acciones contiene: `EXTENSA` se demora dentro de esa misma acción (tiempo, cuerpo, reacción) sin añadir acciones ni repetir las ya hechas, y `BREVE` no se infla. Significa lo mismo en relato, novela simple y novela multi-hilo (ADR 0035).
 
 **Regla de extension (ADR 0020):** no hay suelo ni techo literario numerico obligatorio. No recortes, fusiones frases ni anadas relleno para satisfacer conteos. Valora ritmo, cadencia, cobertura y proporcion dentro de la escena; senala dilucion narrativa con evidencia, no contra una cuota. No exige justificar cada desviacion. El presupuesto tecnico de completion del agente es independiente y comparte razonamiento y respuesta.
 
@@ -243,7 +314,7 @@ La extensión es para el escritor. El guionista solo asigna la etiqueta. El beat
 
 ## Reglas de combinación
 
-Cuando un beat tiene tono compuesto (`Hipnótico / Erótico`, `Explícito / Dominante`):
+Cuando un beat tiene tono compuesto (`Hipnótico / Explícito`, `Explícito / Dominante`):
 
 1. **El primer tono orienta ritmo y atmósfera**: no asigna una emoción o un estado mental al personaje por sí solo
 2. **El segundo tono matiza el registro**: orienta vocabulario y foco sin desplazar el compromiso narrativo ni las restricciones

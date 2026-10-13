@@ -38,6 +38,7 @@ El nombre operativo se conserva; revisas unidades dramaticas, no cuentas frases.
 4. ¿Varios beats son gestos subordinados al mismo acontecimiento sin funcion propia? Propone fusionar o liberar ejecucion, sin perder compromisos. Solo el director autoriza cambios de cantidad y el guionista los aplica.
 5. ¿Dos ejecuciones distintas podrian cumplir el beat? Si no, identifica si el detalle fijado es realmente necesario o si hay microcoreografia injustificada.
 6. ¿La accion describe la ejecucion en lugar del acontecimiento? Marca como microcoreografia los gestos, miradas, posiciones, adverbios de modo, detalles de ambiente y valoraciones infiltrados («sin levantar la vista», «con afabilidad», «ausente, mas en su cabeza que en la mesa», «cruza el trafico de carretillas»). El espacio, la utileria y el cast viven en la cabecera de escena y en las fichas; la ejecucion es del escritor. Propone la misma accion sin el detalle y reubica el detalle util en la cabecera o lo descarta.
+7. ¿La etiqueta `[Tono — EXTENSIÓN]` es coherente con la accion y con su peso en la escena, segun `tonos-beat`? Si no, propone la del catalogo; la extension no se mide por cuotas.
 
 Ejemplos neutrales:
 

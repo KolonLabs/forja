@@ -25,6 +25,9 @@ Referencias:
   etiqueta nueva y su stable_id, para que el modelo las revise en ese momento.
 - En archivos para el modelo (contexto, cola_d, fichas) se cita solo el stable_id.
 
+Tonos: cada beat lleva `[Tono — EXTENSIÓN]` (hasta dos tonos con `/`) del catálogo de la skill
+`tonos-beat` de la obra; los que se salen del catálogo se devuelven en `fuera_de_catalogo`.
+
 `--tabla` añade la tabla completa de etiquetas antiguas y nuevas. No modifica el
 marcador, el stable_id, el [seq] ni el texto del beat.
 """
@@ -45,6 +48,7 @@ ENCABEZADO = re.compile(r"^###[ \t]+(?P<etq>E_\d+)[ \t]+—[ \t]+.*$")
 PAREJA = re.compile(r"\b(?P<tipo>[BE])_\d+(?P<sep>[ \t]*·[ \t]*)(?P<id>[A-Za-z0-9](?:[A-Za-z0-9_]|-(?![BE]_\d))*)")
 INVERTIDA = re.compile(r"`?(?P<id>[A-Za-z0-9][A-Za-z0-9_-]*)`?[ \t]*[(\[](?P<tipo>[BE])_\d+[)\]]")
 SUELTA = re.compile(r"\b[BE]_\d+\b(?![ \t]*·)")
+ETIQUETA_TONO = re.compile(r"\[(?P<tonos>[^\[\]`]+?)[ \t]+\u2014[ \t]+(?P<ext>[A-Z\u00c1\u00c9\u00cd\u00d3\u00da]+)\]")
 FENCE = re.compile(r"^[ \t]*(`{3,}|~{3,})")
 SIN_REFERENCIAS = {".git", ".opencode", ".claude", "node_modules", "publicacion", "referencias", ".forja-transaccion", "docs"}
 DOCUMENTOS_PIPELINE = {"AGENTS.md", "CLAUDE.md", "GUIA.md", "PIPELINE.md", "ORQUESTACION.md"}
@@ -133,6 +137,49 @@ def etiquetar(texto, b, e, mapa=None, antes=None):
     return nl.join(salida), b, e
 
 
+def catalogo_tonos(root):
+    """(tonos, extensiones) de la skill tonos-beat de la obra, o None si no la tiene."""
+    skill = root / ".claude" / "skills" / "tonos-beat" / "SKILL.md"
+    if not skill.exists():
+        return None
+    tonos, extensiones, seccion = set(), set(), ""
+    for linea in skill.read_text(encoding="utf-8-sig").splitlines():
+        if linea.startswith("## "):
+            seccion = linea[3:].strip().lower()
+        elif seccion.startswith("cat") and linea.startswith("### "):
+            tonos.add(linea[4:].strip())
+        elif seccion.startswith("extensi"):
+            m = re.match(r"^\|\s*`([A-Z\u00c1\u00c9\u00cd\u00d3\u00da]+)`", linea)
+            if m:
+                extensiones.add(m.group(1))
+    return tonos, extensiones
+
+
+def revisar_tonos(path, texto, mapa, catalogo, root):
+    """Beats cuyo tono o extensión no están en el catálogo de tonos-beat."""
+    tonos, extensiones = catalogo
+    fuera = []
+    for n, linea in enumerate(texto.splitlines(), 1):
+        m = BEAT.match(linea)
+        if not m:
+            continue
+        motivos = []
+        etiqueta = ETIQUETA_TONO.search(m["resto"])
+        if not etiqueta:
+            motivos.append("sin [Tono \u2014 EXTENSI\u00d3N]")
+        else:
+            lista = [x.strip() for x in etiqueta["tonos"].split("/")]
+            if len(lista) > 2:
+                motivos.append(f"más de dos tonos ({' / '.join(lista)})")
+            motivos += [f"tono «{x}» fuera del catálogo" for x in lista if x not in tonos]
+            if etiqueta["ext"] not in extensiones:
+                motivos.append(f"extensión «{etiqueta['ext']}» fuera del catálogo")
+        for motivo in motivos:
+            fuera.append({"archivo": path.relative_to(root).as_posix(), "linea": n,
+                          "etiqueta": mapa.get(m["id"]), "stable_id": m["id"], "motivo": motivo})
+    return fuera
+
+
 def refrescar_parejas(texto, mapa, huerfanas, origen):
     def invertida(m):
         # «`a7d3f1c8` (B_0219)» o «a7d3f1c8 [B_0219]» con un stable_id conocido → pareja canónica.
@@ -194,6 +241,7 @@ def escribir(path, texto, bom):
 
 def run(root, simular, tabla=False):
     resultado = []
+    catalogo = catalogo_tonos(root)
     for nombre, guiones in ambitos(root):
         b = e = 1
         cambiados, mapa, antes, huerfanas, textos = [], {}, {}, [], {}
@@ -220,11 +268,15 @@ def run(root, simular, tabla=False):
                   "renumeradas": sum(len(v) for v in cambios.values()),
                   "nuevas": sum(1 for sid in mapa if sid not in antes),
                   "cambiados": cambiados, "parejas_huerfanas": huerfanas,
+                  "fuera_de_catalogo": [x for g in guiones for x in revisar_tonos(g, textos[g], mapa, catalogo, root)] if catalogo else [],
                   "referencias": buscar_referencias(root, nombre, cambios, textos) if cambios else []}
         if tabla:
             ambito["tabla"] = [{"antes": v, "ahora": n, "stable_id": s} for v, l in sorted(cambios.items()) for n, s in l]
         resultado.append(ambito)
     salida = {"estado": "simulado" if simular else "ok", "ambitos": resultado}
+    if any(a["fuera_de_catalogo"] for a in resultado):
+        salida["tonos"] = ("Hay beats con tono o extensión fuera del catálogo de tonos-beat: pide al guionista que "
+                           "use el catálogo, o consulta a la persona usuaria si hace falta un tono nuevo.")
     if any(a["referencias"] for a in resultado):
         salida["siguiente_paso"] = ("Revisa cada referencia ahora: en notas para revisión humana cámbiala por la pareja "
                                     "«ahora · stable_id»; en archivos para el modelo, por el stable_id; si cita otra obra "

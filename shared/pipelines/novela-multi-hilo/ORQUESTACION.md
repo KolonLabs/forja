@@ -88,7 +88,7 @@ No modificar archivos
 | `mecanica-prosa` | automática | escritor, integrador | Formato de prosa: guiones de diálogo, párrafos, ⚡, cursiva |
 | `beats-estructura` | automática | guionista, auditor-beats, escritor (lectura) | Formato de beat `stable_id [seq]` + `[Tono — EXTENSIÓN] [Personajes] [Zona] [Hilos]` |
 | `hechos-estructura` | automática | guionista | Formato de hecho narrativo con `stable_id [seq]` |
-| `tonos-beat` | automática | guionista (asignar), escritor (ejecutar) | Catálogo de 15 tonos + reglas BREVE/MEDIA/EXTENSA |
+| `tonos-beat` | automática | guionista (asignar), auditor-beats y validador (comprobar); escritor e integrador la reciben inline del director | Catálogo común de 13 tonos + reglas BREVE/MEDIA/EXTENSA |
 | `estructura-narrativa` | automática | guionista | Jerarquía: actos → capítulos → escenas → beats |
 | `plantilla-guion` | automática | guionista | Estructura de archivos de guion (simple y multi-hilo) |
 | `plantilla-ficha` | automática | entidades | Estructura FIJO/DINÁMICO para 10 tipos de entidad |
@@ -233,7 +233,7 @@ Tipo de capítulo: [exclusivo | puente | espejo]
 Contrato editorial: Obligatorio = acontecimientos/decisiones/consecuencias/restricciones y quién sabe o infiere; Libre = palabras, gestos, pausas y enlaces; Ejemplos = opciones, no canon.
 Guion de la escena COMPLETA: todos los beats con stable_id [seq] parent_id — acción — tono/extensión — hilo
 Fichas: [lista por stable_id], inline
-Voz/POV, mecánica de prosa y extensión orientativa: [reglas ya resueltas por el director, inline]
+Voz/POV, mecánica de prosa, fichas de tonos-beat de la escena y extensión orientativa: [reglas ya resueltas por el director, inline]
 Escena explícita: acto a acto con progresión y transiciones; reacción del POV; sensación concreta; prohibidas las sentencias que cuentan en lugar de mostrar.
 Briefing memoria: [~600 tokens, filtrado por los stable_id de hilo activos]
 Prosa de transición: [escena anterior de la misma lectura si existe]

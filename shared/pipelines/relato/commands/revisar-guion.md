@@ -7,7 +7,7 @@ agent: director
 
 En `diseno`, todavía no existe un guion canónico: lee `_actos.md`, `BRIEF.md` y `config.json`, informa de problemas de hechos y de contexto insuficiente para el diseño de beats, y dirige a `/generar`. Los hechos solo cambian con autorización.
 
-En `fichas`, lee además `guion.md`. Comprueba cobertura causal, atomicidad sin prosa, intercalado de patrones con beats de contraste, agrupación de `E_XXXX`, arcos tonales y `Salida`. Aplica autónomamente las reparaciones que respeten el brief mediante:
+En `fichas`, lee además `guion.md`. Comprueba cobertura causal, atomicidad sin prosa, intercalado de patrones con beats de contraste, agrupación de `E_XXXX`, tono y extensión de cada beat y `Salida`. Aplica autónomamente las reparaciones que respeten el brief mediante:
 
 ```powershell
 pwsh -NoProfile -File scripts/relato-transaccion.ps1 -Accion Preparar -Operacion guion

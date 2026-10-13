@@ -9,7 +9,7 @@ Esta guía responde **qué comando usar según tu objetivo**. Para el contrato d
 | Afinar hechos antes de escribir | `/refinar-hechos` | Un hecho es vago, demasiado amplio o no deja claro qué evolución debe hacerse visible. En `fichas` también se puede: el director revisa después los beats de ese hecho. | Para revisar el ritmo del guion ya creado. |
 | Comprobar que los hechos cuentan una historia coherente | `/validar-hechos` | Quieres detectar contradicciones, huecos, fugas de información o problemas de arco. | Para corregir prosa. |
 | Crear o continuar la obra | `/generar` | El workspace está en el flujo normal de diseño, componentes o escritura. En escritura confirma una escena y se detiene. | En una edición derivada con estado `correccion`. |
-| Revisar la estructura antes de escribir o cerrar | `/revisar-guion` | Hay dudas sobre beats, escenas operativas, ritmo, registros o salidas visibles. | Para cambiar solo la redacción de un beat. |
+| Revisar la estructura antes de escribir o cerrar | `/revisar-guion` | Hay dudas sobre beats, escenas operativas, ritmo, tonos o salidas visibles. | Para cambiar solo la redacción de un beat. |
 | Escribir todas las escenas pendientes de una vez | `/generar completo` | Has revisado las primeras escenas y quieres que el resto se escriba sin parar. Cada escena se valida y confirma por separado. | Si quieres revisar escena a escena. |
 | Corregir un fragmento concreto | `/revisar B_XXXX <instrucción>` | Conoces el beat que contiene el cambio. | Para una pasada integral de toda la obra. |
 | Añadir desarrollo a un fragmento sin cambiar su acción | `/expandir B_XXXX <enfoque>` | Falta detalle sensorial, emocional, físico o un monólogo. | Para alterar la estructura o el resultado del beat. |
@@ -43,9 +43,9 @@ H_XXXX (hechos) → B_XXXX (beats globales) → E_XXXX (escenas operativas) → 
 
 - `H_XXXX` se asigna al crear `_actos.md` y no cambia durante la generación.
 - Un `H_XXXX` puede fijar una secuencia causal o una pauta que deba hacerse visible. El guionista construye el mapa global e intercala sus beats representativos con rutina, relación y consecuencias ya respaldadas; no existen `[D]` ni `cola_d.md`.
-- `B_XXXX` es una acción causal completa, sin prosa ni cuota de longitud; puede llevar `[peso: breve|extenso]` si merece menos o más detenimiento que el resto de su escena. El guion indica qué ocurre; el escritor decide cómo, incluidas las palabras del diálogo. El rango de diseño es provisional; una vez persistido el guion, su identificador nunca se renumera.
+- `B_XXXX` es una acción causal completa, sin prosa ni cuota de longitud; lleva `[Tono — EXTENSIÓN]` del catálogo `tonos-beat` (uno o dos tonos y `BREVE`, `MEDIA` o `EXTENSA` según el detenimiento que merece dentro de su escena). El guion indica qué ocurre; el escritor decide cómo, incluidas las palabras del diálogo. El rango de diseño es provisional; una vez persistido el guion, su identificador nunca se renumera.
 - `E_XXXX` agrupa beats contiguos en una unidad dramática que se escribe en una sola generación. Una situación amplia puede incluir varias escenas operativas.
-- La escena define un arco tonal; un beat solo añade `[registro: ...]` cuando requiere un tratamiento distinto, por ejemplo explícito o visceral.
+- La escena no declara arco tonal: su recorrido es la secuencia de tonos de sus beats. `[elipsis]` marca aparte un beat que salta deliberadamente un intervalo.
 - `Salida: continua` mantiene la prosa sin corte visible; `Salida: separador` crea `---` en el manuscrito.
 
 El `relato-draft.md` conserva prosa continua por escena. Sus comentarios `<!-- B_XXXX -->` son anclas invisibles para localizar una corrección; no son secciones narrativas y desaparecen al publicar.

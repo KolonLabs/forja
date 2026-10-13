@@ -68,7 +68,7 @@ La escena se lee continua: los encabezados son trazabilidad, se conservan IDs/se
 4. Prosa de transicion y antecedentes necesarios (sin cuota fija de beats ni notas historicas irrelevantes).
 5. Paquete de capitulo preparado una vez: memoria de lo ocurrido, distinta de planes futuros; sin duplicar contenido en cada campo.
 6. Personajes, zonas y props declarados de la escena.
-7. Reglas de voz, POV, mecanica de prosa y extension orientativa ya resueltas por el director. En escenas explícitas, además, las reglas de detalle: acto a acto con progresión y transiciones, reacción del POV y sensación concreta; sin sentencias que cuentan en lugar de mostrar.
+7. Reglas de voz, POV, mecanica de prosa, fichas de `tonos-beat` de los tonos de la escena y extension orientativa ya resueltas por el director. En escenas explícitas, además, las reglas de detalle: acto a acto con progresión y transiciones, reacción del POV y sensación concreta; sin sentencias que cuentan en lugar de mostrar.
 8. Restricciones pertinentes del proyecto, inline. Escritor sin herramientas: no se le dan ordenes de leer archivos ni cargar skills.
 9. Contrato editorial comun inline: Obligatorio, Libre y Ejemplos opcionales; escena continua, distincion de conocimiento y libertad de ejecucion sin alterar canon.
 

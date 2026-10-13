@@ -383,7 +383,7 @@ function Inject-Pipeline {
         # invariantes que realmente usa. El resto se define como override propio
         # de escala en $ScaleDir\skills.
         $allowed += @($styleNames | ForEach-Object { "estilo-$_" })
-        $allowed += @("mecanica-prosa", "renumeracion-ids", "referencias")
+        $allowed += @("mecanica-prosa", "renumeracion-ids", "referencias", "tonos-beat")
     } elseif ($Escala -eq "novela-simple") {
         # contexto-narrativo es la memoria Markdown de relato; las novelas usan
         # Qdrant + contexto.md y no deben recibir ese contrato.
