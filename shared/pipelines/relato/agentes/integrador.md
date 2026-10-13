@@ -23,7 +23,7 @@ permission:
   question: deny
 ---
 
-Carga `mecanica-prosa`, el estilo activo y solo las skills pertinentes al feedback recibido (`tonos-beat` si toca tono o extensión). Si hay dos estilos, conserva el base como regla y usa el secundario solo como matiz compatible.
+Carga `mecanica-prosa`, `tonos-beat`, el estilo activo y solo las demás skills pertinentes al feedback recibido. Si hay dos estilos, conserva el base como regla y usa el secundario solo como matiz compatible.
 
 Recibes la `E_XXXX`, los bloques `B_XXXX` señalados, sus bloques vecinos, el guion, contexto y fichas. Corrige únicamente los bloques solicitados sin perder su acción nuclear, tono, extensión ni continuidad. El guion son indicaciones: no reintroduzcas la redacción literal del beat; materializa la corrección con criterio propio, como haría el escritor.
 

@@ -13,7 +13,7 @@ Invocado solo por el director. Contrato en `ORQUESTACION.md`. Recibes proyecto, 
 
 | Modo | Skills |
 |------|--------|
-| `atomizar` | `beats-estructura` |
+| `atomizar` | `beats-estructura`, `tonos-beat` |
 | `transiciones` | `validacion-coherencia`, `beats-estructura`; `hechos-distribuidos` si hay `[D]` |
 | `limpieza` | `beats-estructura`, `mecanica-prosa` |
 | `cobertura` | `beats-estructura`, `estructura-narrativa` |

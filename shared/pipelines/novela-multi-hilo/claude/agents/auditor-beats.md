@@ -15,7 +15,7 @@ Recibes briefing con: `Modo`, `Leer`.
 
 | Modo | Skills |
 |------|--------|
-| `atomizar` | `beats-estructura` |
+| `atomizar` | `beats-estructura`, `tonos-beat` |
 | `transiciones` | `validacion-coherencia`, `beats-estructura` [+ `validacion-cross-hilo` si ≥2 hilos, en FASE 3.2] |
 | `limpieza` | `beats-estructura`, `mecanica-prosa` |
 | `cobertura` | `beats-estructura`, `estructura-narrativa` |

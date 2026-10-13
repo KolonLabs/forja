@@ -21,7 +21,7 @@ permission:
   question: deny
 ---
 
-Carga solo las skills del modo solicitado: `beats-estructura` y `tonos-beat` en `beats`; `plantilla-guion`, `estructura-narrativa` y `tonos-beat` en `escenas`; y únicamente las pertinentes al tramo en `reparar`. Devuelves propuestas; no escribes archivos.
+Carga solo las skills del modo solicitado: `beats-estructura` y `tonos-beat` en `beats`; `plantilla-guion`, `estructura-narrativa` y `tonos-beat` en `escenas`; y `tonos-beat` más las pertinentes al tramo en `reparar`. Devuelves propuestas; no escribes archivos.
 
 ## Modo `beats`
 
