@@ -439,6 +439,39 @@ function Assert-CleanManuscript {
     }
 }
 
+function Assert-SeparadoresManuscrito {
+    # La salida de una escena describe cómo termina: `separador` pone un `---` tras
+    # ella (salvo la última) y `continua`, ninguno. El marcador ESCENA está al
+    # principio de la escena, así que sustituirlo por `---` adelantaría el corte una
+    # escena. Cada `---` debe preceder al primer párrafo de la escena que sigue.
+    param([object[]]$Escenas, [string]$DraftPath, [string]$ManuscriptPath)
+
+    $normalizar = { param([string]$Texto) $t = ([regex]::Replace($Texto, '\s+', ' ')).Trim(); if ($t.Length -gt 60) { $t.Substring(0, 60) } else { $t } }
+    $draft = Get-Content -LiteralPath $DraftPath -Raw -Encoding UTF8
+    $markers = [regex]::Matches($draft, '(?m)^<!--\s*ESCENA\s+(E_\d{4})\s*:[^\n]*-->[ \t]*\r?$')
+    $esperados = [System.Collections.Generic.List[object]]::new()
+    for ($index = 0; $index -lt $markers.Count - 1; $index++) {
+        if ($Escenas[$index].salida -ne "separador") { continue }
+        $start = $markers[$index + 1].Index + $markers[$index + 1].Length
+        $end = if ($index + 2 -lt $markers.Count) { $markers[$index + 2].Index } else { $draft.Length }
+        $primera = ((Get-NarrativeText -Text $draft.Substring($start, $end - $start)) -split '\r?\n', 2)[0]
+        $esperados.Add([pscustomobject]@{ Tras = $Escenas[$index].id; Antes = $markers[$index + 1].Groups[1].Value; Texto = (& $normalizar $primera) })
+    }
+
+    $manuscript = Get-Content -LiteralPath $ManuscriptPath -Raw -Encoding UTF8
+    $separadores = [regex]::Matches($manuscript, '(?m)^---[ \t]*\r?$')
+    if ($separadores.Count -ne $esperados.Count) {
+        throw "relato.md tiene $($separadores.Count) separadores '---'; la salida de las escenas pide $($esperados.Count): uno tras cada escena con 'salida: separador', salvo la última."
+    }
+    for ($index = 0; $index -lt $separadores.Count; $index++) {
+        $siguiente = [regex]::Match($manuscript.Substring($separadores[$index].Index + $separadores[$index].Length), '\S[^\r\n]*')
+        $esperado = $esperados[$index]
+        if (-not $siguiente.Success -or (& $normalizar $siguiente.Value) -ne $esperado.Texto) {
+            throw "El separador $($index + 1) de relato.md está mal colocado: debe ir tras $($esperado.Tras) (salida: separador), justo antes del primer párrafo de $($esperado.Antes)."
+        }
+    }
+}
+
 function Assert-AllBeatsClosed {
     param([string]$GuionPath)
 
@@ -503,6 +536,7 @@ function Assert-Stage {
             Assert-DraftContract -Escenas $escenas -DraftPath (Join-Path $NextRoot "relato-draft.md") -Completo
             Assert-AllBeatsClosed -GuionPath (Join-Path $NextRoot "guion.md")
             Assert-CleanManuscript -ManuscriptPath (Join-Path $NextRoot "relato.md")
+            Assert-SeparadoresManuscrito -Escenas $escenas -DraftPath (Join-Path $NextRoot "relato-draft.md") -ManuscriptPath (Join-Path $NextRoot "relato.md")
         }
     }
 }

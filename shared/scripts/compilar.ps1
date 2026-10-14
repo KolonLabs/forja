@@ -68,9 +68,13 @@ try {
     $artifacts = [ordered]@{
         markdown = [ordered]@{ archivo = "$slug.md"; sha256 = Get-FileSha256 $bookMarkdown }
     }
+    # Cubierta del EPUB: imagenes/portada.jpg|png de la obra, si existe.
+    $portada = Get-ImagenObra -WorkspaceRoot $WorkspaceRoot -Nombre "portada"
     if ($Epub) {
         $epubPath = Join-Path $stageDir "$slug.epub"
-        & (Join-Path $PSScriptRoot "build-epub.ps1") -InputMarkdown $bookMarkdown -OutputEpub $epubPath
+        $epubArgs = @{ InputMarkdown = $bookMarkdown; OutputEpub = $epubPath }
+        if ($portada) { $epubArgs.Portada = $portada.Ruta }
+        & (Join-Path $PSScriptRoot "build-epub.ps1") @epubArgs
         $artifacts.epub = [ordered]@{ archivo = "$slug.epub"; sha256 = Get-FileSha256 $epubPath }
     }
     if ($Pdf) {
@@ -94,6 +98,7 @@ try {
             commit = $git.commit
             sin_commit = $git.sin_commit
         }
+        portada = $(if ($Epub -and $portada) { [ordered]@{ archivo = $portada.Relativa; sha256 = Get-FileSha256 $portada.Ruta } } else { $null })
         artefactos = $artifacts
     }
     [System.IO.File]::WriteAllText((Join-Path $stageDir "manifest.json"), ($manifest | ConvertTo-Json -Depth 12), $utf8NoBom)
@@ -121,7 +126,11 @@ try {
     Write-Host ""
     Write-Host "=== Obra compilada: $outputDir ==="
     Write-Host "  Markdown:   $(Join-Path $outputDir "$slug.md")"
-    if ($Epub) { Write-Host "  EPUB:       $(Join-Path $outputDir "$slug.epub")" }
+    if ($Epub) {
+        Write-Host "  EPUB:       $(Join-Path $outputDir "$slug.epub")"
+        if ($portada) { Write-Host "  Portada:    $($portada.Relativa)" }
+        else { Write-Host "  Aviso:      EPUB sin portada; añade imagenes/portada.jpg (o .png) y vuelve a compilar." }
+    }
     if ($Pdf) { Write-Host "  PDF:        $(Join-Path $outputDir "$slug.pdf")" }
     Write-Host "  Manifiesto: $(Join-Path $outputDir "manifest.json")"
     Write-Host "  Estado:     publicado"

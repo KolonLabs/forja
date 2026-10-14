@@ -1,4 +1,4 @@
-# borrador-regression.ps1 — Borradores de revisión de relato y novela, de prosa y de guion (ADR 0028, 0036 y 0038).
+# borrador-regression.ps1 — Borradores de revisión de relato y novela, de prosa y de guion (ADR 0028, 0036, 0038 y 0040).
 [CmdletBinding()]
 param()
 
@@ -79,6 +79,7 @@ Vuelve a casa.
     Assert-True ($cuerpo -ceq "Ana abre la puerta.`nSale a la calle.`n`nLa calle está vacía.`n`n---`n`nVuelve a casa.") "relato: limpia anclas, une escenas y corta tras separador salvo al final"
     Assert-True ((Get-Campo $relatoMd "subtitle") -match "^Borrador del .* · escenas escritas: 3 de 4 · no es el texto final$") "relato: el subtítulo declara fecha y cobertura"
     Assert-True ((Get-Campo $relatoMd "title") -ceq "Relato de prueba (borrador)" -and (Get-Campo $relatoMd "author") -ceq "Amaro Alba" -and (Get-Campo $relatoMd "lang") -ceq "es") "relato: título con la marca, autor e idioma en el frontmatter"
+    Assert-True ((Get-Campo $relatoMd "identifier") -ceq "urn:uuid:ddd4803c-e85b-5cdb-971d-ec5131c4dead") "relato: identificador estable propio del borrador, distinto del libro"
     Assert-True ((Get-Content -Raw -LiteralPath $relatoMd) -notmatch "(?m)^#{1,2} (Relato de prueba|Amaro Alba)") "relato: título y autor no entran en el texto"
     Assert-True ((Get-Content -Raw -LiteralPath (Join-Path $relato "config.json") | ConvertFrom-Json).estado -eq "escritura") "relato: no cambia el estado"
     Assert-Throws { & (Join-Path $relato "scripts\borrador.ps1") -Capitulo 1 | Out-Null } "relato: rechaza un capítulo" "no tiene capítulos"
@@ -96,7 +97,7 @@ Vuelve a casa.
     Assert-True (($relatoBorradores -join ",") -eq "relato-prueba-borrador.epub,relato-prueba-borrador.md") "relato: con -Epub quedan el EPUB y su .md, sin manifest"
 
     # Novela: un capítulo, solo escenas completas; un hueco intermedio se señala.
-    $novela = New-Obra "novela" @{ slug = "novela-prueba"; titulo = "Novela de prueba"; tipo = "novela"; escala = "novela-multi-hilo"; estado = "escritura" }
+    $novela = New-Obra "novela" @{ slug = "novela-prueba"; titulo = "Novela de prueba"; subtitulo = "Primera parte"; tipo = "novela"; escala = "novela-multi-hilo"; estado = "escritura" }
     $cap1 = Join-Path $novela "capitulos\cap-01-inicio"
     Write-Utf8 -Path (Join-Path $cap1 "guion.md") -Content @"
 # Capítulo cap-01-inicio — El inicio
@@ -163,7 +164,7 @@ Esto no es prosa.
     Assert-True ($cuerpoNovela -notmatch "Prosa de una escena sin cerrar" -and $cuerpoNovela -notmatch "Candidata") "novela: no incluye escenas incompletas ni candidatas"
     $manifiesto = Get-Content -Raw -LiteralPath (Join-Path $capDir "novela-prueba-cap-01-borrador.manifest.json") | ConvertFrom-Json
     Assert-True ((@($manifiesto.alcance.escenas_incluidas) -join ",") -eq "aaaa1111,cccc3333" -and (@($manifiesto.alcance.escenas_pendientes_intermedias) -join ",") -eq "bbbb2222") "novela: el manifiesto registra el alcance"
-    Assert-True ((Get-Campo $capMd "subtitle") -match "Capítulo 1 — El inicio · escenas completas: 2 de 4") "novela: declara la cobertura"
+    Assert-True ((Get-Campo $capMd "subtitle") -match "^Primera parte · Borrador del .*Capítulo 1 — El inicio · escenas completas: 2 de 4") "novela: el subtítulo de la obra precede a la nota y la cobertura"
     Assert-Throws { & (Join-Path $novela "scripts\borrador.ps1") -Capitulo "cap-02" | Out-Null } "novela: rechaza un capítulo sin escenas completas" "no tiene escenas completas"
     Assert-Throws { & (Join-Path $novela "scripts\borrador.ps1") -Capitulo 7 | Out-Null } "novela: rechaza un capítulo inexistente" "no identifica"
     & (Join-Path $novela "scripts\borrador.ps1") -Capitulo 1 | Out-Null

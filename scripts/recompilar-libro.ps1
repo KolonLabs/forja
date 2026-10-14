@@ -1,4 +1,5 @@
 # recompilar-libro.ps1 -- Regenera formatos desde un libro ya publicado.
+# El EPUB usa la portada congelada en el libro; -Portada la sustituye (ADR 0040).
 
 param(
     [Parameter(Mandatory = $true)]
@@ -8,7 +9,8 @@ param(
     [ValidateSet("paperback", "paperback-5x8", "hardcover", "hardcover-9pt", "hardcover-6x9", "hardcover-6x9-9pt")]
     [string]$PdfFormat = "paperback",
     [ValidateSet("auto", "typst", "xelatex", "wkhtmltopdf")]
-    [string]$PdfEngine = "auto"
+    [string]$PdfEngine = "auto",
+    [string]$Portada
 )
 
 $ErrorActionPreference = "Stop"
@@ -36,6 +38,10 @@ Assert-KebabSlug $Libro
 if (-not $Epub -and -not $Pdf) {
     throw "Indica al menos una salida: -Epub y/o -Pdf."
 }
+if (-not [string]::IsNullOrWhiteSpace($Portada)) {
+    if (-not $Epub) { throw "Cambiar la portada exige regenerar el EPUB: añade -Epub." }
+    if (-not (Test-Path -LiteralPath $Portada -PathType Leaf)) { throw "No existe la imagen de portada: $Portada" }
+}
 
 $outputDir = Join-Path $PublicadosRoot $Libro
 $manifestPath = Join-Path $outputDir "manifest.json"
@@ -59,6 +65,13 @@ if (-not (Test-Path -LiteralPath $markdownPath -PathType Leaf)) {
 if (-not $manifest.artefactos.markdown.sha256 -or (Get-FileSha256 $markdownPath) -ne $manifest.artefactos.markdown.sha256) {
     throw "El Markdown congelado de '$Libro' no coincide con el hash del manifiesto. Crea una nueva edición; no recompiles una fuente modificada."
 }
+# La portada congelada también se comprueba, salvo que se vaya a sustituir.
+if ($manifest.portada -and [string]::IsNullOrWhiteSpace($Portada)) {
+    $portadaCongelada = Join-Path $outputDir $manifest.portada.archivo
+    if (-not (Test-Path -LiteralPath $portadaCongelada -PathType Leaf) -or (Get-FileSha256 $portadaCongelada) -ne $manifest.portada.sha256) {
+        throw "La portada de '$Libro' ($($manifest.portada.archivo)) falta o no coincide con el hash del manifiesto. Indica otra con -Portada."
+    }
+}
 
 $operationId = [guid]::NewGuid().ToString("N")
 $stageDir = Join-Path $PublicadosRoot ".${Libro}.recompilando-$operationId"
@@ -70,9 +83,18 @@ try {
     Get-ChildItem -LiteralPath $outputDir -Force | Copy-Item -Destination $stageDir -Recurse -Force
     $stageMarkdown = Join-Path $stageDir "$Libro.md"
 
+    $portadaLibro = $null
+    if (-not [string]::IsNullOrWhiteSpace($Portada)) {
+        $portadaLibro = Set-PortadaLibro -Origen $Portada -CarpetaLibro $stageDir
+        $manifest | Add-Member -NotePropertyName "portada" -NotePropertyValue ([ordered]@{ archivo = $portadaLibro.Archivo; sha256 = $portadaLibro.Sha256 }) -Force
+    } elseif ($manifest.portada) {
+        $portadaLibro = [pscustomobject]@{ Ruta = (Join-Path $stageDir $manifest.portada.archivo); Archivo = $manifest.portada.archivo }
+    }
     if ($Epub) {
         $epubPath = Join-Path $stageDir "$Libro.epub"
-        & (Join-Path $BuildScripts "build-epub.ps1") -InputMarkdown $stageMarkdown -OutputEpub $epubPath -Titulo $manifest.titulo -Autor $manifest.autor
+        $epubArgs = @{ InputMarkdown = $stageMarkdown; OutputEpub = $epubPath; Titulo = $manifest.titulo; Autor = $manifest.autor }
+        if ($portadaLibro) { $epubArgs.Portada = $portadaLibro.Ruta }
+        & (Join-Path $BuildScripts "build-epub.ps1") @epubArgs
         $manifest.artefactos | Add-Member -NotePropertyName "epub" -NotePropertyValue ([ordered]@{
             archivo = "$Libro.epub"
             sha256 = Get-FileSha256 $epubPath
@@ -124,6 +146,8 @@ try {
     Write-Host ""
     Write-Host "=== Libro recompilado: $outputDir ==="
     if ($Epub) { Write-Host "  EPUB: $(Join-Path $outputDir "$Libro.epub")" }
+    if ($Epub -and $portadaLibro) { Write-Host "  Portada: $(Join-Path $outputDir $portadaLibro.Archivo)" }
+    elseif ($Epub) { Write-Host "  Aviso: EPUB sin portada; añádela con --portada <imagen>." }
     if ($Pdf) { Write-Host "  PDF:  $(Join-Path $outputDir "$Libro.pdf")" }
 } finally {
     if (-not $completed -and (Test-Path -LiteralPath $stageDir)) {

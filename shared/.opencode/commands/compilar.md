@@ -41,7 +41,7 @@ pwsh -NoProfile -File scripts/compilar.ps1 [-Epub] [-Pdf] [-PdfFormat <formato>]
 
 ## Resultado
 
-- `publicacion/<slug>.md` y, si se pidieron, `<slug>.epub` y `<slug>.pdf`. El `.md` abre con un frontmatter YAML (`title`, `author`, `lang`, `date` y `subject`) que Pandoc usa para la portada y los metadatos; título y autor no forman parte del texto.
+- `publicacion/<slug>.md` y, si se pidieron, `<slug>.epub` y `<slug>.pdf`. El `.md` abre con un frontmatter YAML (`title`, `subtitle` si `config.json` tiene `subtitulo`, `author`, `lang`, `date`, `subject` e `identifier`, un identificador estable de la obra) que Pandoc usa para la portada y los metadatos; título y autor no forman parte del texto. Si existe `imagenes/portada.jpg` (o `.png`), es la cubierta del EPUB y el manifiesto registra su hash; si no, el EPUB sale sin cubierta y el script lo avisa, igual que si la portada mide menos de 1000 px de ancho (transmite el aviso). En el EPUB, cada `---` del texto se muestra como «\* \* \*» centrado.
 - `publicacion/manifest.json` con el hash del manuscrito y el commit de la obra.
 - `config.json.estado = "publicado"`, solo si todas las salidas se generaron. Lo escribe el script, nunca tú.
 

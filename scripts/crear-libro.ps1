@@ -1,5 +1,6 @@
 # crear-libro.ps1 -- Ensambla antologias de relatos finalizados (ADR 0026).
-# Una obra unica se compila dentro de la obra con /compilar.
+# Una obra unica se compila dentro de la obra con /compilar. -Portada (JPG o PNG)
+# queda congelada en el libro como cubierta del EPUB (ADR 0040).
 
 param(
     [Parameter(Mandatory = $true)]
@@ -13,7 +14,8 @@ param(
     [ValidateSet("paperback", "paperback-5x8", "hardcover", "hardcover-9pt", "hardcover-6x9", "hardcover-6x9-9pt")]
     [string]$PdfFormat = "paperback",
     [ValidateSet("auto", "typst", "xelatex", "wkhtmltopdf")]
-    [string]$PdfEngine = "auto"
+    [string]$PdfEngine = "auto",
+    [string]$Portada
 )
 
 $ErrorActionPreference = "Stop"
@@ -45,6 +47,9 @@ foreach ($source in $Fuentes) {
 }
 if (($Fuentes | Sort-Object -Unique).Count -ne $Fuentes.Count) {
     throw "No puedes incluir el mismo workspace mas de una vez."
+}
+if (-not [string]::IsNullOrWhiteSpace($Portada) -and -not (Test-Path -LiteralPath $Portada -PathType Leaf)) {
+    throw "No existe la imagen de portada: $Portada"
 }
 
 $sources = @()
@@ -113,6 +118,7 @@ try {
         lang = "es"
         date = (Get-Date).ToString("yyyy-MM-dd")
         subject = ($generos -join " · ")
+        identifier = New-IdentificadorObra "forja:libro:$Libro"
     })
     $content = [System.Text.StringBuilder]::new()
     $content.Append("$frontMatter`n`n") | Out-Null
@@ -124,8 +130,11 @@ try {
     }
     [System.IO.File]::WriteAllText($bookMarkdown, $content.ToString(), $utf8NoBom)
 
+    $portadaLibro = if (-not [string]::IsNullOrWhiteSpace($Portada)) { Set-PortadaLibro -Origen $Portada -CarpetaLibro $stageDir } else { $null }
     if ($Epub) {
-        & (Join-Path $BuildScripts "build-epub.ps1") -InputMarkdown $bookMarkdown -OutputEpub (Join-Path $stageDir "$Libro.epub") -Titulo $Titulo -Autor $Autor
+        $epubArgs = @{ InputMarkdown = $bookMarkdown; OutputEpub = (Join-Path $stageDir "$Libro.epub"); Titulo = $Titulo; Autor = $Autor }
+        if ($portadaLibro) { $epubArgs.Portada = $portadaLibro.Ruta }
+        & (Join-Path $BuildScripts "build-epub.ps1") @epubArgs
     }
     if ($Pdf) {
         & (Join-Path $BuildScripts "build-pdf.ps1") -InputMarkdown $bookMarkdown -OutputPdf (Join-Path $stageDir "$Libro.pdf") -Titulo $Titulo -Autor $Autor -PdfFormat $PdfFormat -PdfEngine $PdfEngine
@@ -172,6 +181,7 @@ try {
                 }
             }
         )
+        portada = $(if ($portadaLibro) { [ordered]@{ archivo = $portadaLibro.Archivo; sha256 = $portadaLibro.Sha256 } } else { $null })
         artefactos = $artifacts
         historial_formatos = @(
             [ordered]@{
@@ -220,6 +230,8 @@ try {
     Write-Host "=== Libro creado: $outputDir ==="
     Write-Host "  Markdown: $(Join-Path $outputDir "$Libro.md")"
     if ($Epub) { Write-Host "  EPUB:     $(Join-Path $outputDir "$Libro.epub")" }
+    if ($portadaLibro) { Write-Host "  Portada:  $(Join-Path $outputDir $portadaLibro.Archivo)" }
+    elseif ($Epub) { Write-Host "  Aviso:    EPUB sin portada; añádela con /recompilar-libro $Libro --epub --portada <imagen>." }
     if ($Pdf) { Write-Host "  PDF:      $(Join-Path $outputDir "$Libro.pdf")" }
     Write-Host "  Manifiesto: $(Join-Path $outputDir "manifest.json")"
 } catch {

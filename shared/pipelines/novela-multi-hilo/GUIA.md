@@ -13,7 +13,7 @@ Esta guía responde **qué comando usar según tu objetivo**. Para el contrato d
 | Corregir un fragmento concreto | `/revisar B_XXXX <instrucción>` | Conoces el beat que contiene el problema. | Para una pasada integral de toda la novela. |
 | Añadir desarrollo sin cambiar la acción | `/expandir B_XXXX <enfoque>` | Falta detalle sensorial, emocional o físico en un beat. | Para alterar la estructura o el resultado del beat. |
 | Generar el manuscrito limpio | `/publicar` | Todos los capítulos de la tabla de Trenzado están cerrados. | Para corregir prosa: primero usa `/revisar` o `/expandir`. |
-| Compilar el libro (EPUB/PDF) | `/compilar [--epub] [--pdf]` | El manuscrito está `finalizado`, o ya `publicado` y quieres regenerar formatos. | Para cambiar el texto: el manuscrito no se toca al compilar. |
+| Compilar el libro (EPUB/PDF) | `/compilar [--epub] [--pdf]` | El manuscrito está `finalizado`, o ya `publicado` y quieres regenerar formatos. La cubierta del EPUB es `imagenes/portada.jpg` (requisitos en `imagenes/LEEME.md`). | Para cambiar el texto: el manuscrito no se toca al compilar. |
 | Leer o revisar un capítulo en curso | `/borrador [cap-NN] [--epub] [--pdf]` | Quieres una versión limpia de un capítulo, completo o a medias, con solo sus escenas completas. Sin capítulo, usa el capítulo en curso. No cambia el estado. | Para publicar o para la novela entera: el borrador es siempre de un solo capítulo. |
 | Revisar el guion de un capítulo | `/borrador --guion [cap-NN] [--hilo <hilo>] [--anotado] [--epub] [--pdf]` | Quieres leer los beats como texto, con su etiqueta `B_NNNN` para comentarlos con el director, sin estados, `stable_id` ni marcas; `--anotado` añade tono, extensión, personajes y zona. Sin capítulo, el primero con beats pendientes. En multi-hilo, antes de ensamblar, indica el hilo. No cambia el estado. | Para cambiar el guion: usa `/revisar-guion`. |
 
@@ -112,7 +112,7 @@ python scripts/neo4j.py check
 
 ## Compilar el libro
 
-El libro se compila dentro de este workspace con `/compilar [--epub] [--pdf]`: deja el resultado en `publicacion/` y no modifica el manuscrito. El hub solo ensambla antologías de relatos. Las ediciones derivadas (`/nueva-edicion`) todavía no están disponibles para novelas.
+El libro se compila dentro de este workspace con `/compilar [--epub] [--pdf]`: deja el resultado en `publicacion/` y no modifica el manuscrito. La cubierta del EPUB es `imagenes/portada.jpg` (o `.png`; requisitos en `imagenes/LEEME.md`) y el subtítulo del libro, si lo tiene, `config.json.subtitulo`. El hub solo ensambla antologías de relatos. Las ediciones derivadas (`/nueva-edicion`) todavía no están disponibles para novelas.
 
 ## Antes de actuar
 

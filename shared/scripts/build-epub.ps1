@@ -2,13 +2,15 @@
 # metadatos salen del frontmatter YAML del Markdown (compilar.ps1, borrador.ps1,
 # crear-libro.ps1); -Titulo y -Autor solo los sobrescriben. Un Markdown sin
 # frontmatter, con la cabecera «# Título» + «## Autor» de antes, sigue siendo válido.
+# -Portada es la imagen de cubierta del EPUB (imagenes/portada.jpg de la obra).
 param(
     [Parameter(Mandatory = $true)]
     [string]$InputMarkdown,
     [Parameter(Mandatory = $true)]
     [string]$OutputEpub,
     [string]$Titulo,
-    [string]$Autor
+    [string]$Autor,
+    [string]$Portada
 )
 
 $ErrorActionPreference = "Stop"
@@ -49,6 +51,12 @@ $OutputEpub = [System.IO.Path]::GetFullPath($OutputEpub)
 $libro = Read-MarkdownLibro $InputMarkdown
 $cuerpo = $libro.Cuerpo
 
+# Cambio de escena: cada `---` del texto (párrafo propio) pasa a «* * *» centrado,
+# como en el PDF; la línea fina de <hr> apenas se ve en un lector, y en modo
+# oscuro desaparece. Estilo y sangría del párrafo siguiente: .separador en build.css.
+$separador = "::: {.separador role=`"separator`"}`n\* \* \*`n:::"
+$cuerpo = [regex]::Replace($cuerpo, '(?<=\A|\n[ \t]*\r?\n)---[ \t]*(?=\r?\n[ \t]*\r?\n|\s*\z)', $separador.Replace('$', '$$'))
+
 # Pandoc abre cada capítulo del EPUB con un encabezado de nivel 1; si el texto no
 # empieza con uno (un relato), inserta el título de la obra como encabezado visible
 # justo después de la portada. Se pone uno propio con el título, oculto por la
@@ -74,6 +82,19 @@ try {
         "-o", $OutputEpub
     )
     if (Test-LibroConCapitulos $libro.Cuerpo) { $arguments += "--toc", "--toc-depth=1" }
+    if (-not [string]::IsNullOrWhiteSpace($Portada)) {
+        if (-not (Test-Path -LiteralPath $Portada -PathType Leaf)) {
+            throw "build-epub: no existe la imagen de portada: $Portada"
+        }
+        $arguments += "--epub-cover-image", (Resolve-Path -LiteralPath $Portada).Path
+        # Las tiendas rechazan cubiertas pequeñas (imagenes/LEEME.md): se avisa, no se impide.
+        $dimensiones = Get-DimensionesImagen $Portada
+        if (-not $dimensiones) {
+            Write-Host "Aviso: la portada no es un PNG o JPEG reconocible: $Portada"
+        } elseif ($dimensiones.Ancho -lt 1000) {
+            Write-Host "Aviso: la portada mide $($dimensiones.Ancho) × $($dimensiones.Alto) px; algunas tiendas rechazan menos de 1000 px de ancho (recomendado 1600 × 2560)."
+        }
+    }
     $arguments += @(Get-MetadatosPandoc -Libro $libro -Titulo $Titulo -Autor $Autor)
     $cssPath = Join-Path $PSScriptRoot "build.css"
     if (Test-Path -LiteralPath $cssPath -PathType Leaf) {

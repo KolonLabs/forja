@@ -235,6 +235,30 @@ En la calle descubre que la cita era una trampa y cambia de rumbo.
     Write-Config -Workspace (Join-Path $workspace ".forja-transaccion\siguiente") -Estado "escritura"
     & $helper -Accion Confirmar | Out-Null
 
+    # Separadores (ADR 0040): en una copia aislada, E_0001 termina con `salida: separador`.
+    # El corte va tras E_0001, antes del primer párrafo de E_0002; sustituir el marcador
+    # de E_0001 por `---` lo adelantaría una escena.
+    $separadores = Join-Path $RunRoot "separadores"
+    Copy-Item -LiteralPath $workspace -Destination $separadores -Recurse
+    $helperSeparadores = Join-Path $separadores "scripts\relato-transaccion.ps1"
+    Write-Utf8 -Path (Join-Path $separadores "guion.md") -Content ([regex]::new('- Salida: continua').Replace($guionCerrado, '- Salida: separador', 1))
+    $draftSeparadores = Join-Path $separadores "relato-draft.md"
+    Write-Utf8 -Path $draftSeparadores -Content ((Get-Content -Raw -LiteralPath $draftSeparadores).Replace("E_0001: Inicio | salida: continua", "E_0001: Inicio | salida: separador"))
+    & $helperSeparadores -Accion Preparar -Operacion publicar | Out-Null
+    $manuscritoSeparadores = Join-Path $separadores ".forja-transaccion\siguiente\relato.md"
+    Write-Config -Workspace (Join-Path $separadores ".forja-transaccion\siguiente") -Estado "finalizado"
+    $parrafoUno = "Ana recibe la llamada y el sonido le rompe la rutina.`n`nGuarda las llaves en el bolsillo y sale antes de poder arrepentirse."
+    $parrafoDos = "En la calle descubre que la cita era una trampa y cambia de rumbo."
+    Write-Utf8 -Path $manuscritoSeparadores "# Fixture de relato`n`n---`n`n$parrafoUno`n`n$parrafoDos`n"
+    Assert-Throws { & $helperSeparadores -Accion Confirmar } "publicar rechaza el separador adelantado una escena"
+    Write-Utf8 -Path $manuscritoSeparadores "# Fixture de relato`n`n$parrafoUno`n`n$parrafoDos`n"
+    Assert-Throws { & $helperSeparadores -Accion Confirmar } "publicar rechaza que falte el separador"
+    Write-Utf8 -Path $manuscritoSeparadores "# Fixture de relato`n`n$parrafoUno`n`n---`n`n$parrafoDos`n`n---`n"
+    Assert-Throws { & $helperSeparadores -Accion Confirmar } "publicar rechaza un separador de más tras la última escena"
+    Write-Utf8 -Path $manuscritoSeparadores "# Fixture de relato`n`n$parrafoUno`n`n---`n`n$parrafoDos`n"
+    & $helperSeparadores -Accion Confirmar | Out-Null
+    Assert-Equal "finalizado" ((Get-Content -Raw -LiteralPath (Join-Path $separadores "config.json") | ConvertFrom-Json).estado) "publicar acepta el separador tras la escena con salida separador"
+
     & $helper -Accion Preparar -Operacion publicar | Out-Null
     Write-Utf8 -Path (Join-Path $workspace ".forja-transaccion\siguiente\relato.md") "# Fixture de relato`n"
     Write-Config -Workspace (Join-Path $workspace ".forja-transaccion\siguiente") -Estado "finalizado"
@@ -290,6 +314,7 @@ Ana recibe una llamada y decide salir. En la calle descubre la trampa y cambia d
     foreach ($tool in @("compilar.ps1", "borrador.ps1", "publicacion-comun.ps1", "build-epub.ps1", "build-pdf.ps1", "build.css", "templates\forja-kdp.typ")) {
         Assert-True (Test-Path -LiteralPath (Join-Path $injected "scripts\$tool")) "inyección incluye scripts\$tool"
     }
+    Assert-True (Test-Path -LiteralPath (Join-Path $injected "imagenes\LEEME.md")) "inyección incluye la guía de imagenes/ (ADR 0040)"
     Assert-True (Test-Path -LiteralPath (Join-Path $injected ".opencode\commands\compilar.md")) "inyección incluye /compilar en opencode"
     Assert-True (Test-Path -LiteralPath (Join-Path $injected ".claude\commands\compilar.md")) "inyección incluye /compilar en Claude Code"
     Inject-Pipeline -TargetDir $injected -Escala "relato" -EstiloBase "contemporaneo"

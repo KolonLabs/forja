@@ -32,6 +32,9 @@ html, body {
 .title { font-size: 1.8em; font-weight: 700; margin-bottom: 0.4em; }
 .subtitle { font-size: 0.95em; font-style: italic; color: #444; text-indent: 0; margin-bottom: 0.8em; }
 .author { font-size: 1em; color: #444; margin-bottom: 1em; }
+.titlepage p { text-indent: 0; }
+/* La fecha es de compilación: queda en los metadatos, no en la portada. */
+.titlepage .date { display: none; }
 
 /* Capitulos */
 h1 {
@@ -90,6 +93,18 @@ hr {
   border-top: 1px solid #e6e6e6;
   margin: 1.0em 0;
 }
+
+/* Cambio de escena: build-epub.ps1 convierte cada `---` del texto en
+   «* * *» centrado (como el PDF), visible también en modo oscuro. */
+.separador p {
+  text-align: center;
+  text-indent: 0;
+  letter-spacing: 0.3em;
+  margin: 1.2em 0;
+}
+
+/* Sin sangría en el primer párrafo de un capítulo o tras un cambio de escena. */
+h1 + p, h2 + p, .separador + p { text-indent: 0; }
 
 /* Tablas simples */
 table {

@@ -15,7 +15,7 @@ Esta guía responde **qué comando usar según tu objetivo**. Para el contrato d
 | Añadir desarrollo a un fragmento sin cambiar su acción | `/expandir B_XXXX <enfoque>` | Falta detalle sensorial, emocional, físico o un monólogo. | Para alterar la estructura o el resultado del beat. |
 | Corregir estructura o una pasada completa | `/corregir [alcance] <instrucción>` | En `escritura` o en una edición derivada con estado `correccion`. | En el workspace publicado original o en novelas por ahora. |
 | Generar el manuscrito limpio | `/publicar` | Todos los beats están cerrados o has terminado una edición derivada. | Para corregir prosa: primero revisa o corrige el draft. |
-| Compilar el libro (EPUB/PDF) | `/compilar [--epub] [--pdf]` | El manuscrito está `finalizado`, o ya `publicado` y quieres regenerar formatos. | Para cambiar el texto: el manuscrito no se toca al compilar. |
+| Compilar el libro (EPUB/PDF) | `/compilar [--epub] [--pdf]` | El manuscrito está `finalizado`, o ya `publicado` y quieres regenerar formatos. La cubierta del EPUB es `imagenes/portada.jpg` (requisitos en `imagenes/LEEME.md`). | Para cambiar el texto: el manuscrito no se toca al compilar. |
 | Leer o revisar lo escrito hasta ahora | `/borrador [--epub] [--pdf]` | Quieres una versión limpia de la prosa confirmada, sin anclas ni marcadores, para leerla o compartirla. No cambia el estado. | Para publicar: el borrador no es el libro. |
 | Revisar el guion con calma | `/borrador --guion [--anotado] [--epub] [--pdf]` | Quieres leer los beats como texto, con su etiqueta `B_XXXX` para comentarlos, sin estados ni marcas; `--anotado` añade tono, extensión y datos de escena. No cambia el estado. | Para cambiar el guion: usa `/revisar-guion` o `/corregir estructura`. |
 

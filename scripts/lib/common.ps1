@@ -41,6 +41,29 @@ function Get-PublicadosRoot {
     return Resolve-ForjaRoot -Hub $Hub -Variable "FORJA_PUBLICADOS" -Default "Publicados"
 }
 
+function Set-PortadaLibro {
+    # Congela la portada de una antología en la carpeta del libro como
+    # portada.<ext> (ADR 0040): el manifiesto guarda su hash y recompilar-libro la
+    # reutiliza. Sustituye una portada anterior, aunque tenga otra extensión.
+    param([string]$Origen, [string]$CarpetaLibro)
+
+    if (-not (Test-Path -LiteralPath $Origen -PathType Leaf)) {
+        throw "No existe la imagen de portada: $Origen"
+    }
+    $ext = [System.IO.Path]::GetExtension($Origen).TrimStart(".").ToLowerInvariant()
+    if ($ext -notin @("jpg", "jpeg", "png")) {
+        throw "La portada debe ser JPG o PNG: $Origen"
+    }
+    Get-ChildItem -LiteralPath $CarpetaLibro -File -Filter "portada.*" | Remove-Item -Force
+    $destino = Join-Path $CarpetaLibro "portada.$ext"
+    Copy-Item -LiteralPath $Origen -Destination $destino -Force
+    return [pscustomobject]@{
+        Ruta = $destino
+        Archivo = "portada.$ext"
+        Sha256 = (Get-FileHash -LiteralPath $destino -Algorithm SHA256).Hash.ToLowerInvariant()
+    }
+}
+
 function Initialize-ObraGit {
     # Cada obra es su propio repositorio local. No se hace ningún commit: los
     # puntos de restauración los decide la persona usuaria.
@@ -348,6 +371,15 @@ function Inject-Pipeline {
     }
     if (Test-Path -LiteralPath $userGuide -PathType Leaf) {
         Copy-Item -LiteralPath $userGuide -Destination (Join-Path $TargetDir "GUIA.md") -Force
+    }
+
+    # 6b. imagenes/: la guía de las imágenes de publicación (portada del EPUB;
+    # ADR 0040). Solo se escribe el LEEME; las imágenes son de la obra y no se tocan.
+    $imagenesGuide = Join-Path $SharedDir "imagenes\LEEME.md"
+    if (Test-Path -LiteralPath $imagenesGuide -PathType Leaf) {
+        $targetImagenes = Join-Path $TargetDir "imagenes"
+        New-Item -ItemType Directory -Force -Path $targetImagenes | Out-Null
+        Copy-Item -LiteralPath $imagenesGuide -Destination (Join-Path $targetImagenes "LEEME.md") -Force
     }
 
     # 7. Skills filtrados por escala

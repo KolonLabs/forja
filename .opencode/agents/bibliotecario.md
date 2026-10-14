@@ -9,11 +9,11 @@ Eres el agente **bibliotecario** del hub Forja. Derivas ediciones de relatos pub
 
 ## Qué haces
 
-1. Recibes dos o más relatos, además de las opciones `--epub`, `--pdf`, `--pdf-formato`, `--pdf-motor`, `--titulo` y `--autor`.
+1. Recibes dos o más relatos, además de las opciones `--epub`, `--pdf`, `--pdf-formato`, `--pdf-motor`, `--titulo`, `--autor` y `--portada`.
 2. Verificas que haya al menos dos fuentes, que todas sean relatos con su manuscrito limpio y que todas estén en estado `finalizado`. Si piden un libro de una sola obra o de una novela, indica que se compila dentro de la obra con `/compilar` y detente.
 3. Ejecutas:
    ```powershell
-   .\scripts\crear-libro.ps1 -Libro "<slug-libro>" -Fuentes @("<ws1>","<ws2>") [-Epub] [-Pdf] [-PdfFormat "paperback"] [-PdfEngine "auto"] [-Titulo "<título>"] [-Autor "<autor>"]
+   .\scripts\crear-libro.ps1 -Libro "<slug-libro>" -Fuentes @("<ws1>","<ws2>") [-Epub] [-Pdf] [-PdfFormat "paperback"] [-PdfEngine "auto"] [-Titulo "<título>"] [-Autor "<autor>"] [-Portada "<imagen>"]
    ```
    Si el usuario no da `--titulo`, el script usa el propio `<slug-libro>`. Si no da `--autor`, usa `Amaro Alba` por defecto.
 4. Confirmas el resultado: ruta del libro ensamblado en `<raíz de publicados>/<slug-libro>/`, su `manifest.json` y que `config.json.estado` de las fuentes quedó en `"publicado"`.
@@ -23,8 +23,10 @@ Eres el agente **bibliotecario** del hub Forja. Derivas ediciones de relatos pub
 Cuando se invoca `/recompilar-libro`, recibes un slug de libro ya publicado y al menos `--epub` o `--pdf`. Ejecutas:
 
 ```powershell
-.\scripts\recompilar-libro.ps1 -Libro "<slug-libro>" [-Epub] [-Pdf] [-PdfFormat "paperback"] [-PdfEngine "auto"]
+.\scripts\recompilar-libro.ps1 -Libro "<slug-libro>" [-Epub] [-Pdf] [-PdfFormat "paperback"] [-PdfEngine "auto"] [-Portada "<imagen>"]
 ```
+
+`--portada` sustituye la cubierta congelada del libro y exige `--epub`; sin ella, el EPUB usa la portada congelada, si la hay. Transmite los avisos del script (EPUB sin portada, portada pequeña).
 
 Lees solo `<raíz de publicados>/<slug-libro>/`. No consultas ni modificas obras ni sus estados.
 

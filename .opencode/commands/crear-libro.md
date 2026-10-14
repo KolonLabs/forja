@@ -18,7 +18,7 @@ Interpreta esos argumentos antes de actuar. El primer valor es el slug del libro
 ## Sintaxis
 
 ```
-/crear-libro <slug-libro> <relato1> <relato2> [relato3 ...] [--epub] [--pdf] [--pdf-formato <formato>] [--pdf-motor <motor>] [--titulo "<título>"] [--autor "<autor>"]
+/crear-libro <slug-libro> <relato1> <relato2> [relato3 ...] [--epub] [--pdf] [--pdf-formato <formato>] [--pdf-motor <motor>] [--titulo "<título>"] [--autor "<autor>"] [--portada "<imagen>"]
 ```
 
 | Parámetro | Descripción | Default |
@@ -29,6 +29,7 @@ Interpreta esos argumentos antes de actuar. El primer valor es el slug del libro
 | `--pdf-motor` | `auto`, `typst`, `xelatex`, `wkhtmltopdf` | `auto` |
 | `--titulo` | Título mostrado en la portada/metadatos | El propio `<slug-libro>` |
 | `--autor` | Nombre de autor en la portada/metadatos | `Amaro Alba` |
+| `--portada` | Imagen JPG o PNG de cubierta del EPUB; queda congelada en el libro como `portada.<ext>` (requisitos: 1600 × 2560 px recomendado, al menos 1000 px de ancho) | Sin cubierta |
 
 ## Ejemplo
 
@@ -39,10 +40,10 @@ Interpreta esos argumentos antes de actuar. El primer valor es el slug del libro
 ## Qué hace
 
 1. Lee `relato.md` de cada relato fuente
-2. Ensambla el contenido en `<raíz de publicados>/<slug-libro>/<slug-libro>.md`, que abre con un frontmatter YAML (`title`, `author`, `lang`, `date` y `subject`) para la portada y los metadatos; cada relato es un capítulo con su propio título
+2. Ensambla el contenido en `<raíz de publicados>/<slug-libro>/<slug-libro>.md`, que abre con un frontmatter YAML (`title`, `author`, `lang`, `date`, `subject` e `identifier`, estable para el libro) para la portada y los metadatos; cada relato es un capítulo con su propio título
 3. Opcionalmente compila EPUB con `--epub` y/o PDF con `--pdf`
 4. Rechaza menos de dos fuentes, novelas y fuentes repetidas
-5. Escribe `manifest.json` con fuentes congeladas, hashes y formatos generados
+5. Escribe `manifest.json` con fuentes congeladas, portada, hashes y formatos generados
 6. Solo si todas las salidas solicitadas terminan correctamente, marca `config.json.estado = "publicado"` en los relatos fuente
 
 ## Requisitos
@@ -56,5 +57,5 @@ Interpreta esos argumentos antes de actuar. El primer valor es el slug del libro
 
 El comando ejecuta:
 ```powershell
-.\scripts\crear-libro.ps1 -Libro "<slug>" -Fuentes @("<relato1>","<relato2>") [-Epub] [-Pdf] [-PdfFormat "paperback"] [-PdfEngine "auto"] [-Titulo "<título>"] [-Autor "<autor>"]
+.\scripts\crear-libro.ps1 -Libro "<slug>" -Fuentes @("<relato1>","<relato2>") [-Epub] [-Pdf] [-PdfFormat "paperback"] [-PdfEngine "auto"] [-Titulo "<título>"] [-Autor "<autor>"] [-Portada "<imagen>"]
 ```

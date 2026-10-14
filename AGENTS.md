@@ -109,11 +109,11 @@ Ejecuta `scripts/compilar.ps1`, determinista: lee el manuscrito limpio y escribe
 
 **Desde el hub, solo antologías:**
 ```
-/crear-libro <slug-libro> <relato1> <relato2> [relato3...] [--epub] [--pdf] [--pdf-formato <formato>] [--pdf-motor <motor>] [--titulo "<título>"] [--autor "<autor>"]
+/crear-libro <slug-libro> <relato1> <relato2> [relato3...] [--epub] [--pdf] [--pdf-formato <formato>] [--pdf-motor <motor>] [--titulo "<título>"] [--autor "<autor>"] [--portada "<imagen>"]
 ```
 Lo ejecuta el agente **bibliotecario**: lee dos o más relatos en estado `finalizado`, los ensambla en `<raíz de publicados>/<libro>/` y, cuando todas las salidas solicitadas terminan correctamente, actualiza las fuentes a `publicado`.
 
-Para añadir o regenerar EPUB/PDF de una antología se usa `/recompilar-libro <slug-libro> [--epub] [--pdf] [--pdf-formato <formato>] [--pdf-motor <motor>]`. Opera solo sobre el Markdown y `manifest.json` congelados del libro; no modifica obras.
+Para añadir o regenerar EPUB/PDF de una antología se usa `/recompilar-libro <slug-libro> [--epub] [--pdf] [--pdf-formato <formato>] [--pdf-motor <motor>] [--portada "<imagen>"]`. Opera solo sobre el Markdown y `manifest.json` congelados del libro; no modifica obras.
 
 Si cambia el contenido de un relato publicado, se usa `/nueva-edicion <workspace-publicado> <slug-edicion> [--titulo "..."] [--motivo "..."]`. Crea un workspace derivado en estado `correccion`, con `relato-edicion-anterior.md` como referencia inmutable. Tras `/corregir` y `/publicar`, la edición queda `finalizado` y se compila con un slug de libro nuevo. Este flujo no está disponible todavía para novelas.
 
@@ -146,6 +146,7 @@ Para recuperar ideas desde notas, escaletas o guiones libres se usa `/importar-p
 | `shared/.opencode/agents/`, `shared/.claude/agents/` | 2 agentes fijos (memoria, cronista), uno por entorno; solo se inyectan en novelas |
 | `shared/scripts/` | Utilidades que se copian a `scripts/` en todas las escalas: `renumerar.ps1` (renumera definiciones `H_`/`E_`/`B_` y devuelve la tabla viejo → nuevo; la skill `renumeracion-ids` guía al LLM en la revisión de referencias) y la compilación de la obra (`compilar.ps1`, `borrador.ps1`, `publicacion-comun.ps1`, `build-epub.ps1`, `build-pdf.ps1`, `build.css`, `templates/forja-kdp.typ`), que el hub también usa para las antologías, la lectura de secretos (`secretos.ps1`, `secretos.py`; ADR 0029) y la validación de `referencias/` (`validar-referencias.py`; ADR 0032) |
 | `shared/GUIA.md` | Guía de decisión por defecto (relato). Si la escala define `shared/pipelines/<escala>/GUIA.md`, prevalece esa |
+| `shared/imagenes/LEEME.md` | Guía de `imagenes/` de la obra (portada del EPUB y sus requisitos; ADR 0040); se inyecta en todas las escalas |
 | `shared/.opencode/commands/`, `shared/.claude/commands/` | 10 comandos por entorno: generar, revisar, expandir, corregir, publicar, compilar, borrador, refinar-hechos, revisar-guion, validar-hechos. `corregir` solo se inyecta en relato |
 | `shared/pipelines/<escala>/` | Agentes (`agentes/`), skills, scripts y overrides de comandos propios de escala + `PIPELINE.md` + `ORQUESTACION.md` |
 | `shared/pipelines/<escala>/claude/` | Capa Claude Code de la escala: `agents/`, `commands/`, `settings.json` y `CLAUDE.md` |

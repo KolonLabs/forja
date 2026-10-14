@@ -67,7 +67,7 @@ Por cada `E_XXXX`, en orden:
 
 1. Verifica que cada `E_XXXX` del guion tenga un único marcador de draft, en el mismo orden y con la misma `Salida`; cada marcador debe contener exactamente sus `B_XXXX`, una vez y en orden. Rechaza escenas, anclas o beats huérfanos.
 2. Prepara una transacción `publicar`, genera en su staging `relato.md` con el título de `config.json` y deja `config.json.estado = "finalizado"`.
-3. Elimina anclas `B_XXXX` y marcadores de escena. Convierte en `---` solo los marcadores con `salida: separador`; los de `continua` se eliminan sin corte visible. Confirma la transacción; el helper rechaza IDs de control, separadores duplicados, título sin prosa y manuscrito vacío.
+3. Elimina anclas `B_XXXX` y marcadores de escena. La salida describe cómo termina cada escena: tras cada escena con `salida: separador`, salvo la última, va un `---` antes del primer párrafo de la siguiente; las de `continua` enlazan sin corte visible. Confirma la transacción; el helper rechaza IDs de control, separadores duplicados, que falten o estén fuera de sitio, título sin prosa y manuscrito vacío.
 
 **Transición:** `estado = finalizado`. `/compilar` asigna `publicado` tras compilar.
 

@@ -453,7 +453,11 @@ $marca = if ($Guion) { "guion, borrador" } else { "borrador" }
 $tituloBorrador = if ($borrador.Rotulo) { "$Titulo · $($borrador.Rotulo) ($marca)" } else { "$Titulo ($marca)" }
 $metadatos = Get-ObraMetadatos -Config $config -Titulo $tituloBorrador -Autor $Autor
 $tipoBorrador = if ($Guion) { "Guion en borrador" } else { "Borrador" }
-$metadatos.subtitle = "$tipoBorrador del $fecha · $($borrador.Cobertura) · no es el texto final"
+# El subtítulo de la obra (config.json.subtitulo), si lo hay, va delante de la nota.
+$notaBorrador = "$tipoBorrador del $fecha · $($borrador.Cobertura) · no es el texto final"
+$metadatos.subtitle = if ([string]::IsNullOrWhiteSpace($metadatos.subtitle)) { $notaBorrador } else { "$($metadatos.subtitle) · $notaBorrador" }
+# Identificador propio de cada borrador (estable por alcance), distinto del libro.
+$metadatos.identifier = New-IdentificadorObra "forja:borrador:$($borrador.Base)"
 $markdown = "$(New-FrontMatter $metadatos)`n`n"
 if ($borrador.Encabezado) { $markdown += "$($borrador.Encabezado)`n`n" }
 $markdown += "$($borrador.Cuerpo)`n"
@@ -471,9 +475,14 @@ try {
     $mdPath = Join-Path $stageDir "$base.md"
     [System.IO.File]::WriteAllText($mdPath, $markdown, $utf8NoBom)
     $artifacts = [ordered]@{ markdown = [ordered]@{ archivo = "$base.md"; sha256 = Get-FileSha256 $mdPath } }
+    # La cubierta de la obra (imagenes/portada.jpg|png), si existe, para ver el
+    # EPUB como quedará; el título del borrador lleva su marca igualmente.
+    $portada = Get-ImagenObra -WorkspaceRoot $WorkspaceRoot -Nombre "portada"
     if ($Epub) {
         $epubPath = Join-Path $stageDir "$base.epub"
-        & (Join-Path $PSScriptRoot "build-epub.ps1") -InputMarkdown $mdPath -OutputEpub $epubPath
+        $epubArgs = @{ InputMarkdown = $mdPath; OutputEpub = $epubPath }
+        if ($portada) { $epubArgs.Portada = $portada.Ruta }
+        & (Join-Path $PSScriptRoot "build-epub.ps1") @epubArgs
         $artifacts.epub = [ordered]@{ archivo = "$base.epub"; sha256 = Get-FileSha256 $epubPath }
     }
     if ($Pdf) {
@@ -494,6 +503,7 @@ try {
         fuentes = @($borrador.Fuentes | ForEach-Object { [ordered]@{ archivo = $_; sha256 = Get-FileSha256 (Join-Path $WorkspaceRoot $_) } })
         commit = $git.commit
         fuentes_sin_commit = $git.sin_commit
+        portada = $(if ($Epub -and $portada) { [ordered]@{ archivo = $portada.Relativa; sha256 = Get-FileSha256 $portada.Ruta } } else { $null })
         artefactos = $artifacts
     }
     [System.IO.File]::WriteAllText((Join-Path $stageDir "$base.manifest.json"), ($manifest | ConvertTo-Json -Depth 12), $utf8NoBom)
@@ -520,7 +530,10 @@ try {
     Write-Host "=== Borrador generado: $outputDir ==="
     Write-Host "  Alcance:  $($borrador.Cobertura)"
     Write-Host "  Markdown: $(Join-Path $outputDir "$base.md")"
-    if ($Epub) { Write-Host "  EPUB:     $(Join-Path $outputDir "$base.epub")" }
+    if ($Epub) {
+        Write-Host "  EPUB:     $(Join-Path $outputDir "$base.epub")"
+        Write-Host "  Portada:  $(if ($portada) { $portada.Relativa } else { 'sin portada (imagenes/portada.jpg)' })"
+    }
     if ($Pdf) { Write-Host "  PDF:      $(Join-Path $outputDir "$base.pdf")" }
     if ($Guion -and $borrador.SinEtiqueta -gt 0) {
         Write-Host "  Aviso:    $($borrador.SinEtiqueta) beats sin etiqueta visual; ejecuta python -X utf8 scripts/etiquetas-guion.py"
