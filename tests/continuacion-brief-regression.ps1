@@ -137,6 +137,7 @@ try {
     Assert-True ($null -eq (git -C $creado rev-parse --verify --quiet HEAD 2>$null)) "la obra nace sin commits"
     Assert-True ((Get-Content -Raw -LiteralPath (Join-Path $creado ".gitignore")) -match "(?m)^\.forja-transaccion/$") ".gitignore de la obra excluye el staging"
     Assert-True ((Get-Content -Raw -LiteralPath (Join-Path $creado ".gitignore")) -notmatch "draft") ".gitignore de la obra versiona los borradores"
+    Assert-True ((Get-Content -Raw -LiteralPath (Join-Path $creado ".gitignore")) -match "(?m)^tmp/$") ".gitignore de la obra excluye las carpetas tmp/ a cualquier nivel (ADR 0041)"
     Assert-True (-not (Test-Path -LiteralPath (Join-Path $hubCopia "workspaces"))) "el hub no recibe obras"
     $agentsObra = Get-Content -Raw -LiteralPath (Join-Path $creado "AGENTS.md") -Encoding UTF8
     Assert-True ($agentsObra -match "## Historial y publicación" -and $agentsObra -match "/compilar" -and $agentsObra -match "No crees copias de seguridad") "AGENTS.md de la obra declara git propio, sin copias y /compilar"

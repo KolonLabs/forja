@@ -55,6 +55,8 @@ El sistema valida el mapa de beats una vez, agrupa escenas y escribe una escena 
 
 Los cambios de hechos, diseño, guion, componentes, escritura, corrección y publicación se preparan internamente en `.forja-transaccion/`. No edites esa carpeta: el director la retoma si sigue siendo válida, la descarta si no lo es y restaura el último estado coherente si una aplicación se interrumpe.
 
+`correcciones.md` solo guarda la última corrección y las decisiones pendientes: cada corrección lo sobrescribe. Si quieres conservar el detalle de una, haz commit antes de la siguiente. Las reglas que pidas durante el trabajo van a `config.json.restricciones` (el director te propone el texto para `BRIEF.md` y `AGENTS.md`, que editas tú), y las indicaciones para escenas aún no escritas, a las notas de `contexto_narrativo.md`, que se borran al escribir cada escena.
+
 ### Renumerar identificadores
 
 Por defecto un `B_XXXX` o `E_XXXX` persistido no se renumera: lo insertado recibe el siguiente número libre (por eso aparecen `B_0101` entre `B_0014` y `B_0015`). Si decides dejar la numeración consecutiva, `scripts/renumerar.ps1` hace la parte mecánica:

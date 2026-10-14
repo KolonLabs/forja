@@ -105,7 +105,7 @@ Genera `relato.md` (relato) o `novela.md` (novela) en la raíz del workspace. Si
 ```
 /compilar [--epub] [--pdf] [--pdf-formato <formato>] [--pdf-motor <motor>] [--titulo "<título>"] [--autor "<autor>"]
 ```
-Ejecuta `scripts/compilar.ps1`, determinista: lee el manuscrito limpio y escribe `publicacion/` (Markdown, EPUB/PDF opcionales y `manifest.json` con hash y commit). Acepta `finalizado` o `publicado` y, solo si todas las salidas terminan correctamente, asigna `publicado`. El director nunca escribe ese estado a mano.
+Ejecuta `scripts/compilar.ps1`, determinista: lee el manuscrito limpio y escribe `publicacion/` (Markdown, EPUB/PDF opcionales y `manifest.json` con hash y commit); lo demás que haya en `publicacion/` (borradores, un audiolibro) se conserva (ADR 0041). Acepta `finalizado` o `publicado` y, solo si todas las salidas terminan correctamente, asigna `publicado`. El director nunca escribe ese estado a mano.
 
 **Desde el hub, solo antologías:**
 ```

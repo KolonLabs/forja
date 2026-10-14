@@ -54,12 +54,12 @@ Por defecto, cada `/generar` escribe y confirma una sola escena y se detiene par
 
 Por cada `E_XXXX`, en orden:
 
-1. El director prepara fichas, contexto y la escena siguiente. Los estados `🔄` son efímeros: no se persisten por separado.
+1. El director prepara fichas, contexto y la escena siguiente, con sus notas y las transversales de `contexto_narrativo.md`, que pasan al escritor y al validador como notas del director. Los estados `🔄` son efímeros: no se persisten por separado.
 2. El escritor genera la **escena completa** en una respuesta. El director la valida y, si procede, obtiene los reemplazos del integrador antes de abrir persistencia.
 3. El director prepara una transacción `escritura` y persiste solo en staging la escena bajo `<!-- ESCENA E_XXXX: nombre | salida: continua|separador -->`, con una ancla `<!-- B_XXXX -->` antes del primer pasaje que realiza cada beat.
 4. Verifica la misma `Salida`, anclas únicas y ordenadas, y prosa no vacía tras cada ancla. También comprueba que la escena realiza cada acción nuclear. Las anclas no dividen la escena en prosas independientes.
 5. El validador evalúa la escena completa: continuidad, tono de los beats y sus transiciones, ritmo y crudeza cuando aplique. Devuelve problemas concretos por `B_XXXX`, no puntuaciones. Si hay correcciones, el integrador reescribe solo los bloques señalados y el director vuelve a comprobar las invariantes afectadas.
-6. En el mismo staging marca los beats `✅`, actualiza el delta de contexto y confirma. Solo una contradicción factual o una restricción imposible bloquea el avance.
+6. En el mismo staging marca los beats `✅`, actualiza el delta de contexto, borra las notas de la escena y confirma. Solo una contradicción factual o una restricción imposible bloquea el avance.
 
 **Gate final de fase:** cada `B_XXXX` del guion tiene exactamente una ancla en el draft y todas las escenas están cerradas sin contradicciones factuales. Durante la fase, el draft es un prefijo ordenado y completo por escena: solo contiene las `E_XXXX` ya confirmadas.
 
@@ -74,6 +74,7 @@ Por cada `E_XXXX`, en orden:
 ## Correcciones y memoria
 
 - En `fichas`, `/revisar-guion` puede ajustar el guion con la transacción `guion`, sin iniciar prosa. En `escritura` o `correccion`, una corrección actualiza mediante staging transaccional el guion, el prefijo de escenas del draft afectado, el contexto desde la primera `E_XXXX` modificada y el registro. `/revisar` y `/expandir` solo actúan sobre escenas ya presentes en ese prefijo.
+- `correcciones.md` solo guarda la última corrección: cada transacción `correccion` lo sobrescribe con su entrada y conserva las decisiones pendientes. El historial está en el git de la obra. Lo que deba durar más va a `config.json.restricciones` (reglas) o a las notas de `contexto_narrativo.md` (indicaciones para escenas aún no escritas), que se borran al escribir cada escena (skill `contexto-narrativo`).
 - Al dividir una escena, la primera conserva su `E_XXXX` y la siguiente toma un ID nuevo. Al fusionarlas, sobrevive la primera y la otra queda retirada; ningún ID se reutiliza.
 - Si un draft heredado usa headings `## B_XXXX — ...`, el director los sustituye dentro del staging de corrección por `<!-- B_XXXX -->`, sin reescribir su prosa, antes de revisar, expandir o corregir.
 - Cada escena añade al contexto solo un delta breve. Tras una salida `separador`, el director compacta los deltas de la secuencia cerrada.

@@ -2,6 +2,8 @@
 # Lee relato.md o novela.md y escribe publicacion/: Markdown del libro, EPUB y
 # PDF opcionales y manifest.json. Solo si todas las salidas se generan asigna
 # config.json.estado = "publicado". No modifica el manuscrito ni hace commits.
+# En publicacion/ solo sustituye esos archivos; lo demás (borradores, audiolibro
+# u otras salidas junto al libro) se conserva (ADR 0041).
 
 param(
     [switch]$Epub,
@@ -53,6 +55,8 @@ $stageDir = Join-Path $WorkspaceRoot ".publicacion-$operationId"
 $previousDir = Join-Path $WorkspaceRoot ".publicacion-anterior-$operationId"
 $configUpdated = $false
 $completed = $false
+$retirados = @()
+$colocados = @()
 
 try {
     New-Item -ItemType Directory -Force -Path $stageDir | Out-Null
@@ -109,19 +113,31 @@ try {
     [System.IO.File]::WriteAllText($configPath, ($config | ConvertTo-Json -Depth 12), $utf8NoBom)
     $configUpdated = $true
 
-    if (Test-Path -LiteralPath $outputDir) {
-        Move-Item -LiteralPath $outputDir -Destination $previousDir
+    # En publicacion/ solo se sustituye lo que genera este script, aunque no se
+    # haya vuelto a pedir (un EPUB anterior sin -Epub). Lo demás no se mueve: los
+    # borradores de revisión (ADR 0028) y lo que otras herramientas dejan junto
+    # al libro, como el audiolibro (ADR 0030 y 0041).
+    $propios = @("$slug.md", "$slug.epub", "$slug.pdf", "manifest.json")
+    $manuscritoAnterior = $null
+    $manifiestoAnterior = Join-Path $outputDir "manifest.json"
+    if (Test-Path -LiteralPath $manifiestoAnterior -PathType Leaf) {
+        try { $manuscritoAnterior = (Get-Content -LiteralPath $manifiestoAnterior -Raw -Encoding UTF8 | ConvertFrom-Json).manuscrito.sha256 } catch { }
     }
-    Move-Item -LiteralPath $stageDir -Destination $outputDir
-    $completed = $true
-    if (Test-Path -LiteralPath $previousDir) {
-        # Los borradores de revisión (ADR 0028) no forman parte del libro: se conservan.
-        $borradores = Join-Path $previousDir "borrador"
-        if (Test-Path -LiteralPath $borradores) {
-            Move-Item -LiteralPath $borradores -Destination (Join-Path $outputDir "borrador")
+    New-Item -ItemType Directory -Force -Path $outputDir, $previousDir | Out-Null
+    foreach ($nombre in $propios) {
+        $anterior = Join-Path $outputDir $nombre
+        if (Test-Path -LiteralPath $anterior) {
+            Move-Item -LiteralPath $anterior -Destination (Join-Path $previousDir $nombre)
+            $retirados += $nombre
         }
-        Remove-Item -LiteralPath $previousDir -Recurse -Force
     }
+    foreach ($nuevo in @(Get-ChildItem -LiteralPath $stageDir -File)) {
+        Move-Item -LiteralPath $nuevo.FullName -Destination (Join-Path $outputDir $nuevo.Name)
+        $colocados += $nuevo.Name
+    }
+    $completed = $true
+    Remove-Item -LiteralPath $stageDir, $previousDir -Recurse -Force -ErrorAction SilentlyContinue
+    $conservados = @(Get-ChildItem -LiteralPath $outputDir -Force | Where-Object { $_.Name -notin $propios -and $_.Name -ne "borrador" } | ForEach-Object Name)
 
     Write-Host ""
     Write-Host "=== Obra compilada: $outputDir ==="
@@ -133,20 +149,27 @@ try {
     }
     if ($Pdf) { Write-Host "  PDF:        $(Join-Path $outputDir "$slug.pdf")" }
     Write-Host "  Manifiesto: $(Join-Path $outputDir "manifest.json")"
+    if ($conservados.Count -gt 0) {
+        Write-Host "  Conservado: $($conservados -join ', ') (no lo genera /compilar)"
+        if ($manuscritoAnterior -and $manuscritoAnterior -ne $manifest.manuscrito.sha256) {
+            Write-Host "  Aviso:      el manuscrito ha cambiado desde la compilación anterior; lo conservado puede haberse quedado desfasado."
+        }
+    }
     Write-Host "  Estado:     publicado"
     if ($git.sin_commit) {
         Write-Host "  Aviso:      $manuscriptName tiene cambios sin commitear; el manifiesto no apunta a un commit que lo contenga."
     }
 } catch {
-    if ($configUpdated) {
+    if ($configUpdated -and -not $completed) {
         [System.IO.File]::WriteAllText($configPath, $configRaw, $utf8NoBom)
     }
     throw
 } finally {
     if (-not $completed) {
+        # Deshace el intercambio: fuera lo colocado y de vuelta lo retirado.
+        foreach ($nombre in $colocados) { Remove-Item -LiteralPath (Join-Path $outputDir $nombre) -Force -ErrorAction SilentlyContinue }
+        foreach ($nombre in $retirados) { Move-Item -LiteralPath (Join-Path $previousDir $nombre) -Destination (Join-Path $outputDir $nombre) -Force }
         if (Test-Path -LiteralPath $stageDir) { Remove-Item -LiteralPath $stageDir -Recurse -Force }
-        if ((Test-Path -LiteralPath $previousDir) -and -not (Test-Path -LiteralPath $outputDir)) {
-            Move-Item -LiteralPath $previousDir -Destination $outputDir
-        }
+        if (Test-Path -LiteralPath $previousDir) { Remove-Item -LiteralPath $previousDir -Recurse -Force }
     }
 }

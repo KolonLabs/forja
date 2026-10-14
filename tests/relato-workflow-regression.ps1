@@ -369,6 +369,8 @@ ew-edicion-relato.ps1") -Origen "origen-sin-nivel" -Slug "origen-sin-nivel-2a" -
     Assert-True (-not (Test-Path -LiteralPath (Join-Path $editionTarget ".forja-transaccion"))) "la edición no hereda staging interno"
     Assert-Equal "medio" ((Get-Content -Raw -LiteralPath (Join-Path $editionTarget "config.json") | ConvertFrom-Json).explicitud) "la edición conserva la explicitud del origen"
     Assert-True ((Get-Content -Raw -LiteralPath (Join-Path $editionTarget "AGENTS.md")) -match "\*\*Explicitud:\*\* medio") "AGENTS.md de la edición declara el nivel del origen"
+    $registroEdicion = Get-Content -Raw -LiteralPath (Join-Path $editionTarget "correcciones.md") -Encoding UTF8
+    Assert-True ($registroEdicion -match "Solo contiene la última corrección" -and $registroEdicion -match "(?m)^## .+ — Apertura de edición\r?$" -and $registroEdicion -match "``config\.json\.restricciones``" -and $registroEdicion -notmatch "añade una fila") "correcciones.md de la edición nace con la apertura como única entrada (ADR 0042)"
 
     Write-Output "OK: regresión de workflow de relato superada."
 } finally {

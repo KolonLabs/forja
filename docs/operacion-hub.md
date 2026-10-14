@@ -71,7 +71,7 @@ Ejemplo:
 /compilar --epub --pdf --pdf-formato paperback --titulo "Barniz de sangre"
 ```
 
-El libro se crea en `publicacion/` dentro de la obra, con `<slug>.md`, `manifest.json` (hash del manuscrito y commit de la obra) y, si se pidieron, `<slug>.epub` y `<slug>.pdf`. Acepta obras en `finalizado` o `publicado`; cuando todas las salidas terminan correctamente, la obra pasa a `publicado`. `publicacion/` no se versiona: se regenera desde el manuscrito.
+El libro se crea en `publicacion/` dentro de la obra, con `<slug>.md`, `manifest.json` (hash del manuscrito y commit de la obra) y, si se pidieron, `<slug>.epub` y `<slug>.pdf`. Acepta obras en `finalizado` o `publicado`; cuando todas las salidas terminan correctamente, la obra pasa a `publicado`. `publicacion/` no se versiona: el libro se regenera desde el manuscrito, y lo que no genera `/compilar` (borradores, un audiolibro) se conserva.
 
 ### Antologias
 

@@ -201,22 +201,31 @@ Este workspace deriva de una publicación anterior. El manuscrito de referencia 
 "@
     [System.IO.File]::WriteAllText((Join-Path $stagePath "EDICION.md"), $editionNote, $utf8NoBom)
 
+    # correcciones.md solo guarda la última corrección (ADR 0042): la apertura de
+    # la edición es su primera entrada y la sustituye la primera corrección.
     $migrationRows = @()
     if ($draftMigration.headings_migrated) {
-        $migrationRows += "| $timestamp | Normalización de draft | Todos los B conservados | Headings heredados convertidos a anclas invisibles |"
+        $migrationRows += "- ``relato-draft.md``: headings heredados convertidos a anclas invisibles; se conservan todos los ``B_XXXX``."
     }
     if ($draftMigration.scene_markers_migrated) {
-        $migrationRows += "| $timestamp | Normalización de escenas | Todas las E conservadas | Marcadores ESCENA reconstruidos desde el guion sin tocar prosa |"
+        $migrationRows += "- ``relato-draft.md``: marcadores ``ESCENA`` reconstruidos desde el guion sin tocar la prosa; se conservan todas las ``E_XXXX``."
+    }
+    if ($migrationRows.Count -eq 0) {
+        $migrationRows += "- Ninguno: la edición parte del draft del origen tal cual."
     }
     $correctionLog = @"
-# Registro de correcciones — Edición $editionNumber
+# Correcciones — Edición $editionNumber
 
-| Fecha | Alcance | Beats afectados | Resultado |
-|---|---|---|---|
-| $timestamp | Apertura de edición | — | Pendiente de corrección |
+> **Uso de este archivo.** Solo contiene la última corrección: cada transacción ``correccion`` lo sobrescribe con su propia entrada. El historial está en git. Lo que deba durar más allá de una corrección va a ``config.json.restricciones`` o a las notas de ``contexto_narrativo.md``.
+
+## $($timestamp.Substring(0, 10)) — Apertura de edición
+
+**Motivo** (ver ``EDICION.md``): $Motivo
+
+**Cambios:**
 $($migrationRows -join "`n")
 
-El director añade una fila por cada ejecución de `/corregir`, `/revisar` o `/expandir` realizada durante esta edición.
+**Resultado.** Pendiente de corrección.
 "@
     [System.IO.File]::WriteAllText((Join-Path $stagePath "correcciones.md"), $correctionLog, $utf8NoBom)
 

@@ -138,7 +138,7 @@ function Test-LibroConCapitulos {
 function Get-ImagenObra {
     # Imagen de la obra en imagenes/ (portada, contraportada…) en JPG o PNG: ruta
     # absoluta y relativa, o $null si no existe. imagenes/ se versiona con la obra;
-    # publicacion/ no, porque se regenera entera.
+    # publicacion/ no, porque su libro se regenera en cada compilación.
     param([string]$WorkspaceRoot, [string]$Nombre)
 
     foreach ($ext in @("jpg", "jpeg", "png")) {

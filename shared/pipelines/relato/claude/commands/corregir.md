@@ -17,6 +17,6 @@ Sin argumento, ejecuta una pasada `completa`. Con `estructura`, limita el trabaj
 3. Si el draft heredado contiene headings `## B_XXXX — ...`, sustitúyelos allí por las anclas equivalentes antes de corregir prosa.
 4. Para prosa, corrige solo tramos señalados por ancla y comprueba continuidad de su escena. Para estructura, actualiza guion, el prefijo ya escrito, contexto y config desde la primera escena afectada.
 5. Al dividir una escena, conserva el ID de la primera parte; al fusionar, conserva el primero. Recalcula `Salida: continua|separador`.
-6. Crea o actualiza `correcciones.md` en staging con fecha, alcance, IDs y resultado. Confirma; el helper exige registro no vacío y un prefijo de draft válido.
+6. Sobrescribe en staging `correcciones.md` con la entrada de esta corrección (fecha, alcance, IDs y resultado) y conserva sus decisiones pendientes; lo que deba durar más va a `config.json.restricciones` o a las notas de `contexto_narrativo.md` (skill `contexto-narrativo`). Confirma; el helper exige registro no vacío y un prefijo de draft válido.
 
 En una edición derivada no modifica el manuscrito anterior ni el workspace de origen. `/publicar` solo finaliza cuando la obra completa supera sus gates.

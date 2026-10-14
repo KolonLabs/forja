@@ -81,6 +81,8 @@ function Initialize-ObraGit {
         ".env"
         "*.env"
         "secretos.env"
+        # Carpetas temporales, a cualquier nivel de la obra (ADR 0041).
+        "tmp/"
     ) -join "`n"
     [System.IO.File]::WriteAllText((Join-Path $TargetDir ".gitignore"), $gitignore + "`n", [System.Text.UTF8Encoding]::new($false))
 
@@ -772,7 +774,7 @@ guion.md (E_XXXX + B_XXXX)
 |---|---|
 | EDICION.md | Linaje y motivo de la edición {1} derivada de `{2}`. |
 | relato-edicion-anterior.md | Manuscrito publicado de referencia, solo lectura. |
-| correcciones.md | Registro de pasadas e IDs afectados. |
+| correcciones.md | Última corrección aplicada y decisiones pendientes; cada corrección lo sobrescribe y el historial está en git. |
 | guion.md | Escenas operativas y beats canónicos. |
 | relato-draft.md | Prosa continua por escena; las anclas no son secciones. |
 | contexto_narrativo.md | Memoria local que se actualiza desde la primera escena afectada. |

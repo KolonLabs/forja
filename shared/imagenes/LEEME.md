@@ -1,7 +1,7 @@
 # imagenes/
 
 Imágenes de la obra para la publicación. Se versionan con la obra (a diferencia de
-`publicacion/`, que se regenera entera en cada `/compilar`). Formato JPG o PNG; el
+`publicacion/`, cuyo libro se regenera en cada `/compilar`). Formato JPG o PNG; el
 nombre fija el uso.
 
 | Archivo | Uso | Lo usa |

@@ -91,6 +91,21 @@ Vuelve a casa.
     Assert-True (Test-Path -LiteralPath $relatoMd) "compilar conserva publicacion/borrador/"
     Assert-True (Test-Path -LiteralPath (Join-Path $relato "publicacion\relato-prueba.md")) "compilar genera el libro"
 
+    # Lo que no genera /compilar (un audiolibro y su temp/) se conserva; sus propios formatos ya no pedidos, no (ADR 0041).
+    $publicacionRelato = Join-Path $relato "publicacion"
+    Write-Utf8 -Path (Join-Path $publicacionRelato "relato-prueba.mp3") -Content "audio"
+    Write-Utf8 -Path (Join-Path $publicacionRelato "temp\relato-prueba-efectos.yaml") -Content "efectos"
+    Write-Utf8 -Path (Join-Path $publicacionRelato "relato-prueba.epub") -Content "EPUB de una compilación anterior"
+    $salidaCompilar = & (Join-Path $relato "scripts\compilar.ps1") 6>&1 | Out-String
+    Assert-True ((Test-Path -LiteralPath (Join-Path $publicacionRelato "relato-prueba.mp3")) -and (Test-Path -LiteralPath (Join-Path $publicacionRelato "temp\relato-prueba-efectos.yaml")) -and (Test-Path -LiteralPath $relatoMd)) "compilar conserva el audiolibro, su temp/ y los borradores"
+    Assert-True (-not (Test-Path -LiteralPath (Join-Path $publicacionRelato "relato-prueba.epub"))) "compilar retira el EPUB anterior si no se vuelve a pedir"
+    $lineaConservado = [regex]::Match($salidaCompilar, '(?m)^\s*Conservado: (.*)$').Groups[1].Value
+    Assert-True ($lineaConservado -match 'relato-prueba\.mp3' -and $lineaConservado -match '\btemp\b' -and $lineaConservado -notmatch 'borrador' -and $salidaCompilar -notmatch 'desfasado') "compilar informa de lo conservado, sin aviso si el manuscrito no ha cambiado"
+    Write-Utf8 -Path (Join-Path $relato "relato.md") -Content "# Relato de prueba`n`nAna abre la puerta y sale."
+    $salidaCompilar = & (Join-Path $relato "scripts\compilar.ps1") 6>&1 | Out-String
+    Assert-True ($salidaCompilar -match 'desfasado' -and (Test-Path -LiteralPath (Join-Path $publicacionRelato "relato-prueba.mp3"))) "compilar avisa de que lo conservado puede estar desfasado si cambia el manuscrito"
+    Assert-True (@(Get-ChildItem -LiteralPath $relato -Directory -Force -Filter ".publicacion-*").Count -eq 0) "compilar no deja la publicación anterior"
+
     # Con un formato pedido, el manifest es un fichero de trabajo; el .md, fuente del formato, se conserva (ADR 0037).
     & (Join-Path $relato "scripts\borrador.ps1") -Epub | Out-Null
     $relatoBorradores = @(Get-ChildItem -LiteralPath (Join-Path $relato "publicacion\borrador\prosa") -Force | ForEach-Object Name)
