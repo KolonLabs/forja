@@ -16,9 +16,15 @@ Los ejemplos ilustran opciones de ejecución, no canon ni obligaciones de frase,
 
 ## Formato de diálogo
 
+### Lo dicho, en boca de quien lo dice
+
+Si la escena recoge el contenido de lo que alguien dice —también el narrador cuando habla en primera persona—, va en estilo directo con raya: «—Me sienta mal —dijo.», nunca «le dijo que le sentaba mal». No resumas en la narración lo que alguien pregunta, cuenta, pide, saluda o contesta («le preguntó si…», «le contó que…») ni cites sus palabras entre comillas dentro de un párrafo narrativo («dijo "así"»). Vale también para el habla que no viene en el beat: saludos, preguntas de mesa, comentarios de fondo.
+
+Quedan fuera lo que el POV no llega a oír («le dijo algo al oído»), el ruido sin contenido («hablaba por el móvil»), los mensajes escritos (entre comillas latinas) y el pensamiento, que sigue las reglas de interioridad.
+
 ### Párrafo independiente
 
-Cada intervención de diálogo va en su propio párrafo, separado de la narración por una línea en blanco. Con guion largo (—).
+Cada intervención de diálogo va en su propio párrafo, separado de la narración y de la intervención siguiente por una línea en blanco. Con guion largo (—). Una réplica pegada con un salto simple se funde con el párrafo vecino al compilar.
 
 ```
 Fernando se puso en pie con los hombros tensos.

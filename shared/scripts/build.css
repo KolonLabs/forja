@@ -30,6 +30,7 @@ html, body {
   margin-bottom: 3em;
 }
 .title { font-size: 1.8em; font-weight: 700; margin-bottom: 0.4em; }
+.subtitle { font-size: 0.95em; font-style: italic; color: #444; text-indent: 0; margin-bottom: 0.8em; }
 .author { font-size: 1em; color: #444; margin-bottom: 1em; }
 
 /* Capitulos */
@@ -40,6 +41,10 @@ h1 {
   font-weight: 700;
   page-break-before: always;
 }
+
+/* Título que build-epub.ps1 pone a un texto sin capítulos (un relato): nombra
+   la entrada del índice de navegación, pero no se muestra. */
+h1.titulo-oculto { display: none; }
 
 h2 {
   font-size: 1.2em;

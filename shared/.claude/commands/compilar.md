@@ -23,8 +23,8 @@ Argumentos recibidos: `$ARGUMENTS`
 | `--pdf` | Genera también el PDF (requiere Pandoc y Typst, wkhtmltopdf o XeLaTeX) | Solo Markdown |
 | `--pdf-formato` | `paperback`, `paperback-5x8`, `hardcover`, `hardcover-9pt`, `hardcover-6x9`, `hardcover-6x9-9pt` | `paperback` |
 | `--pdf-motor` | `auto`, `typst`, `xelatex`, `wkhtmltopdf` | `auto` |
-| `--titulo` | Título de portada y metadatos | `config.json.titulo` |
-| `--autor` | Autor de portada y metadatos | `Amaro Alba` |
+| `--titulo` | Título del frontmatter (portada y metadatos) | `config.json.titulo` |
+| `--autor` | Autor del frontmatter (portada y metadatos) | `Amaro Alba` |
 
 ## Requisitos
 
@@ -41,7 +41,7 @@ pwsh -NoProfile -File scripts/compilar.ps1 [-Epub] [-Pdf] [-PdfFormat <formato>]
 
 ## Resultado
 
-- `publicacion/<slug>.md` y, si se pidieron, `<slug>.epub` y `<slug>.pdf`.
+- `publicacion/<slug>.md` y, si se pidieron, `<slug>.epub` y `<slug>.pdf`. El `.md` abre con un frontmatter YAML (`title`, `author`, `lang`, `date` y `subject`) que Pandoc usa para la portada y los metadatos; título y autor no forman parte del texto.
 - `publicacion/manifest.json` con el hash del manuscrito y el commit de la obra.
 - `config.json.estado = "publicado"`, solo si todas las salidas se generaron. Lo escribe el script, nunca tú.
 

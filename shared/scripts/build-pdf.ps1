@@ -1,11 +1,14 @@
+# build-pdf.ps1 -- Markdown a PDF con Pandoc (Typst, wkhtmltopdf o XeLaTeX; ADR 0038).
+# Título, autor y demás metadatos salen del frontmatter YAML del Markdown
+# (compilar.ps1, borrador.ps1, crear-libro.ps1); -Titulo y -Autor solo los
+# sobrescriben. Un Markdown sin frontmatter, con la cabecera «# Título» +
+# «## Autor» de antes, sigue siendo válido: la cabecera pasa a la portada.
 param(
     [Parameter(Mandatory = $true)]
     [string]$InputMarkdown,
     [Parameter(Mandatory = $true)]
     [string]$OutputPdf,
-    [Parameter(Mandatory = $true)]
     [string]$Titulo,
-    [Parameter(Mandatory = $true)]
     [string]$Autor,
     [ValidateSet("paperback", "paperback-5x8", "hardcover", "hardcover-9pt", "hardcover-6x9", "hardcover-6x9-9pt")]
     [string]$PdfFormat = "paperback",
@@ -14,6 +17,7 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
+. (Join-Path $PSScriptRoot "publicacion-comun.ps1")
 
 function Find-Executable {
     param([string]$Name, [string[]]$Candidates = @())
@@ -100,10 +104,10 @@ $formats = @{
 }
 $format = $formats[$PdfFormat]
 
-# El Markdown combinado incluye título y autor para la lectura directa. La
-# plantilla PDF genera su propia portada, así que se eliminan esos encabezados.
-$sourceText = Get-Content -LiteralPath $InputMarkdown -Raw -Encoding UTF8
-$sourceText = [regex]::Replace($sourceText, '^\s*# [^\r\n]+\r?\n(?:\r?\n)*## [^\r\n]+\r?\n(?:\r?\n)*', "")
+# Título y autor llegan como frontmatter, no como encabezados del texto: la
+# plantilla genera la portada con ellos y el cuerpo se pasa tal cual.
+$libro = Read-MarkdownLibro $InputMarkdown
+$sourceText = if ($libro.FrontMatter) { "$($libro.FrontMatter)`n`n$($libro.Cuerpo)`n" } else { "$($libro.Cuerpo)`n" }
 $preparedInput = Join-Path $OutputDir (".{0}.pdf-source.md" -f [System.IO.Path]::GetFileNameWithoutExtension($OutputPdf))
 $utf8NoBom = [System.Text.UTF8Encoding]::new($false)
 
@@ -113,12 +117,10 @@ try {
     $pandocArgs = @(
         $preparedInput,
         "--from", "markdown",
-        "--metadata", "title=$Titulo",
-        "--metadata", "author=$Autor",
-        "--metadata", "lang=es",
-        "--toc", "--toc-depth=1",
         "-o", $OutputPdf
     )
+    if (Test-LibroConCapitulos $libro.Cuerpo) { $pandocArgs += "--toc", "--toc-depth=1" }
+    $pandocArgs += @(Get-MetadatosPandoc -Libro $libro -Titulo $Titulo -Autor $Autor)
 
     switch ($PdfEngine) {
         "typst" {

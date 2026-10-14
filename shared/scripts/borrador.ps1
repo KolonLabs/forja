@@ -1,11 +1,13 @@
-# borrador.ps1 -- Versión limpia de revisión del trabajo en curso (ADR 0028, 0036 y 0037).
+# borrador.ps1 -- Versión limpia de revisión del trabajo en curso (ADR 0028, 0036, 0037 y 0038).
 # Prosa: relato completo desde relato-draft.md; en novela, un único capítulo (el
 # indicado o el capítulo en curso), solo con sus escenas completas. Escribe en
-# publicacion/borrador/prosa/.
+# publicacion/borrador/prosa/ (novela: en su carpeta cap-NN/).
 # Guion (-Guion): los beats para revisión humana, con su etiqueta visual y su acción;
 # -Anotado añade tono, extensión y notas. Relato completo; en novela, un capítulo (en
-# multi-hilo, de capitulos/ o de un hilo con -Hilo). Escribe en publicacion/borrador/guion/.
-# Nunca cambia el estado ni toca draft, guion o manuscrito.
+# multi-hilo, de capitulos/ o de un hilo con -Hilo). Escribe en publicacion/borrador/guion/
+# (novela: cap-NN/; un hilo antes de ensamblar: hilo-<slug>/cap-NN/).
+# El Markdown abre con un frontmatter YAML con los metadatos; nunca cambia el
+# estado ni toca draft, guion o manuscrito.
 
 param(
     [string]$Capitulo,
@@ -83,6 +85,8 @@ function Get-RelatoBorrador {
     $cobertura = if ($total) { "escenas escritas: $($marcas.Count) de $total" } else { "escenas escritas: $($marcas.Count)" }
     return [pscustomobject]@{
         Base = "$slug-borrador"
+        Carpeta = ""
+        Rotulo = ""
         Encabezado = ""
         Cuerpo = ($partes -join "`n`n")
         Cobertura = $cobertura
@@ -210,8 +214,11 @@ function Get-NovelaBorrador {
     }
 
     $relDir = "capitulos/$($estado.Dir.Name)"
+    $cap = "cap-$('{0:D2}' -f $estado.Numero)"
     return [pscustomobject]@{
-        Base = "$slug-cap-$('{0:D2}' -f $estado.Numero)-borrador"
+        Base = "$slug-$cap-borrador"
+        Carpeta = $cap
+        Rotulo = "Capítulo $($estado.Numero)"
         Encabezado = "# Capítulo $($estado.Numero) — $($estado.Nombre)"
         Cuerpo = ($partes -join "`n`n")
         Cobertura = "Capítulo $($estado.Numero) — $($estado.Nombre) · escenas completas: $($ids.Count) de $($estado.Escenas.Count)"
@@ -337,6 +344,8 @@ function Get-RelatoGuionBorrador {
     $resumen = Get-GuionResumen $escenas
     return [pscustomobject]@{
         Base = "$slug-guion$sufijoAnotado-borrador"
+        Carpeta = ""
+        Rotulo = ""
         Encabezado = ""
         Cuerpo = Format-GuionEscenas $escenas
         Cobertura = "guion completo · escenas: $($resumen.Escenas) · beats: $($resumen.Beats)"
@@ -395,8 +404,11 @@ function Get-NovelaGuionBorrador {
     if ($escenas.Count -eq 0) { throw "borrador: $relBase/$($elegido.Name) todavía no tiene beats." }
     $resumen = Get-GuionResumen $escenas
     $prefijo = if ($hiloNombre) { "$slug-$($hiloNombre -replace '^hilo-', '')" } else { $slug }
+    $cap = "cap-$('{0:D2}' -f $numero)"
     return [pscustomobject]@{
-        Base = "$prefijo-cap-$('{0:D2}' -f $numero)-guion$sufijoAnotado-borrador"
+        Base = "$prefijo-$cap-guion$sufijoAnotado-borrador"
+        Carpeta = $(if ($hiloNombre) { "$hiloNombre/$cap" } else { $cap })
+        Rotulo = $(if ($hiloNombre) { "Hilo $($hiloNombre -replace '^hilo-', '') · Capítulo $numero" } else { "Capítulo $numero" })
         Encabezado = $encabezado
         Cuerpo = Format-GuionEscenas $escenas
         Cobertura = "guion · $($encabezado.Substring(2)) · escenas: $($resumen.Escenas) · beats: $($resumen.Beats), $($resumen.Cerrados) escritos"
@@ -434,13 +446,23 @@ if ([string]::IsNullOrWhiteSpace($Titulo)) {
 
 $fecha = (Get-Date).ToString("yyyy-MM-dd HH:mm")
 $marca = if ($Guion) { "guion, borrador" } else { "borrador" }
-$nota = "*Borrador del $fecha · $($borrador.Cobertura). No es el texto final.*"
-$markdown = "# $Titulo ($marca)`n`n## $Autor`n`n$nota`n`n"
+# Título, autor y la nota del borrador van en el frontmatter, no en el texto: la
+# marca queda en el título (es lo que muestra la biblioteca del lector), con el
+# capítulo en novela para distinguir unos borradores de otros, y la fecha y la
+# cobertura en el subtítulo de la portada.
+$tituloBorrador = if ($borrador.Rotulo) { "$Titulo · $($borrador.Rotulo) ($marca)" } else { "$Titulo ($marca)" }
+$metadatos = Get-ObraMetadatos -Config $config -Titulo $tituloBorrador -Autor $Autor
+$tipoBorrador = if ($Guion) { "Guion en borrador" } else { "Borrador" }
+$metadatos.subtitle = "$tipoBorrador del $fecha · $($borrador.Cobertura) · no es el texto final"
+$markdown = "$(New-FrontMatter $metadatos)`n`n"
 if ($borrador.Encabezado) { $markdown += "$($borrador.Encabezado)`n`n" }
 $markdown += "$($borrador.Cuerpo)`n"
 
 $borradorRoot = Join-Path $WorkspaceRoot "publicacion\borrador"
-$outputDir = Join-Path $borradorRoot $(if ($Guion) { "guion" } else { "prosa" })
+$tipoDir = Join-Path $borradorRoot $(if ($Guion) { "guion" } else { "prosa" })
+# En novela, cada capítulo tiene su carpeta: el .md se conserva junto a sus
+# formatos (ADR 0037) y los borradores de varios capítulos no se mezclan.
+$outputDir = if ($borrador.Carpeta) { Join-Path $tipoDir $borrador.Carpeta } else { $tipoDir }
 New-Item -ItemType Directory -Force -Path $outputDir | Out-Null
 $stageDir = Join-Path $outputDir (".tmp-" + [guid]::NewGuid().ToString("N"))
 $base = $borrador.Base
@@ -451,12 +473,12 @@ try {
     $artifacts = [ordered]@{ markdown = [ordered]@{ archivo = "$base.md"; sha256 = Get-FileSha256 $mdPath } }
     if ($Epub) {
         $epubPath = Join-Path $stageDir "$base.epub"
-        & (Join-Path $PSScriptRoot "build-epub.ps1") -InputMarkdown $mdPath -OutputEpub $epubPath -Titulo "$Titulo ($marca)" -Autor $Autor
+        & (Join-Path $PSScriptRoot "build-epub.ps1") -InputMarkdown $mdPath -OutputEpub $epubPath
         $artifacts.epub = [ordered]@{ archivo = "$base.epub"; sha256 = Get-FileSha256 $epubPath }
     }
     if ($Pdf) {
         $pdfPath = Join-Path $stageDir "$base.pdf"
-        & (Join-Path $PSScriptRoot "build-pdf.ps1") -InputMarkdown $mdPath -OutputPdf $pdfPath -Titulo "$Titulo ($marca)" -Autor $Autor -PdfFormat $PdfFormat -PdfEngine $PdfEngine
+        & (Join-Path $PSScriptRoot "build-pdf.ps1") -InputMarkdown $mdPath -OutputPdf $pdfPath -PdfFormat $PdfFormat -PdfEngine $PdfEngine
         $artifacts.pdf = [ordered]@{ archivo = "$base.pdf"; sha256 = Get-FileSha256 $pdfPath; formato = $PdfFormat; motor_solicitado = $PdfEngine }
     }
 
@@ -466,6 +488,7 @@ try {
         tipo = $(if ($Guion) { "borrador-guion" } else { "borrador" })
         obra = $slug
         titulo = $Titulo
+        autor = $Autor
         generado = (Get-Date).ToString("yyyy-MM-ddTHH:mm:ss")
         alcance = $borrador.Alcance
         fuentes = @($borrador.Fuentes | ForEach-Object { [ordered]@{ archivo = $_; sha256 = Get-FileSha256 (Join-Path $WorkspaceRoot $_) } })
@@ -476,9 +499,9 @@ try {
     [System.IO.File]::WriteAllText((Join-Path $stageDir "$base.manifest.json"), ($manifest | ConvertTo-Json -Depth 12), $utf8NoBom)
 
     # El borrador anterior de este mismo alcance se sustituye entero: no quedan
-    # formatos viejos junto a los nuevos.
-    # También la versión suelta en publicacion/borrador/, anterior a la carpeta prosa/.
-    foreach ($dir in @($outputDir, $borradorRoot)) {
+    # formatos viejos junto a los nuevos. También las versiones sueltas de antes:
+    # en prosa/ o guion/, sin carpeta de capítulo, y en publicacion/borrador/.
+    foreach ($dir in @($outputDir, $tipoDir, $borradorRoot | Select-Object -Unique)) {
         foreach ($ext in @("md", "epub", "pdf", "manifest.json")) {
             $previo = Join-Path $dir "$base.$ext"
             if (Test-Path -LiteralPath $previo) { Remove-Item -LiteralPath $previo -Force }

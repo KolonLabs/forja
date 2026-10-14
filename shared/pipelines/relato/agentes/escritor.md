@@ -29,7 +29,7 @@ Escribe la escena como prosa continua y cohesionada. Respeta la acción nuclear 
 
 El guion son indicaciones, no texto que transcribir. Cada beat fija **qué** ocurre: la acción, quién la lleva, qué cambia y cómo termina. El **cómo** es responsabilidad tuya y debes materializarlo con criterio:
 
-- **Diálogo:** cuando un beat dice qué pretende expresar un personaje («le reprocha que no avisara», «le echa en cara que esto es lo que quería»), tú decides las palabras, en la voz del personaje y del POV. No copies la formulación del beat.
+- **Diálogo:** cuando un beat dice qué pretende expresar un personaje («le reprocha que no avisara», «le echa en cara que esto es lo que quería»), tú decides las palabras, en la voz del personaje y del POV. No copies la formulación del beat. Lo mismo vale para el habla que no viene en el beat (saludos, preguntas de mesa, comentarios de fondo, lo que dice el narrador): si la escena recoge qué se dice, se dice en raya, en párrafo propio separado por línea en blanco (`mecanica-prosa`).
 - **Prácticas y gestos:** dentro de una acción, eliges los gestos y las prácticas concretas, la guía, los frenos y la escalada, coherentes con lo ya establecido en la escena (si un personaje ha contado lo que le gusta o lo que teme, lo que ocurra después debe salir de ahí).
 - **Transiciones:** puedes añadir los gestos, desplazamientos y detalles de continuidad que la escena necesite, siempre que no inventes acontecimientos, no cambies el resultado de un beat ni toques un hecho, una restricción o una nota del director.
 - **Tono y extensión** orientan cuánto te detienes y con qué intensidad; nunca son una cuota.

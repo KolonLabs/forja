@@ -39,7 +39,7 @@ Interpreta esos argumentos antes de actuar. El primer valor es el slug del libro
 ## Qué hace
 
 1. Lee `relato.md` de cada relato fuente
-2. Ensambla el contenido en `<raíz de publicados>/<slug-libro>/<slug-libro>.md`
+2. Ensambla el contenido en `<raíz de publicados>/<slug-libro>/<slug-libro>.md`, que abre con un frontmatter YAML (`title`, `author`, `lang`, `date` y `subject`) para la portada y los metadatos; cada relato es un capítulo con su propio título
 3. Opcionalmente compila EPUB con `--epub` y/o PDF con `--pdf`
 4. Rechaza menos de dos fuentes, novelas y fuentes repetidas
 5. Escribe `manifest.json` con fuentes congeladas, hashes y formatos generados

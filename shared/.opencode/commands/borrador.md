@@ -27,8 +27,8 @@ Argumentos recibidos: `$ARGUMENTS`
 | `--pdf` | Genera también el PDF (requiere Pandoc y Typst, wkhtmltopdf o XeLaTeX) | Solo Markdown |
 | `--pdf-formato` | `paperback`, `paperback-5x8`, `hardcover`, `hardcover-9pt`, `hardcover-6x9`, `hardcover-6x9-9pt` | `paperback` |
 | `--pdf-motor` | `auto`, `typst`, `xelatex`, `wkhtmltopdf` | `auto` |
-| `--titulo` | Título de portada y metadatos (se le añade «(borrador)») | `config.json.titulo` |
-| `--autor` | Autor de portada y metadatos | `Amaro Alba` |
+| `--titulo` | Título del frontmatter (portada y metadatos); se le añade «(borrador)» | `config.json.titulo` |
+| `--autor` | Autor del frontmatter (portada y metadatos) | `Amaro Alba` |
 
 ## Qué incluye
 
@@ -47,10 +47,12 @@ pwsh -NoProfile -File scripts/borrador.ps1 [-Capitulo <cap>] [-Guion] [-Anotado]
 
 ## Resultado
 
-- `publicacion/borrador/prosa/<slug>-borrador.*` (relato completo) o `<slug>-cap-NN-borrador.*` (un capítulo de novela o multi-hilo). Con `--guion`, en `publicacion/borrador/guion/`: `<slug>-guion-borrador.*`, `<slug>-cap-NN-guion-borrador.*` o, por hilo, `<slug>-<hilo>-cap-NN-guion-borrador.*`; `--anotado` añade `-anotado` antes de `-borrador`. Una versión suelta del mismo alcance en `publicacion/borrador/`, anterior a esta carpeta, se retira al regenerarlo.
+- **Relato:** `publicacion/borrador/prosa/<slug>-borrador.*`; con `--guion`, `publicacion/borrador/guion/<slug>-guion-borrador.*`.
+- **Novela y multi-hilo:** una carpeta por capítulo. Prosa en `publicacion/borrador/prosa/cap-NN/<slug>-cap-NN-borrador.*`; con `--guion`, `publicacion/borrador/guion/cap-NN/<slug>-cap-NN-guion-borrador.*` o, por hilo antes de ensamblar, `publicacion/borrador/guion/hilo-<hilo>/cap-NN/<slug>-<hilo>-cap-NN-guion-borrador.*`.
+- `--anotado` añade `-anotado` antes de `-borrador`. Una versión suelta del mismo alcance que dejó una estructura anterior (en `prosa/` o `guion/` sin carpeta de capítulo, o en `publicacion/borrador/`) se retira al regenerarlo.
 - Sin formatos, el borrador es el `.md`, con un `.manifest.json` que registra las escenas incluidas, los hashes de las fuentes y el commit. Con `--epub` o `--pdf` se generan además los formatos pedidos y se conserva junto a ellos el `.md` en que se basan; el manifest es un fichero de trabajo y se elimina.
 - Cada ejecución sustituye el borrador anterior del mismo alcance. `publicacion/` no se versiona.
-- La portada y la primera línea indican que es un borrador, su fecha y su cobertura.
+- El `.md` abre con un frontmatter YAML con las propiedades de la obra: `title` (con «(borrador)» y, en novela, el capítulo: `<título> · Capítulo N (borrador)`), `subtitle` (que es un borrador, su fecha y su cobertura), `author`, `lang`, `date` y `subject` (género y subgénero). Título y autor no forman parte del texto, que empieza directamente con la prosa (o con el encabezado del capítulo, en novela). Pandoc usa esas propiedades para la portada y los metadatos del EPUB y del PDF.
 - El estado de la obra no cambia.
 
 ## Si falla

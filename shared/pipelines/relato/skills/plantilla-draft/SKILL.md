@@ -13,10 +13,17 @@ El draft conserva una prosa continua por escena. Los beats no son secciones de p
 
 <!-- ESCENA E_0001: [nombre] | salida: continua -->
 <!-- B_0001 -->
+
 Prosa que inicia la escena y realiza la primera acción.
+
+—Réplica en raya, en su propio párrafo —dice alguien.
+
 <!-- B_0002 -->
+
 La misma prosa continúa y realiza la siguiente acción.
 ```
+
+Los párrafos narrativos y cada réplica en raya se separan con una línea en blanco, también tras cada ancla: al compilar, un salto simple funde las líneas en un solo párrafo.
 
 ## Reglas
 

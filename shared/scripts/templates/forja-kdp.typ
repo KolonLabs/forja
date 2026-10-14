@@ -3,6 +3,24 @@
 
 #let horizontalrule = align(center, text(fill: rgb("888888"), size: 0.9em, "* * *"))
 
+// Propiedades del PDF desde el frontmatter (ADR 0038). El autor debe ser texto
+// plano; Pandoc lo entrega como contenido, así que se convierte.
+#let content-to-string = (content) => {
+  if content.has("text") {
+    content.text
+  } else if content.has("children") {
+    content.children.map(content-to-string).join("")
+  } else if content.has("body") {
+    content-to-string(content.body)
+  } else if content == [ ] {
+    " "
+  }
+}
+#set document(
+  $if(title)$title: [$title$],$endif$
+  $if(author)$author: ($for(author)$content-to-string([$author$]),$endfor$),$endif$
+)
+
 #set page(
   width: $if(page-width)$$page-width$$else$6in$endif$,
   height: $if(page-height)$$page-height$$else$9in$endif$,
@@ -31,7 +49,7 @@
 )
 
 #show heading.where(level: 1): it => {
-  pagebreak()
+  pagebreak(weak: true)
   v(2em)
   align(center)[
     #text(size: 1.45em, weight: "bold")[#it.body]
@@ -54,17 +72,22 @@ $if(title)$
 #align(center)[
   #v(2in)
   #text(size: 1.8em, weight: "bold")[$title$]
+  $if(subtitle)$
+  #v(0.6em)
+  #text(size: 0.9em, style: "italic")[$subtitle$]
+  $endif$
   $if(author)$
   #v(0.8em)
   #text(size: 1em)[$author$]
   $endif$
 ]
-#pagebreak()
+// El texto (o el índice) empieza en página impar, tras el dorso en blanco.
+#pagebreak(to: "odd")
 $endif$
 
 $if(toc)$
 #outline(
-  title: [Indice],
+  title: [Índice],
   depth: 1,
   indent: auto,
 )

@@ -22,6 +22,8 @@ $HubRoot = Split-Path -Parent $PSScriptRoot
 $WorkspacesRoot = Get-ObrasRoot
 $PublicadosRoot = Get-PublicadosRoot
 $BuildScripts = Join-Path $HubRoot "shared\scripts"
+# Hashes y frontmatter de metadatos, los mismos que usa /compilar (ADR 0038).
+. (Join-Path $BuildScripts "publicacion-comun.ps1")
 $utf8NoBom = [System.Text.UTF8Encoding]::new($false)
 
 function Assert-KebabSlug {
@@ -30,12 +32,6 @@ function Assert-KebabSlug {
     if ($Value -notmatch "^[a-z0-9]+(-[a-z0-9]+)*$") {
         throw "$Name '$Value' invalido. Debe ser un slug kebab-case."
     }
-}
-
-function Get-FileSha256 {
-    param([string]$Path)
-
-    return (Get-FileHash -LiteralPath $Path -Algorithm SHA256).Hash.ToLowerInvariant()
 }
 
 Assert-KebabSlug $Libro "Libro"
@@ -108,9 +104,18 @@ $published = $false
 try {
     New-Item -ItemType Directory -Force -Path $stageDir | Out-Null
     $bookMarkdown = Join-Path $stageDir "$Libro.md"
+    # Título y autor van en el frontmatter, no en el texto: cada relato abre con su
+    # propio «# Título», que es un capítulo del libro.
+    $generos = @($sources | ForEach-Object { "$($_.Config.genero)" } | Where-Object { -not [string]::IsNullOrWhiteSpace($_) } | Select-Object -Unique)
+    $frontMatter = New-FrontMatter ([ordered]@{
+        title = $Titulo
+        author = $Autor
+        lang = "es"
+        date = (Get-Date).ToString("yyyy-MM-dd")
+        subject = ($generos -join " · ")
+    })
     $content = [System.Text.StringBuilder]::new()
-    $content.Append("# $Titulo`n`n") | Out-Null
-    $content.Append("## $Autor`n`n") | Out-Null
+    $content.Append("$frontMatter`n`n") | Out-Null
 
     foreach ($source in $sources) {
         Write-Host "Incluyendo: $($source.Title)"

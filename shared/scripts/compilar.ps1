@@ -57,24 +57,25 @@ $completed = $false
 try {
     New-Item -ItemType Directory -Force -Path $stageDir | Out-Null
 
-    # El manuscrito abre con «# <título>». El libro lleva su propia cabecera de
-    # título y autor (la plantilla PDF la sustituye por la portada), así que se
-    # retira ese primer encabezado para no duplicarlo.
+    # El manuscrito abre con «# <título>». En el libro, título y autor son
+    # metadatos (frontmatter YAML), no texto: Pandoc los usa para la portada y los
+    # metadatos del EPUB/PDF. Se retira ese primer encabezado para no duplicarlo.
     $body = [regex]::Replace($manuscript.TrimStart([char]0xFEFF), '^\s*# [^\r\n]+\r?\n', "").Trim()
     $bookMarkdown = Join-Path $stageDir "$slug.md"
-    [System.IO.File]::WriteAllText($bookMarkdown, "# $Titulo`n`n## $Autor`n`n$body`n", $utf8NoBom)
+    $frontMatter = New-FrontMatter (Get-ObraMetadatos -Config $config -Titulo $Titulo -Autor $Autor)
+    [System.IO.File]::WriteAllText($bookMarkdown, "$frontMatter`n`n$body`n", $utf8NoBom)
 
     $artifacts = [ordered]@{
         markdown = [ordered]@{ archivo = "$slug.md"; sha256 = Get-FileSha256 $bookMarkdown }
     }
     if ($Epub) {
         $epubPath = Join-Path $stageDir "$slug.epub"
-        & (Join-Path $PSScriptRoot "build-epub.ps1") -InputMarkdown $bookMarkdown -OutputEpub $epubPath -Titulo $Titulo -Autor $Autor
+        & (Join-Path $PSScriptRoot "build-epub.ps1") -InputMarkdown $bookMarkdown -OutputEpub $epubPath
         $artifacts.epub = [ordered]@{ archivo = "$slug.epub"; sha256 = Get-FileSha256 $epubPath }
     }
     if ($Pdf) {
         $pdfPath = Join-Path $stageDir "$slug.pdf"
-        & (Join-Path $PSScriptRoot "build-pdf.ps1") -InputMarkdown $bookMarkdown -OutputPdf $pdfPath -Titulo $Titulo -Autor $Autor -PdfFormat $PdfFormat -PdfEngine $PdfEngine
+        & (Join-Path $PSScriptRoot "build-pdf.ps1") -InputMarkdown $bookMarkdown -OutputPdf $pdfPath -PdfFormat $PdfFormat -PdfEngine $PdfEngine
         $artifacts.pdf = [ordered]@{ archivo = "$slug.pdf"; sha256 = Get-FileSha256 $pdfPath; formato = $PdfFormat; motor_solicitado = $PdfEngine }
     }
 

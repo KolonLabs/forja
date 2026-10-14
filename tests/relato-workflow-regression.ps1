@@ -254,13 +254,13 @@ Ana recibe una llamada y decide salir. En la calle descubre la trampa y cambia d
     & $compilar | Out-Null
     $publicacion = Join-Path $workspace "publicacion"
     $libroMd = Get-Content -Raw -LiteralPath (Join-Path $publicacion "fixture-relato.md")
-    Assert-True ($libroMd -match "^# Fixture de relato\r?\n\r?\n## Amaro Alba\r?\n\r?\nAna recibe") "compilar antepone título y autor sin duplicar el título del manuscrito"
+    Assert-True ($libroMd -match '^---\r?\ntitle: "Fixture de relato"\r?\nauthor: "Amaro Alba"\r?\nlang: "es"\r?\n(?s:.*?)\r?\n---\r?\n\r?\nAna recibe') "compilar pone título y autor en el frontmatter, sin duplicar el título del manuscrito (ADR 0038)"
     $manifiestoObra = Get-Content -Raw -LiteralPath (Join-Path $publicacion "manifest.json") | ConvertFrom-Json
     Assert-Equal "relato.md" $manifiestoObra.manuscrito.archivo "el manifiesto apunta al manuscrito"
     Assert-Equal (Get-FileHash -LiteralPath (Join-Path $workspace "relato.md") -Algorithm SHA256).Hash.ToLowerInvariant() $manifiestoObra.manuscrito.sha256 "el manifiesto congela el hash del manuscrito"
     Assert-Equal "publicado" ((Get-Content -Raw -LiteralPath (Join-Path $workspace "config.json") | ConvertFrom-Json).estado) "compilar asigna publicado"
     & $compilar -Titulo "Otro título" | Out-Null
-    Assert-True ((Get-Content -Raw -LiteralPath (Join-Path $publicacion "fixture-relato.md")) -match "^# Otro título") "compilar regenera una obra ya publicada"
+    Assert-True ((Get-Content -Raw -LiteralPath (Join-Path $publicacion "fixture-relato.md")) -match '(?m)^title: "Otro título"\r?$') "compilar regenera una obra ya publicada"
     Assert-True (@(Get-ChildItem -LiteralPath $workspace -Directory -Force -Filter ".publicacion-*").Count -eq 0) "compilar no deja carpetas temporales"
     Write-Config -Workspace $workspace -Estado "escritura"
     Assert-Throws { & $compilar | Out-Null } "compilar rechaza una obra sin terminar"

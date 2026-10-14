@@ -10,7 +10,18 @@ Escribe una única prosa cohesionada por `E_XXXX`. Los beats solo se señalan co
 `<!-- B_XXXX -->` antes del primer pasaje que realiza su acción: no son headings,
 subsecciones, cuotas ni unidades de escritura.
 
-- Usa raya (`—`) para el diálogo cuando haya diálogo.
+- **Lo dicho, en boca de quien lo dice.** Si la escena recoge el contenido de
+  lo que alguien dice —también el narrador—, va en estilo directo con raya
+  (`—`): «—Me sienta mal —digo.», nunca «le digo que me sienta mal». No
+  resumas en la narración lo que alguien pregunta, cuenta, pide, saluda o
+  contesta («le pregunta si…», «me cuenta que…») ni cites sus palabras entre
+  comillas dentro de un párrafo narrativo («dice "así"»). Quedan fuera lo que
+  el POV no llega a oír («le dice algo al oído»), el ruido sin contenido
+  («habla por el móvil»), los mensajes escritos (entre comillas latinas) y el
+  pensamiento.
+- Cada intervención en raya es un párrafo propio, separado del anterior y del
+  siguiente por una línea en blanco, igual que los párrafos narrativos. Una
+  réplica pegada con un salto simple se funde con la narración al compilar.
 - Conserva párrafos y pensamiento interior solo cuando beneficien a la voz de la
   escena; no impongas una longitud ni una alternancia mecánica.
 - No añadas líneas `⚡`, extensiones, notas del escritor, títulos de beat ni

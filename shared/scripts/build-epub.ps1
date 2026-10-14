@@ -1,15 +1,18 @@
+# build-epub.ps1 -- Markdown a EPUB con Pandoc (ADR 0038). Título, autor y demás
+# metadatos salen del frontmatter YAML del Markdown (compilar.ps1, borrador.ps1,
+# crear-libro.ps1); -Titulo y -Autor solo los sobrescriben. Un Markdown sin
+# frontmatter, con la cabecera «# Título» + «## Autor» de antes, sigue siendo válido.
 param(
     [Parameter(Mandatory = $true)]
     [string]$InputMarkdown,
     [Parameter(Mandatory = $true)]
     [string]$OutputEpub,
-    [Parameter(Mandatory = $true)]
     [string]$Titulo,
-    [Parameter(Mandatory = $true)]
     [string]$Autor
 )
 
 $ErrorActionPreference = "Stop"
+. (Join-Path $PSScriptRoot "publicacion-comun.ps1")
 
 function Find-Pandoc {
     $command = Get-Command pandoc -ErrorAction SilentlyContinue | Select-Object -First 1
@@ -41,25 +44,51 @@ if (-not (Test-Path -LiteralPath $InputMarkdown -PathType Leaf)) {
 }
 
 $pandoc = Find-Pandoc
-$arguments = @(
-    $InputMarkdown,
-    "--from", "markdown",
-    "--to", "epub",
-    "--metadata", "title=$Titulo",
-    "--metadata", "author=$Autor",
-    "--metadata", "lang=es",
-    "--toc", "--toc-depth=1",
-    "-o", $OutputEpub
-)
-$cssPath = Join-Path $PSScriptRoot "build.css"
-if (Test-Path -LiteralPath $cssPath -PathType Leaf) {
-    $arguments += "--css", $cssPath
-}
+$utf8NoBom = [System.Text.UTF8Encoding]::new($false)
+$OutputEpub = [System.IO.Path]::GetFullPath($OutputEpub)
+$libro = Read-MarkdownLibro $InputMarkdown
+$cuerpo = $libro.Cuerpo
 
-Write-Host "Generando EPUB..."
-$output = & $pandoc @arguments 2>&1 | Out-String
-if ($LASTEXITCODE -ne 0 -or -not (Test-Path -LiteralPath $OutputEpub -PathType Leaf)) {
-    $logPath = Join-Path (Split-Path -Parent $OutputEpub) ("{0}.epub-build-error.log" -f [System.IO.Path]::GetFileNameWithoutExtension($OutputEpub))
-    [System.IO.File]::WriteAllText($logPath, $output, [System.Text.UTF8Encoding]::new($false))
-    throw "build-epub: Pandoc no pudo generar el EPUB. Revisa $logPath"
+# Pandoc abre cada capítulo del EPUB con un encabezado de nivel 1; si el texto no
+# empieza con uno (un relato), inserta el título de la obra como encabezado visible
+# justo después de la portada. Se pone uno propio con el título, oculto por la
+# clase `titulo-oculto` de build.css: da nombre a la entrada del índice de
+# navegación y el texto empieza con la prosa.
+if ($cuerpo -notmatch '^#[ \t]+\S') {
+    # Ojo: PowerShell no distingue mayúsculas; no reutilizar el nombre $Titulo.
+    $tituloCapitulo = if (-not [string]::IsNullOrWhiteSpace($Titulo)) { $Titulo } else { $libro.Campos["title"] }
+    if ([string]::IsNullOrWhiteSpace($tituloCapitulo)) { $tituloCapitulo = "Texto" }
+    $tituloCapitulo = [regex]::Replace($tituloCapitulo, '([\\`*_{}\[\]<>#])', '\$1')
+    $cuerpo = "# $tituloCapitulo {.unnumbered .titulo-oculto}`n`n$cuerpo"
+}
+$sourceText = if ($libro.FrontMatter) { "$($libro.FrontMatter)`n`n$cuerpo`n" } else { "$cuerpo`n" }
+
+$preparedInput = Join-Path (Split-Path -Parent $OutputEpub) (".{0}.epub-source.md" -f [System.IO.Path]::GetFileNameWithoutExtension($OutputEpub))
+try {
+    [System.IO.File]::WriteAllText($preparedInput, $sourceText, $utf8NoBom)
+
+    $arguments = @(
+        $preparedInput,
+        "--from", "markdown",
+        "--to", "epub",
+        "-o", $OutputEpub
+    )
+    if (Test-LibroConCapitulos $libro.Cuerpo) { $arguments += "--toc", "--toc-depth=1" }
+    $arguments += @(Get-MetadatosPandoc -Libro $libro -Titulo $Titulo -Autor $Autor)
+    $cssPath = Join-Path $PSScriptRoot "build.css"
+    if (Test-Path -LiteralPath $cssPath -PathType Leaf) {
+        $arguments += "--css", $cssPath
+    }
+
+    Write-Host "Generando EPUB..."
+    $output = & $pandoc @arguments 2>&1 | Out-String
+    if ($LASTEXITCODE -ne 0 -or -not (Test-Path -LiteralPath $OutputEpub -PathType Leaf)) {
+        $logPath = Join-Path (Split-Path -Parent $OutputEpub) ("{0}.epub-build-error.log" -f [System.IO.Path]::GetFileNameWithoutExtension($OutputEpub))
+        [System.IO.File]::WriteAllText($logPath, $output, $utf8NoBom)
+        throw "build-epub: Pandoc no pudo generar el EPUB. Revisa $logPath"
+    }
+} finally {
+    if (Test-Path -LiteralPath $preparedInput -PathType Leaf) {
+        Remove-Item -LiteralPath $preparedInput -Force
+    }
 }

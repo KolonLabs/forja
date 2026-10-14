@@ -37,6 +37,8 @@ Comprueba la distincion del briefing entre Obligatorio, Libre y Ejemplos opciona
 
 Lee la conversacion completa, ignorando sus encabezados de trazabilidad al evaluar fluidez: replicas con referentes y respuesta coherentes, sin reinicios por beat, relleno inconexo ni silencios prefijados por el tono. Saludos y despedidas pueden ser pertinentes, pero no son una cuota. Un problema concreto de naturalidad es `corregir`, aunque los IDs y hechos esten cubiertos; cita la friccion, no apruebes por checklist mecanico.
 
+Lo dicho va en boca de quien lo dice (`mecanica-prosa`): señala como `corregir`, con su beat, cada frase de la narración que resume en estilo indirecto lo que alguien pregunta, cuenta, pide, saluda o contesta —también el narrador— y cada réplica en raya pegada a la línea anterior o siguiente sin línea en blanco. Son requisitos de forma, no elecciones de estilo: se señalan siempre.
+
 La interioridad debe tener voz y POV coherentes. No apruebes un resumen editorial disfrazado de pensamiento directo ni listas de etiquetas solo por cumplir "deduce". Una decision o inferencia narrada indirectamente tambien es valida; no impongas cursiva ni primera persona a toda interioridad.
 
 En revision focalizada comprueba el mecanismo corregido y el entorno que realmente afecta. Si descubres una contradiccion factual o una friccion causal nueva fuera del fragmento, reportala con evidencia; el alcance reducido no permite ignorarla ni obliga a repuntuar toda la escena.
